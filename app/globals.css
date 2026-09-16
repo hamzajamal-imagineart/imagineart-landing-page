@@ -1,0 +1,360 @@
+@import "tailwindcss";
+
+/* ═════════════════════════════════════════════════════════════
+   ImagineArt product landing page.
+
+   The design system is the ImagineArt Enterprise visual language:
+   confident display type at weight 500, monochrome ink with colour
+   from imagery only, hairline dividers instead of boxed cards, one
+   tinted wash per page with film grain, and two-tone headings as
+   the single typographic flourish.
+   ═════════════════════════════════════════════════════════════ */
+
+@theme {
+  --color-content-primary: rgb(20 20 20);
+  --color-content-secondary: rgb(91 91 91);
+  --color-content-tertiary: rgb(0 0 0 / 0.5);
+
+  --color-primary-90: rgb(33 33 33);
+  --color-primary-100: rgb(23 23 23);
+
+  --color-border-primary: rgb(0 0 0 / 0.08);
+  --color-border-secondary: rgb(0 0 0 / 0.12);
+  --color-border-tertiary: rgb(0 0 0 / 0.2);
+
+  --color-footer-bg: #070707;
+
+  --font-sans: var(--font-google-sans), "Google Sans", "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, Monaco, Consolas, monospace;
+
+  --radius-2: 8px;
+  --radius-3: 12px;
+  --radius-4: 16px;
+  --radius-5: 20px;
+  --radius-6: 24px;
+}
+
+:root {
+  --ink: #141414;
+  /* Headings sit a step off pure black: at display sizes #141414 reads
+     heavy, and the lighter value keeps plenty of contrast on white.
+     Re-declared per route by <PageTint>. */
+  --ink-heading: #2f4358;
+  --ink-2: #5b5b5b;
+  --ink-3: #7a7a7a;
+  --line: rgba(0, 0, 0, 0.09);
+  --line-strong: rgba(0, 0, 0, 0.14);
+
+  --paper: #ffffff;
+  /* White stays white: against a tinted page wash it is the elevation cue. */
+  --panel: #ffffff;
+
+  /* Slate defaults, overridden by <PageTint>. */
+  --page-bg: #eef1f5;
+  --heading-muted: #97aabd;
+  --tile: #dfe6ee;
+  --panel-2: #e6ebf1;
+  /* Two shades of the page wash for nested containers, so a framed panel
+     and the container inside it both read against the page and each other. */
+  --shade-1: #e3e8ee;
+  --shade-2: #d7dee6;
+  /* One height for the three studio banners (Ad, Fashion, Film). */
+  --studio-band-h: clamp(360px, 30vw, 420px);
+
+  --radius-lg: 20px;
+  --maxw: 1240px;
+
+  --font-fallback: "Google Sans", "Helvetica Neue", Arial, sans-serif;
+
+  --page-noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0.4  0 0 0 0 0.46  0 0 0 0 0.58  0 0 0 0.5 0'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+@layer base {
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 96px;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  section[id] {
+    scroll-margin-top: 96px;
+  }
+
+  body {
+    /* Per-route wash, painted on the body itself so it reads as a real page
+       colour rather than a ghost of one. */
+    background: var(--page-bg);
+    color: var(--ink);
+    font-family: var(--font-sans), var(--font-fallback);
+    font-weight: 400;
+    line-height: 1.5;
+    letter-spacing: -0.011em;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  a { color: inherit; text-decoration: none; }
+
+  h1, h2, h3, h4, h5, h6 { font-weight: 500; }
+  strong, b { font-weight: 600; }
+
+  ::selection {
+    background: rgb(20 20 20 / 0.12);
+    color: rgb(20 20 20);
+  }
+  footer ::selection {
+    background: rgb(255 255 255 / 0.16);
+    color: #fff;
+  }
+}
+
+*:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+@layer utilities {
+  .container-page {
+    max-width: 1240px;
+    margin: 0 auto;
+    padding-left: 32px;
+    padding-right: 32px;
+    position: relative;
+  }
+  @media (max-width: 768px) {
+    .container-page {
+      padding-left: 20px;
+      padding-right: 20px;
+    }
+  }
+
+  .no-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+}
+
+/* ═════════════════════════════════════════════════════════════
+   Type scale
+   ═════════════════════════════════════════════════════════════ */
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  font-weight: 600;
+}
+
+.display {
+  color: var(--ink-heading);
+  font-size: clamp(40px, 6vw, 72px);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  font-weight: 500;
+  text-wrap: balance;
+}
+
+.h2 {
+  color: var(--ink-heading);
+  font-size: clamp(30px, 4vw, 48px);
+  line-height: 1.1;
+  letter-spacing: -0.015em;
+  font-weight: 500;
+  text-wrap: balance;
+}
+@media (min-width: 880px) {
+  .h2 { text-wrap: nowrap; white-space: nowrap; }
+}
+
+.h3 {
+  color: var(--ink-heading);
+  font-size: clamp(24px, 2.6vw, 34px);
+  line-height: 1.15;
+  letter-spacing: -0.015em;
+  font-weight: 500;
+  text-wrap: balance;
+}
+
+.lede {
+  font-size: 18px;
+  line-height: 1.65;
+  max-width: 60ch;
+  color: var(--ink-2);
+  font-weight: 400;
+}
+
+/* Second clause of a two-tone heading: a light tint of the page's own hue,
+   from <PageTint>, so heading and background always agree. */
+.h-muted {
+  color: var(--heading-muted);
+}
+
+/* ═════════════════════════════════════════════════════════════
+   Attribute list: scannable icon + label + blurb rows, replacing
+   boxed dashboard-mockup cards.
+   ═════════════════════════════════════════════════════════════ */
+.attr-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0;
+  border-top: 1px solid var(--line);
+  border-left: 1px solid var(--line);
+}
+.attr-item {
+  padding: 28px 28px 30px;
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+.attr-icon {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  background: var(--panel-2);
+  color: var(--ink);
+  flex: 0 0 auto;
+}
+.attr-icon svg { width: 18px; height: 18px; }
+.attr-title {
+  margin-top: 18px;
+  font-size: 16.5px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+.attr-body {
+  margin-top: 6px;
+  font-size: 14.5px;
+  line-height: 1.55;
+  color: var(--ink-3);
+  max-width: 34ch;
+}
+@media (max-width: 880px) {
+  .attr-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 560px) {
+  .attr-grid { grid-template-columns: 1fr; }
+}
+
+/* ═════════════════════════════════════════════════════════════
+   Split panel: copy on one side, a single credible visual on the other.
+   ═════════════════════════════════════════════════════════════ */
+.split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(32px, 6vw, 96px);
+  align-items: center;
+}
+@media (max-width: 880px) {
+  .split { grid-template-columns: 1fr; }
+}
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  padding: clamp(16px, 2vw, 24px);
+}
+.panel-flat {
+  background: var(--panel-2);
+  border-radius: var(--radius-lg);
+  padding: clamp(16px, 2vw, 24px);
+}
+
+/* ═════════════════════════════════════════════════════════════
+   Grain backdrop: near-flat solid + film grain, rendered in CSS.
+   ═════════════════════════════════════════════════════════════ */
+.grain {
+  position: relative;
+  border-radius: 26px;
+  padding: clamp(18px, 2.6vw, 38px);
+  overflow: hidden;
+  isolation: isolate;
+  background:
+    radial-gradient(140% 70% at 50% -10%, var(--grain-1) 0%, transparent 62%),
+    linear-gradient(180deg,
+      var(--grain-1) 0%,
+      var(--grain-2) 48%,
+      var(--grain-3) 100%);
+}
+.grain::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.28;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.03 0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 160px 160px;
+}
+.grain > * { position: relative; z-index: 1; }
+.grain { color: var(--grain-fg, inherit); }
+
+.grain-mineral  { --grain-1: #c4d2d3; --grain-2: #bccbcd; --grain-3: #b2c3c5; --grain-fg: #16201f; }
+.grain-sand     { --grain-1: #e2ded1; --grain-2: #dad6c7; --grain-3: #d2cebd; --grain-fg: #221f16; }
+.grain-charcoal { --grain-1: #343836; --grain-2: #2e3230; --grain-3: #272b29; --grain-fg: #ffffff; }
+.grain-olive    { --grain-1: #545a54; --grain-2: #4d534d; --grain-3: #454b45; --grain-fg: #ffffff; }
+.grain-teal     { --grain-1: #2a3838; --grain-2: #243030; --grain-3: #1e2929; --grain-fg: #ffffff; }
+.grain-steel    { --grain-1: #45525a; --grain-2: #3d4a52; --grain-3: #36434a; --grain-fg: #ffffff; }
+.grain-slate    { --grain-1: #c9d3de; --grain-2: #c0ccd8; --grain-3: #b6c3d1; --grain-fg: #1a232c; }
+
+.grain-diagonal {
+  background:
+    radial-gradient(120% 90% at 12% 8%, var(--grain-1) 0%, transparent 55%),
+    linear-gradient(163deg,
+      var(--grain-1) 0%,
+      var(--grain-1) 34%,
+      var(--grain-2) 62%,
+      var(--grain-3) 100%);
+}
+
+/* ═════════════════════════════════════════════════════════════
+   Liquid glass: the lens treatment for pills and icon boxes over media.
+   ═════════════════════════════════════════════════════════════ */
+.glass {
+  border: 0;
+  background: var(--glass-tint, rgba(255, 255, 255, 0.1));
+  -webkit-backdrop-filter: blur(5px) saturate(210%) brightness(1.06);
+  backdrop-filter: blur(5px) saturate(210%) brightness(1.06);
+  box-shadow:
+    inset 1.5px 1.5px 0 -0.5px var(--glass-spec, rgba(255, 255, 255, 0.8)),
+    inset -1.5px -1.5px 0 -0.5px var(--glass-spec-low, rgba(255, 255, 255, 0.3)),
+    inset 0 0 0 1px var(--glass-ring, rgba(255, 255, 255, 0.18)),
+    inset 0 0 10px var(--glass-bloom, rgba(255, 255, 255, 0.08)),
+    0 4px 14px var(--glass-cast, rgba(0, 0, 0, 0.18));
+}
+.glass-on-light {
+  --glass-tint: rgba(255, 255, 255, 0.28);
+  --glass-spec: rgba(255, 255, 255, 1);
+  --glass-spec-low: rgba(255, 255, 255, 0.55);
+  --glass-ring: rgba(255, 255, 255, 0.5);
+  --glass-bloom: rgba(255, 255, 255, 0.16);
+  --glass-cast: rgba(16, 20, 20, 0.09);
+}
+
+/* ═════════════════════════════════════════════════════════════
+   Page grain: a very light hue-tinted noise over the whole page, so flat
+   areas have some tooth instead of reading as dead paper. Fixed so it never
+   has to span the document height; the tint comes from <PageTint>.
+   ═════════════════════════════════════════════════════════════ */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.5;
+  background-image: var(--page-noise);
+  background-size: 140px 140px;
+}
