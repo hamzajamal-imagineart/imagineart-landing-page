@@ -9,10 +9,13 @@ import { withBasePath } from "@/lib/assets";
  *
  * Three things it has to do to sit behind a section safely:
  *
- * - Overhang the section by more than the blur radius (`inset: -140px`). A
- *   blurred layer samples transparent pixels past its own edges and fades
- *   out at the sides, so a flush layer leaves a pale halo along every seam.
- *   The host section needs `overflow: clip` to cut the overhang back off.
+ * - Overhang by more than the blur radius. A blurred layer samples
+ *   transparent pixels past its own edges and fades out at the sides, so a
+ *   flush layer leaves a pale halo along every seam. The overhang is clipped
+ *   by a wrapper of the component's own rather than by the host section:
+ *   clipping at the section forced `overflow-clip-margin` there to save the
+ *   SectionGuides dots, and that margin then let the overhang leak back out
+ *   and widen the document.
  * - Sit at `z-index: -1` inside a section that isolates. A positioned layer
  *   at `z-index: 0` paints *above* the section's own static text.
  * - Fade out hard at top and bottom, so it meets the hairline seams on the
@@ -32,25 +35,33 @@ export function Backdrop({
   opacity?: number;
 }) {
   return (
-    <div
-      className="bd"
-      aria-hidden
-      style={{
-        ["--bd-img" as string]: `url(${withBasePath("/media/hero/backdrop.jpg")})`,
-        ["--bd-pos" as string]: position,
-        ["--bd-op" as string]: String(opacity),
-      }}
-    />
+    <div className="bd" aria-hidden>
+      <span
+        className="bd-layer"
+        style={{
+          ["--bd-img" as string]: `url(${withBasePath("/media/hero/backdrop.jpg")})`,
+          ["--bd-pos" as string]: position,
+          ["--bd-op" as string]: String(opacity),
+        }}
+      />
+    </div>
   );
 }
 
 /** Emitted once per host section; duplicate rules are harmless. */
 export const backdropCss = `
+  /* Clips its own overhang, so the host section needs nothing but an
+     isolation context and can let other things overflow it. */
   .bd {
     position: absolute;
-    inset: -140px;
+    inset: 0;
     z-index: -1;
+    overflow: hidden;
     pointer-events: none;
+  }
+  .bd-layer {
+    position: absolute;
+    inset: -140px;
     background-image: var(--bd-img);
     background-size: cover;
     background-position: var(--bd-pos);

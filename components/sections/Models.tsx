@@ -74,9 +74,8 @@ export function Models() {
 
       <style>{`
         /* Hosts a <Backdrop>: isolate so the layer can sit at z-index -1
-           without falling behind the page, clip so its overhang does not
-           bleed into the neighbouring sections. */
-        #models { isolation: isolate; overflow: clip; }
+           without falling behind the page. It clips its own overhang. */
+        #models { isolation: isolate; }
         ${backdropCss}
 
         .mdl-grid {

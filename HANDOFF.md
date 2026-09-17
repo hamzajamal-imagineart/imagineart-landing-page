@@ -151,14 +151,15 @@ Two things learned the hard way, both silent failures:
 ## 4. Links (`lib/links.ts`)
 
 Confirmed: Creative `/image`, Workflows `/workflow`, Computer `/imagine-computer`,
-Film Studio `/ai-film-studio`, Pricing `/subscription`, demo
+the three studios `/ad-studio` · `/fashion-studio` · `/film-studio`,
+Pricing `/subscription`, demo
 `cal.com/team/imagineart/imagineart-customer-assist`, template gallery
 `/enterprise/template` with category slugs `advertising · cinematic · fashion · branding`,
 app gallery `/apps?category-id=` with `image 14 · video 23 · music 18`,
 plugin pages `/plugins#<app>`.
 
-**Inferred, verify before shipping:** Ad Studio → `/ai-image-generator`,
-Fashion Studio → `/apps/outfit-tryon`.
+**Inferred, verify before shipping:** the Avatar studio → `/apps/heygen-avatar`.
+Note `/apps/outfit-tryon`, which Fashion Studio used to point at, returns 500.
 
 ## 5. Content caveats
 
@@ -209,7 +210,7 @@ that shows it.
 
 ## 7. Open items
 
-1. Confirm the inferred URLs (§4) and the flagged model names (§5).
+1. Confirm the remaining inferred URL (§4) and the flagged model names (§5).
 2. Replace the Creative Tools thumbnails and give the cards per-app links; supply real audio footage (§5).
 3. Replace the remaining placeholder hero footage and the invented copy (§5).
 4. Re-encode the Fashion clip and delete the unused media (§6).

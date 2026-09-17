@@ -13,7 +13,7 @@ const COLUMNS: { heading: string; links: { label: string; href: string }[] }[] =
       { label: "Image Studio", href: `${BASE}/image` },
       { label: "Video Studio", href: `${BASE}/video` },
       { label: "Audio Studio", href: `${BASE}/audio-studio` },
-      { label: "Film Studio", href: `${BASE}/ai-film-studio` },
+      { label: "Film Studio", href: `${BASE}/film-studio` },
       { label: "Workflow", href: `${BASE}/flow` },
       { label: "Enterprise", href: `${BASE}/business/enterprise` },
       { label: "Teams", href: `${BASE}/teams-plan` },

@@ -7,8 +7,9 @@ import { BlurHeading } from "@/components/BlurHeading";
  *
  * Image, Video and Music and Audio each get a row: the medium on the left, a
  * "See all" into that category of the app gallery on the right, and a
- * horizontal rail of the tools underneath. It replaces the three-column
- * lineup, which could show three tools where the product has dozens.
+ * horizontal rail of the tools underneath, clipped to the page grid. It
+ * replaces the three-column lineup, which could show three tools where the
+ * product has dozens.
  *
  * Cards are thumbnail-over-copy rather than the clip filling the card: the
  * rails sit directly on the page wash with no panel around them, and a row of
@@ -128,9 +129,6 @@ export function CreativeTools() {
       </div>
 
       <style>{`
-        /* The rails deliberately run past the container on both sides. */
-        #tools { overflow-x: hidden; overflow-x: clip; }
-
         .ct-rows { display: flex; flex-direction: column; gap: 48px; }
 
         .ct-head {
@@ -160,16 +158,13 @@ export function CreativeTools() {
         .ct-all:hover { color: var(--ink); }
         .ct-all:hover svg { transform: translateX(2px); }
 
-        /* The rail runs to the edges of the window, not the container, so
-           the row reads as continuing past the screen. The padding puts the
-           first card back on the page grid. The section clips the overflow so
-           the document never widens. */
+        /* The rail is the container, and cuts off at its edges: as a scroll
+           container it clips its own overflow, so a card leaving the row
+           disappears on the page grid rather than running out to the window. */
         .ct-rail {
           display: flex;
           gap: 16px;
           overflow-x: auto;
-          margin-inline: calc(50% - 50vw);
-          padding-inline: calc(50vw - 50%);
           padding-block: 6px 14px;
           scrollbar-width: none;
         }

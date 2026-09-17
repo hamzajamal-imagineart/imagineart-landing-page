@@ -114,9 +114,8 @@ export function FAQSection() {
 
       <style>{`
         /* Hosts a <Backdrop>: isolate so the layer can sit at z-index -1
-           without falling behind the page, clip so its overhang does not
-           bleed into the neighbouring sections. */
-        #faq { isolation: isolate; overflow: clip; }
+           without falling behind the page. It clips its own overhang. */
+        #faq { isolation: isolate; }
         ${backdropCss}
 
         .faq-grid {

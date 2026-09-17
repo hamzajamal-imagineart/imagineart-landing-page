@@ -20,12 +20,12 @@ export const WORKFLOWS_HREF = `${HOME}/workflow`;
 export const CREATIVE_HREF = `${HOME}/image`;
 export const COMPUTER_HREF = `${HOME}/imagine-computer`;
 
-/** Studios. Film is confirmed; the other three are inferred. */
+/** Studios. Ad, Fashion and Film confirmed (Hamza, 17 Sep); Avatar inferred. */
 export const STUDIO_HREFS = {
-  ad: `${HOME}/ai-image-generator`,
+  ad: `${HOME}/ad-studio`,
   avatar: `${HOME}/apps/heygen-avatar`,
-  fashion: `${HOME}/apps/outfit-tryon`,
-  film: `${HOME}/ai-film-studio`,
+  fashion: `${HOME}/fashion-studio`,
+  film: `${HOME}/film-studio`,
 } as const;
 
 /** Plugin pages, one anchor per host application. Confirmed. */

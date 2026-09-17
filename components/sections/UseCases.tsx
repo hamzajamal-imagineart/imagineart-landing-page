@@ -100,7 +100,7 @@ export function UseCases() {
         /* Hosts a <Backdrop>: isolate so the layer can sit at z-index -1
            without falling behind the page, clip so its overhang does not
            bleed into the neighbouring sections. */
-        #use-cases { isolation: isolate; overflow: clip; }
+        #use-cases { isolation: isolate; }
         ${backdropCss}
 
         /* Narrow, the wheel's cards deliberately run past the container on

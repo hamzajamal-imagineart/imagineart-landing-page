@@ -113,12 +113,8 @@ export function Workflows() {
 
       <style>{`
         /* Hosts a <Backdrop>: isolate so the layer can sit at z-index -1
-           without falling behind the page, clip so its overhang does not
-           bleed into the neighbouring sections. */
-        /* overflow-clip-margin: the <Backdrop> overhang has to be cut off,
-           but the SectionGuides dots are centred on the section's top edge
-           and stand 2px proud of it. Clipping flush would halve them. */
-        #workflows { isolation: isolate; overflow: clip; overflow-clip-margin: 4px; }
+           without falling behind the page. It clips its own overhang. */
+        #workflows { isolation: isolate; }
         ${backdropCss}
 
         .wf-bento {
