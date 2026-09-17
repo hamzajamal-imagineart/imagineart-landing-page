@@ -23,6 +23,6 @@ export const sectionGlowCss = `
     inset: 0;
     z-index: -1;
     pointer-events: none;
-    background: radial-gradient(58% 46% at var(--sg-pos), var(--glow-tint), transparent 72%);
+    background: radial-gradient(70% 56% at var(--sg-pos), var(--glow-tint), transparent 74%);
   }
 `;

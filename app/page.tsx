@@ -1,7 +1,6 @@
 import { SiteNav } from "@/components/SiteNav";
 import { SiteFooter } from "@/components/SiteFooter";
 import { PageTint } from "@/components/PageTint";
-import { SectionReveal } from "@/components/SectionReveal";
 import { FAQSection } from "@/components/FAQSection";
 import { ReviewsSection } from "@/components/ReviewsSection";
 
@@ -64,8 +63,6 @@ export default function Page() {
         <FAQSection />
         <ClosingCta />
       </main>
-
-      <SectionReveal />
 
       <SiteFooter />
     </>

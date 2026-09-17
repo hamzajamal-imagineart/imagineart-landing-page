@@ -107,16 +107,6 @@ halo. They render through `components/BlurHeading`, which carries the three
 shapes the page uses: one clause, a clause plus a muted second clause, and the
 hero's two lines at different weights.
 
-**Sections fade in on scroll** (17 Sep). `components/SectionReveal` is mounted
-once beside `<main>`; it does not wrap anything. From a passive effect it
-arms every direct child of `<main>` that is below the fold at mount, sets
-`data-reveal` on it, and an `IntersectionObserver` flips that to
-`data-reveal="in"`. The two rules live at the foot of `globals.css`. It fails
-open on purpose: the hidden state exists only once JS has run, so nothing in
-`out/index.html` carries `opacity:0`, and a section already on screen at mount
-is never armed, so the hero cannot paint and then blank. Reduced motion skips
-it in both the effect and the CSS.
-
 **Headings do not animate** (17 Sep). BlurHeading used to wrap
 `components/ui/blur-reveal` and reveal per character on scroll; it was pulled
 because it split every heading into one `inline-block` span per character,
@@ -127,7 +117,7 @@ is still on disk but unused.
 ### Shared components
 
 In use: `UseCaseWheel`, `MarkCluster`, `SiteNav`, `SiteFooter`, `Button`,
-`PageTint`, `BlurHeading`, `SectionReveal`, `icons.tsx`, `primitives/SectionGuides`,
+`PageTint`, `BlurHeading`, `icons.tsx`, `primitives/SectionGuides`,
 `primitives/SectionGlow`, `primitives/SlidingIndicator`,
 `primitives/useAutoAdvance`.
 Unused, kept on disk: `ui/blur-reveal`, `Backdrop`, `RailGrid`, `MediaCard`,
