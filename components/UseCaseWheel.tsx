@@ -179,7 +179,7 @@ export function UseCaseWheel({ groups, label }: { groups: WheelGroup[]; label: s
           border-radius: 999px;
           display: grid; place-items: center;
           background: var(--ink-heading);
-          color: #fff;
+          color: var(--page-bg);
           flex: 0 0 auto;
           animation: uw-pop 360ms cubic-bezier(0.22, 1, 0.36, 1) both;
           transition: transform 0.2s ease;

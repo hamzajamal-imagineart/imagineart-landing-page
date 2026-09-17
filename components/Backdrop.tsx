@@ -66,8 +66,10 @@ export const backdropCss = `
     background-size: cover;
     background-position: var(--bd-pos);
     background-repeat: no-repeat;
-    filter: blur(64px);
-    opacity: var(--bd-op);
+    filter: blur(64px) brightness(var(--photo-dim, 1));
+    /* --bd-scale lets the theme dim every backdrop at once without
+       reaching past the per-instance opacity set on the element. */
+    opacity: calc(var(--bd-op) * var(--bd-scale, 1));
     -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 38%, #000 62%, transparent 100%);
     mask-image: linear-gradient(to bottom, transparent 0, #000 38%, #000 62%, transparent 100%);
   }

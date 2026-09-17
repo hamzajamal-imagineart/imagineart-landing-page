@@ -1,77 +1,77 @@
 import { withBasePath } from "@/lib/assets";
-import { APP_CATEGORY, appsCategoryHref } from "@/lib/links";
+import { appsHref } from "@/lib/links";
 import { BlurHeading } from "@/components/BlurHeading";
+import { SectionGuides } from "@/components/primitives/SectionGuides";
+import { ButtonLink } from "@/components/Button";
+import {
+  IconAudio, IconBox, IconCamera, IconClapper, IconHanger, IconImage, IconPalette, IconPerson,
+  IconPlay, IconVideo,
+} from "@/components/icons";
+import { SectionGlow, sectionGlowCss } from "@/components/primitives/SectionGlow";
 
 /**
- * The creative tools, as one labelled rail per medium.
+ * The tools, as the bento from Figma (H-Drafts 483:442).
  *
- * Image, Video and Music and Audio each get a row: the medium on the left, a
- * "See all" into that category of the app gallery on the right, and a
- * horizontal rail of the tools underneath, clipped to the page grid. It
- * replaces the three-column lineup, which could show three tools where the
- * product has dozens.
+ * Four columns of 308 with a 16px gutter, each column split differently: two
+ * cards at 372/172, or three at 112/112/300. That uneven split is the whole
+ * point of the layout, so the columns are real flex columns with fixed card
+ * heights rather than a uniform grid, exactly as the Figma frames are built.
  *
- * Cards are thumbnail-over-copy rather than the clip filling the card: the
- * rails sit directly on the page wash with no panel around them, and a row of
- * full-bleed clips read as a band of video rather than a set of tools.
+ * Cards come in two kinds. One carries a photograph full-bleed with a scrim
+ * under the copy; the other is a flat tinted panel, and its tint is the only
+ * thing separating it from its neighbours (#46211e, #171726 and #141417 are
+ * sampled from the export; the second row's four are in the same family).
  *
- * ASSETS ARE PLACEHOLDERS. Every thumbnail below is a clip already on disk,
- * borrowed from another section and picked only for being the nearest thing
- * to the tool it sits under; the audio row in particular has no footage of
- * its own. Swap the `video` paths as the real ones arrive. Card titles and
- * bodies are written from the tool names and are draft copy (HANDOFF.md §5).
+ * The second row is flat across all four columns, and deliberately so: it
+ * reads as a quieter shelf under the picture row rather than a repeat of it,
+ * and there are no more photographs in the Figma to give it.
  *
- * Card links point at the row's category page rather than at per-app URLs,
- * which are not confirmed. Give each card its own `href` once they are.
+ * The cards are dark on the page's light wash, as the Apps section was,
+ * rather than sitting on a dark band of their own as in Figma. A dark band
+ * this early would fight the hero backdrop directly above it. If the band is
+ * wanted, it is one background on .bt-grid.
  */
-type Tool = { title: string; body: string; video: string };
-type Row = { id: string; label: string; seeAll: string; tools: Tool[] };
+type Card = {
+  title: string;
+  body: string;
+  icon: React.ReactNode;
+  /** Photograph, full-bleed. */
+  image?: string;
+  /** Flat tint, for the cards without a photograph. */
+  tint?: string;
+  size: "tall" | "short" | "mini" | "fill";
+  badge?: string;
+};
 
-const ROWS: Row[] = [
-  {
-    id: "image",
-    label: "Image",
-    seeAll: appsCategoryHref(APP_CATEGORY.image),
-    tools: [
-      { title: "Inpaint", body: "Change one part of the image and keep the rest exactly as it was.", video: "/media/capabilities/inpaint.mp4" },
-      { title: "Image Upscaler", body: "Sharper and larger, ready for print at full resolution.", video: "/media/capabilities/upscale.mp4" },
-      { title: "Sketch to Render", body: "Take a line drawing through to a finished render in one step.", video: "/media/capabilities/sketch-to-render.mp4" },
-      { title: "Variate", body: "Explore a direction without losing the frame you started from.", video: "/media/capabilities/variate.mp4" },
-      { title: "Outfit Try-on", body: "Dress a model in your garment from a single product photo.", video: "/media/capabilities/outfit-tryon.mp4" },
-      { title: "Reframe Presets", body: "One asset, resized for every placement you need to fill.", video: "/media/capabilities/reframe-presets.mp4" },
-      { title: "Product Studio", body: "Packshots and lifestyle sets without booking a shoot.", video: "/media/templates/product-studio.mp4" },
-    ],
-  },
-  {
-    id: "video",
-    label: "Video",
-    seeAll: appsCategoryHref(APP_CATEGORY.video),
-    tools: [
-      { title: "Video Extend", body: "Add seconds to the end of a shot without cutting away.", video: "/media/capabilities/video-extend.mp4" },
-      { title: "Video Reframe", body: "Recut a landscape edit for vertical and square placements.", video: "/media/capabilities/video-reframe.mp4" },
-      { title: "VFX Shots", body: "Effects work on a shot you already have, no plates needed.", video: "/media/capabilities/vfx.mp4" },
-      { title: "Motion Graphics", body: "Type, shapes and transitions moving on your brand system.", video: "/media/use-cases/motion.mp4" },
-      { title: "UGC Creator", body: "A creator who speaks your script, in any language you ship.", video: "/media/capabilities/ugc.mp4" },
-      { title: "Character Sequence", body: "One character held steady across every shot in the cut.", video: "/media/use-cases/character.mp4" },
-      { title: "Ad Campaign", body: "A full set of motion ads from one brief and one product.", video: "/media/templates/ad-campaign.mp4" },
-    ],
-  },
-  {
-    id: "music",
-    label: "Music and Audio",
-    seeAll: appsCategoryHref(APP_CATEGORY.music),
-    tools: [
-      { title: "Music Generator", body: "A track cut to length, in the style and tempo you name.", video: "/media/capabilities/music.mp4" },
-      { title: "Voice and Lip Sync", body: "A read in any voice, matched to the mouth on screen.", video: "/media/capabilities/ugc.mp4" },
-      { title: "Sound Effects", body: "Effects placed on cue against the picture you are cutting.", video: "/media/use-cases/film.mp4" },
-      { title: "Score to Picture", body: "Music that follows the edit instead of fighting it.", video: "/media/use-cases/motion.mp4" },
-    ],
-  },
+const COLUMNS: Card[][] = [
+  [
+    { title: "Lipsync", body: "Create high-end visuals from prompts or images.", icon: <IconPerson />, image: "/media/tools/lipsync.jpg", size: "tall" },
+    { title: "AI Voiceover", body: "Studio-quality voiceovers in every major language.", icon: <IconAudio />, image: "/media/tools/ai-voiceover.jpg", size: "short" },
+    { title: "Inpaint", body: "Change one part of an image and keep the rest exactly as it was.", icon: <IconImage />, tint: "#1b2430", size: "short" },
+  ],
+  [
+    { title: "Relight Video", body: "Make cinematic videos that feel professionally directed.", icon: <IconVideo />, image: "/media/tools/relight-video.jpg", size: "tall", badge: "New" },
+    { title: "Outpaint", body: "Connect AI tools into a single, reusable creative pipeline.", icon: <IconPalette />, tint: "#141417", size: "short" },
+    { title: "Image Upscaler", body: "Sharper and larger, ready for print at full resolution.", icon: <IconBox />, tint: "#241b2b", size: "short" },
+  ],
+  [
+    { title: "Motion Sync", body: "70+ ready-made AI effects. Transform any visual in seconds.", icon: <IconPlay />, image: "/media/tools/motion-sync.jpg", size: "tall" },
+    { title: "VFX", body: "Create a track for any video, in any style.", icon: <IconClapper />, image: "/media/tools/vfx.jpg", size: "short" },
+    { title: "Video Extend", body: "Add seconds to the end of a shot without cutting away.", icon: <IconVideo />, tint: "#1f2a22", size: "short" },
+  ],
+  [
+    { title: "Dub Video", body: "Change spoken language with lipsync.", icon: <IconAudio />, tint: "#46211e", size: "mini" },
+    { title: "Remove Background", body: "Generate without leaving your timeline.", icon: <IconImage />, tint: "#171726", size: "mini" },
+    { title: "Create Characters", body: "Create high-end AI video production with precise control.", icon: <IconCamera />, image: "/media/tools/create-characters.jpg", size: "fill" },
+    { title: "Outfit Try-on", body: "Dress a model in your garment from a single product photo.", icon: <IconHanger />, tint: "#2b201a", size: "short" },
+  ],
 ];
 
 export function CreativeTools() {
   return (
-    <section id="tools" className="relative border-t border-[color:var(--line)] py-24 md:py-32">
+    <section id="tools" className="relative border-t border-[color:var(--line)] py-24 md:py-32 lg:border-t-0">
+      <SectionGlow />
+      <SectionGuides edge="top" />
       <div className="container-page">
         {/* Wider than the page's usual 680px heading block: .h2 is nowrap
             above 880px and this is a multi-word heading. */}
@@ -83,163 +83,194 @@ export function CreativeTools() {
           </p>
         </div>
 
-        <div className="ct-rows mt-16">
-          {ROWS.map((row, r) => (
-            <section key={row.id} className="ct-row" aria-labelledby={`ct-${row.id}`}>
-              <header className="ct-head">
-                <h3 id={`ct-${row.id}`} className="ct-label">{row.label}</h3>
-                <a className="ct-all" href={row.seeAll} target="_blank" rel="noopener noreferrer">
-                  See all
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden><path d="M9 6l6 6-6 6" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                </a>
-              </header>
-
-              <div className="ct-rail">
-                {row.tools.map((t, i) => (
-                  <a
-                    key={t.title}
-                    className="ct-card"
-                    href={row.seeAll}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <div className="ct-thumb">
-                      {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-                      <video
-                        src={withBasePath(t.video)}
-                        autoPlay
-                        muted
-                        loop
-                        playsInline
-                        preload={r === 0 && i < 3 ? "auto" : "none"}
-                        aria-hidden
-                      />
-                    </div>
-                    <h4 className="ct-name">{t.title}</h4>
-                    <p className="ct-body">{t.body}</p>
-                    <span className="ct-go" aria-hidden>
-                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M6 12h12M13 6l6 6-6 6" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" /></svg>
+        <div className="bt-grid mt-14">
+          {COLUMNS.map((col, c) => (
+            <div key={c} className="bt-col">
+              {col.map((card) => (
+                <a
+                  key={card.title}
+                  className={`bt-card bt-${card.size} ${card.image ? "bt-has-image" : ""}`}
+                  href={appsHref()}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={card.tint ? { background: card.tint } : undefined}
+                >
+                  {card.image && (
+                    <>
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img className="bt-img" src={withBasePath(card.image)} alt="" aria-hidden />
+                      <span className="bt-scrim" aria-hidden />
+                    </>
+                  )}
+                  {card.badge && <span className="bt-badge">{card.badge}</span>}
+                  <span className="bt-meta">
+                    <span className="bt-icon" aria-hidden>{card.icon}</span>
+                    <span className="bt-title">{card.title}</span>
+                    <span className="bt-reveal">
+                      <span className="bt-body">{card.body}</span>
                     </span>
-                  </a>
-                ))}
-              </div>
-            </section>
+                  </span>
+                </a>
+              ))}
+            </div>
           ))}
+        </div>
+
+        <div className="bt-foot">
+          <ButtonLink href={appsHref()} target="_blank" rel="noopener noreferrer" variant="ghost" size="md">
+            View all tools
+          </ButtonLink>
         </div>
       </div>
 
       <style>{`
-        .ct-rows { display: flex; flex-direction: column; gap: 48px; }
+        /* Hosts a <SectionGlow> at z-index -1. */
+        #tools { isolation: isolate; }
+        ${sectionGlowCss}
 
-        .ct-head {
-          display: flex;
-          align-items: baseline;
-          justify-content: space-between;
+        .bt-grid {
+          display: grid;
+          grid-template-columns: repeat(4, minmax(0, 1fr));
           gap: 16px;
-          margin-bottom: 16px;
+          align-items: start;
         }
-        .ct-label {
-          font-size: 21px;
-          font-weight: 500;
-          letter-spacing: -0.015em;
-          color: var(--ink-heading);
-        }
-        .ct-all {
-          display: inline-flex;
-          align-items: center;
-          gap: 3px;
-          font-size: 14px;
-          font-weight: 500;
-          color: var(--ink-3);
-          white-space: nowrap;
-          transition: color 200ms ease;
-        }
-        .ct-all svg { flex: 0 0 auto; transition: transform 200ms ease; }
-        .ct-all:hover { color: var(--ink); }
-        .ct-all:hover svg { transform: translateX(2px); }
+        .bt-col { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
 
-        /* The rail is the container, and cuts off at its edges: as a scroll
-           container it clips its own overflow, so a card leaving the row
-           disappears on the page grid rather than running out to the window. */
-        .ct-rail {
-          display: flex;
-          gap: 16px;
-          overflow-x: auto;
-          padding-block: 6px 14px;
-          scrollbar-width: none;
-        }
-        .ct-rail::-webkit-scrollbar { display: none; }
+        /* Heights are the Figma's, and the uneven column splits are the
+           layout: 372/172 against 112/112/300. */
+        .bt-tall  { height: 372px; }
+        .bt-short { height: 172px; }
+        /* Taller than the Figma's 112, and the fill card shorter than its
+           300, so the column still totals 560 like the other three. At 112 a
+           mini card could not hold its icon, title and description at once
+           and the description was cut off. */
+        .bt-mini  { height: 130px; }
+        .bt-fill  { height: 268px; }
 
-        /* Card, not a clip: thumbnail, title, two lines, arrow. */
-        .ct-card {
+        .bt-card {
           position: relative;
-          flex: 0 0 304px;
-          width: 304px;
-          display: flex;
-          flex-direction: column;
-          padding: 12px 12px 18px;
-          border-radius: var(--radius-4);
-          background: var(--panel);
-          border: 1px solid var(--line);
-          color: inherit;
-          text-decoration: none;
-          transition: transform 320ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 320ms ease;
-        }
-        .ct-card:hover, .ct-card:focus-visible {
-          transform: translateY(-3px);
-          box-shadow: 0 10px 28px rgba(16, 20, 30, 0.1);
-        }
-
-        .ct-thumb {
-          position: relative;
-          aspect-ratio: 4 / 3;
-          border-radius: var(--radius-3);
+          display: block;
           overflow: hidden;
-          background-color: var(--tile);
+          border-radius: var(--radius-4);
+          background-color: #141417;
+          color: #fff;
+          text-decoration: none;
+          transition: transform 340ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 340ms ease;
         }
-        .ct-thumb video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+        .bt-card:hover, .bt-card:focus-visible {
+          transform: translateY(-3px);
+          box-shadow: 0 14px 34px rgba(16, 20, 30, 0.18);
+        }
 
-        .ct-name {
-          margin: 16px 5px 0;
-          font-size: 16.5px;
+        .bt-img {
+          position: absolute;
+          inset: 0;
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          display: block;
+        }
+        /* Only the picture cards need a scrim; the flat ones are already dark
+           enough for white type. */
+        .bt-scrim {
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(to top, rgba(10, 10, 11, 0.88) 0%, rgba(10, 10, 11, 0.45) 30%, transparent 62%);
+          transition: background 320ms ease;
+        }
+        .bt-card:hover .bt-scrim, .bt-card:focus-visible .bt-scrim {
+          background: linear-gradient(to top, rgba(10, 10, 11, 0.92) 0%, rgba(10, 10, 11, 0.66) 44%, rgba(10, 10, 11, 0.2) 100%);
+        }
+
+        .bt-meta {
+          position: absolute;
+          left: 0; right: 0; bottom: 0;
+          display: block;
+          padding: 20px;
+        }
+        .bt-icon {
+          width: 32px; height: 32px;
+          border-radius: 10px;
+          display: grid; place-items: center;
+          background: rgba(255, 255, 255, 0.12);
+          color: #fff;
+          margin-bottom: 10px;
+        }
+        .bt-icon svg { width: 17px; height: 17px; }
+        .bt-mini .bt-meta { padding: 16px; }
+        .bt-mini .bt-icon { width: 28px; height: 28px; border-radius: 9px; margin-bottom: 8px; }
+        .bt-mini .bt-icon svg { width: 15px; height: 15px; }
+
+        .bt-title {
+          display: block;
+          font-size: 16px;
           font-weight: 500;
           letter-spacing: -0.01em;
-          color: var(--ink);
+          color: #fff;
         }
-        /* Two lines, so every card in a rail is the same height whatever the
-           copy runs to. */
-        .ct-body {
-          margin: 7px 5px 0;
-          font-size: 14.5px;
-          line-height: 1.5;
-          color: var(--ink-3);
+        /* The description is the hover: at rest a card is its picture, its
+           icon and its name. max-height rather than a 0fr-to-1fr grid row,
+           which cannot both close and open in an auto-height box. */
+        .bt-reveal {
+          display: block;
+          max-height: 0;
+          overflow: hidden;
+          opacity: 0;
+          transition: max-height 320ms cubic-bezier(0.22, 1, 0.36, 1), opacity 220ms ease;
+        }
+        .bt-card:hover .bt-reveal, .bt-card:focus-visible .bt-reveal {
+          max-height: 80px;
+          opacity: 1;
+        }
+        .bt-body {
           display: -webkit-box;
           -webkit-line-clamp: 2;
           -webkit-box-orient: vertical;
           overflow: hidden;
-          min-height: calc(14.5px * 1.5 * 2);
-          padding-right: 38px;
+          padding-top: 5px;
+          font-size: 13.5px;
+          line-height: 1.45;
+          color: rgba(255, 255, 255, 0.72);
         }
-        .ct-go {
-          position: absolute;
-          right: 14px;
-          bottom: 14px;
-          width: 28px; height: 28px;
-          border-radius: 999px;
-          display: grid; place-items: center;
-          background: var(--ink-heading);
-          color: #fff;
-          transition: transform 200ms ease;
-        }
-        .ct-card:hover .ct-go { transform: scale(1.06); }
 
-        @media (max-width: 560px) {
-          .ct-card { flex-basis: 252px; width: 252px; }
-          .ct-rows { gap: 40px; }
+        .bt-badge {
+          position: absolute;
+          top: 10px; right: 10px;
+          padding: 3px 9px;
+          border-radius: 999px;
+          background: #aa7eeb;
+          color: #17111f;
+          font-size: 11px;
+          font-weight: 500;
+          letter-spacing: 0.02em;
+          text-transform: uppercase;
+        }
+
+        .bt-foot { display: flex; justify-content: center; margin-top: 40px; }
+
+        /* Two columns keeps each column's internal split intact; one column
+           lets every card find its own height. */
+        @media (max-width: 1100px) {
+          .bt-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        }
+        /* No hover to reveal with, so the description simply stays open and
+           the cards take whatever height that needs. */
+        @media (hover: none) {
+          .bt-reveal { max-height: 80px; opacity: 1; }
+          .bt-mini { height: auto; min-height: 130px; }
+          .bt-mini .bt-meta { position: static; }
+        }
+        @media (max-width: 680px) {
+          .bt-grid { grid-template-columns: minmax(0, 1fr); }
+          .bt-tall { height: 300px; }
+          .bt-fill { height: 260px; }
+          .bt-short { height: 172px; }
+          .bt-mini { height: auto; min-height: 130px; }
+          .bt-mini .bt-meta { position: static; }
         }
         @media (prefers-reduced-motion: reduce) {
-          .ct-card, .ct-go { transition: none; }
-          .ct-card:hover, .ct-card:focus-visible { transform: none; }
+          .bt-card, .bt-reveal, .bt-scrim { transition: none; }
+          .bt-card:hover, .bt-card:focus-visible { transform: none; }
         }
       `}</style>
     </section>

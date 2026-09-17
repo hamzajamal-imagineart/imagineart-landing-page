@@ -27,6 +27,10 @@
  * scratch. Sections whose content is entirely full-bleed shouldn't use this
  * at all, since there's nothing left for the grid to align to.
  *
+ * DIVERGES from the B2B copy in one place: the rule and dot colours come
+ * from --guide-line / --guide-dot rather than fixed blacks, so the grid
+ * survives dark mode. Port that back rather than reverting it.
+ *
  * `edge` should match the section's own border — the section keeps its
  * `border-t`/`border-b` for mobile and hides it at `lg:` where this takes
  * over, via `lg:border-t-0` / `lg:border-b-0` on the section itself.
@@ -58,26 +62,26 @@ export function SectionGuides({ edge = "top" }: { edge?: "top" | "bottom" }) {
       <div className="relative mx-auto h-full w-full max-w-[1240px]">
         {/* Vertical rules — masked only at the dotted edge */}
         <span
-          className="absolute left-0 top-0 bottom-0 w-px bg-black/[0.055]"
+          className="absolute left-0 top-0 bottom-0 w-px bg-[color:var(--guide-line)]"
           style={{ WebkitMaskImage: vMask, maskImage: vMask }}
         />
         <span
-          className="absolute right-0 top-0 bottom-0 w-px bg-black/[0.055]"
+          className="absolute right-0 top-0 bottom-0 w-px bg-[color:var(--guide-line)]"
           style={{ WebkitMaskImage: vMask, maskImage: vMask }}
         />
 
         {/* Horizontal rule on the marked edge */}
         <span
-          className={`absolute left-0 right-0 h-px bg-black/[0.055] ${edge === "top" ? "top-0" : "bottom-0"}`}
+          className={`absolute left-0 right-0 h-px bg-[color:var(--guide-line)] ${edge === "top" ? "top-0" : "bottom-0"}`}
           style={{ WebkitMaskImage: hMask, maskImage: hMask }}
         />
 
         {/* One dot per intersection — this edge only */}
         <span
-          className={`absolute left-0 ${dotY} -translate-x-1/2 w-[4px] h-[4px] rounded-full bg-black/50`}
+          className={`absolute left-0 ${dotY} -translate-x-1/2 w-[4px] h-[4px] rounded-full bg-[color:var(--guide-dot)]`}
         />
         <span
-          className={`absolute right-0 ${dotY} translate-x-1/2 w-[4px] h-[4px] rounded-full bg-black/50`}
+          className={`absolute right-0 ${dotY} translate-x-1/2 w-[4px] h-[4px] rounded-full bg-[color:var(--guide-dot)]`}
         />
       </div>
     </div>

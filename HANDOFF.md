@@ -24,7 +24,7 @@ components, not forked from it.
 |---|---|---|
 | Hero | `sections/Hero` | Headline "Bringing / imagination to life" ("Bringing" at weight 400) left, one-line copy right, Get Started + Book a demo pills. Full-bleed `hero/backdrop.jpg` behind the whole section, blurred and masked out at the foot. Framed panel with a Creative · Workflows · Computer tab bar and one 16:9 clip per tab; the visible clip shows native controls on hover or focus. Tabs do not auto-advance. |
 | Partners | `sections/Partners` | Six partner marks (ByteDance, Kling AI, MINIMAX, Wan, fal, Grok) with two captions. The only section that keeps the kit's `SectionGuides` rules and dots. |
-| Creative Tools `#tools` | `sections/CreativeTools` | Three labelled rails, Image · Video · Music and Audio, each with a "See all" into that app-gallery category. Cards are the clip full-bleed at 3:4, title always on a bottom veil, description revealed on hover. Rails bleed to the window edges; the section clips the overflow. |
+| Creative Tools `#tools` | `sections/CreativeTools` | A 13-card bento built from Figma (H-Drafts 483:442): four 308px columns, 16px gutter, columns split 372/172 or 112/112/300. Picture cards carry a photograph under a scrim; the rest are flat tinted panels. Title always showing, description on hover. "View all tools" at the foot. |
 | Workflows `#workflows` | `sections/Workflows` | Bento, spans [2,1] / [1,1,1]: Node canvas (wide, clip), Scheduling (clip), Creative Analyser (clip), Connectors as a `MarkCluster`, Plugins as a linked list of host apps. Tiles on `#dce4ee`, 460px rows. |
 | Studios `#studios` | `sections/AdStudio` | Heading "Studios" + one line, then the **Ad Studio banner**: dark band of five vertical marquee columns of 9:16 ad clips (30 clips, CDN, posters, `preload="none"`) and a frosted left panel. |
 | Fashion Studio `#fashion-studio` | `sections/FashionStudio` | Banner: campaign clip full-bleed, rising dark scrim, white wordmark, glass "Try Now". |
@@ -48,6 +48,28 @@ eight-app data are still on disk; recovering it is one import and one line in
 appear as cards in the Creative Tools rails.
 
 ## 3. Design system
+
+**The page ships dark.** `data-theme="dark"` is set on `<html>` in
+`app/layout.tsx`, and one override block in `globals.css` keyed to
+`:root[data-theme="dark"]` carries the whole theme: it outranks the `:root`
+that `<PageTint>` emits, and because Tailwind v4 compiles its utilities to
+`var(--color-*)`, redefining those flips every utility class without touching
+a className. Dark is neutral (shades of black), not a darkened slate: the hue
+is what warms the light page against white and reads as a blue cast on black.
+The light palette is still defined and still correct, so that one attribute is
+the only thing to change back.
+
+Watch for anything that pairs a token with a fixed partner. `background:
+var(--ink); color: #fff` is white on white in dark; every such pair now takes
+`var(--page-bg)` for the label. The same trap caught the nav's un-scrolled
+links, the MCP copy button, and the arrow discs.
+
+Logos with baked-in near-black need a per-theme answer. The ImagineArt and
+Imagine MCP wordmarks ship a `-dark.svg` twin swapped by CSS, because a
+filter would invert their coloured marks too; the MCP client marks that are a
+single dark glyph take `filter: brightness(0) invert(1)` instead, because
+`grok.svg` carries a `fill="white"` inside a `<mask>` that a fill-swap would
+corrupt.
 
 Page palette is **slate** via `components/PageTint.tsx`: one hue used as wash,
 heading ink, tile, panel, and two nested-container shades (`--shade-1`,
@@ -85,13 +107,23 @@ the source of these tokens, and a self-reference there emits
 `--tile: var(--tile)`, which resolves to nothing and silently removes every
 panel background.
 
-**Backdrop.** `components/Backdrop.tsx` reuses the hero photograph at
-`blur(64px)` behind Workflows, Use Cases, Models and FAQ, so a thread of the
-hero's light runs down the page. It overhangs its host by 140px (a blurred
-layer samples transparent past its own edges and haloes the seams otherwise),
-sits at `z-index: -1` in a host that isolates and clips, and masks out top and
-bottom. The studio banners and the closing band are skipped: they are dark or
-already carry a photograph.
+**Heading treatment.** `.display` and `.h2` are painted with a vertical
+gradient (`background-clip: text`) falling from the heading ink to a
+`color-mix` of it and the page, plus a `--head-glow` halo. Two consequences
+worth knowing: `background-clip:text` paints only where the element's own
+background box falls, so descenders on the last line went unpainted until the
+`padding-bottom` / negative `margin-bottom` pair was added; and a transparent
+text fill means `::selection` has to restore `-webkit-text-fill-color`, or a
+selected heading is a highlight with nothing in it. Anything that overrides
+`.h-muted` must set the fill as well as the colour, for the same reason.
+
+**Section glow.** `primitives/SectionGlow` puts a faint pool of light at the
+head of alternate sections (Tools, Use Cases, Models, FAQ) so the page is not
+one flat black top to bottom. Sits at `z-index: -1`, so its host isolates.
+The studio banners and closing band are skipped: a white glow behind a dark
+band or a photograph does nothing.
+
+`components/Backdrop.tsx` is unused since the hero photograph was dropped.
 
 **Tabs.** Every tab list on the page (hero, MCP clients, MCP route, the Use
 Cases wheel) uses `primitives/SlidingIndicator`: one fill that travels between
@@ -166,11 +198,11 @@ Note `/apps/outfit-tryon`, which Fashion Studio used to point at, returns 500.
 - **Written from names alone, treat as draft:** Creative Tools card titles and
   bodies, Workflows tile bodies. MCP copy and commands are the MCP repo's own.
   Fashion and Ad banner copy is the product's own, shortened.
-- **Creative Tools thumbnails are placeholders.** Every clip is borrowed from
-  another section and picked only for being the nearest thing to the tool it
-  sits under. The Music and Audio row is the weakest: there is no audio footage
-  on disk at all. Cards also all link to their row's category page, because
-  per-app URLs are not confirmed; give each card its own `href` once they are.
+- **The bento's six photographs come from Figma** and are the real thing.
+  Three of its descriptions do not match their titles: VFX reads as music
+  copy, Outpaint as pipeline copy and Lipsync as image copy, because the
+  Figma frames were renamed without their bodies. Fix before shipping. Every
+  card links to `/apps`, since per-tool URLs are not confirmed.
 - **Model names** are copied from the B2B repo's Workflows page. Flagged there
   as unverified: Alibaba and Lightricks inferred, Kling used as the brand,
   Flux 3 filed as video. Seedance uses the `dreamina` mark.
@@ -199,7 +231,7 @@ ffmpeg on this machine; see the B2B Guidelines §7 for the recipe):
 | `studios/fashion/banner.mp4` | 13MB | in use; re-encode |
 | `hero/hero.mp4` | 6MB | unused since the hero changed; delete |
 | `cta/hills.jpg` | 195KB | unused since the closing band changed; delete |
-| `hero/backdrop.jpg` | 122KB | in use, twice over: the hero ground and every `<Backdrop>` |
+| `hero/backdrop.jpg` | 122KB | unused since the hero photograph was dropped; delete with `Backdrop.tsx` |
 
 Also unused and deletable: `models/*.png` icons other than the eight on the
 model cards, `pillars/chat.mp4`, the six `models/providers/*` backdrops not on

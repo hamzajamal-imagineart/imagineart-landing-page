@@ -58,6 +58,15 @@ const agentSteps = (id: string, label: string, finish: React.ReactNode): Step[] 
   { title: "Start creating", body: finish },
 ];
 
+/**
+ * Client marks that are a single near-black glyph. On a dark panel they
+ * disappear, so the theme paints them white with brightness(0) invert(1)
+ * rather than by rewriting the files: grok.svg carries a `fill="white"`
+ * inside a <mask>, which is a masking helper and not visual, so swapping
+ * fills blindly corrupts it. Claude, OpenClaw and npm keep their colour.
+ */
+const MONO_MARKS = new Set(["chatgpt", "grok", "hermes", "cursor", "codex", "terminal", "grokbot"]);
+
 const CLIENTS: Client[] = [
   {
     id: "claude", label: "Claude", icon: "claude", video: "claude",
@@ -188,7 +197,13 @@ export function Mcp() {
       <SectionGuides edge="top" />
       <div className="container-page">
         <div className="mx-auto max-w-[680px] text-center">
-          <h2 className="h2 mcp-title"><img src={withBasePath("/media/mcp/imagine-mcp-logo.svg")} alt="Imagine MCP" /></h2>
+          <h2 className="h2 mcp-title">
+            {/* The wordmark's letters are a fixed #0F0F0F, so dark mode gets
+                its own file rather than a filter that would also invert the
+                gradient marks. */}
+            <img className="mcp-logo-light" src={withBasePath("/media/mcp/imagine-mcp-logo.svg")} alt="Imagine MCP" />
+            <img className="mcp-logo-dark" src={withBasePath("/media/mcp/imagine-mcp-logo-dark.svg")} alt="" aria-hidden />
+          </h2>
           <p className="lede mx-auto mt-5">
             Every ImagineArt tool inside the agent you already use, connected once
             and ready in a minute.
@@ -214,7 +229,7 @@ export function Mcp() {
                   className={`mcp-tab ${route === "mcp" && i === client ? "mcp-tab-on" : ""}`}
                   onClick={() => { setRoute("mcp"); setClient(i); }}
                 >
-                  <img src={withBasePath(`/media/mcp/clients/${cl.icon}.svg`)} alt="" aria-hidden />
+                  <img className={MONO_MARKS.has(cl.icon) ? "mcp-mono" : undefined} src={withBasePath(`/media/mcp/clients/${cl.icon}.svg`)} alt="" aria-hidden />
                   {cl.label}
                 </button>
               ))}
@@ -334,12 +349,16 @@ export function Mcp() {
         .mcp-tab-on { color: var(--ink); }
         ${slidingIndicatorCss}
         .mcp-tab img, .mcp-tab svg { width: 18px; height: 18px; display: block; }
+        :root[data-theme="dark"] .mcp-mono { filter: brightness(0) invert(1); }
         .mcp-tabs-off .mcp-tab { color: var(--ink-3); }
         .mcp-route { padding: 4px; border-radius: 12px; align-self: center; position: relative; }
         .mcp-route .mcp-tab { height: 32px; padding: 0 10px; font-size: 13px; gap: 6px; border-radius: 13px; }
         .mcp-route .mcp-tab svg { width: 14px; height: 14px; }
         .mcp-title { display: flex; justify-content: center; }
         .mcp-title img { display: block; height: clamp(30px, 3.2vw, 44px); width: auto; }
+        .mcp-logo-dark { display: none; }
+        :root[data-theme="dark"] .mcp-logo-light { display: none; }
+        :root[data-theme="dark"] .mcp-logo-dark { display: block; }
 
         .mcp-body {
           display: grid;
@@ -355,10 +374,12 @@ export function Mcp() {
           width: 26px; height: 26px;
           border-radius: 999px;
           display: grid; place-items: center;
-          background: rgba(255, 255, 255, 0.6);
+          /* Was a flat 60% white disc with --ink-2 on it, which in dark put
+             light grey on a bright circle. Both ends are tokens now. */
+          background: var(--tile-2);
           font-size: 12.5px;
           font-weight: 500;
-          color: var(--ink-2);
+          color: var(--ink);
           flex: 0 0 auto;
           margin-top: 1px;
         }
@@ -388,15 +409,21 @@ export function Mcp() {
           width: 28px;
           height: 28px;
           padding: 0;
-          border: 0;
+          border: 1px solid var(--line);
           border-radius: 7px;
-          background: var(--ink);
-          color: #fff;
+          /* Was a solid --ink block with #fff on it: in dark that is a white
+             square with a white glyph inside it, and even solved it would sit
+             as a hard slab on the field it lives in. It is a quiet control on
+             the field's own surface instead. */
+          background: var(--tile-2);
+          color: var(--ink-2);
           font-family: inherit;
           font-size: 12.5px;
           font-weight: 500;
           cursor: pointer;
+          transition: background 180ms ease, color 180ms ease;
         }
+        .mcp-copy:hover { background: var(--tile); color: var(--ink); }
         .mcp-block {
           position: relative;
           border-radius: 12px;
@@ -422,8 +449,8 @@ export function Mcp() {
           transition: border-color 0.2s ease, background 0.2s ease;
         }
         .mcp-btn:hover { border-color: var(--ink-3); }
-        .mcp-btn-dark { background: var(--ink); color: #fff; border-color: var(--ink); }
-        .mcp-btn-dark:hover { background: #2a2a2c; }
+        .mcp-btn-dark { background: var(--ink); color: var(--page-bg); border-color: var(--ink); }
+        .mcp-btn-dark:hover { background: var(--ink-2); }
 
         .mcp-visual {
           position: relative;

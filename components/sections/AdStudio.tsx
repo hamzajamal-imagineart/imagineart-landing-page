@@ -3,6 +3,7 @@ import { withBasePath } from "@/lib/assets";
 import { STUDIO_HREFS } from "@/lib/links";
 import { BlurHeading } from "@/components/BlurHeading";
 import { SectionGuides } from "@/components/primitives/SectionGuides";
+import { SectionGlow, sectionGlowCss } from "@/components/primitives/SectionGlow";
 
 /**
  * Ad Studio banner, on the product's own treatment: a dark band filled with
@@ -28,6 +29,7 @@ const COLUMNS: { speed: number; clips: string[] }[] = [
 export function AdStudio() {
   return (
     <section id="studios" className="relative border-t border-[color:var(--line)] py-24 md:py-32 lg:border-t-0">
+      <SectionGlow />
       <SectionGuides edge="top" />
       <div className="container-page">
         <div className="mx-auto max-w-[680px] text-center">
@@ -73,6 +75,10 @@ export function AdStudio() {
       </div>
 
       <style>{`
+        /* Hosts a <SectionGlow> at z-index -1. */
+        #studios { isolation: isolate; }
+        ${sectionGlowCss}
+
         .ad-band {
           position: relative;
           height: var(--studio-band-h);

@@ -2,7 +2,6 @@ import { withBasePath } from "@/lib/assets";
 import { MarkCluster } from "@/components/MarkCluster";
 import { BlurHeading } from "@/components/BlurHeading";
 import { pluginHref } from "@/lib/links";
-import { Backdrop, backdropCss } from "@/components/Backdrop";
 import { SectionGuides } from "@/components/primitives/SectionGuides";
 
 /**
@@ -43,7 +42,6 @@ export function Workflows() {
   return (
     <section id="workflows" className="relative border-t border-[color:var(--line)] py-24 md:py-32 lg:border-t-0">
       <SectionGuides edge="top" />
-      <Backdrop position="30% 40%" />
       <div className="container-page">
         <div className="mx-auto max-w-[680px] text-center">
           <BlurHeading className="h2" lead="Workflows" />
@@ -63,11 +61,11 @@ export function Workflows() {
           </article>
 
           <article className="wf-tile">
-            <h3 className="wf-title">Scheduling.</h3>
-            <p className="wf-body">Run any workflow on a cadence, delivered on time.</p>
+            <h3 className="wf-title">Brand Guidelines.</h3>
+            <p className="wf-body">Every output on brand, without re-briefing it each time.</p>
             <div className="wf-media">
               {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-              <video src={withBasePath("/media/capabilities/agents.mp4")} autoPlay muted loop playsInline preload="metadata" aria-hidden />
+              <video src="https://www.imagine.art/business/media/brandkit/brand-kits.mp4" autoPlay muted loop playsInline preload="metadata" aria-hidden />
             </div>
           </article>
 
@@ -112,10 +110,6 @@ export function Workflows() {
       </div>
 
       <style>{`
-        /* Hosts a <Backdrop>: isolate so the layer can sit at z-index -1
-           without falling behind the page. It clips its own overhang. */
-        #workflows { isolation: isolate; }
-        ${backdropCss}
 
         .wf-bento {
           display: grid;
@@ -182,7 +176,7 @@ export function Workflows() {
           transition: background 240ms ease;
         }
         .wf-plugins li + li .wf-pg { box-shadow: inset 0 1px 0 var(--line); }
-        .wf-pg:hover, .wf-pg:focus-visible { background: rgba(255, 255, 255, 0.5); box-shadow: none; }
+        .wf-pg:hover, .wf-pg:focus-visible { background: var(--hover-wash); box-shadow: none; }
         .wf-pg-mark {
           width: 32px; height: 32px;
           border-radius: 9px;
@@ -208,7 +202,7 @@ export function Workflows() {
           flex: 0 0 auto;
           display: grid; place-items: center;
           background: var(--ink-heading);
-          color: #fff;
+          color: var(--page-bg);
           opacity: 0.28;
           transform: translateX(-2px);
           transition: opacity 240ms ease, transform 240ms ease;

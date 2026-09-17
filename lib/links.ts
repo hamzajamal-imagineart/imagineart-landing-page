@@ -34,6 +34,7 @@ export const pluginHref = (anchor: string) => `${PLUGINS_HREF}#${anchor}`;
 
 /** App gallery, by category. Confirmed. */
 const APPS_HREF = `${HOME}/apps`;
+export const appsHref = () => APPS_HREF;
 export const appsCategoryHref = (id: number) => `${APPS_HREF}?category-id=${id}`;
 export const APP_CATEGORY = { image: 14, video: 23, music: 18 } as const;
 

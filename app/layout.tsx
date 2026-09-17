@@ -32,7 +32,9 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={googleSans.variable}>
+    // The page ships dark. The light palette is still defined in globals.css
+    // and still correct, so this attribute is the only thing to change back.
+    <html lang="en" data-theme="dark" className={googleSans.variable}>
       <body>{children}</body>
     </html>
   );

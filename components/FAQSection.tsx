@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { BlurHeading } from "@/components/BlurHeading";
-import { Backdrop, backdropCss } from "@/components/Backdrop";
+import { SectionGlow, sectionGlowCss } from "@/components/primitives/SectionGlow";
 
 /**
  * FAQ on the kit's layout: heading in a fixed left rail, accordion beside it.
@@ -92,7 +92,7 @@ function FaqRow({ q, a, defaultOpen = false }: { q: string; a: string; defaultOp
 export function FAQSection() {
   return (
     <section id="faq" className="relative border-t border-[color:var(--line)] py-24 md:py-32">
-      <Backdrop position="80% 35%" opacity={0.45} />
+      <SectionGlow position="50% 6%" />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
 
       <div className="container-page relative z-10">
@@ -113,10 +113,10 @@ export function FAQSection() {
       </div>
 
       <style>{`
-        /* Hosts a <Backdrop>: isolate so the layer can sit at z-index -1
-           without falling behind the page. It clips its own overhang. */
+        /* Hosts a <SectionGlow> at z-index -1. */
         #faq { isolation: isolate; }
-        ${backdropCss}
+        ${sectionGlowCss}
+
 
         .faq-grid {
           display: grid;

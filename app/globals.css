@@ -90,6 +90,85 @@
 
   --page-noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0.4  0 0 0 0 0.46  0 0 0 0 0.58  0 0 0 0.5 0'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
 }
+/* ---------------------------------------------------------------------------
+   Dark mode.
+
+   Every surface, ink and line on this page already goes through a token after
+   the coherence pass, so the theme is one block of overrides rather than a
+   second stylesheet. Two things make it reach everything:
+
+   - `:root[data-theme="dark"]` outranks the `:root` that <PageTint> emits
+     (0,1,1 against 0,1,0), so the per-route palette does not fight it.
+   - Tailwind v4 compiles its utilities to `var(--color-*)`, so redefining
+     those flips `bg-content-primary`, `border-border-secondary` and the rest
+     without touching a single className.
+
+   Light mode reads depth downward: white panels raised off a pale wash. Dark
+   inverts that — the wash is the floor and every surface steps up from it,
+   because below near-black there is nowhere left to go.
+   --------------------------------------------------------------------------- */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  /* Neutral throughout. The slate hue is what gives the light page its
+     warmth against white; carried into dark it just reads as a blue cast, so
+     dark is shades of black and the colour comes from the imagery alone. */
+  --ink: #f2f2f3;
+  --ink-2: #b3b3b6;
+  /* Lifted from #85858a: at 13.5px on --tile that was 3.84:1, under AA.
+     Raising the token rather than one class fixes every tertiary line. */
+  --ink-3: #96969c;
+  --ink-heading: #ededee;
+  --heading-muted: #7e7e84;
+
+  --line: rgba(255, 255, 255, 0.10);
+  --line-strong: rgba(255, 255, 255, 0.18);
+
+  --paper: #0b0b0c;
+  --page-bg: #0b0b0c;
+  --track: #101012;
+  --tile: #17171a;
+  --tile-2: #232326;
+  --panel: #2b2b2f;
+  --panel-2: #17171a;
+  --shade-1: #141416;
+  --shade-2: #1d1d20;
+  /* Already neutral, and now a step off the page rather than a slab on it. */
+  --ground: #0a0a0b;
+
+  /* The wash is tinted slate; in dark it would be a blue haze over black. */
+  --page-noise: none;
+
+  /* Tailwind's palette, so the utility classes follow. */
+  --color-content-primary: rgb(242 242 243);
+  --color-content-secondary: rgb(179 179 182);
+  --color-content-tertiary: rgb(255 255 255 / 0.5);
+  --color-primary-90: rgb(222 222 224);
+  --color-primary-100: rgb(242 242 243);
+  --color-border-primary: rgb(255 255 255 / 0.10);
+  --color-border-secondary: rgb(255 255 255 / 0.16);
+  --color-border-tertiary: rgb(255 255 255 / 0.28);
+}
+
+/* The guide grid is drawn in ink, so it needs a value per theme. */
+:root {
+  --guide-line: rgba(0, 0, 0, 0.055);
+  --guide-dot: rgba(0, 0, 0, 0.5);
+  --head-glow: transparent;
+  --glow-tint: transparent;
+  /* Row hover on a tinted tile. */
+  --hover-wash: rgba(255, 255, 255, 0.55);
+  --selection-bg: rgba(47, 67, 88, 0.18);
+}
+:root[data-theme="dark"] {
+  --guide-line: rgba(255, 255, 255, 0.08);
+  --guide-dot: rgba(255, 255, 255, 0.45);
+  --head-glow: rgba(255, 255, 255, 0.19);
+  --glow-tint: rgba(255, 255, 255, 0.055);
+  --hover-wash: rgba(255, 255, 255, 0.045);
+  --selection-bg: rgba(255, 255, 255, 0.24);
+}
+
 
 @layer base {
   * {
@@ -204,6 +283,60 @@
   letter-spacing: -0.015em;
   font-weight: 500;
   text-wrap: balance;
+}
+
+/* Selection.
+
+   The gradient headings paint with a transparent text fill, so without this
+   a selected heading is a highlight with nothing in it: the fill has to be
+   restored for the selected range, not just the colour. The glow goes too,
+   or it fringes the highlight. */
+::selection {
+  background: var(--selection-bg);
+  color: var(--ink);
+  -webkit-text-fill-color: var(--ink);
+  text-shadow: none;
+}
+::-moz-selection {
+  background: var(--selection-bg);
+  color: var(--ink);
+  text-shadow: none;
+}
+
+/* Headings are painted with a short vertical fade rather than a flat ink:
+   full strength at the cap line falling to a softer tone at the baseline.
+   The far end is mixed from the heading ink and the page itself, so it
+   follows every palette and both themes without a second value to keep in
+   step — in dark that reads as white falling away to grey.
+
+   `color` stays as the fallback: if background-clip:text is unsupported the
+   heading is simply flat, never invisible. */
+.display,
+.h2 {
+  background-image: linear-gradient(
+    180deg,
+    var(--ink-heading) 0%,
+    color-mix(in srgb, var(--ink-heading) 52%, var(--page-bg)) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  /* background-clip:text paints the gradient only where the element's own
+     background box falls, and a descender on the last line hangs below it at
+     this line-height, so the tail of a "g" went unpainted. The padding grows
+     the paint area and the negative margin gives the space straight back, so
+     nothing moves. */
+  padding-bottom: 0.16em;
+  margin-bottom: -0.16em;
+  /* A wide, faint halo so the heading sits off the page rather than on it.
+     text-shadow paints from the glyph outline, so it survives the transparent
+     text fill the gradient needs. Off in light, where a white glow on a pale
+     wash does nothing but soften the edges. */
+  text-shadow: 0 0 52px var(--head-glow);
+}
+/* The muted clause keeps its own flat tone; it is already the quiet half. */
+.h-muted {
+  -webkit-text-fill-color: var(--heading-muted);
 }
 
 .lede {

@@ -102,7 +102,7 @@ export function SiteFooter() {
             <img src={withBasePath("/media/footer/logo-icon.svg")} alt="ImagineArt" width={28} height={28} className="block" />
 
             <div className="flex flex-col gap-2">
-              <span className="text-[11px] font-semibold tracking-[0.5px] text-white/[0.38] mb-1">
+              <span className="text-[11px] font-semibold tracking-[0.5px] text-white/[0.62] mb-1">
                 Try Imagine Mobile
               </span>
               <a
@@ -126,7 +126,7 @@ export function SiteFooter() {
             </div>
 
             <div>
-              <span className="block text-[11px] font-semibold tracking-[0.5px] text-white/[0.38] mb-5">
+              <span className="block text-[11px] font-semibold tracking-[0.5px] text-white/[0.62] mb-5">
                 Community
               </span>
               <ul className="flex flex-col gap-3 list-none m-0 p-0">
@@ -149,7 +149,7 @@ export function SiteFooter() {
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-[repeat(5,auto)] xl:grid-cols-[repeat(6,auto)] justify-between gap-x-6 gap-y-10 flex-1 min-w-0">
             {COLUMNS.map((col) => (
               <div key={col.heading}>
-                <span className="block text-[11px] font-semibold tracking-[0.5px] text-white/[0.38] mb-5">
+                <span className="block text-[11px] font-semibold tracking-[0.5px] text-white/[0.62] mb-5">
                   {col.heading}
                 </span>
                 <ul className="flex flex-col gap-3 list-none m-0 p-0">

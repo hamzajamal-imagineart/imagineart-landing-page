@@ -60,19 +60,26 @@ export function SiteNav({
           "--nav-burger": "rgba(255,255,255,0.9)",
         }
       : {
-          "--nav-fg": "rgba(11,11,12,0.6)",
+          // Over the page itself, so these follow the theme. Fixed near-black
+          // here left the whole bar invisible on a dark page.
+          "--nav-fg": "var(--ink-2)",
           "--nav-fg-hover": "var(--ink)",
-          "--nav-fg-ghost": "rgba(11,11,12,0.28)",
+          "--nav-fg-ghost": "var(--ink-3)",
           "--nav-cta-bg": "var(--ink)",
-          "--nav-cta-fg": "#ffffff",
-          "--nav-cta-glow": "rgba(11,11,12,0.08)",
-          "--nav-burger": "rgba(11,11,12,0.8)",
+          "--nav-cta-fg": "var(--page-bg)",
+          "--nav-cta-glow": "var(--line-strong)",
+          "--nav-burger": "var(--ink-2)",
         }
   ) as React.CSSProperties;
 
   return (
     <>
       <style>{`
+        /* The wordmark's letters are a fixed #0F0F0F, so the theme swaps the file
+           rather than filtering it and inverting the mark with it. */
+        .brand-dark { display: none !important; }
+        :root[data-theme="dark"] .brand-light { display: none !important; }
+        :root[data-theme="dark"] .brand-dark { display: block !important; }
         .nav-link { position: relative; display: inline-flex; flex-direction: column; height: 20px; overflow: hidden; cursor: pointer; text-decoration: none; }
         .nav-link-inner { display: flex; flex-direction: column; transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1); }
         .nav-link:hover .nav-link-inner { transform: translateY(-20px); }
@@ -130,8 +137,21 @@ export function SiteNav({
       >
         <a href={HOME} style={{ display: "flex", alignItems: "center", flexShrink: 0 }} aria-label="ImagineArt home">
           <img
+            className="brand-light"
             src={withBasePath("/media/imagine-art-wordmark.svg")}
             alt="ImagineArt"
+            style={{
+              display: "block",
+              height: 24,
+              width: "auto",
+              filter: darkTheme ? "brightness(0) invert(1)" : "none",
+              transition: "filter 0.3s ease",
+            }}
+          />
+          <img
+            className="brand-dark"
+            src={withBasePath("/media/imagine-art-wordmark-dark.svg")}
+            alt="" aria-hidden
             style={{
               display: "block",
               height: 24,
@@ -184,18 +204,21 @@ export function SiteNav({
       {menuOpen && (
         <div
           style={{
-            position: "fixed", inset: 0, zIndex: 101, background: "#fff",
+            position: "fixed", inset: 0, zIndex: 101, background: "var(--page-bg)",
             display: "flex", flexDirection: "column",
             animation: "navMenuIn 0.22s cubic-bezier(0.4,0,0.2,1) forwards",
           }}
         >
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "18px 24px", flexShrink: 0 }}>
             <a href={HOME} onClick={() => setMenuOpen(false)} style={{ display: "inline-flex", alignItems: "center" }} aria-label="ImagineArt home">
-              <img src={withBasePath("/media/imagine-art-wordmark.svg")} alt="ImagineArt" style={{ display: "block", height: 24, width: "auto" }} />
+              <>
+                <img className="brand-light" src={withBasePath("/media/imagine-art-wordmark.svg")} alt="ImagineArt" style={{ display: "block", height: 24, width: "auto" }} />
+                <img className="brand-dark" src={withBasePath("/media/imagine-art-wordmark-dark.svg")} alt="" aria-hidden style={{ display: "block", height: 24, width: "auto" }} />
+              </>
             </a>
             <button
               onClick={() => setMenuOpen(false)}
-              style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: 4, border: "none", background: "transparent", color: "rgba(11,11,12,0.6)", cursor: "pointer" }}
+              style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: 4, border: "none", background: "transparent", color: "var(--ink-2)", cursor: "pointer" }}
               aria-label="Close menu"
             >
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
@@ -223,12 +246,12 @@ export function SiteNav({
               ))}
             </div>
 
-            <div style={{ width: "calc(100% - 48px)", height: 1, background: "rgba(11,11,12,0.08)", margin: "16px 0" }} />
+            <div style={{ width: "calc(100% - 48px)", height: 1, background: "var(--line)", margin: "16px 0" }} />
 
             <a
               href={START_HREF}
               onClick={() => setMenuOpen(false)}
-              style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", height: 46, padding: "0 26px", borderRadius: 22, fontFamily: FONT, fontSize: 15, fontWeight: 600, color: "#fff", background: "#171717", textDecoration: "none" }}
+              style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", height: 46, padding: "0 26px", borderRadius: 22, fontFamily: FONT, fontSize: 15, fontWeight: 600, color: "var(--page-bg)", background: "var(--ink)", textDecoration: "none" }}
             >
               Get Started
             </a>

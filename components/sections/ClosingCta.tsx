@@ -76,9 +76,14 @@ export function ClosingCta() {
           letter-spacing: -0.02em;
           font-weight: 500;
         }
-        /* The muted clause takes a white tint here, not the page's slate one,
-           which would disappear against the scrim. */
-        .cta-h2 .h-muted { color: rgba(255, 255, 255, 0.62); }
+        /* The muted clause takes a white tint here, not the page's own muted
+           ink, which disappears against the scrim. -webkit-text-fill-color as
+           well as color: the global .h-muted rule sets the fill for the
+           gradient headings, and fill wins over color when text is painted. */
+        .cta-h2 .h-muted {
+          color: rgba(255, 255, 255, 0.66);
+          -webkit-text-fill-color: rgba(255, 255, 255, 0.66);
+        }
         .cta-lede {
           margin-top: 14px;
           font-size: clamp(15px, 1.2vw, 17px);

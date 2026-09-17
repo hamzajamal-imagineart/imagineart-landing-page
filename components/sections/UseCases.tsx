@@ -2,7 +2,7 @@ import { UseCaseWheel, type WheelGroup } from "@/components/UseCaseWheel";
 import { ButtonLink } from "@/components/Button";
 import { templateHref } from "@/lib/links";
 import { BlurHeading } from "@/components/BlurHeading";
-import { Backdrop, backdropCss } from "@/components/Backdrop";
+import { SectionGlow, sectionGlowCss } from "@/components/primitives/SectionGlow";
 
 /**
  * Use cases and templates, on the wheel: a centred list of use cases that
@@ -78,7 +78,7 @@ const USE_CASES: WheelGroup[] = [
 export function UseCases() {
   return (
     <section id="use-cases" className="relative border-t border-[color:var(--line)] py-24 md:py-32">
-      <Backdrop position="70% 55%" />
+      <SectionGlow position="50% 8%" />
       <div className="container-page">
         <div className="mx-auto max-w-[760px] text-center">
           <p className="uc-eyebrow">Use Cases</p>
@@ -97,11 +97,10 @@ export function UseCases() {
       </div>
 
       <style>{`
-        /* Hosts a <Backdrop>: isolate so the layer can sit at z-index -1
-           without falling behind the page, clip so its overhang does not
-           bleed into the neighbouring sections. */
+        /* Hosts a <SectionGlow> at z-index -1. */
         #use-cases { isolation: isolate; }
-        ${backdropCss}
+        ${sectionGlowCss}
+
 
         /* Narrow, the wheel's cards deliberately run past the container on
            both sides. Clipped at the section rather than left to widen the

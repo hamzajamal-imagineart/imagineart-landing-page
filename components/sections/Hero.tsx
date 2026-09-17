@@ -9,11 +9,6 @@ import { BlurHeading } from "@/components/BlurHeading";
 /**
  * Hero, on the ElevenLabs pattern, pared down.
  *
- * A full-bleed photograph sits behind the whole section, blurred to a field
- * of light and masked out at the foot so it dissolves into the page wash
- * instead of ending on a line. <Backdrop> reuses the same picture further
- * down the page.
- *
  * Headline left, supporting copy right, two pill buttons. Below, one framed
  * panel: a three-way tab bar (Creative · Workflows · Computer) and one 16:9
  * clip per tab. Nothing else in the panel.
@@ -62,11 +57,6 @@ export function Hero() {
 
   return (
     <section id="top" className="hero-section">
-      <div
-        className="hero-bg"
-        aria-hidden
-        style={{ ["--hero-bg" as string]: `url(${withBasePath("/media/hero/backdrop.jpg")})` }}
-      />
       <div className="container-page">
         <div className="hero-top">
           <div>
@@ -162,32 +152,8 @@ export function Hero() {
       <style>{`
         .hero-section {
           position: relative;
-          padding-top: clamp(120px, 15vh, 170px);
+          padding-top: clamp(168px, 20vh, 232px);
           padding-bottom: clamp(40px, 6vh, 72px);
-          isolation: isolate;
-          overflow: clip;
-        }
-        /* Full-bleed backdrop behind the whole hero. Anchored bottom so the
-           ridge lines stay along the foot of the section at any height, and
-           faded out into --page-bg at the bottom edge so the hero meets the
-           Partners strip on the page wash rather than on a hard seam. */
-        .hero-bg {
-          position: absolute;
-          /* Overhangs by more than the blur radius: a blurred layer samples
-             transparent past its own edges and fades out at the sides. The
-             section clips the overhang back off. */
-          inset: -140px;
-          z-index: -1;
-          filter: blur(64px);
-          background-image: var(--hero-bg);
-          background-size: cover;
-          background-position: center bottom;
-          background-repeat: no-repeat;
-          /* Full strength across the top, then a long dissolve so it is
-             already gone well before the Partners seam. */
-          -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 34%, transparent 88%);
-          mask-image: linear-gradient(to bottom, #000 0%, #000 34%, transparent 88%);
-          pointer-events: none;
         }
         .hero-top {
           display: grid;
@@ -219,8 +185,8 @@ export function Hero() {
           transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
         }
         .hero-btn:active { transform: translateY(1px); }
-        .hero-btn-dark { background: var(--ink); color: #fff; }
-        .hero-btn-dark:hover { background: #2a2a2c; }
+        .hero-btn-dark { background: var(--ink); color: var(--page-bg); }
+        .hero-btn-dark:hover { background: var(--ink-2); }
         .hero-btn-ghost { background: var(--panel); color: var(--ink); border: 1px solid var(--line-strong); }
         .hero-btn-ghost:hover { border-color: var(--ink-3); }
 
