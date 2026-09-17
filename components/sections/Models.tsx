@@ -1,5 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 import { withBasePath } from "@/lib/assets";
+import { BlurHeading } from "@/components/BlurHeading";
 
 /**
  * Models: eight cards, four by two.
@@ -48,9 +49,10 @@ export function Models() {
     <section id="models" className="relative border-t border-black/[0.08] py-24 md:py-32">
       <div className="container-page">
         <div className="mx-auto max-w-[680px] text-center">
-          <h2 className="h2">Models</h2>
+          <BlurHeading className="h2" lead="Models" />
           <p className="lede mx-auto mt-5">
-            Eight of the 50+ models you can switch between in one workflow.
+            Eight of the 50+ models you can switch between mid-workflow, without
+            moving your work elsewhere.
           </p>
         </div>
 

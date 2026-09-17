@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { withBasePath } from "@/lib/assets";
 
 /**
@@ -55,6 +55,51 @@ export function RailGrid({
 }) {
   const [active, setActive] = useState(0);
   const panelRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const railRef = useRef<HTMLDivElement | null>(null);
+  const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  /**
+   * One indicator slides between tabs instead of each tab toggling its own
+   * fill: toggling made selection read as two separate flashes. Measured
+   * from the live element so it follows the rail in both orientations
+   * (vertical above 880px, a horizontal scroller below).
+   */
+  const [ind, setInd] = useState<{ x: number; y: number; w: number; h: number } | null>(null);
+  const [ready, setReady] = useState(false);
+
+  const measure = useCallback(() => {
+    const rail = railRef.current;
+    const tab = tabRefs.current[active];
+    if (!rail || !tab) return;
+    setInd({
+      x: tab.offsetLeft - rail.scrollLeft,
+      y: tab.offsetTop - rail.scrollTop,
+      w: tab.offsetWidth,
+      h: tab.offsetHeight,
+    });
+  }, [active]);
+
+  useLayoutEffect(() => { measure(); }, [measure]);
+
+  useEffect(() => {
+    // Skip the transition on the first placement, so the indicator does not
+    // fly in from the corner on load.
+    const id = requestAnimationFrame(() => setReady(true));
+    return () => cancelAnimationFrame(id);
+  }, []);
+
+  useEffect(() => {
+    const rail = railRef.current;
+    if (!rail) return;
+    const ro = new ResizeObserver(measure);
+    ro.observe(rail);
+    rail.addEventListener("scroll", measure, { passive: true });
+    window.addEventListener("resize", measure);
+    return () => {
+      ro.disconnect();
+      rail.removeEventListener("scroll", measure);
+      window.removeEventListener("resize", measure);
+    };
+  }, [measure]);
 
   useEffect(() => {
     panelRefs.current.forEach((panel, i) => {
@@ -76,10 +121,18 @@ export function RailGrid({
 
   return (
     <div className="rg">
-      <div className="rg-rail" role="tablist" aria-orientation="vertical" aria-label={label} onKeyDown={onKeyDown}>
+      <div className="rg-rail" ref={railRef} role="tablist" aria-orientation="vertical" aria-label={label} onKeyDown={onKeyDown}>
+        {ind && (
+          <span
+            className={`rg-ind ${ready ? "rg-ind-ready" : ""}`}
+            aria-hidden
+            style={{ transform: `translate3d(${ind.x}px, ${ind.y}px, 0)`, width: ind.w, height: ind.h }}
+          />
+        )}
         {groups.map((g, i) => (
           <button
             key={g.id}
+            ref={(el) => { tabRefs.current[i] = el; }}
             id={`${idPrefix}-tab-${g.id}`}
             role="tab"
             type="button"
@@ -178,7 +231,26 @@ export function RailGrid({
           position: sticky;
           top: 112px;
         }
+        .rg-ind {
+          position: absolute;
+          top: 0;
+          left: 0;
+          border-radius: 14px;
+          background: #f3f5f8;
+          border: 1px solid var(--line);
+          box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05), 0 4px 14px rgba(16, 20, 30, 0.05);
+          pointer-events: none;
+          z-index: 0;
+        }
+        .rg-ind-ready {
+          transition:
+            transform 420ms cubic-bezier(0.22, 1, 0.36, 1),
+            width 420ms cubic-bezier(0.22, 1, 0.36, 1),
+            height 420ms cubic-bezier(0.22, 1, 0.36, 1);
+        }
         .rg-tab {
+          position: relative;
+          z-index: 1;
           display: flex;
           align-items: center;
           gap: 12px;
@@ -191,29 +263,62 @@ export function RailGrid({
           cursor: pointer;
           font-family: inherit;
           color: var(--ink-2);
-          transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+          transition: color 260ms ease;
         }
-        .rg-tab:hover { color: var(--ink); background: rgba(255, 255, 255, 0.4); }
-        .rg-tab-on {
-          color: var(--ink);
-          background: #f3f5f8;
-          border-color: var(--line);
-          box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05), 0 4px 14px rgba(16, 20, 30, 0.05);
+        .rg-tab::before {
+          content: "";
+          position: absolute;
+          inset: 0;
+          border-radius: inherit;
+          /* Kept well short of the selected fill (#f3f5f8): at 0.45 this
+             resolved to ~#ecf0f6 and hover was indistinguishable from
+             selection. */
+          background: rgba(255, 255, 255, 0.22);
+          opacity: 0;
+          transition: opacity 240ms ease;
+          pointer-events: none;
         }
+        .rg-tab:hover::before { opacity: 1; }
+        .rg-tab-on::before,
+        .rg-tab-on:hover::before { opacity: 0; }
+        .rg-tab:hover { color: var(--ink); }
+        .rg-tab-on { color: var(--ink); }
+        /* Icon tiles read as recessed wells: an inset top highlight and a
+           soft inner shadow, the light-ground reading of the reference's
+           inner glow. The selected tile fills with the page's own hue
+           (--ink-heading) rather than an accent colour, so the rail stays
+           monochrome and inside the palette. */
         .rg-tab-icon {
           width: 36px; height: 36px;
-          border-radius: 10px;
+          border-radius: 11px;
           display: grid; place-items: center;
-          background: #f3f5f8;
-          color: var(--ink);
+          background: var(--shade-2);
+          color: var(--ink-heading);
           flex: 0 0 auto;
-          transition: background 0.2s ease, color 0.2s ease;
+          box-shadow:
+            inset 0 1px 0 rgba(255, 255, 255, 0.8),
+            inset 0 0 10px rgba(255, 255, 255, 0.5),
+            inset 0 -1px 2px rgba(16, 20, 30, 0.1);
+          transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
         }
         .rg-tab-icon svg { width: 17px; height: 17px; }
-        .rg-tab-on .rg-tab-icon { background: var(--ink); color: #fff; }
+        .rg-tab:hover .rg-tab-icon {
+          box-shadow:
+            inset 0 1px 0 rgba(255, 255, 255, 0.88),
+            inset 0 0 12px rgba(255, 255, 255, 0.58),
+            inset 0 -1px 2px rgba(16, 20, 30, 0.12);
+        }
+        .rg-tab-on .rg-tab-icon {
+          background: var(--ink-heading);
+          color: #fff;
+          box-shadow:
+            inset 0 1px 0 rgba(255, 255, 255, 0.22),
+            0 2px 8px rgba(47, 67, 88, 0.28);
+        }
         .rg-tab-text { display: flex; flex-direction: column; min-width: 0; }
         .rg-tab-title { font-size: 15px; font-weight: 500; letter-spacing: -0.01em; line-height: 1.25; }
         .rg-tab-sub { font-size: 12.5px; color: var(--ink-3); line-height: 1.3; margin-top: 2px; }
+        .rg-tab-sub { transition: color 260ms ease; }
         .rg-tab-on .rg-tab-sub { color: var(--ink-2); }
 
         .rg-stack { display: grid; min-width: 0; }
@@ -330,6 +435,7 @@ export function RailGrid({
         }
         @media (prefers-reduced-motion: reduce) {
           .rg-panel, .rg-on, a.rg-card .rg-media { transition: none; transform: none; }
+          .rg-ind-ready { transition: none; }
         }
       `}</style>
     </div>

@@ -1,5 +1,20 @@
 import type { ComponentPropsWithoutRef, ReactNode } from "react";
 
+/**
+ * Trailing arrow on the tertiary (ghost) variant.
+ *
+ * Part of the variant rather than something each call site passes, so every
+ * ghost button on the page carries it without being asked. Pass
+ * `arrow={false}` where one should not.
+ */
+function Arrow() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden className="shrink-0">
+      <path d="M6 12h12M13 6l6 6-6 6" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
 type Variant = "brand" | "ghost" | "white" | "muted";
 type Size = "md" | "lg";
 
@@ -8,6 +23,8 @@ interface CommonProps {
   size?: Size;
   children: ReactNode;
   className?: string;
+  /** Ghost buttons carry a trailing arrow; set false to drop it. */
+  arrow?: boolean;
 }
 
 const base =
@@ -38,20 +55,24 @@ export function buttonClass({
 
 type AnchorProps = CommonProps & Omit<ComponentPropsWithoutRef<"a">, "className" | "children">;
 
-export function ButtonLink({ variant, size, className, children, ...rest }: AnchorProps) {
+export function ButtonLink({ variant, size, className, children, arrow, ...rest }: AnchorProps) {
+  const showArrow = arrow ?? variant === "ghost";
   return (
     <a className={buttonClass({ variant, size, className })} {...rest}>
       {children}
+      {showArrow && <Arrow />}
     </a>
   );
 }
 
 type ButtonProps = CommonProps & Omit<ComponentPropsWithoutRef<"button">, "className" | "children">;
 
-export function Button({ variant, size, className, children, ...rest }: ButtonProps) {
+export function Button({ variant, size, className, children, arrow, ...rest }: ButtonProps) {
+  const showArrow = arrow ?? variant === "ghost";
   return (
     <button className={buttonClass({ variant, size, className })} {...rest}>
       {children}
+      {showArrow && <Arrow />}
     </button>
   );
 }

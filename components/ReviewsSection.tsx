@@ -1,3 +1,5 @@
+import { BlurHeading } from "@/components/BlurHeading";
+
 
 /**
  * Reviews: a summary column on the left that sticks while a stacked column of
@@ -32,7 +34,7 @@ export function ReviewsSection() {
       <div className="container-page relative z-10">
         <div className="rv-split">
           <div className="rv-summary">
-            <h2 className="h2">Reviews</h2>
+            <BlurHeading className="h2" lead="Reviews" />
             <p className="lede mt-5" style={{ maxWidth: "36ch" }}>
               From solo creators to studios, in their own words.
             </p>

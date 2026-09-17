@@ -17,7 +17,7 @@ const NAV_LINKS: NavLink[] = [
   { label: "Workflows", href: "#workflows" },
   { label: "Studios", href: "#studios" },
   { label: "Use Cases", href: "#use-cases" },
-  { label: "FAQ", href: "#faq" },
+  { label: "MCP", href: "#mcp" },
   { label: "Pricing", href: PRICING_HREF },
 ];
 

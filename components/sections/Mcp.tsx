@@ -3,6 +3,7 @@
 /* eslint-disable @next/next/no-img-element */
 import { useState } from "react";
 import { withBasePath } from "@/lib/assets";
+import { SlidingIndicator, slidingIndicatorCss, useSlidingIndicator } from "@/components/primitives/SlidingIndicator";
 
 /**
  * MCP connect panel, ported from Vyro-ai/imagine-web-mcp-landing and restyled
@@ -176,6 +177,9 @@ function Steps({ steps }: { steps: Step[] }) {
 export function Mcp() {
   const [route, setRoute] = useState<"mcp" | "cli">("mcp");
   const [client, setClient] = useState(0);
+  // Nothing is selected in the client list while the CLI route is showing.
+  const clientTabs = useSlidingIndicator<HTMLButtonElement>(route === "mcp" ? client : -1);
+  const routeTabs = useSlidingIndicator<HTMLButtonElement>(route === "mcp" ? 0 : 1);
   const c = CLIENTS[client];
 
   return (
@@ -184,16 +188,24 @@ export function Mcp() {
         <div className="mx-auto max-w-[680px] text-center">
           <h2 className="h2 mcp-title"><img src={withBasePath("/media/mcp/imagine-mcp-logo.svg")} alt="Imagine MCP" /></h2>
           <p className="lede mx-auto mt-5">
-            Every ImagineArt tool inside the agent you already use.
+            Every ImagineArt tool inside the agent you already use, connected once
+            and ready in a minute.
           </p>
         </div>
 
         <div className="mcp-panel mt-12">
           <div className="mcp-bar">
-            <div className={`mcp-tabs ${route === "cli" ? "mcp-tabs-off" : ""}`} role="tablist" aria-label="Clients">
+            <div
+              className={`mcp-tabs ${route === "cli" ? "mcp-tabs-off" : ""}`}
+              ref={clientTabs.containerRef as React.Ref<HTMLDivElement>}
+              role="tablist"
+              aria-label="Clients"
+            >
+              <SlidingIndicator box={clientTabs.box} ready={clientTabs.ready} className="mcp-tab-fill" />
               {CLIENTS.map((cl, i) => (
                 <button
                   key={cl.id}
+                  ref={(el) => { clientTabs.itemRefs.current[i] = el; }}
                   role="tab"
                   type="button"
                   aria-selected={route === "mcp" && i === client}
@@ -205,12 +217,13 @@ export function Mcp() {
                 </button>
               ))}
             </div>
-            <div className="mcp-route" role="tablist" aria-label="Route">
-              <button type="button" role="tab" aria-selected={route === "mcp"} className={`mcp-tab ${route === "mcp" ? "mcp-tab-on" : ""}`} onClick={() => setRoute("mcp")}>
+            <div className="mcp-route" ref={routeTabs.containerRef as React.Ref<HTMLDivElement>} role="tablist" aria-label="Route">
+              <SlidingIndicator box={routeTabs.box} ready={routeTabs.ready} className="mcp-tab-fill mcp-route-fill" />
+              <button ref={(el) => { routeTabs.itemRefs.current[0] = el; }} type="button" role="tab" aria-selected={route === "mcp"} className={`mcp-tab ${route === "mcp" ? "mcp-tab-on" : ""}`} onClick={() => setRoute("mcp")}>
                 <svg viewBox="0 0 180 180" fill="none" aria-hidden><g stroke="currentColor" strokeWidth="13" strokeLinecap="round"><path d="M23.6 85.25 86.2 22.65c8.65-8.64 22.66-8.64 31.3 0 8.65 8.65 8.65 22.66 0 31.3L70.23 101.23" /><path d="m70.88 100.58 46.62-46.63c8.65-8.64 22.66-8.64 31.31 0l.33.33c8.64 8.64 8.64 22.66 0 31.3l-56.62 56.62c-2.88 2.88-2.88 7.55 0 10.43l11.62 11.63" /><path d="M101.85 38.3 55.55 84.6c-8.64 8.65-8.64 22.66 0 31.3 8.65 8.65 22.66 8.65 31.3 0l46.3-46.3" /></g></svg>
                 MCP
               </button>
-              <button type="button" role="tab" aria-selected={route === "cli"} className={`mcp-tab ${route === "cli" ? "mcp-tab-on" : ""}`} onClick={() => setRoute("cli")}>
+              <button ref={(el) => { routeTabs.itemRefs.current[1] = el; }} type="button" role="tab" aria-selected={route === "cli"} className={`mcp-tab ${route === "cli" ? "mcp-tab-on" : ""}`} onClick={() => setRoute("cli")}>
                 <svg viewBox="0 0 24 24" fill="none" aria-hidden><g stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="m18 16 4-4-4-4" /><path d="m6 8-4 4 4 4" /><path d="m14.5 4-5 16" /></g></svg>
                 CLI
               </button>
@@ -287,15 +300,15 @@ export function Mcp() {
           border-radius: 16px;
           background: #cfd9e5;
         }
-        .mcp-tabs { flex-wrap: wrap; }
+        .mcp-tabs { flex-wrap: wrap; position: relative; }
         .mcp-tab {
           display: inline-flex;
           align-items: center;
           gap: 8px;
           height: 40px;
           padding: 0 14px;
-          border: 1px solid transparent;
-          border-radius: 12px;
+          border: 0;
+          border-radius: 16px;
           background: transparent;
           font-family: inherit;
           font-size: 14.5px;
@@ -303,14 +316,25 @@ export function Mcp() {
           letter-spacing: -0.01em;
           color: var(--ink-3);
           cursor: pointer;
-          transition: color 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+          position: relative;
+          z-index: 1;
+          transition: color 260ms ease;
         }
+        /* No border: the fill alone marks the selected tab, and an outline
+           here read as a button. */
+        .mcp-tab-fill {
+          border-radius: 16px;
+          background: var(--panel);
+          box-shadow: 0 1px 2px rgba(16, 20, 30, 0.05);
+        }
+        .mcp-route-fill { border-radius: 13px; }
         .mcp-tab:hover { color: var(--ink); }
-        .mcp-tab-on { color: var(--ink); background: var(--panel); border-color: var(--line); }
+        .mcp-tab-on { color: var(--ink); }
+        ${slidingIndicatorCss}
         .mcp-tab img, .mcp-tab svg { width: 18px; height: 18px; display: block; }
         .mcp-tabs-off .mcp-tab { color: var(--ink-3); }
-        .mcp-route { padding: 4px; border-radius: 12px; align-self: center; }
-        .mcp-route .mcp-tab { height: 32px; padding: 0 10px; font-size: 13px; gap: 6px; border-radius: 9px; }
+        .mcp-route { padding: 4px; border-radius: 12px; align-self: center; position: relative; }
+        .mcp-route .mcp-tab { height: 32px; padding: 0 10px; font-size: 13px; gap: 6px; border-radius: 13px; }
         .mcp-route .mcp-tab svg { width: 14px; height: 14px; }
         .mcp-title { display: flex; justify-content: center; }
         .mcp-title img { display: block; height: clamp(30px, 3.2vw, 44px); width: auto; }

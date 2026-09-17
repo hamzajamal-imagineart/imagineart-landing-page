@@ -2,26 +2,41 @@
 
 import { useEffect, useRef, useState } from "react";
 import { withBasePath } from "@/lib/assets";
-import { PRICING_HREF, START_HREF } from "@/lib/links";
+import { DEMO_HREF, START_HREF } from "@/lib/links";
+import { SlidingIndicator, slidingIndicatorCss, useSlidingIndicator } from "@/components/primitives/SlidingIndicator";
+import { useAutoAdvance } from "@/components/primitives/useAutoAdvance";
+import { BlurHeading } from "@/components/BlurHeading";
 
 /**
  * Hero, on the ElevenLabs pattern, pared down.
+ *
+ * A full-bleed photograph sits behind the whole section, masked out at the
+ * foot so it dissolves into the page wash instead of ending on a line.
  *
  * Headline left, supporting copy right, two pill buttons. Below, one framed
  * panel: a three-way tab bar (Creative · Workflows · Computer) and one 16:9
  * clip per tab. Nothing else in the panel.
  *
  * All three clips render into the HTML, stacked in one cell; only the visible
- * one plays. Clips are placeholders for real product footage per line.
+ * one plays. Creative streams real campaign footage; Workflows and Computer
+ * are still placeholders.
  */
+/** Dwell on each product line before the tabs move on. */
+const DWELL_MS = 5000;
+
 const LINES = [
-  { id: "creative", label: "Creative", video: "/media/pillars/creative.mp4" },
+  // Real campaign footage, streamed. withBasePath() passes an absolute URL
+  // through untouched, so it needs no local copy.
+  { id: "creative", label: "Creative", video: "https://imagine.animagic.art/imagine-one/home/campaigns/gpt-2.5.mp4" },
   { id: "workflows", label: "Workflows", video: "/media/pillars/workflows.mp4" },
   { id: "computer", label: "Computer", video: "/media/hero/computer.mp4" },
 ];
 
 export function Hero() {
-  const [line, setLine] = useState(0);
+  const walk = useAutoAdvance(LINES.length, DWELL_MS);
+  const line = walk.active;
+  const setLine = walk.pick;
+  const tabs = useSlidingIndicator<HTMLButtonElement>(line);
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
 
   useEffect(() => {
@@ -43,28 +58,54 @@ export function Hero() {
 
   return (
     <section id="top" className="hero-section">
+      <div
+        className="hero-bg"
+        aria-hidden
+        style={{ ["--hero-bg" as string]: `url(${withBasePath("/media/hero/backdrop.jpg")})` }}
+      />
       <div className="container-page">
         <div className="hero-top">
           <div>
-            <h1 className="display hero-h1">
-              <span className="hero-h1-light">Bringing</span><br />imagination to life
-            </h1>
+            <BlurHeading
+              as="h1"
+              className="display hero-h1"
+              lead="Bringing"
+              leadClassName="hero-h1-light"
+              muted="imagination to life"
+              mutedClassName=""
+              lineBreak
+            />
             <div className="hero-actions">
               <a href={START_HREF} className="hero-btn hero-btn-dark">Get Started</a>
-              <a href={PRICING_HREF} target="_blank" rel="noopener noreferrer" className="hero-btn hero-btn-ghost">See Plans</a>
+              <a href={DEMO_HREF} target="_blank" rel="noopener noreferrer" className="hero-btn hero-btn-ghost">Book a demo</a>
             </div>
           </div>
           <p className="hero-copy">
-            Creative tools, Workflows and Imagine Computer, on 50+ frontier
-            models. For creators, teams and developers.
+            ImagineArt is the best AI creative suite that generates images, videos,
+            shorts, and voice from text prompt. Built for creators, teams and the
+            developers shipping alongside them.
           </p>
         </div>
 
         <div className="hero-frame">
-          <div className="hero-tabs" role="tablist" aria-label="Product lines" onKeyDown={onTabKey}>
+          <div
+            className="hero-tabs"
+            ref={tabs.containerRef as React.Ref<HTMLDivElement>}
+            role="tablist"
+            aria-label="Product lines"
+            onKeyDown={onTabKey}
+            {...walk.hold}
+          >
+            <SlidingIndicator
+              box={tabs.box}
+              ready={tabs.ready}
+              className="hero-tab-fill"
+              progress={walk.running ? { key: walk.epoch, durationMs: DWELL_MS, paused: walk.paused } : undefined}
+            />
             {LINES.map((l, i) => (
               <button
                 key={l.id}
+                ref={(el) => { tabs.itemRefs.current[i] = el; }}
                 id={`hero-tab-${l.id}`}
                 role="tab"
                 type="button"
@@ -113,6 +154,23 @@ export function Hero() {
           position: relative;
           padding-top: clamp(120px, 15vh, 170px);
           padding-bottom: clamp(40px, 6vh, 72px);
+          isolation: isolate;
+        }
+        /* Full-bleed backdrop behind the whole hero. Anchored bottom so the
+           ridge lines stay along the foot of the section at any height, and
+           faded out into --page-bg at the bottom edge so the hero meets the
+           Partners strip on the page wash rather than on a hard seam. */
+        .hero-bg {
+          position: absolute;
+          inset: 0;
+          z-index: -1;
+          background-image: var(--hero-bg);
+          background-size: cover;
+          background-position: center bottom;
+          background-repeat: no-repeat;
+          -webkit-mask-image: linear-gradient(to bottom, #000 62%, transparent 100%);
+          mask-image: linear-gradient(to bottom, #000 62%, transparent 100%);
+          pointer-events: none;
         }
         .hero-top {
           display: grid;
@@ -125,7 +183,7 @@ export function Hero() {
         .hero-copy {
           font-size: clamp(16px, 1.25vw, 18px);
           line-height: 1.6;
-          color: var(--ink-2);
+          color: var(--ink);
           max-width: 46ch;
           padding-top: 10px;
         }
@@ -156,12 +214,22 @@ export function Hero() {
           background: #dce4ee;
           overflow: hidden;
         }
-        .hero-tabs { display: flex; gap: 6px; padding: 6px; }
+        .hero-tabs { display: flex; gap: 6px; padding: 6px; position: relative; }
+        /* Tabs are squarer than the pill buttons on purpose: the radius is
+           what separates a tab from a button at a glance. No border either,
+           the fill and its shadow carry it. */
+        .hero-tab-fill {
+          border-radius: 16px;
+          background: var(--panel);
+          box-shadow: 0 1px 2px rgba(0,0,0,0.06), 0 4px 14px rgba(16,20,30,0.06);
+        }
         .hero-tab {
+          position: relative;
+          z-index: 1;
           flex: 1 1 0;
           height: 50px;
           border: 0;
-          border-radius: 999px;
+          border-radius: 16px;
           background: transparent;
           font-family: inherit;
           font-size: 15.5px;
@@ -169,14 +237,11 @@ export function Hero() {
           letter-spacing: -0.01em;
           color: var(--ink-3);
           cursor: pointer;
-          transition: color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+          transition: color 260ms ease;
         }
         .hero-tab:hover { color: var(--ink-heading); }
-        .hero-tab-on {
-          color: var(--ink-heading);
-          background: var(--panel);
-          box-shadow: 0 1px 2px rgba(0,0,0,0.06), 0 4px 14px rgba(16,20,30,0.06);
-        }
+        .hero-tab-on { color: var(--ink-heading); }
+        ${slidingIndicatorCss}
 
         /* One 16:9 frame directly in the panel; the three clips stack in it and
            only the active one shows. */

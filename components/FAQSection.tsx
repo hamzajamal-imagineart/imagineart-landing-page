@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { BlurHeading } from "@/components/BlurHeading";
 
 /**
  * FAQ on the kit's layout: heading in a fixed left rail, accordion beside it.
@@ -95,7 +96,7 @@ export function FAQSection() {
       <div className="container-page relative z-10">
         <div className="faq-grid">
           <div className="faq-intro">
-            <h2 className="h2">FAQ</h2>
+            <BlurHeading className="h2" lead="FAQ" />
             <p className="lede mt-5" style={{ maxWidth: "34ch" }}>
               The things people ask before they start.
             </p>

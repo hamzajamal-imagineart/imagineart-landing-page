@@ -1,61 +1,130 @@
-import { ButtonLink } from "@/components/Button";
 import { withBasePath } from "@/lib/assets";
-import { PRICING_HREF, START_HREF } from "@/lib/links";
+import { DEMO_HREF, START_HREF } from "@/lib/links";
+import { BlurHeading } from "@/components/BlurHeading";
 
 /**
- * Closing band, un-boxed: a hairline, centred copy, two actions, and a
- * photograph faded in from the bottom with a soft page-coloured scrim behind
- * the copy so the muted heading clause stays legible.
+ * Closing band: the photograph full-bleed behind the whole section.
+ *
+ * Edge to edge rather than a framed card, so the page ends on a full stop
+ * instead of one more container. The copy stays on the page grid
+ * (`container-page`), left aligned, with the scrim running in from the left,
+ * so the arch keeps the clean right-hand side of the frame at any width.
+ *
+ * No top hairline: the band is dark and full width, which is its own seam.
+ *
+ * Its own buttons rather than <ButtonLink>: on a dark ground the kit's brand
+ * and ghost variants are both wrong, so this takes the white-on-dark pair the
+ * studio banners already use.
  */
 export function ClosingCta() {
   return (
     <section
-      className="cta-section relative border-t border-black/[0.08] py-28 md:py-36"
-      style={{ ["--cta-bg" as string]: `url(${withBasePath("/media/cta/hills.jpg")})` }}
+      className="cta-section"
+      style={{ ["--cta-bg" as string]: `url(${withBasePath("/media/cta/portal.jpg")})` }}
     >
-      <div className="container-page relative z-10 text-center">
-        <h2 className="h2 mx-auto">
-          Start creating <span className="h-muted">with ImagineArt</span>
-        </h2>
-        <p className="lede mx-auto mt-6">
-          Every creative tool, one platform. Free to start.
-        </p>
-        <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
-          <ButtonLink href={START_HREF} variant="brand" size="lg">
-            Get Started
-          </ButtonLink>
-          <ButtonLink href={PRICING_HREF} target="_blank" rel="noopener noreferrer" variant="ghost" size="lg">
-            See Plans
-          </ButtonLink>
+      <div className="container-page cta-inner">
+        <div className="cta-copy">
+          <BlurHeading as="h2" className="cta-h2" lead="Bring your ideas" muted="to life" />
+          <p className="cta-lede">Every creative tool, one platform. Free to start.</p>
+          <div className="cta-actions">
+            <a href={START_HREF} className="cta-btn cta-btn-light">Get Started</a>
+            <a href={DEMO_HREF} target="_blank" rel="noopener noreferrer" className="cta-btn cta-btn-glass">
+              Book a demo
+            </a>
+          </div>
         </div>
       </div>
 
       <style>{`
+        .cta-section {
+          position: relative;
+          background-color: #10141a;
+          background-image: var(--cta-bg);
+          background-size: cover;
+          /* The arch sits right of centre, so the frame holds the right of
+             the image and the copy takes the darkened left. */
+          background-position: 62% center;
+          background-repeat: no-repeat;
+          isolation: isolate;
+        }
+        /* Scrim in from the left only, so the picture stays legible on the
+           right rather than being flattened under an even wash. */
         .cta-section::before {
           content: "";
           position: absolute;
           inset: 0;
           z-index: 1;
           pointer-events: none;
-          background: radial-gradient(
-            58% 52% at 50% 40%,
-            color-mix(in srgb, var(--page-bg) 94%, transparent) 0%,
-            color-mix(in srgb, var(--page-bg) 74%, transparent) 46%,
-            transparent 76%
-          );
+          background:
+            linear-gradient(to right, rgba(8, 11, 16, 0.86) 0%, rgba(8, 11, 16, 0.62) 32%, rgba(8, 11, 16, 0.1) 60%, transparent 80%),
+            linear-gradient(to top, rgba(8, 11, 16, 0.32), transparent 55%);
         }
-        .cta-section::after {
-          content: "";
-          position: absolute;
-          inset: 0;
-          z-index: 0;
-          pointer-events: none;
-          background-image: var(--cta-bg);
-          background-repeat: no-repeat;
-          background-position: center bottom;
-          background-size: cover;
-          -webkit-mask-image: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.5) 38%, #000 100%);
-          mask-image: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.5) 38%, #000 100%);
+
+        .cta-inner {
+          position: relative;
+          z-index: 2;
+          min-height: clamp(400px, 32vw, 520px);
+          display: flex;
+          align-items: center;
+        }
+        .cta-copy { max-width: 560px; padding-block: 64px; }
+
+        .cta-h2 {
+          color: #fff;
+          font-size: clamp(30px, 3.6vw, 48px);
+          line-height: 1.1;
+          letter-spacing: -0.02em;
+          font-weight: 500;
+        }
+        /* The muted clause takes a white tint here, not the page's slate one,
+           which would disappear against the scrim. */
+        .cta-h2 .h-muted { color: rgba(255, 255, 255, 0.62); }
+        .cta-lede {
+          margin-top: 14px;
+          font-size: clamp(15px, 1.2vw, 17px);
+          line-height: 1.6;
+          color: rgba(255, 255, 255, 0.76);
+          max-width: 40ch;
+        }
+
+        .cta-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 28px; }
+        .cta-btn {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          height: 46px;
+          padding: 0 22px;
+          border-radius: 999px;
+          font-size: 15px;
+          font-weight: 500;
+          letter-spacing: -0.005em;
+          white-space: nowrap;
+          transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+        }
+        .cta-btn:active { transform: translateY(1px); }
+        .cta-btn-light { background: #fff; color: #10141a; }
+        .cta-btn-light:hover { background: rgba(255, 255, 255, 0.88); }
+        .cta-btn-glass {
+          background: rgba(255, 255, 255, 0.12);
+          color: #fff;
+          border: 1px solid rgba(255, 255, 255, 0.24);
+          backdrop-filter: blur(10px);
+          -webkit-backdrop-filter: blur(10px);
+        }
+        .cta-btn-glass:hover { background: rgba(255, 255, 255, 0.2); border-color: rgba(255, 255, 255, 0.4); }
+
+        /* Narrow: the copy can no longer take half the width, so the scrim
+           becomes a bottom-up one and the copy sits on the floor of the band. */
+        @media (max-width: 720px) {
+          .cta-section { background-position: 58% center; }
+          .cta-section::before {
+            background: linear-gradient(to top, rgba(8, 11, 16, 0.92) 0%, rgba(8, 11, 16, 0.7) 40%, rgba(8, 11, 16, 0.18) 72%, transparent 100%);
+          }
+          .cta-inner { align-items: flex-end; min-height: 460px; }
+          .cta-copy { max-width: none; padding-block: 48px; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .cta-btn { transition: none; }
         }
       `}</style>
     </section>

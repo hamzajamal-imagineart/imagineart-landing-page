@@ -3,6 +3,7 @@
 import { useRef } from "react";
 import { withBasePath } from "@/lib/assets";
 import { HOME } from "@/lib/links";
+import { BlurHeading } from "@/components/BlurHeading";
 
 /**
  * Apps as a horizontal card rail with chevron pagers, the pattern the
@@ -46,8 +47,10 @@ export function Apps() {
     <section id="apps" className="relative border-t border-black/[0.08] py-24 md:py-32">
       <div className="container-page">
         <div className="mx-auto max-w-[680px] text-center">
-          <h2 className="h2">Apps</h2>
-          <p className="lede mx-auto mt-5">Purpose-built for the jobs you do most.</p>
+          <BlurHeading className="h2" lead="Apps" />
+          <p className="lede mx-auto mt-5">
+            Focused apps for the jobs you do most, each one tuned to a single task.
+          </p>
         </div>
       </div>
 

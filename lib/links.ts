@@ -10,6 +10,9 @@ export const HOME = "https://www.imagine.art";
 /** Primary CTA everywhere: nav, hero, closing band. */
 export const START_HREF = HOME;
 export const PRICING_HREF = `${HOME}/subscription`;
+/** Secondary CTA in the hero and closing band. The booking page the footer
+    already pointed at, so the page keeps its no-contact-form decision. */
+export const DEMO_HREF = "https://cal.com/team/imagineart/imagineart-customer-assist";
 
 /** The three pillars. */
 export const CHAT_HREF = `${HOME}/imagine-computer/ai-chat`;
@@ -24,6 +27,15 @@ export const STUDIO_HREFS = {
   fashion: `${HOME}/apps/outfit-tryon`,
   film: `${HOME}/ai-film-studio`,
 } as const;
+
+/** Plugin pages, one anchor per host application. Confirmed. */
+const PLUGINS_HREF = `${HOME}/plugins`;
+export const pluginHref = (anchor: string) => `${PLUGINS_HREF}#${anchor}`;
+
+/** App gallery, by category. Confirmed. */
+const APPS_HREF = `${HOME}/apps`;
+export const appsCategoryHref = (id: number) => `${APPS_HREF}?category-id=${id}`;
+export const APP_CATEGORY = { image: 14, video: 23, music: 18 } as const;
 
 /** Template gallery, optionally filtered to a confirmed category slug. */
 const TEMPLATES_HREF = `${HOME}/enterprise/template`;

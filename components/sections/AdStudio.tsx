@@ -1,6 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 import { withBasePath } from "@/lib/assets";
 import { STUDIO_HREFS } from "@/lib/links";
+import { BlurHeading } from "@/components/BlurHeading";
 
 /**
  * Ad Studio banner, on the product's own treatment: a dark band filled with
@@ -28,8 +29,10 @@ export function AdStudio() {
     <section id="studios" className="relative border-t border-black/[0.08] py-24 md:py-32">
       <div className="container-page">
         <div className="mx-auto max-w-[680px] text-center">
-          <h2 className="h2">Studios</h2>
-          <p className="lede mx-auto mt-5">Purpose-built spaces for ads, fashion and film.</p>
+          <BlurHeading className="h2" lead="Studios" />
+          <p className="lede mx-auto mt-5">
+            Purpose-built spaces for ads, fashion and film, each with the models and presets that job needs.
+          </p>
         </div>
         <div className="ad-band mt-14">
           <div className="ad-cols" aria-hidden>
