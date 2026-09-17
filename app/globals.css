@@ -513,3 +513,28 @@ body::before {
   background-image: var(--page-noise);
   background-size: 140px 140px;
 }
+
+/* Section reveal on scroll.
+
+   Set by components/SectionReveal.tsx, never in the markup: the hidden state
+   only ever exists once JS has run, so a page without it renders every
+   section visible. See that file for why. */
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(14px);
+}
+
+[data-reveal="in"] {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal] {
+    opacity: 1;
+    transform: none;
+  }
+}

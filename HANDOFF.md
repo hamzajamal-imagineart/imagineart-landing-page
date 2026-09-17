@@ -103,19 +103,34 @@ beyond the kit's two.
 
 `.display` and `.h2` take a vertical gradient (`background-clip: text`) falling
 from the heading ink to a `color-mix` of it and the page, plus a `--head-glow`
-halo. They animate through `components/BlurHeading`, which wraps
-`components/ui/blur-reveal` (a shadcn-style drop-in on `motion`) and adds the
-three things the bare component cannot do: a muted second clause, the hero's
-two lines at different weights, and a reduced-motion path that renders plain
-text. Every heading reveals `inView` and `once`.
+halo. They render through `components/BlurHeading`, which carries the three
+shapes the page uses: one clause, a clause plus a muted second clause, and the
+hero's two lines at different weights.
+
+**Sections fade in on scroll** (17 Sep). `components/SectionReveal` is mounted
+once beside `<main>`; it does not wrap anything. From a passive effect it
+arms every direct child of `<main>` that is below the fold at mount, sets
+`data-reveal` on it, and an `IntersectionObserver` flips that to
+`data-reveal="in"`. The two rules live at the foot of `globals.css`. It fails
+open on purpose: the hidden state exists only once JS has run, so nothing in
+`out/index.html` carries `opacity:0`, and a section already on screen at mount
+is never armed, so the hero cannot paint and then blank. Reduced motion skips
+it in both the effect and the CSS.
+
+**Headings do not animate** (17 Sep). BlurHeading used to wrap
+`components/ui/blur-reveal` and reveal per character on scroll; it was pulled
+because it split every heading into one `inline-block` span per character,
+which cost first paint, broke `text-wrap: balance`, and baked `opacity:0` into
+the static export so headings were invisible without JS. `ui/blur-reveal.tsx`
+is still on disk but unused.
 
 ### Shared components
 
 In use: `UseCaseWheel`, `MarkCluster`, `SiteNav`, `SiteFooter`, `Button`,
-`PageTint`, `BlurHeading`, `icons.tsx`, `primitives/SectionGuides`,
+`PageTint`, `BlurHeading`, `SectionReveal`, `icons.tsx`, `primitives/SectionGuides`,
 `primitives/SectionGlow`, `primitives/SlidingIndicator`,
-`primitives/useAutoAdvance`, `ui/blur-reveal`.
-Unused, kept on disk: `Backdrop`, `RailGrid`, `MediaCard`,
+`primitives/useAutoAdvance`.
+Unused, kept on disk: `ui/blur-reveal`, `Backdrop`, `RailGrid`, `MediaCard`,
 `CollaborationDemo`, `primitives/SectionPattern`.
 
 - **Tabs.** Every tab list (hero, MCP clients, MCP route, the wheel) uses
@@ -230,21 +245,16 @@ replacing one changes every card that shows it.
 2. Confirm the remaining inferred URL (§5) and the flagged model names (§6).
 3. Replace the Computer hero clip and the remaining invented copy (§6).
 4. Re-encode the Fashion clip and delete the unused media (§7).
-5. **Headings are invisible without JS.** `motion` renders `initial="hidden"`
-   into the static HTML, so every character carries `opacity:0` in
-   `out/index.html`. Crawlers still get the text (the `sr-only` span is real),
-   but a reader whose JS fails sees no headings. Decide whether to accept it or
-   render plain text until hydration.
-6. `text-wrap: balance` no longer applies to headings, since every character is
-   its own `inline-block`.
-7. **Tap targets.** 63 elements are under 40px on mobile, almost all text links
+5. ~~Headings invisible without JS~~ and ~~`text-wrap: balance` not applying~~:
+   both resolved by removing the heading animation (§3).
+6. **Tap targets.** 63 elements are under 40px on mobile, almost all text links
    in the nav and footer where the text is the target and spacing is adequate.
    The MCP client tabs at 36px are the closest to worth changing. A decision,
    not a defect.
-8. Deployment: `next.config.ts` reads `BASE_PATH` at build time; there is no
+7. Deployment: `next.config.ts` reads `BASE_PATH` at build time; there is no
    deploy workflow yet. Reuse the B2B repo's R2 + BunnyCDN workflow once the
    mount path is decided.
-9. `npm run lint` is not wired (ESLint 9 needs `eslint.config.js`); the build is
+8. `npm run lint` is not wired (ESLint 9 needs `eslint.config.js`); the build is
    the only guard.
 
 ## 9. Last audit (17 Sep)
