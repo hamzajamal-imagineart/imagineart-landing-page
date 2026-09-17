@@ -3,6 +3,7 @@ import { MarkCluster } from "@/components/MarkCluster";
 import { BlurHeading } from "@/components/BlurHeading";
 import { pluginHref } from "@/lib/links";
 import { Backdrop, backdropCss } from "@/components/Backdrop";
+import { SectionGuides } from "@/components/primitives/SectionGuides";
 
 /**
  * Workflows as a bento. Five tiles on a three-column grid, the same spans
@@ -40,7 +41,8 @@ const PLUGINS = [
 
 export function Workflows() {
   return (
-    <section id="workflows" className="relative border-t border-[color:var(--line)] py-24 md:py-32">
+    <section id="workflows" className="relative border-t border-[color:var(--line)] py-24 md:py-32 lg:border-t-0">
+      <SectionGuides edge="top" />
       <Backdrop position="30% 40%" />
       <div className="container-page">
         <div className="mx-auto max-w-[680px] text-center">
@@ -113,7 +115,10 @@ export function Workflows() {
         /* Hosts a <Backdrop>: isolate so the layer can sit at z-index -1
            without falling behind the page, clip so its overhang does not
            bleed into the neighbouring sections. */
-        #workflows { isolation: isolate; overflow: clip; }
+        /* overflow-clip-margin: the <Backdrop> overhang has to be cut off,
+           but the SectionGuides dots are centred on the section's top edge
+           and stand 2px proud of it. Clipping flush would halve them. */
+        #workflows { isolation: isolate; overflow: clip; overflow-clip-margin: 4px; }
         ${backdropCss}
 
         .wf-bento {
@@ -129,7 +134,6 @@ export function Workflows() {
           padding: clamp(22px, 2.4vw, 32px);
           border-radius: var(--radius-5);
           background: var(--tile);
-          border: 1px solid var(--line);
           min-width: 0;
         }
         .wf-title { font-size: clamp(20px, 1.8vw, 26px); line-height: 1.2; letter-spacing: -0.015em; color: var(--ink-heading); }

@@ -2,6 +2,7 @@
 import { withBasePath } from "@/lib/assets";
 import { STUDIO_HREFS } from "@/lib/links";
 import { BlurHeading } from "@/components/BlurHeading";
+import { SectionGuides } from "@/components/primitives/SectionGuides";
 
 /**
  * Ad Studio banner, on the product's own treatment: a dark band filled with
@@ -26,7 +27,8 @@ const COLUMNS: { speed: number; clips: string[] }[] = [
 
 export function AdStudio() {
   return (
-    <section id="studios" className="relative border-t border-[color:var(--line)] py-24 md:py-32">
+    <section id="studios" className="relative border-t border-[color:var(--line)] py-24 md:py-32 lg:border-t-0">
+      <SectionGuides edge="top" />
       <div className="container-page">
         <div className="mx-auto max-w-[680px] text-center">
           <BlurHeading className="h2" lead="Studios" />

@@ -4,6 +4,7 @@
 import { useState } from "react";
 import { withBasePath } from "@/lib/assets";
 import { SlidingIndicator, slidingIndicatorCss, useSlidingIndicator } from "@/components/primitives/SlidingIndicator";
+import { SectionGuides } from "@/components/primitives/SectionGuides";
 
 /**
  * MCP connect panel, ported from Vyro-ai/imagine-web-mcp-landing and restyled
@@ -183,7 +184,8 @@ export function Mcp() {
   const c = CLIENTS[client];
 
   return (
-    <section id="mcp" className="relative border-t border-[color:var(--line)] py-24 md:py-32">
+    <section id="mcp" className="relative border-t border-[color:var(--line)] py-24 md:py-32 lg:border-t-0">
+      <SectionGuides edge="top" />
       <div className="container-page">
         <div className="mx-auto max-w-[680px] text-center">
           <h2 className="h2 mcp-title"><img src={withBasePath("/media/mcp/imagine-mcp-logo.svg")} alt="Imagine MCP" /></h2>

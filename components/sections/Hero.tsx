@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from "react";
 import { withBasePath } from "@/lib/assets";
 import { DEMO_HREF, START_HREF } from "@/lib/links";
 import { SlidingIndicator, slidingIndicatorCss, useSlidingIndicator } from "@/components/primitives/SlidingIndicator";
-import { useAutoAdvance } from "@/components/primitives/useAutoAdvance";
 import { BlurHeading } from "@/components/BlurHeading";
 
 /**
@@ -20,24 +19,27 @@ import { BlurHeading } from "@/components/BlurHeading";
  * clip per tab. Nothing else in the panel.
  *
  * All three clips render into the HTML, stacked in one cell; only the visible
- * one plays. Creative streams real campaign footage; Workflows and Computer
- * are still placeholders.
+ * one plays, and the visible one shows native controls while the pointer is
+ * over the frame. Creative and Workflows stream real footage; Computer is
+ * still a placeholder.
  */
-/** Dwell on each product line before the tabs move on. */
-const DWELL_MS = 5000;
-
 const LINES = [
   // Real campaign footage, streamed. withBasePath() passes an absolute URL
   // through untouched, so it needs no local copy.
   { id: "creative", label: "Creative", video: "https://imagine.animagic.art/imagine-one/home/campaigns/gpt-2.5.mp4" },
-  { id: "workflows", label: "Workflows", video: "/media/pillars/workflows.mp4" },
+  { id: "workflows", label: "Workflows", video: "https://www.imagine.art/business/media/modes/quick-iterations.mp4" },
   { id: "computer", label: "Computer", video: "/media/hero/computer.mp4" },
 ];
 
 export function Hero() {
-  const walk = useAutoAdvance(LINES.length, DWELL_MS);
-  const line = walk.active;
-  const setLine = walk.pick;
+  const [line, setLine] = useState(0);
+  /**
+   * Native controls appear on the visible clip while the pointer is over the
+   * frame, or while anything inside it has focus. `controls` is an attribute,
+   * not a style, so it cannot be a CSS hover; and it goes on the active panel
+   * only, since the other two are stacked behind it in the same cell.
+   */
+  const [showControls, setShowControls] = useState(false);
   const tabs = useSlidingIndicator<HTMLButtonElement>(line);
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
 
@@ -96,12 +98,10 @@ export function Hero() {
             role="tablist"
             aria-label="Product lines"
             onKeyDown={onTabKey}
-            {...walk.hold}
           >
-            {/* No progress fill here, unlike the Use Cases wheel: the hero
-                tabs sit above the fold under the headline, and a countdown
-                running there pulls the eye off the copy. They still advance
-                on their own. */}
+            {/* The hero tabs do not walk themselves: under the headline, a
+                panel changing on its own competes with the copy for the eye.
+                The Use Cases wheel, further down, does. */}
             <SlidingIndicator box={tabs.box} ready={tabs.ready} className="hero-tab-fill" />
             {LINES.map((l, i) => (
               <button
@@ -122,7 +122,13 @@ export function Hero() {
           </div>
 
           <div className="hero-body">
-            <div className="hero-stack">
+            <div
+              className="hero-stack"
+              onMouseEnter={() => setShowControls(true)}
+              onMouseLeave={() => setShowControls(false)}
+              onFocusCapture={() => setShowControls(true)}
+              onBlurCapture={() => setShowControls(false)}
+            >
             {LINES.map((l, i) => (
               <div
                 key={l.id}
@@ -136,12 +142,15 @@ export function Hero() {
                 <video
                   ref={(el) => { videoRefs.current[i] = el; }}
                   src={withBasePath(l.video)}
+                  title={`${l.label} in ImagineArt`}
                   autoPlay={i === 0}
                   muted
                   loop
                   playsInline
                   preload={i === 0 ? "auto" : "metadata"}
-                  aria-hidden
+                  controls={showControls && i === line}
+                  controlsList="nodownload noremoteplayback"
+                  disablePictureInPicture
                 />
               </div>
             ))}

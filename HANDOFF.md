@@ -22,7 +22,7 @@ components, not forked from it.
 
 | Section | Component | What it is |
 |---|---|---|
-| Hero | `sections/Hero` | Headline "Bringing / imagination to life" ("Bringing" at weight 400) left, one-line copy right, Get Started + Book a demo pills. Full-bleed `hero/backdrop.jpg` behind the whole section, masked out at the foot. Framed panel with a Creative · Workflows · Computer tab bar (auto-advancing, 5s) and one 16:9 clip per tab. |
+| Hero | `sections/Hero` | Headline "Bringing / imagination to life" ("Bringing" at weight 400) left, one-line copy right, Get Started + Book a demo pills. Full-bleed `hero/backdrop.jpg` behind the whole section, blurred and masked out at the foot. Framed panel with a Creative · Workflows · Computer tab bar and one 16:9 clip per tab; the visible clip shows native controls on hover or focus. Tabs do not auto-advance. |
 | Partners | `sections/Partners` | Six partner marks (ByteDance, Kling AI, MINIMAX, Wan, fal, Grok) with two captions. The only section that keeps the kit's `SectionGuides` rules and dots. |
 | Creative Tools `#tools` | `sections/CreativeTools` | Three labelled rails, Image · Video · Music and Audio, each with a "See all" into that app-gallery category. Cards are the clip full-bleed at 3:4, title always on a bottom veil, description revealed on hover. Rails bleed to the window edges; the section clips the overflow. |
 | Workflows `#workflows` | `sections/Workflows` | Bento, spans [2,1] / [1,1,1]: Node canvas (wide, clip), Scheduling (clip), Creative Analyser (clip), Connectors as a `MarkCluster`, Plugins as a linked list of host apps. Tiles on `#dce4ee`, 460px rows. |
@@ -96,10 +96,22 @@ already carry a photograph.
 **Tabs.** Every tab list on the page (hero, MCP clients, MCP route, the Use
 Cases wheel) uses `primitives/SlidingIndicator`: one fill that travels between
 tabs on `transform`/`width`/`height`, leaving each tab nothing to animate but
-its text colour. The auto-advancing lists (hero 5s, wheel 3s) share
-`primitives/useAutoAdvance`. Only the wheel draws the dwell, as a very faint
-fill sweeping the selected tab; the hero advances silently, because a
-countdown under the headline pulls the eye off the copy.
+its text colour. Only the Use Cases wheel walks itself, on
+`primitives/useAutoAdvance` (3s), drawing the dwell as a very faint fill
+sweeping the selected tab. The hero tabs are manual: under the headline, a
+panel changing on its own competes with the copy for the eye.
+
+**Section guides.** `primitives/SectionGuides` is the Enterprise repo's
+version, ported wholesale on 17 Sep; the copy this project was seeded with was
+an older one that drew four dots per section (so every shared seam rendered a
+double dot), gapped its verticals at both ends (so the grid read as detached
+boxes rather than one continuous rule), and sat at `z-20`, painting lines over
+cards. Keep them in sync with the B2B repo rather than editing this copy. In
+use on Partners, Workflows, Studios and MCP, each `edge="top"` with
+`lg:border-t-0` on the section so the guide's rule takes over from the border
+at desktop. A section that also hosts a `<Backdrop>` needs
+`overflow-clip-margin`, or the clip halves the dots standing proud of its top
+edge.
 
 **Headings** animate through `components/BlurHeading`, which wraps the
 `components/ui/blur-reveal` component (shadcn-style drop-in, `motion`). It adds
@@ -168,11 +180,12 @@ Fashion Studio → `/apps/outfit-tryon`.
   Selected view; no aggregate rating claim is made.
 - **FAQ** reuses the B2B repo's "we never train on your content" and "full
   commercial rights" lines; "free to start" assumes a free tier.
-- **Hero clips:** Creative streams real campaign footage; Workflows and
-  Computer are still placeholders.
+- **Hero clips:** Creative and Workflows stream real footage; Computer is
+  still a placeholder.
 - **Remote runtime dependencies:** MCP connect recordings and the 30 Ad Studio
   clips stream from `cdn-imagine.vyro.ai`; the hero's Creative clip streams
-  from `imagine.animagic.art`. Everything else is local.
+  from `imagine.animagic.art` and its Workflows clip from `www.imagine.art`.
+  Everything else is local.
 
 ## 6. Media
 
