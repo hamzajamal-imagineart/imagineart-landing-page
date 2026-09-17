@@ -5,6 +5,7 @@ import { withBasePath } from "@/lib/assets";
 import { DEMO_HREF, START_HREF } from "@/lib/links";
 import { SlidingIndicator, slidingIndicatorCss, useSlidingIndicator } from "@/components/primitives/SlidingIndicator";
 import { BlurHeading } from "@/components/BlurHeading";
+import { SectionGlow, sectionGlowCss } from "@/components/primitives/SectionGlow";
 
 /**
  * Hero, on the ElevenLabs pattern, pared down.
@@ -57,6 +58,10 @@ export function Hero() {
 
   return (
     <section id="top" className="hero-section">
+      {/* Lower than the sections further down: the hero opens under a fixed
+          bar and a pool at 0% would sit behind it, so it is centred on the
+          headline instead. */}
+      <SectionGlow position="50% 20%" />
       <div className="container-page">
         <div className="hero-top">
           <div>
@@ -150,11 +155,14 @@ export function Hero() {
       </div>
 
       <style>{`
+        /* Hosts a <SectionGlow> at z-index -1. */
         .hero-section {
           position: relative;
+          isolation: isolate;
           padding-top: clamp(168px, 20vh, 232px);
           padding-bottom: clamp(40px, 6vh, 72px);
         }
+        ${sectionGlowCss}
         .hero-top {
           display: grid;
           grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);

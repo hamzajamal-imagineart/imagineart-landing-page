@@ -158,6 +158,7 @@
   --glow-tint: transparent;
   /* Row hover on a tinted tile. */
   --hover-wash: rgba(255, 255, 255, 0.55);
+  --progress-wash: rgba(47, 67, 88, 0.05);
   --selection-bg: rgba(47, 67, 88, 0.18);
 }
 :root[data-theme="dark"] {
@@ -166,6 +167,7 @@
   --head-glow: rgba(255, 255, 255, 0.19);
   --glow-tint: rgba(255, 255, 255, 0.085);
   --hover-wash: rgba(255, 255, 255, 0.045);
+  --progress-wash: rgba(255, 255, 255, 0.09);
   --selection-bg: rgba(255, 255, 255, 0.24);
 }
 

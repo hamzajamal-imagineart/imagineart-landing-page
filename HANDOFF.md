@@ -126,7 +126,8 @@ Unused, kept on disk: `ui/blur-reveal`, `Backdrop`, `RailGrid`, `MediaCard`,
 - **Tabs.** Every tab list (hero, MCP clients, MCP route, the wheel) uses
   `SlidingIndicator`: one fill that travels on `transform`/`width`/`height`,
   leaving each tab nothing to animate but its text colour. Only the wheel walks
-  itself, on `useAutoAdvance` (3s), drawing the dwell as a faint fill.
+  itself, on `useAutoAdvance` (3s), drawing the dwell as a faint fill in
+  `--progress-wash`.
 - **Section guides.** `SectionGuides` is the Enterprise repo's version, ported
   wholesale; keep it in sync with the B2B repo rather than editing this copy.
   It diverges in one place only: the rule and dot colours come from
@@ -134,7 +135,9 @@ Unused, kept on disk: `ui/blur-reveal`, `Backdrop`, `RailGrid`, `MediaCard`,
   Tools, Workflows, Studios and MCP, each `edge="top"` with `lg:border-t-0` on
   the section.
 - **Section glow.** `SectionGlow` puts a faint pool of light at the head of
-  alternate sections (Tools, Studios, Use Cases, Models, FAQ). Sits at
+  the hero and of alternate sections (Tools, Studios, Use Cases, Models, FAQ).
+  The hero's sits at `50% 20%` rather than the usual `50% 0%`, since a pool at
+  the very top would fall behind the fixed bar. Sits at
   `z-index: -1`, so its host needs `isolation: isolate`.
 
 ## 4. Traps already paid for

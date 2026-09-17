@@ -122,13 +122,17 @@ export const slidingIndicatorCss = `
   /* The dwell, drawn as a fill sweeping across the selected tab. It reaches
      the far edge exactly as the list moves on. Kept very faint: it only has
      to be noticed when someone is already looking at the tab, so it reads as
-     a shade passing over rather than a bar filling up. */
+     a shade passing over rather than a bar filling up.
+
+     The wash is a token, not a literal. It used to be a fixed near-black at
+     4.5%, which is invisible on the dark pill it sits in, so the dwell never
+     showed on the shipped page at all. */
   .sl-progress {
     position: absolute;
     inset: 0;
     right: auto;
     width: 0;
-    background: rgba(47, 67, 88, 0.045);
+    background: var(--progress-wash);
     animation-name: sl-fill;
     animation-timing-function: linear;
     animation-fill-mode: forwards;
