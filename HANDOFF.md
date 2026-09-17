@@ -247,7 +247,41 @@ replacing one changes every card that shows it.
 8. `npm run lint` is not wired (ESLint 9 needs `eslint.config.js`); the build is
    the only guard.
 
-## 9. Last audit (17 Sep)
+## 9. No-JS and crawler audit (17 Sep)
+
+Run against `out/index.html`, since the crawler and a reader without JS both
+get exactly that file. **The page's text is all in the static HTML**: one
+`<h1>`, ten `<h2>`, every section lede, all 13 bento cards with their
+descriptions, all six use cases, every FAQ question and answer, every review,
+and the whole footer. No element carries `opacity:0` from the markup. Nothing
+about the copy depends on hydration.
+
+Two gaps were found and fixed:
+
+- **Eight of the nine use-case rows were `<button onClick>`**, so only the
+  selected one was a link. Without JS that left the section with a single way
+  out, and a crawler with one template-gallery URL to follow. Every row is now
+  an `<a href>`; with JS, a click on an inactive row still selects it instead
+  of navigating. Anchors on the page went from 90 to 102.
+- **The mobile menu did not exist until JS opened it** (`menuOpen && …`), and
+  the desktop links are `display:none` under 1080px, so a phone without JS got
+  a wordmark and a dead burger. A `<noscript>` block now lays the same link set
+  out in flow under the bar. It costs a hydrated page nothing.
+
+Checked and deliberately left alone:
+
+- **Hero tabs.** The first panel is server-rendered with `hero-panel-on`, so
+  it shows without JS. The other two hold video only, no text.
+- **MCP.** Only the selected client's three steps are in the DOM. The default
+  (Claude) panel is complete, and the other five are the same instructions
+  with a different client name, so there is nothing unique to lose.
+- **Bento descriptions** are hover-revealed but already forced open under
+  `@media (hover: none)`, and they are in the DOM either way.
+- **89 of 95 images carry `alt=""`.** They are decorative: each sits in a card
+  whose title and description are real text beside it.
+
+## 10. Last layout audit (17 Sep)
+
 
 Instrumented pass at 1440 and 375, walking the page so lazy media mounted:
 **no horizontal overflow, no broken images or videos, and no text under WCAG AA

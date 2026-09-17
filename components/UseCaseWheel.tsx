@@ -75,37 +75,30 @@ export function UseCaseWheel({ groups, label }: { groups: WheelGroup[]; label: s
             const on = i === active;
             return (
               <div key={g.id} className="uw-row">
-                {on ? (
-                  /* The selected use case is its own way in, so the pill
-                     becomes the link and carries the arrow. */
-                  <a
-                    ref={(el) => { tabRefs.current[i] = el; pill.itemRefs.current[i] = el; }}
-                    role="tab"
-                    aria-selected
-                    tabIndex={0}
-                    className="uw-name uw-on"
-                    href={g.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    {g.title}
+                {/* Every row is a real link to its template gallery, not just
+                    the selected one. A button would leave eight of the nine
+                    use cases with no way out of the page at all when the
+                    script does not run, and nothing for a crawler to follow.
+                    With JS, a click on an inactive row selects it instead of
+                    navigating, which is what the wheel has always done. */}
+                <a
+                  ref={(el) => { tabRefs.current[i] = el; pill.itemRefs.current[i] = el; }}
+                  role="tab"
+                  aria-selected={on}
+                  tabIndex={on ? 0 : -1}
+                  className={`uw-name ${on ? "uw-on" : ""}`}
+                  href={g.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={on ? undefined : (e) => { e.preventDefault(); pick(i); }}
+                >
+                  {g.title}
+                  {on && (
                     <span className="uw-arrow" aria-hidden>
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M6 12h12M13 6l6 6-6 6" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" /></svg>
                     </span>
-                  </a>
-                ) : (
-                  <button
-                    ref={(el) => { tabRefs.current[i] = el; pill.itemRefs.current[i] = el; }}
-                    role="tab"
-                    type="button"
-                    aria-selected={false}
-                    tabIndex={-1}
-                    className="uw-name"
-                    onClick={() => pick(i)}
-                  >
-                    {g.title}
-                  </button>
-                )}
+                  )}
+                </a>
               </div>
             );
           })}
@@ -157,6 +150,7 @@ export function UseCaseWheel({ groups, label }: { groups: WheelGroup[]; label: s
           min-height: 42px;
           cursor: pointer;
           white-space: nowrap;
+          text-decoration: none;
           position: relative;
           z-index: 1;
           transition: color 380ms ease;

@@ -97,6 +97,29 @@ export function SiteNav({
           .nav-burger { display: inline-flex !important; }
         }
         @keyframes navMenuIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: none; } }
+
+        /* Without JS the burger cannot open anything, and the desktop links
+           are already display:none at this width, so the bar would be a
+           wordmark and a dead button. This is the same link set laid out in
+           flow under the bar. It only ever renders inside <noscript>, so it
+           costs a hydrated page nothing. */
+        .nav-fallback {
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: center;
+          gap: 4px 18px;
+          padding: 10px 24px 14px;
+          border-bottom: 1px solid var(--line);
+          background: var(--page-bg);
+        }
+        .nav-fallback a {
+          font-size: 15px;
+          font-weight: 500;
+          color: var(--ink-2);
+          text-decoration: none;
+          padding: 6px 2px;
+        }
+        @media (min-width: 1081px) { .nav-fallback { display: none; } }
       `}</style>
 
       <nav
@@ -200,6 +223,21 @@ export function SiteNav({
           </span>
         </button>
       </nav>
+
+      <noscript>
+        <div className="nav-fallback">
+          {NAV_LINKS.map((link) => (
+            <a
+              key={link.label}
+              href={link.href}
+              {...(isExternal(link.href) ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+            >
+              {link.label}
+            </a>
+          ))}
+          <a href={START_HREF}>Get Started</a>
+        </div>
+      </noscript>
 
       {menuOpen && (
         <div
