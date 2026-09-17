@@ -51,7 +51,7 @@ export function FilmStudio() {
           justify-content: center;
           gap: 16px;
           height: var(--studio-band-h);
-          border-radius: 24px;
+          border-radius: var(--radius-6);
           overflow: hidden;
           background:
             radial-gradient(60% 120% at 6% 100%, rgba(120, 80, 210, 0.55), transparent 60%),

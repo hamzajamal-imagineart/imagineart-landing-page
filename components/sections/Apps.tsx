@@ -44,7 +44,7 @@ export function Apps() {
   };
 
   return (
-    <section id="apps" className="relative border-t border-black/[0.08] py-24 md:py-32">
+    <section id="apps" className="relative border-t border-[color:var(--line)] py-24 md:py-32">
       <div className="container-page">
         <div className="mx-auto max-w-[680px] text-center">
           <BlurHeading className="h2" lead="Apps" />
@@ -109,7 +109,7 @@ export function Apps() {
           flex: 0 0 auto;
           width: clamp(260px, 27vw, 380px);
           height: clamp(400px, 44vw, 500px);
-          border-radius: 20px;
+          border-radius: var(--radius-4);
           padding: 28px 26px 0;
           display: flex;
           flex-direction: column;

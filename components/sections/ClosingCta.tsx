@@ -38,7 +38,7 @@ export function ClosingCta() {
       <style>{`
         .cta-section {
           position: relative;
-          background-color: #10141a;
+          background-color: var(--ground);
           background-image: var(--cta-bg);
           background-size: cover;
           /* The arch sits right of centre, so the frame holds the right of
@@ -56,8 +56,8 @@ export function ClosingCta() {
           z-index: 1;
           pointer-events: none;
           background:
-            linear-gradient(to right, rgba(8, 11, 16, 0.86) 0%, rgba(8, 11, 16, 0.62) 32%, rgba(8, 11, 16, 0.1) 60%, transparent 80%),
-            linear-gradient(to top, rgba(8, 11, 16, 0.32), transparent 55%);
+            linear-gradient(to right, rgba(10, 10, 11, 0.86) 0%, rgba(10, 10, 11, 0.62) 32%, rgba(10, 10, 11, 0.1) 60%, transparent 80%),
+            linear-gradient(to top, rgba(10, 10, 11, 0.32), transparent 55%);
         }
 
         .cta-inner {
@@ -102,7 +102,7 @@ export function ClosingCta() {
           transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
         }
         .cta-btn:active { transform: translateY(1px); }
-        .cta-btn-light { background: #fff; color: #10141a; }
+        .cta-btn-light { background: #fff; color: var(--ground); }
         .cta-btn-light:hover { background: rgba(255, 255, 255, 0.88); }
         .cta-btn-glass {
           background: rgba(255, 255, 255, 0.12);
@@ -118,7 +118,7 @@ export function ClosingCta() {
         @media (max-width: 720px) {
           .cta-section { background-position: 58% center; }
           .cta-section::before {
-            background: linear-gradient(to top, rgba(8, 11, 16, 0.92) 0%, rgba(8, 11, 16, 0.7) 40%, rgba(8, 11, 16, 0.18) 72%, transparent 100%);
+            background: linear-gradient(to top, rgba(10, 10, 11, 0.92) 0%, rgba(10, 10, 11, 0.7) 40%, rgba(10, 10, 11, 0.18) 72%, transparent 100%);
           }
           .cta-inner { align-items: flex-end; min-height: 460px; }
           .cta-copy { max-width: none; padding-block: 48px; }

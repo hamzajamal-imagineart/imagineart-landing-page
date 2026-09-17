@@ -66,8 +66,8 @@ export function MarkCluster({ dir, marks, label }: { dir: string; marks: string[
           max-width: 78px;
           aspect-ratio: 1;
           border-radius: 50%;
-          background: #f3f5f8;
-          border: 1px solid rgba(0, 0, 0, 0.06);
+          background: var(--tile-2);
+          border: 1px solid var(--line);
           display: grid;
           place-items: center;
           transition: transform 0.15s ease-out, filter 0.15s ease-out;

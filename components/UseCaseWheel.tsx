@@ -169,13 +169,13 @@ export function UseCaseWheel({ groups, label }: { groups: WheelGroup[]; label: s
            lists on the page. */
         .uw-pill {
           border-radius: 16px;
-          background: #f6f8fa;
+          background: var(--tile-2);
           box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05), 0 6px 18px rgba(16, 20, 30, 0.07);
         }
         /* A filled disc, but riding inside the pill rather than sitting
            beside it as its own button. */
         .uw-arrow {
-          width: 30px; height: 30px;
+          width: 28px; height: 28px;
           border-radius: 999px;
           display: grid; place-items: center;
           background: var(--ink-heading);
@@ -207,7 +207,7 @@ export function UseCaseWheel({ groups, label }: { groups: WheelGroup[]; label: s
           margin: 0;
           border-radius: 16px;
           overflow: hidden;
-          border: 1px solid rgba(0, 0, 0, 0.08);
+          border: 1px solid var(--line);
           background-color: var(--tile);
           box-shadow: 0 10px 30px rgba(16, 20, 30, 0.1);
           animation: uw-in 620ms cubic-bezier(0.22, 1, 0.36, 1) both;

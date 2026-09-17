@@ -226,7 +226,7 @@ export function RailGrid({
           gap: 4px;
           padding: 8px;
           border-radius: 20px;
-          background: #dce4ee;
+          background: var(--tile);
           border: 1px solid var(--line);
           position: sticky;
           top: 112px;
@@ -236,7 +236,7 @@ export function RailGrid({
           top: 0;
           left: 0;
           border-radius: 14px;
-          background: #f3f5f8;
+          background: var(--tile-2);
           border: 1px solid var(--line);
           box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05), 0 4px 14px rgba(16, 20, 30, 0.05);
           pointer-events: none;
@@ -270,7 +270,7 @@ export function RailGrid({
           position: absolute;
           inset: 0;
           border-radius: inherit;
-          /* Kept well short of the selected fill (#f3f5f8): at 0.45 this
+          /* Kept well short of the selected fill (var(--tile-2)): at 0.45 this
              resolved to ~#ecf0f6 and hover was indistinguishable from
              selection. */
           background: rgba(255, 255, 255, 0.22);

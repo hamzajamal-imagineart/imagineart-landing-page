@@ -49,11 +49,28 @@
   /* White stays white: against a tinted page wash it is the elevation cue. */
   --panel: #ffffff;
 
-  /* Slate defaults, overridden by <PageTint>. */
+  /* Slate defaults, overridden by <PageTint>.
+
+     Four surfaces, in order of depth, and nothing between them. Anything that
+     needs a slate ground picks one of these; hard-coding a value three units
+     off one of them is what made the page read as several designs.
+
+       --page-bg   the wash everything sits on
+       --panel     white, the one elevation cue
+       --tile      recessed: framed panels, bento tiles, media grounds
+       --tile-2    a light tile inside a recessed panel
+       --track     the groove a segmented control runs in            */
   --page-bg: #eef1f5;
   --heading-muted: #97aabd;
-  --tile: #dfe6ee;
-  --panel-2: #e6ebf1;
+  --tile: #dce4ee;
+  /* Orphaned: --panel-2 sat two percent off --page-bg on this palette and was
+     invisible as a surface. Kept only because <PageTint> still emits it and
+     the unused RailGrid still reads it. Use --tile. */
+  --tile-2: #f3f5f8;
+  --track: #cfd9e5;
+  /* Dark bands (Ad, Film, closing). Neutral, like every other dark surface
+     here; a blue-tinted black read as a different design. */
+  --ground: #0a0a0b;
   /* Two shades of the page wash for nested containers, so a framed panel
      and the container inside it both read against the page and each other. */
   --shade-1: #e3e8ee;
@@ -61,6 +78,11 @@
   /* One height for the three studio banners (Ad, Fashion, Film). */
   --studio-band-h: clamp(360px, 30vw, 420px);
 
+  /* One radius ladder, used by name:
+       --radius-6 24  full-width bands and the hero frame
+       --radius-5 20  panels and bento tiles
+       --radius-4 16  cards and tabs
+       --radius-3 12  media frames and marks inside a card           */
   --radius-lg: 20px;
   --maxw: 1240px;
 

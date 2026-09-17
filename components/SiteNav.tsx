@@ -61,9 +61,9 @@ export function SiteNav({
         }
       : {
           "--nav-fg": "rgba(11,11,12,0.6)",
-          "--nav-fg-hover": "#0b0b0c",
+          "--nav-fg-hover": "var(--ink)",
           "--nav-fg-ghost": "rgba(11,11,12,0.28)",
-          "--nav-cta-bg": "#0b0b0c",
+          "--nav-cta-bg": "var(--ink)",
           "--nav-cta-fg": "#ffffff",
           "--nav-cta-glow": "rgba(11,11,12,0.08)",
           "--nav-burger": "rgba(11,11,12,0.8)",

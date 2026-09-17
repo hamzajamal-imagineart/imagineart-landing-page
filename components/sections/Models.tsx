@@ -1,6 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 import { withBasePath } from "@/lib/assets";
 import { BlurHeading } from "@/components/BlurHeading";
+import { Backdrop, backdropCss } from "@/components/Backdrop";
 
 /**
  * Models: eight cards, four by two.
@@ -46,7 +47,8 @@ function CardMedia({ src }: { src: string }) {
 
 export function Models() {
   return (
-    <section id="models" className="relative border-t border-black/[0.08] py-24 md:py-32">
+    <section id="models" className="relative border-t border-[color:var(--line)] py-24 md:py-32">
+      <Backdrop position="20% 60%" opacity={0.45} />
       <div className="container-page">
         <div className="mx-auto max-w-[680px] text-center">
           <BlurHeading className="h2" lead="Models" />
@@ -71,6 +73,12 @@ export function Models() {
       </div>
 
       <style>{`
+        /* Hosts a <Backdrop>: isolate so the layer can sit at z-index -1
+           without falling behind the page, clip so its overhang does not
+           bleed into the neighbouring sections. */
+        #models { isolation: isolate; overflow: clip; }
+        ${backdropCss}
+
         .mdl-grid {
           display: grid;
           grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -81,7 +89,7 @@ export function Models() {
           isolation: isolate;
           overflow: hidden;
           aspect-ratio: 7 / 8;
-          border-radius: 20px;
+          border-radius: var(--radius-4);
           display: flex;
           flex-direction: column;
           justify-content: flex-end;

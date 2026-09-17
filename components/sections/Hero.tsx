@@ -10,8 +10,10 @@ import { BlurHeading } from "@/components/BlurHeading";
 /**
  * Hero, on the ElevenLabs pattern, pared down.
  *
- * A full-bleed photograph sits behind the whole section, masked out at the
- * foot so it dissolves into the page wash instead of ending on a line.
+ * A full-bleed photograph sits behind the whole section, blurred to a field
+ * of light and masked out at the foot so it dissolves into the page wash
+ * instead of ending on a line. <Backdrop> reuses the same picture further
+ * down the page.
  *
  * Headline left, supporting copy right, two pill buttons. Below, one framed
  * panel: a three-way tab bar (Creative · Workflows · Computer) and one 16:9
@@ -96,12 +98,11 @@ export function Hero() {
             onKeyDown={onTabKey}
             {...walk.hold}
           >
-            <SlidingIndicator
-              box={tabs.box}
-              ready={tabs.ready}
-              className="hero-tab-fill"
-              progress={walk.running ? { key: walk.epoch, durationMs: DWELL_MS, paused: walk.paused } : undefined}
-            />
+            {/* No progress fill here, unlike the Use Cases wheel: the hero
+                tabs sit above the fold under the headline, and a countdown
+                running there pulls the eye off the copy. They still advance
+                on their own. */}
+            <SlidingIndicator box={tabs.box} ready={tabs.ready} className="hero-tab-fill" />
             {LINES.map((l, i) => (
               <button
                 key={l.id}
@@ -155,6 +156,7 @@ export function Hero() {
           padding-top: clamp(120px, 15vh, 170px);
           padding-bottom: clamp(40px, 6vh, 72px);
           isolation: isolate;
+          overflow: clip;
         }
         /* Full-bleed backdrop behind the whole hero. Anchored bottom so the
            ridge lines stay along the foot of the section at any height, and
@@ -162,14 +164,20 @@ export function Hero() {
            Partners strip on the page wash rather than on a hard seam. */
         .hero-bg {
           position: absolute;
-          inset: 0;
+          /* Overhangs by more than the blur radius: a blurred layer samples
+             transparent past its own edges and fades out at the sides. The
+             section clips the overhang back off. */
+          inset: -140px;
           z-index: -1;
+          filter: blur(64px);
           background-image: var(--hero-bg);
           background-size: cover;
           background-position: center bottom;
           background-repeat: no-repeat;
-          -webkit-mask-image: linear-gradient(to bottom, #000 62%, transparent 100%);
-          mask-image: linear-gradient(to bottom, #000 62%, transparent 100%);
+          /* Full strength across the top, then a long dissolve so it is
+             already gone well before the Partners seam. */
+          -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 34%, transparent 88%);
+          mask-image: linear-gradient(to bottom, #000 0%, #000 34%, transparent 88%);
           pointer-events: none;
         }
         .hero-top {
@@ -210,8 +218,8 @@ export function Hero() {
         .hero-frame {
           margin-top: clamp(36px, 5vh, 56px);
           border: 1px solid var(--line);
-          border-radius: 26px;
-          background: #dce4ee;
+          border-radius: var(--radius-6);
+          background: var(--tile);
           overflow: hidden;
         }
         .hero-tabs { display: flex; gap: 6px; padding: 6px; position: relative; }
@@ -248,8 +256,8 @@ export function Hero() {
         .hero-body { margin: 0 6px 6px; }
         .hero-stack {
           display: grid;
-          border-radius: 20px;
-          border: 1px solid rgba(0, 0, 0, 0.1);
+          border-radius: var(--radius-4);
+          border: 1px solid var(--line);
           overflow: hidden;
           background: var(--tile);
           aspect-ratio: 16 / 9;

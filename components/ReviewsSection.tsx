@@ -30,7 +30,7 @@ const REVIEWS: Review[] = [
 
 export function ReviewsSection() {
   return (
-    <section id="reviews" className="relative border-t border-black/[0.08] py-24 md:py-32">
+    <section id="reviews" className="relative border-t border-[color:var(--line)] py-24 md:py-32">
       <div className="container-page relative z-10">
         <div className="rv-split">
           <div className="rv-summary">
@@ -98,7 +98,7 @@ export function ReviewsSection() {
         .rv-card {
           background: var(--panel);
           border: 1px solid var(--line);
-          border-radius: 18px;
+          border-radius: var(--radius-4);
           padding: 22px 24px;
         }
         .rv-stars { display: inline-flex; gap: 3px; }

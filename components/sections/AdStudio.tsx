@@ -26,7 +26,7 @@ const COLUMNS: { speed: number; clips: string[] }[] = [
 
 export function AdStudio() {
   return (
-    <section id="studios" className="relative border-t border-black/[0.08] py-24 md:py-32">
+    <section id="studios" className="relative border-t border-[color:var(--line)] py-24 md:py-32">
       <div className="container-page">
         <div className="mx-auto max-w-[680px] text-center">
           <BlurHeading className="h2" lead="Studios" />
@@ -74,9 +74,9 @@ export function AdStudio() {
         .ad-band {
           position: relative;
           height: var(--studio-band-h);
-          border-radius: 24px;
+          border-radius: var(--radius-6);
           overflow: hidden;
-          background: #0a0a0b;
+          background: var(--ground);
           border: 1px solid var(--line);
           isolation: isolate;
         }

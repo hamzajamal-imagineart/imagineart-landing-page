@@ -27,7 +27,7 @@ const BRANDS: Brand[] = [
 
 export function Partners() {
   return (
-    <section className="relative border-t border-black/[0.08] py-16 md:py-20 lg:border-t-0">
+    <section className="relative border-t border-[color:var(--line)] py-16 md:py-20 lg:border-t-0">
       <SectionGuides edge="top" />
       <div className="container-page">
         <p className="pt-cap">Trusted by the brands you benchmark against</p>

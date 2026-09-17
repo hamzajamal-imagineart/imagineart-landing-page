@@ -183,7 +183,7 @@ export function Mcp() {
   const c = CLIENTS[client];
 
   return (
-    <section id="mcp" className="relative border-t border-black/[0.08] py-24 md:py-32">
+    <section id="mcp" className="relative border-t border-[color:var(--line)] py-24 md:py-32">
       <div className="container-page">
         <div className="mx-auto max-w-[680px] text-center">
           <h2 className="h2 mcp-title"><img src={withBasePath("/media/mcp/imagine-mcp-logo.svg")} alt="Imagine MCP" /></h2>
@@ -286,8 +286,8 @@ export function Mcp() {
       <style>{`
         .mcp-panel {
           border: 1px solid var(--line);
-          border-radius: 26px;
-          background: #dce4ee;
+          border-radius: var(--radius-6);
+          background: var(--tile);
           padding: 8px;
         }
         .mcp-bar { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
@@ -298,7 +298,7 @@ export function Mcp() {
           gap: 4px;
           padding: 5px;
           border-radius: 16px;
-          background: #cfd9e5;
+          background: var(--track);
         }
         .mcp-tabs { flex-wrap: wrap; position: relative; }
         .mcp-tab {
@@ -428,8 +428,8 @@ export function Mcp() {
           aspect-ratio: 16 / 9.4;
           border-radius: 16px;
           overflow: hidden;
-          background: #cfd9e5;
-          border: 1px solid rgba(0, 0, 0, 0.1);
+          background: var(--track);
+          border: 1px solid var(--line);
         }
         .mcp-visual video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
         .mcp-empty {

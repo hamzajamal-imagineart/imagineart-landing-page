@@ -10,6 +10,10 @@ import { BlurHeading } from "@/components/BlurHeading";
  * horizontal rail of the tools underneath. It replaces the three-column
  * lineup, which could show three tools where the product has dozens.
  *
+ * Cards are thumbnail-over-copy rather than the clip filling the card: the
+ * rails sit directly on the page wash with no panel around them, and a row of
+ * full-bleed clips read as a band of video rather than a set of tools.
+ *
  * ASSETS ARE PLACEHOLDERS. Every thumbnail below is a clip already on disk,
  * borrowed from another section and picked only for being the nearest thing
  * to the tool it sits under; the audio row in particular has no footage of
@@ -66,7 +70,7 @@ const ROWS: Row[] = [
 
 export function CreativeTools() {
   return (
-    <section id="tools" className="relative border-t border-black/[0.08] py-24 md:py-32">
+    <section id="tools" className="relative border-t border-[color:var(--line)] py-24 md:py-32">
       <div className="container-page">
         {/* Wider than the page's usual 680px heading block: .h2 is nowrap
             above 880px and this is a multi-word heading. */}
@@ -85,6 +89,7 @@ export function CreativeTools() {
                 <h3 id={`ct-${row.id}`} className="ct-label">{row.label}</h3>
                 <a className="ct-all" href={row.seeAll} target="_blank" rel="noopener noreferrer">
                   See all
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden><path d="M9 6l6 6-6 6" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
                 </a>
               </header>
 
@@ -97,29 +102,23 @@ export function CreativeTools() {
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-                    <video
-                      className="ct-video"
-                      src={withBasePath(t.video)}
-                      autoPlay
-                      muted
-                      loop
-                      playsInline
-                      preload={r === 0 && i < 3 ? "auto" : "none"}
-                      aria-hidden
-                    />
-                    <span className="ct-veil" aria-hidden />
-                    <span className="ct-go" aria-hidden>
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M6 12h12M13 6l6 6-6 6" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                    </span>
-                    <div className="ct-meta">
-                      <h4 className="ct-name">{t.title}</h4>
-                      {/* 0fr to 1fr so the description opens to its own
-                          height without a hard-coded max-height. */}
-                      <div className="ct-reveal">
-                        <p className="ct-body">{t.body}</p>
-                      </div>
+                    <div className="ct-thumb">
+                      {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+                      <video
+                        src={withBasePath(t.video)}
+                        autoPlay
+                        muted
+                        loop
+                        playsInline
+                        preload={r === 0 && i < 3 ? "auto" : "none"}
+                        aria-hidden
+                      />
                     </div>
+                    <h4 className="ct-name">{t.title}</h4>
+                    <p className="ct-body">{t.body}</p>
+                    <span className="ct-go" aria-hidden>
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M6 12h12M13 6l6 6-6 6" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                    </span>
                   </a>
                 ))}
               </div>
@@ -148,13 +147,18 @@ export function CreativeTools() {
           color: var(--ink-heading);
         }
         .ct-all {
+          display: inline-flex;
+          align-items: center;
+          gap: 3px;
           font-size: 14px;
           font-weight: 500;
           color: var(--ink-3);
           white-space: nowrap;
           transition: color 200ms ease;
         }
+        .ct-all svg { flex: 0 0 auto; transition: transform 200ms ease; }
         .ct-all:hover { color: var(--ink); }
+        .ct-all:hover svg { transform: translateX(2px); }
 
         /* The rail runs to the edges of the window, not the container, so
            the row reads as continuing past the screen. The padding puts the
@@ -171,108 +175,75 @@ export function CreativeTools() {
         }
         .ct-rail::-webkit-scrollbar { display: none; }
 
-        /* The card is the clip. Title always showing, description on hover. */
+        /* Card, not a clip: thumbnail, title, two lines, arrow. */
         .ct-card {
           position: relative;
-          flex: 0 0 282px;
-          width: 282px;
-          aspect-ratio: 3 / 4;
-          display: block;
-          overflow: hidden;
-          border-radius: 20px;
-          background-color: var(--tile);
-          color: #fff;
+          flex: 0 0 304px;
+          width: 304px;
+          display: flex;
+          flex-direction: column;
+          padding: 12px 12px 18px;
+          border-radius: var(--radius-4);
+          background: var(--panel);
+          border: 1px solid var(--line);
+          color: inherit;
           text-decoration: none;
-          transition: transform 340ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 340ms ease;
+          transition: transform 320ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 320ms ease;
         }
         .ct-card:hover, .ct-card:focus-visible {
-          transform: translateY(-4px);
-          box-shadow: 0 14px 34px rgba(16, 20, 30, 0.16);
+          transform: translateY(-3px);
+          box-shadow: 0 10px 28px rgba(16, 20, 30, 0.1);
         }
 
-        .ct-video {
-          position: absolute;
-          inset: 0;
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-          display: block;
+        .ct-thumb {
+          position: relative;
+          aspect-ratio: 4 / 3;
+          border-radius: var(--radius-3);
+          overflow: hidden;
+          background-color: var(--tile);
         }
-        /* Enough at rest to carry the title, deeper on hover to carry the
-           description as well. */
-        .ct-veil {
-          position: absolute;
-          inset: 0;
-          background: linear-gradient(to top, rgba(8, 11, 16, 0.82) 0%, rgba(8, 11, 16, 0.34) 32%, transparent 62%);
-          transition: background 340ms ease;
-        }
-        .ct-card:hover .ct-veil, .ct-card:focus-visible .ct-veil {
-          background: linear-gradient(to top, rgba(8, 11, 16, 0.9) 0%, rgba(8, 11, 16, 0.6) 46%, rgba(8, 11, 16, 0.18) 100%);
-        }
+        .ct-thumb video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
 
-        .ct-meta {
-          position: absolute;
-          left: 0; right: 0; bottom: 0;
-          padding: 18px;
-        }
         .ct-name {
-          font-size: 17px;
+          margin: 16px 5px 0;
+          font-size: 16.5px;
           font-weight: 500;
           letter-spacing: -0.01em;
-          color: #fff;
+          color: var(--ink);
         }
-        /* max-height rather than the 0fr-to-1fr grid trick: a bare 0fr keeps
-           an automatic min-content floor so it never closes, and minmax(0,1fr)
-           closes but then has no minimum to open against in an auto-height
-           container, so it never opens. max-height does both. The value only
-           has to clear the tallest body, which is three lines. */
-        .ct-reveal {
-          max-height: 0;
-          overflow: hidden;
-          opacity: 0;
-          transition: max-height 340ms cubic-bezier(0.22, 1, 0.36, 1), opacity 240ms ease;
-        }
-        .ct-card:hover .ct-reveal, .ct-card:focus-visible .ct-reveal {
-          max-height: 140px;
-          opacity: 1;
-        }
+        /* Two lines, so every card in a rail is the same height whatever the
+           copy runs to. */
         .ct-body {
-          /* Padding, not margin: it has to be inside the clipped box or it
-             props the closed row open. */
-          padding-top: 7px;
-          font-size: 14px;
+          margin: 7px 5px 0;
+          font-size: 14.5px;
           line-height: 1.5;
-          color: rgba(255, 255, 255, 0.82);
+          color: var(--ink-3);
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+          min-height: calc(14.5px * 1.5 * 2);
+          padding-right: 38px;
         }
-
         .ct-go {
           position: absolute;
-          top: 14px;
           right: 14px;
-          width: 32px; height: 32px;
+          bottom: 14px;
+          width: 28px; height: 28px;
           border-radius: 999px;
           display: grid; place-items: center;
-          background: rgba(255, 255, 255, 0.16);
-          border: 1px solid rgba(255, 255, 255, 0.26);
-          backdrop-filter: blur(10px);
-          -webkit-backdrop-filter: blur(10px);
+          background: var(--ink-heading);
           color: #fff;
-          transition: background 240ms ease, transform 240ms ease;
+          transition: transform 200ms ease;
         }
-        .ct-card:hover .ct-go { background: rgba(255, 255, 255, 0.28); transform: scale(1.06); }
-
-        /* No hover to reveal with, so the description simply stays open. */
-        @media (hover: none) {
-          .ct-reveal { max-height: 140px; opacity: 1; }
-          .ct-veil { background: linear-gradient(to top, rgba(8, 11, 16, 0.9) 0%, rgba(8, 11, 16, 0.6) 46%, rgba(8, 11, 16, 0.18) 100%); }
-        }
+        .ct-card:hover .ct-go { transform: scale(1.06); }
 
         @media (max-width: 560px) {
-          .ct-card { flex-basis: 238px; width: 238px; }
+          .ct-card { flex-basis: 252px; width: 252px; }
           .ct-rows { gap: 40px; }
         }
         @media (prefers-reduced-motion: reduce) {
-          .ct-card, .ct-go, .ct-veil, .ct-reveal { transition: none; }
+          .ct-card, .ct-go { transition: none; }
           .ct-card:hover, .ct-card:focus-visible { transform: none; }
         }
       `}</style>

@@ -2,6 +2,7 @@ import { withBasePath } from "@/lib/assets";
 import { MarkCluster } from "@/components/MarkCluster";
 import { BlurHeading } from "@/components/BlurHeading";
 import { pluginHref } from "@/lib/links";
+import { Backdrop, backdropCss } from "@/components/Backdrop";
 
 /**
  * Workflows as a bento. Five tiles on a three-column grid, the same spans
@@ -39,7 +40,8 @@ const PLUGINS = [
 
 export function Workflows() {
   return (
-    <section id="workflows" className="relative border-t border-black/[0.08] py-24 md:py-32">
+    <section id="workflows" className="relative border-t border-[color:var(--line)] py-24 md:py-32">
+      <Backdrop position="30% 40%" />
       <div className="container-page">
         <div className="mx-auto max-w-[680px] text-center">
           <BlurHeading className="h2" lead="Workflows" />
@@ -108,6 +110,12 @@ export function Workflows() {
       </div>
 
       <style>{`
+        /* Hosts a <Backdrop>: isolate so the layer can sit at z-index -1
+           without falling behind the page, clip so its overhang does not
+           bleed into the neighbouring sections. */
+        #workflows { isolation: isolate; overflow: clip; }
+        ${backdropCss}
+
         .wf-bento {
           display: grid;
           grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -119,12 +127,8 @@ export function Workflows() {
           display: flex;
           flex-direction: column;
           padding: clamp(22px, 2.4vw, 32px);
-          border-radius: 24px;
-          /* A full step down from the page wash, not --panel-2: on this
-             palette --panel-2 is only two percent off --page-bg and the
-             tiles disappeared into the section. Matches the framed panels
-             used elsewhere on the page. */
-          background: #dce4ee;
+          border-radius: var(--radius-5);
+          background: var(--tile);
           border: 1px solid var(--line);
           min-width: 0;
         }
@@ -146,8 +150,8 @@ export function Workflows() {
           height: calc(100% - 22px);
           object-fit: cover;
           display: block;
-          border-radius: 14px;
-          border: 1px solid rgba(0, 0, 0, 0.1);
+          border-radius: var(--radius-3);
+          border: 1px solid var(--line);
         }
 
 
@@ -184,7 +188,7 @@ export function Workflows() {
           border-radius: 9px;
           flex: 0 0 auto;
           display: grid; place-items: center;
-          background: #f3f5f8;
+          background: var(--tile-2);
           box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.05);
         }
         .wf-pg-mark img { width: 18px; height: 18px; display: block; object-fit: contain; }
@@ -199,7 +203,7 @@ export function Workflows() {
            at once would out-weigh the names they sit beside. */
         .wf-pg-go {
           margin-left: auto;
-          width: 26px; height: 26px;
+          width: 28px; height: 28px;
           border-radius: 999px;
           flex: 0 0 auto;
           display: grid; place-items: center;

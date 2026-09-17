@@ -59,13 +59,47 @@ colour from imagery and real brand marks only, one typeface (Google Sans Flex,
 local woff2), no em-dashes in copy, `.container-page` 1240/32, section rhythm
 `py-24 md:py-32` with a plain hairline at every seam.
 
+**Tokens, after the coherence pass (17 Sep).** The page had drifted to five
+container radii, six light slates and five hairline blacks, roughly half of
+them hard-coded beside a token that already said the same thing. Everything
+now goes through a name:
+
+| Job | Token |
+|---|---|
+| page wash | `--page-bg` `#eef1f5` |
+| raised, the one elevation cue | `--panel` `#ffffff` |
+| recessed: framed panels, bento tiles, media grounds | `--tile` `#dce4ee` |
+| a light tile inside a recessed panel | `--tile-2` `#f3f5f8` |
+| segmented-control groove | `--track` `#cfd9e5` |
+| dark bands (Ad, Film, closing) | `--ground` `#0a0a0b` |
+| every hairline on a light ground | `--line`, and `--line-strong` where it must read |
+
+Radii use the ladder by name: `--radius-6` 24 for full-width bands and the
+hero frame, `--radius-5` 20 for panels and bento tiles, `--radius-4` 16 for
+cards and tabs, `--radius-3` 12 for media frames inside a card. Arrow discs
+are 28px everywhere, solid `--ink-heading` on a light ground and glass on
+media. Buttons are pills; tabs are `--radius-4` and unbordered.
+
+Do not put a `var(--…)` into `PageTint`'s palette table: those literals are
+the source of these tokens, and a self-reference there emits
+`--tile: var(--tile)`, which resolves to nothing and silently removes every
+panel background.
+
+**Backdrop.** `components/Backdrop.tsx` reuses the hero photograph at
+`blur(64px)` behind Workflows, Use Cases, Models and FAQ, so a thread of the
+hero's light runs down the page. It overhangs its host by 140px (a blurred
+layer samples transparent past its own edges and haloes the seams otherwise),
+sits at `z-index: -1` in a host that isolates and clips, and masks out top and
+bottom. The studio banners and the closing band are skipped: they are dark or
+already carry a photograph.
+
 **Tabs.** Every tab list on the page (hero, MCP clients, MCP route, the Use
 Cases wheel) uses `primitives/SlidingIndicator`: one fill that travels between
 tabs on `transform`/`width`/`height`, leaving each tab nothing to animate but
-its text colour. Tabs are **16px radius and unbordered**, against the buttons'
-999px pills, so the two shapes read as different things. The auto-advancing
-lists (hero 5s, wheel 3s) share `primitives/useAutoAdvance` and draw the dwell
-as a very faint fill sweeping the selected tab.
+its text colour. The auto-advancing lists (hero 5s, wheel 3s) share
+`primitives/useAutoAdvance`. Only the wheel draws the dwell, as a very faint
+fill sweeping the selected tab; the hero advances silently, because a
+countdown under the headline pulls the eye off the copy.
 
 **Headings** animate through `components/BlurHeading`, which wraps the
 `components/ui/blur-reveal` component (shadcn-style drop-in, `motion`). It adds
@@ -151,6 +185,7 @@ ffmpeg on this machine; see the B2B Guidelines §7 for the recipe):
 | `studios/fashion/banner.mp4` | 13MB | in use; re-encode |
 | `hero/hero.mp4` | 6MB | unused since the hero changed; delete |
 | `cta/hills.jpg` | 195KB | unused since the closing band changed; delete |
+| `hero/backdrop.jpg` | 122KB | in use, twice over: the hero ground and every `<Backdrop>` |
 
 Also unused and deletable: `models/*.png` icons other than the eight on the
 model cards, `pillars/chat.mp4`, the six `models/providers/*` backdrops not on

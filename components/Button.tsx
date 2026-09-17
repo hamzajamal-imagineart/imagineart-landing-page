@@ -27,8 +27,10 @@ interface CommonProps {
   arrow?: boolean;
 }
 
+// Pills, like the hero and closing-band buttons. The kit's 10px rectangle
+// left the page with two button shapes and no rule saying which was which.
 const base =
-  "inline-flex items-center justify-center gap-2 rounded-[10px] font-sans font-medium tracking-[-0.005em] " +
+  "inline-flex items-center justify-center gap-2 rounded-full font-sans font-medium tracking-[-0.005em] " +
   "transition-opacity duration-200 ease-out cursor-pointer border-0 active:translate-y-px";
 
 const sizes: Record<Size, string> = {
@@ -41,7 +43,7 @@ const variants: Record<Variant, string> = {
   ghost:
     "bg-transparent text-content-primary border border-border-secondary transition-colors hover:bg-primary-100/[0.04] hover:border-border-tertiary",
   white:
-    "bg-white text-content-primary border border-[rgba(0,0,0,0.42)] shadow-[0_1px_3px_rgba(0,0,0,0.06)] transition-colors hover:bg-white/90 hover:border-[rgba(0,0,0,0.6)]",
+    "bg-white text-content-primary border border-[color:var(--line-strong)] shadow-[0_1px_3px_rgba(0,0,0,0.06)] transition-colors hover:bg-white/90 hover:border-[color:var(--ink-3)]",
   muted: "bg-[#EDEDED] text-content-primary transition-colors hover:bg-[#E3E3E3]",
 };
 

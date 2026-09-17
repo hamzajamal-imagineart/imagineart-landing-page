@@ -39,9 +39,9 @@ export function FashionStudio() {
         .fb-band {
           position: relative;
           height: var(--studio-band-h);
-          border-radius: 24px;
+          border-radius: var(--radius-6);
           overflow: hidden;
-          background: #0a0a0b;
+          background: var(--ground);
           color: #fff;
           isolation: isolate;
         }
