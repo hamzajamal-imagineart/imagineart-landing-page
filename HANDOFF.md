@@ -23,7 +23,7 @@ components, not forked from it.
 
 | Section | Component | What it is |
 |---|---|---|
-| Hero | `sections/Hero` | One centred column: headline "Bringing / imagination to life" ("Bringing" at weight 400) up to 86px, then the copy, then Get Started + Book a demo, over a full-bleed photograph. At the foot, a rail of seven portrait cards filling the page edge to edge, bottoms aligned and heights arching to the middle, each with its name above. |
+| Hero | `sections/Hero` | **One viewport tall.** A centred column: headline "Bringing / imagination to life", flat and all at weight 500, then the copy, then Get Started + Book a demo, over a full-bleed photograph. At the foot, a rail of seven portrait cards, bottoms aligned and heights arching to the middle, each with its name above. |
 | Partners | `sections/Partners` | Six partner marks (ByteDance, Kling AI, MINIMAX, Wan, fal, Grok) with two captions. |
 | Creative Tools `#tools` | `sections/CreativeTools` | A 13-card bento from Figma: four 308px columns, 16px gutter, columns split 372/172 or 130/130/268. Picture cards carry a photograph under a scrim, the rest are flat tinted panels. Title always showing, description on hover. "View all tools" at the foot. |
 | Workflows `#workflows` | `sections/Workflows` | Bento, spans [2,1] / [1,1,1]: Node canvas (wide, clip), Brand Guidelines (clip), Creative Analyser (clip), Connectors as a `MarkCluster`, Plugins as a linked list of host apps. Tiles on `--tile`, no borders, 460px rows. |
@@ -126,6 +126,31 @@ photograph is reading too dark. The
 This is the page's one saturated surface. The rest of the design system is
 still monochrome, and the colour rule (§3) is unchanged: colour comes from
 imagery, and this is imagery.
+
+**The hero is one screen** (18 Sep), `min-height: 100svh` — `svh`, not `vh`,
+so a phone's collapsing address bar cannot make it taller than the screen. It
+is a flex column: the copy takes whatever the rail leaves and centres in it.
+
+Because the height is fixed, everything inside is sized against **both** axes.
+The headline is `clamp(32px, min(4.6vw, 7.4svh), 62px)`, so a short laptop
+gets a smaller headline rather than a hero that overflows, and every vertical
+gap is in `svh`. Measured: 1440x900 gives a 62px headline in exactly 900px,
+1440x650 gives 48px in exactly 650px, 375x812 gives 32px in exactly 812px.
+**If you add anything to this section, re-measure at 650px tall** — that is
+where it is tightest, and it fits with nothing to spare.
+
+**The hero headline does not take the page's gradient.** `.display` paints its
+text transparent and fills it with a gradient plus a halo; the hero overrides
+all three (`background: none`, `-webkit-text-fill-color`, `text-shadow: none`)
+to one flat ink at one weight. Setting only `color` would have done nothing,
+per the trap in §4.
+
+**The rail's size is the smaller of two answers.** `--fill` is the width that
+makes the row meet both edges of the page; `--fit` is a ceiling of `36svh`.
+`--peak` is `min()` of them, so on a tall screen the row is edge to edge and on
+a short one it comes down with the height and sits inset instead. At 1440x900
+the cap wins and the row is inset 58px a side; raise `--fit` if it should
+touch the edges more often, at the cost of height on short screens.
 
 **The hero's framed panel is gone** (18 Sep). It held a Creative · Workflows ·
 Computer tab bar over one clip each, and before that a five-card carousel in

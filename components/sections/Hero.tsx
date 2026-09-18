@@ -70,7 +70,6 @@ export function Hero() {
             as="h1"
             className="display hero-h1"
             lead="Bringing"
-            leadClassName="hero-h1-light"
             muted="imagination to life"
             mutedClassName=""
             lineBreak
@@ -104,12 +103,21 @@ export function Hero() {
       </div>
 
       <style>{`
-        /* Hosts a <SectionGlow> at z-index -1, and the photograph below it. */
+        /* Hosts a <SectionGlow> at z-index -1, and the photograph below it.
+
+           One viewport tall, in svh rather than vh so a phone's collapsing
+           address bar does not make it taller than the screen. The copy takes
+           the space the rail leaves and centres in it, so everything inside
+           is sized against the height as well as the width: see --hfit. */
         .hero-section {
           position: relative;
           isolation: isolate;
-          padding-top: clamp(168px, 20vh, 232px);
-          padding-bottom: clamp(40px, 6vh, 72px);
+          display: flex;
+          flex-direction: column;
+          min-height: 100vh;
+          min-height: 100svh;
+          padding-top: clamp(72px, 11svh, 140px);
+          padding-bottom: clamp(20px, 3svh, 40px);
         }
         ${sectionGlowCss}
         .hero-bg {
@@ -148,7 +156,15 @@ export function Hero() {
                than a cut. */
             linear-gradient(to bottom, transparent 46%, var(--page-bg) 97%);
         }
-        .hero-section .container-page { position: relative; z-index: 1; }
+        .hero-section .container-page {
+          position: relative;
+          z-index: 1;
+          flex: 1 1 auto;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          min-height: 0;
+        }
         .hero-top {
           display: flex;
           flex-direction: column;
@@ -156,17 +172,34 @@ export function Hero() {
           text-align: center;
           gap: 0;
         }
-        .hero-h1 { font-size: clamp(42px, 6vw, 86px); text-align: center; text-wrap: initial; line-height: 1.02; }
-        .hero-h1-light { font-weight: 400; }
+        /* Sized off whichever axis is tighter, so a short laptop screen gets
+           a smaller headline rather than a hero that will not fit. */
+        .hero-h1 {
+          font-size: clamp(32px, min(4.6vw, 7.4svh), 62px);
+          line-height: 1.04;
+          text-align: center;
+          text-wrap: initial;
+          font-weight: 500;
+        }
+        /* Flat, not the page's gradient heading: one ink, one weight. The
+           fill has to be set as well as the colour, since .display paints its
+           text transparent for the gradient, and the halo goes with it. */
+        .hero-h1, .hero-h1 span {
+          font-weight: 500;
+          color: var(--ink-heading);
+          background: none;
+          -webkit-text-fill-color: var(--ink-heading);
+          text-shadow: none;
+        }
         .hero-copy {
           font-size: clamp(16px, 1.25vw, 18px);
           line-height: 1.6;
           color: var(--ink);
           max-width: 58ch;
-          margin-top: 22px;
+          margin-top: clamp(12px, 2svh, 22px);
           margin-inline: auto;
         }
-        .hero-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 30px; }
+        .hero-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: clamp(16px, 3svh, 30px); }
         .hero-btn {
           display: inline-flex;
           align-items: center;
@@ -203,14 +236,24 @@ export function Hero() {
            The width comes from cqw, not vw: 100vw counts the vertical
            scrollbar, so on any platform that reserves space for one the row
            would be a few pixels wider than the page and give the whole
-           document a horizontal scrollbar. */
+           document a horizontal scrollbar.
+
+           --fit caps that by the viewport's height, because the hero is one
+           screen tall and the rail is the part that has to give. On a tall
+           screen the width solve wins and the row meets both edges; on a
+           short one the height cap wins, the cards come down with it and the
+           row sits inset instead. That trade is the point: a row that always
+           filled the width would push the copy off a laptop screen. */
         .hs {
           container-type: inline-size;
           --ksum: 5.2;
           --gap: clamp(6px, 0.7vw, 14px);
-          --peak: calc((100cqw - (var(--count) - 1) * var(--gap)) / (0.75 * var(--ksum)));
+          --fill: calc((100cqw - (var(--count) - 1) * var(--gap)) / (0.75 * var(--ksum)));
+          --fit: 36svh;
+          --peak: min(var(--fill), var(--fit));
           --count: 7;
-          margin-top: clamp(36px, 5vh, 56px);
+          flex: 0 0 auto;
+          margin-top: clamp(14px, 3svh, 44px);
           overflow-x: auto;
           overflow-y: hidden;
           overscroll-behavior-x: contain;
@@ -259,7 +302,7 @@ export function Hero() {
           .hero-copy { padding-top: 0; }
           /* Eight cards across a phone would be slivers, so the rail stops
              solving for the page width and goes back to scrolling. */
-          .hs { --peak: clamp(190px, 46vw, 300px); }
+          .hs { --fill: clamp(190px, 46vw, 300px); --fit: 30svh; }
           .hs-rail { justify-content: flex-start; padding-inline: 16px; }
           .hs-label { font-size: 12px; }
         }
