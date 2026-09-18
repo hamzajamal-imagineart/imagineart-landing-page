@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { withBasePath } from "@/lib/assets";
-import { DEMO_HREF, START_HREF } from "@/lib/links";
+import { START_HREF } from "@/lib/links";
 import { SlidingIndicator, slidingIndicatorCss, useSlidingIndicator } from "@/components/primitives/SlidingIndicator";
 import { BlurHeading } from "@/components/BlurHeading";
 import { SectionGlow, sectionGlowCss } from "@/components/primitives/SectionGlow";
@@ -173,8 +173,8 @@ export function Hero() {
           <BlurHeading
             as="h1"
             className="display hero-h1"
-            lead="Bringing"
-            muted="imagination to life"
+            lead="Imagine, design, animate,"
+            muted="edit. One platform."
             mutedClassName=""
             lineBreak
           />
@@ -184,8 +184,12 @@ export function Hero() {
             developers shipping alongside them.
           </p>
           <div className="hero-actions">
-            <a href={START_HREF} className="hero-btn hero-btn-dark">Get Started</a>
-            <a href={DEMO_HREF} target="_blank" rel="noopener noreferrer" className="hero-btn hero-btn-ghost">Book a demo</a>
+            <a href={START_HREF} className="hero-cta">
+              Start creating for free
+              <svg className="hero-cta-go" width="12" height="11" viewBox="0 0 12 11" fill="none" aria-hidden>
+                <path d="M11.17 5.5H1M7.75 10l3.585-3.97c.53-.53.54-.52 0-1.06L7.75 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+              </svg>
+            </a>
           </div>
         </div>
 
@@ -304,24 +308,40 @@ export function Hero() {
           margin-top: 20px;
         }
         .hero-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 28px; }
-        .hero-btn {
+        /* The CTA, built from the supplied SVG rather than approximated.
+           The shape is 48 tall on an 18 radius; the fill is that SVG's radial
+           gradient, whose rx and ry were 161.58 and 125.29 against a 255x48
+           button, so 63% and 261%; the two glows are its drop shadows, both
+           #8A3FFC at 15% (stdDeviation 6 and 12, which is 12px and 24px of
+           CSS blur); and the lip is its inner shadow, offset up 4 with no
+           blur, which lands as a 4px band inside the bottom edge. */
+        .hero-cta {
           display: inline-flex;
           align-items: center;
-          justify-content: center;
-          height: 46px;
-          padding: 0 22px;
-          border-radius: 999px;
+          gap: 10px;
+          height: 48px;
+          padding: 0 26px;
+          border-radius: 18px;
           font-size: 15px;
           font-weight: 500;
           letter-spacing: -0.005em;
           white-space: nowrap;
-          transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+          color: #fff;
+          background: radial-gradient(63% 261% at 50% 50%, #8A3FFC 30.29%, #8A3FFC 63.46%, #491D8B 100%);
+          box-shadow:
+            0 6px 12px rgba(138, 63, 252, 0.15),
+            0 12px 24px rgba(138, 63, 252, 0.15),
+            inset 0 -4px 0 #491D8B;
+          transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
-        .hero-btn:active { transform: translateY(1px); }
-        .hero-btn-dark { background: var(--ink); color: var(--page-bg); }
-        .hero-btn-dark:hover { background: var(--ink-2); }
-        .hero-btn-ghost { background: var(--panel); color: var(--ink); border: 1px solid var(--line-strong); }
-        .hero-btn-ghost:hover { border-color: var(--ink-3); }
+        .hero-cta:hover {
+          box-shadow:
+            0 8px 16px rgba(138, 63, 252, 0.26),
+            0 16px 32px rgba(138, 63, 252, 0.22),
+            inset 0 -4px 0 #491D8B;
+        }
+        .hero-cta:active { transform: translateY(1px); }
+        .hero-cta-go { flex: 0 0 auto; }
 
         .hero-frame {
           margin-top: clamp(20px, 3vh, 32px);
@@ -345,9 +365,14 @@ export function Hero() {
         /* Tabs are squarer than the pill buttons on purpose: the radius is
            what separates a tab from a button at a glance. No border either,
            the fill and its shadow carry it. */
+        /* --tile is only six values off the page in dark, so the selected
+           tab was all but invisible once the bar left the panel and stood on
+           --page-bg. --panel is the token for a raised surface, which is what
+           this is now. */
         .hero-tab-fill {
           border-radius: 999px;
-          background: var(--tile);
+          background: var(--panel);
+          box-shadow: 0 1px 2px rgba(0, 0, 0, 0.28);
         }
         .hero-tab {
           position: relative;

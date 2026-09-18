@@ -14,7 +14,7 @@ components, not forked from it.
 ## 1. Decisions
 
 1. **One overview page**, not a hub plus category pages.
-2. **Product framing.** Primary action is always "Get Started" → imagine.art; secondary is "Book a demo" → the cal.com booking page. No contact form.
+2. **Product framing.** Primary action is always → imagine.art; "Book a demo" → the cal.com booking page is secondary. No contact form. **The hero carries the primary action alone** (18 Sep), worded "Start creating for free"; the closing band and the footer still offer both.
 3. **The page ships dark** (17 Sep). The light palette still exists and still works; see §3.
 4. **Separate project** from the Guidelines kit, deployed on its own path (undecided, §7).
 5. **References used:** ElevenLabs enterprise hero (hero), Higgsfield's ChatGPT-skills page (the Use Cases wheel), Figma *H-Drafts* `483:442` (the tools bento), the ImagineArt product site (studio banners, Fashion and Ad copy), the Enterprise page (partners strip, integrations cluster, capabilities bento).
@@ -23,7 +23,7 @@ components, not forked from it.
 
 | Section | Component | What it is |
 |---|---|---|
-| Hero | `sections/Hero` | One centred column on the plain page: headline "Bringing / imagination to life" flat and all at weight 500, the copy, then Get Started + Book a demo. Below it a centred row of pill tabs, Creative · Workflows · Computer, standing on the page rather than inside the panel; then the panel itself. **Creative is one full-width clip over a chip row** (Image Generator · Upscaler · Variations · Relight · Camera Angles); Workflows and Computer are one 16:9 clip each, with native controls on hover or focus. Tabs are manual, no auto-advance. |
+| Hero | `sections/Hero` | One centred column on the plain page: headline "Imagine, design, animate, / edit. One platform." flat and all at weight 500, the copy, then one CTA, "Start creating for free". Below it a centred row of pill tabs, Creative · Workflows · Computer, standing on the page rather than inside the panel; then the panel itself. **Creative is one full-width clip over a chip row** (Image Generator · Upscaler · Variations · Relight · Camera Angles); Workflows and Computer are one 16:9 clip each, with native controls on hover or focus. Tabs are manual, no auto-advance. |
 | Partners | `sections/Partners` | Six partner marks (ByteDance, Kling AI, MINIMAX, Wan, fal, Grok) with two captions. |
 | Creative Tools `#tools` | `sections/CreativeTools` | A 13-card bento from Figma: four 308px columns, 16px gutter, columns split 372/172 or 130/130/268. Picture cards carry a photograph under a scrim, the rest are flat tinted panels. Title always showing, description on hover. "View all tools" at the foot. |
 | Workflows `#workflows` | `sections/Workflows` | Bento, spans [2,1] / [1,1,1]: Node canvas (wide, clip), Brand Guidelines (clip), Creative Analyser (clip), Connectors as a `MarkCluster`, Plugins as a linked list of host apps. Every tile carries a gradient ground. No borders, 460px rows. |
@@ -123,11 +123,22 @@ all three (`background: none`, `-webkit-text-fill-color`, `text-shadow: none`)
 to one flat ink at weight 500, both clauses the same. Setting only `color`
 would have done nothing, per the trap in §4.
 
+**The hero CTA is built from a supplied SVG**, not approximated: shape 48 tall
+on an 18 radius; the fill is that SVG's radial gradient, whose rx and ry were
+161.58 and 125.29 against a 255x48 button, hence 63% and 261%; the two glows
+are its drop shadows, both `#8A3FFC` at 15% with `stdDeviation` 6 and 12,
+which is 12px and 24px of CSS blur; and the lip is its inner shadow, offset up
+4 with no blur, which lands as a 4px band inside the bottom edge. It is the
+page's only saturated control, and its white label measures 5.0:1 on the
+gradient's mid purple.
+
 **The tab bar stands on the page, not in the panel.** It is centred, pills
 rather than squares, and each tab is only as wide as its label: three tabs
 stretched across the page would read as a segmented control. The fill is still
-`SlidingIndicator`, on `--tile` now that it sits on the page rather than the
-panel. The panel below it is media only.
+`SlidingIndicator`, on **`--panel`**: `--tile` is only six values off the page
+in dark, so the selected tab was all but invisible once the bar left the panel
+and stood on `--page-bg`. `--panel` is the token for a raised surface, which
+is what the bar is now. The panel below it is media only.
 
 **The hero panel is the tabbed one** (18 Sep). A Creative · Workflows ·
 Computer tab bar over one clip each; Creative is a full-width clip with a chip
