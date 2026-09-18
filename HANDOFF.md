@@ -128,19 +128,25 @@ mattered least.**
 1. **`SectionGlow` came out of the hero.** It sat above the mosaic and poured
    white light into the middle of the section, which is exactly where the
    headline is. It was working against the scrim.
-2. **The mosaic is blurred**, `blur(14px)`. It takes the hard edges out from
-   under the letterforms. It also needs `transform: scale(1.09)`: a blurred
-   layer samples transparent past its own edges, so without it the mosaic
-   haloes along every edge of the section (§4).
+2. **The mosaic blurs once the page moves**, `blur(14px)` past 24px of
+   scroll. Sharp at rest, so the work reads as work; soft the moment it is
+   only a ground. It takes the hard edges out from under the letterforms. It
+   needs `transform: scale(1.09)`, kept on at all times rather than arriving
+   with the blur: a blurred layer samples transparent past its own edges, so
+   without it the mosaic haloes along every edge of the section (§4), and
+   applying the scale with the blur would shift the ground as it arrives. The
+   toggle is a passive scroll listener seeded from the current position, never
+   `requestAnimationFrame` (§4); with no JS the mosaic simply stays sharp.
 3. **The scrim's pool is wide.** This is the one that carries it. Swept
    against the real mosaic at 1440: a pool of `64% x 48%` gave 11.2:1 behind
    the headline, `80% x 62%` gave 13.2:1 and halved the variation across the
    text box, while blurring from 9px to 24px moved the worst case by 0.3.
    **The pool has to be wider than the copy, not tighter.**
 
-Measured at 1440 per pixel across each text box, worst case: **13.2:1 behind
-the headline, 9.6:1 behind the copy, 17.1:1 behind the CTA.** Variation across
-the headline's box fell from 0.83 to 0.41.
+Measured at 1440 per pixel across each text box, worst case: blurred, **13.2:1
+behind the headline, 9.6:1 behind the copy, 17.1:1 behind the CTA**; sharp, at
+the top of the page, **12.5:1 and 9.1:1**. The pool is what holds it either
+way, which is why the hero survives losing the blur at rest.
 
 The first attempt at this measured 15:1 and still read badly, which is the
 lesson: **a contrast ratio against the mean is not legibility over a

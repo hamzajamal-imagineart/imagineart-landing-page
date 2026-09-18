@@ -146,6 +146,25 @@ function CreativeCarousel({ live }: { live: boolean }) {
 const MOSAIC = Array.from({ length: 18 }, (_, i) => `/media/hero/mosaic/m${i + 1}.jpg`);
 
 export function Hero() {
+  /**
+   * The mosaic is sharp at the top of the page and blurs once you move.
+   *
+   * At rest the work should be legible as work; the moment the page starts
+   * scrolling it is only a ground, and the blur takes the hard edges out from
+   * under the copy. Armed from a passive effect and seeded from the current
+   * scroll position, so a reload partway down starts blurred; never from
+   * requestAnimationFrame, which is suspended in a background tab (§4). With
+   * no JS at all the mosaic simply stays sharp, which is the state that needs
+   * no explanation.
+   */
+  const [moved, setMoved] = useState(false);
+  useEffect(() => {
+    const onScroll = () => setMoved(window.scrollY > 24);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
   const [line, setLine] = useState(0);
   /**
    * Native controls appear on the visible clip while the pointer is over the
@@ -182,7 +201,7 @@ export function Hero() {
           section its interest now. */}
       {/* The ground, and the scrim that makes the copy legible over it. */}
       <div className="hero-bg" aria-hidden>
-        <div className="hero-mosaic">
+        <div className={`hero-mosaic ${moved ? "hero-mosaic-soft" : ""}`}>
           {MOSAIC.map((src) => (
             // eslint-disable-next-line @next/next/no-img-element
             <img key={src} src={withBasePath(src)} alt="" />
@@ -313,19 +332,23 @@ export function Hero() {
           /* Taller than the section so the columns are always cut off rather
              than running out partway down and leaving a bald foot. */
           height: 130%;
-          /* The real reason the copy was hard to read. Contrast was already
-             15:1; what hurt was the detail — faces and hard edges directly
-             behind the letterforms. Blurring the ground leaves the colour and
-             the movement and takes away the competition.
-
-             The scale is not decoration: a blurred layer samples transparent
+          /* The scale is not decoration: a blurred layer samples transparent
              past its own edges, so without it the mosaic haloes along every
-             edge of the section. Scaling it out pushes that fade outside the
-             clip. */
-          filter: blur(14px);
+             edge of the section once .hero-mosaic-soft is on. It stays on at
+             all times rather than arriving with the blur, so nothing shifts
+             at the moment the blur does. */
           transform: scale(1.09);
           transform-origin: center top;
+          transition: filter 420ms ease;
         }
+        /* Set by <Hero> once the page has moved: sharp at rest so the work
+           reads as work, soft the moment it becomes only a ground. What the
+           blur buys for legibility is smaller than the scrim's pool below —
+           swept against the real mosaic, blurring from 9px to 24px moved the
+           worst case behind the headline by 0.3, where widening the pool
+           moved it by 2 — but it is what stops hard edges cutting through the
+           letterforms. */
+        .hero-mosaic-soft { filter: blur(14px); }
         .hero-mosaic img {
           display: block;
           width: 100%;
@@ -556,6 +579,8 @@ export function Hero() {
           .hero-tab { height: 38px; padding: 0 14px; font-size: 14px; }
         }
         @media (prefers-reduced-motion: reduce) {
+          .hero-mosaic { transition: none; }
+          .hero-mosaic { transition: none; }
           .hero-panel { transition: none; }
         }
       `}</style>
