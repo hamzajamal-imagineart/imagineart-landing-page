@@ -18,14 +18,6 @@ import { BlurHeading } from "@/components/BlurHeading";
  * over the frame. Creative and Workflows stream real footage; Computer is
  * still a placeholder.
  */
-const LINES = [
-  // Real campaign footage, streamed. withBasePath() passes an absolute URL
-  // through untouched, so it needs no local copy.
-  { id: "creative", label: "Creative", video: null },
-  { id: "workflows", label: "Workflows", video: "https://www.imagine.art/business/media/modes/quick-iterations.mp4" },
-  { id: "computer", label: "Computer", video: "/media/hero/computer.mp4" },
-];
-
 /**
  * The Creative tab's carousel.
  *
@@ -165,33 +157,6 @@ export function Hero() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const [line, setLine] = useState(0);
-  /**
-   * Native controls appear on the visible clip while the pointer is over the
-   * frame, or while anything inside it has focus. `controls` is an attribute,
-   * not a style, so it cannot be a CSS hover; and it goes on the active panel
-   * only, since the other two are stacked behind it in the same cell.
-   */
-  const [showControls, setShowControls] = useState(false);
-  const tabs = useSlidingIndicator<HTMLButtonElement>(line);
-  const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
-
-  useEffect(() => {
-    videoRefs.current.forEach((v, i) => {
-      if (!v) return;
-      if (i === line) void v.play().catch(() => {});
-      else v.pause();
-    });
-  }, [line]);
-
-  const onTabKey = (e: React.KeyboardEvent) => {
-    const d = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
-    if (!d) return;
-    e.preventDefault();
-    const next = (line + d + LINES.length) % LINES.length;
-    setLine(next);
-    document.getElementById(`hero-tab-${LINES[next].id}`)?.focus();
-  };
 
   return (
     <section id="top" className="hero-section">
@@ -235,78 +200,8 @@ export function Hero() {
           </div>
         </div>
 
-        {/* The tab bar stands on the page between the actions and the panel,
-            rather than sitting inside the panel's own chrome. */}
-        <div className="hero-tabbar">
-        <div
-          className="hero-tabs"
-          ref={tabs.containerRef as React.Ref<HTMLDivElement>}
-          role="tablist"
-          aria-label="Product lines"
-          onKeyDown={onTabKey}
-        >
-          {/* The hero tabs do not walk themselves: under the headline, a
-              panel changing on its own competes with the copy for the eye.
-              The Use Cases wheel, further down, does. */}
-          <SlidingIndicator box={tabs.box} ready={tabs.ready} className="hero-tab-fill" />
-          {LINES.map((l, i) => (
-            <button
-              key={l.id}
-              ref={(el) => { tabs.itemRefs.current[i] = el; }}
-              id={`hero-tab-${l.id}`}
-              role="tab"
-              type="button"
-              aria-selected={i === line}
-              aria-controls={`hero-panel-${l.id}`}
-              tabIndex={i === line ? 0 : -1}
-              className={`hero-tab ${i === line ? "hero-tab-on" : ""}`}
-              onClick={() => setLine(i)}
-            >
-              {l.label}
-            </button>
-          ))}
-        </div>
-        </div>
-
         <div className="hero-frame">
-          <div className="hero-body">
-            <div
-              className="hero-stack"
-              onMouseEnter={() => setShowControls(true)}
-              onMouseLeave={() => setShowControls(false)}
-              onFocusCapture={() => setShowControls(true)}
-              onBlurCapture={() => setShowControls(false)}
-            >
-            {LINES.map((l, i) => (
-              <div
-                key={l.id}
-                id={`hero-panel-${l.id}`}
-                role="tabpanel"
-                aria-labelledby={`hero-tab-${l.id}`}
-                aria-hidden={i !== line}
-                className={`hero-panel ${i === line ? "hero-panel-on" : ""}`}
-              >
-                {l.video === null ? (
-                  <CreativeCarousel live={i === line} />
-                ) : (
-                  /* eslint-disable-next-line jsx-a11y/media-has-caption */
-                  <video
-                    ref={(el) => { videoRefs.current[i] = el; }}
-                    src={withBasePath(l.video)}
-                    title={`${l.label} in ImagineArt`}
-                    muted
-                    loop
-                    playsInline
-                    preload="metadata"
-                    controls={showControls && i === line}
-                    controlsList="nodownload noremoteplayback"
-                    disablePictureInPicture
-                  />
-                )}
-              </div>
-            ))}
-            </div>
-          </div>
+          <CreativeCarousel live />
         </div>
       </div>
 
@@ -446,96 +341,25 @@ export function Hero() {
         .hero-cta:active { transform: translateY(1px); }
         .hero-cta-go { flex: 0 0 auto; }
 
+        /* The clip fills the frame: no padding, no inner chrome. The chips
+           float on top of it rather than sitting on a band below, which is
+           what was eating the bottom of the panel. */
         .hero-frame {
-          margin-top: clamp(8px, 1.4vh, 14px);
+          position: relative;
+          margin-top: clamp(20px, 3vh, 36px);
           border: 1px solid var(--line);
           border-radius: var(--radius-6);
           background: var(--tile);
           overflow: hidden;
-          padding: 6px;
-        }
-        /* A segmented control standing on the page: the groove is the token
-           for exactly this, --track, and it hugs its tabs rather than
-           stretching, so the row stays centred at any width. */
-        .hero-tabbar {
-          display: flex;
-          justify-content: center;
-          margin-top: clamp(30px, 5vh, 52px);
-        }
-        .hero-tabs {
-          display: inline-flex;
-          gap: 4px;
-          padding: 5px;
-          position: relative;
-          border-radius: 999px;
-          background: var(--track);
-          max-width: 100%;
-          overflow-x: auto;
-          scrollbar-width: none;
-        }
-        .hero-tabs::-webkit-scrollbar { display: none; }
-        /* Tabs are squarer than the pill buttons on purpose: the radius is
-           what separates a tab from a button at a glance. No border either,
-           the fill and its shadow carry it. */
-        /* --tile is only six values off the page in dark, so the selected
-           tab was all but invisible once the bar left the panel and stood on
-           --page-bg. --panel is the token for a raised surface, which is what
-           this is now. */
-        .hero-tab-fill {
-          border-radius: 999px;
-          background: var(--panel);
-          box-shadow: 0 1px 2px rgba(0, 0, 0, 0.28);
-        }
-        .hero-tab {
-          position: relative;
-          z-index: 1;
-          flex: 0 0 auto;
-          height: 42px;
-          padding: 0 18px;
-          border: 0;
-          border-radius: 999px;
-          background: transparent;
-          font-family: inherit;
-          font-size: 15.5px;
-          font-weight: 500;
-          letter-spacing: -0.01em;
-          color: var(--ink-3);
-          cursor: pointer;
-          transition: color 260ms ease;
-        }
-        .hero-tab:hover { color: var(--ink-heading); }
-        .hero-tab-on { color: var(--ink-heading); }
-        ${slidingIndicatorCss}
-
-        /* One 16:9 frame directly in the panel; the three clips stack in it and
-           only the active one shows. */
-        .hero-body { margin: 0; }
-        .hero-stack {
-          display: grid;
-          border-radius: var(--radius-4);
-          border: 1px solid var(--line);
-          overflow: hidden;
-          background: var(--tile);
           aspect-ratio: 16 / 9;
         }
-        .hero-panel {
-          grid-area: 1 / 1;
-          position: relative;
-          opacity: 0;
-          visibility: hidden;
-          transition: opacity 320ms ease, visibility 0s linear 320ms;
-        }
-        .hero-panel-on { opacity: 1; visibility: visible; transition: opacity 320ms ease, visibility 0s; }
-        .hero-panel video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+        ${slidingIndicatorCss}
 
-        /* The Creative tab: one full-width clip over a chip row. */
-        .hc {
-          position: absolute;
-          inset: 0;
-          display: grid;
-          grid-template-rows: 1fr auto;
-        }
-        .hc-stage { position: relative; overflow: hidden; background: var(--tile-2); }
+
+
+        /* One clip filling the panel, with the chips floating over it. */
+        .hc { position: absolute; inset: 0; }
+        .hc-stage { position: absolute; inset: 0; overflow: hidden; background: var(--tile-2); }
         .hc-stage video {
           position: absolute;
           inset: 0;
@@ -544,18 +368,42 @@ export function Hero() {
           object-fit: cover;
           display: block;
         }
+        /* Glass, sitting on the clip. A translucent white over a blur of
+           whatever the video is doing, so it belongs to the footage rather
+           than to a band beneath it; the hairline is what keeps its edge
+           legible over a light frame as well as a dark one. */
         .hc-chips {
-          position: relative;
+          position: absolute;
+          left: 50%;
+          bottom: clamp(12px, 2.2%, 22px);
+          transform: translateX(-50%);
+          max-width: calc(100% - 24px);
           display: flex;
           justify-content: center;
-          flex-wrap: wrap;
           gap: 4px;
-          padding: 10px 12px 14px;
+          padding: 5px;
+          border-radius: 999px;
+          background: rgba(255, 255, 255, 0.1);
+          border: 1px solid rgba(255, 255, 255, 0.16);
+          backdrop-filter: blur(22px) saturate(150%);
+          -webkit-backdrop-filter: blur(22px) saturate(150%);
+          box-shadow: 0 8px 28px rgba(0, 0, 0, 0.3);
+          overflow-x: auto;
+          scrollbar-width: none;
         }
-        .hc-chip-fill { border-radius: 999px; background: var(--panel); }
+        .hc-chips::-webkit-scrollbar { display: none; }
+        .hc-chip-fill {
+          border-radius: 999px;
+          background: rgba(255, 255, 255, 0.92);
+        }
+        /* Fixed white rather than a token: these sit on the clip, not on the
+           page, so they do not follow the theme. The selected one takes the
+           ground colour against the near-white fill, per the pairing rule in
+           §4. */
         .hc-chip {
           position: relative;
           z-index: 1;
+          flex: 0 0 auto;
           border: 0;
           border-radius: 999px;
           padding: 0 16px;
@@ -565,23 +413,22 @@ export function Hero() {
           font-size: 13.5px;
           font-weight: 500;
           letter-spacing: -0.005em;
-          color: var(--ink-3);
+          color: rgba(255, 255, 255, 0.72);
           cursor: pointer;
           white-space: nowrap;
           transition: color 260ms ease;
         }
-        .hc-chip:hover { color: var(--ink-heading); }
-        .hc-chip-on { color: var(--ink-heading); }
+        .hc-chip:hover { color: #fff; }
+        .hc-chip-on, .hc-chip-on:hover { color: #0b0b0c; }
 
         @media (max-width: 880px) {
           .hc-chip { height: 30px; padding: 0 12px; font-size: 12.5px; }
           .hero-mosaic { column-count: 3; }
-          .hero-tab { height: 38px; padding: 0 14px; font-size: 14px; }
+          .hc-chip { height: 30px; padding: 0 12px; font-size: 12.5px; }
         }
         @media (prefers-reduced-motion: reduce) {
           .hero-mosaic { transition: none; }
           .hero-mosaic { transition: none; }
-          .hero-panel { transition: none; }
         }
       `}</style>
     </section>

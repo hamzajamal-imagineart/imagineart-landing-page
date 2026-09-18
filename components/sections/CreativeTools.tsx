@@ -17,10 +17,18 @@ import { SectionGlow, sectionGlowCss } from "@/components/primitives/SectionGlow
  * point of the layout, so the columns are real flex columns with fixed card
  * heights rather than a uniform grid, exactly as the Figma frames are built.
  *
- * Cards come in two kinds. One carries a photograph full-bleed with a scrim
- * under the copy; the other is a flat tinted panel, and its tint is the only
- * thing separating it from its neighbours (#46211e, #171726 and #141417 are
- * sampled from the export; the second row's four are in the same family).
+ * Cards come in three kinds now. One carries a photograph full-bleed with a
+ * scrim under the copy; one carries that tool's own clip under the same
+ * scrim; the last is a flat tinted panel, and its tint is the only thing
+ * separating it from its neighbours (#46211e, #171726 and #141417 are sampled
+ * from the export; the second row's four are in the same family). Every card
+ * with a clip keeps its tint underneath, since the clips have no posters and
+ * the card would otherwise be black until the first frame arrives.
+ *
+ * **Two cards are still flat on purpose.** Dub Video and Remove Background
+ * have no clip of their own anywhere in `public/media`, and giving them a
+ * neighbour's footage would repeat the mismatch already flagged in the
+ * handoff, where three card bodies describe the wrong tool.
  *
  * The second row is flat across all four columns, and deliberately so: it
  * reads as a quieter shelf under the picture row rather than a repeat of it,
@@ -37,7 +45,9 @@ type Card = {
   icon: React.ReactNode;
   /** Photograph, full-bleed. */
   image?: string;
-  /** Flat tint, for the cards without a photograph. */
+  /** That tool's own clip, full-bleed, for cards with no photograph. */
+  video?: string;
+  /** Flat tint, for the cards with neither. */
   tint?: string;
   size: "tall" | "short" | "mini" | "fill";
   badge?: string;
@@ -47,23 +57,23 @@ const COLUMNS: Card[][] = [
   [
     { title: "Lipsync", body: "Create high-end visuals from prompts or images.", icon: <IconPerson />, image: "/media/tools/lipsync.jpg", size: "tall" },
     { title: "AI Voiceover", body: "Studio-quality voiceovers in every major language.", icon: <IconAudio />, image: "/media/tools/ai-voiceover.jpg", size: "short" },
-    { title: "Inpaint", body: "Change one part of an image and keep the rest exactly as it was.", icon: <IconImage />, tint: "#1b2430", size: "short" },
+    { title: "Inpaint", body: "Change one part of an image and keep the rest exactly as it was.", icon: <IconImage />, video: "/media/capabilities/inpaint.mp4", tint: "#1b2430", size: "short" },
   ],
   [
     { title: "Relight Video", body: "Make cinematic videos that feel professionally directed.", icon: <IconVideo />, image: "/media/tools/relight-video.jpg", size: "tall", badge: "New" },
-    { title: "Outpaint", body: "Connect AI tools into a single, reusable creative pipeline.", icon: <IconPalette />, tint: "#141417", size: "short" },
-    { title: "Image Upscaler", body: "Sharper and larger, ready for print at full resolution.", icon: <IconBox />, tint: "#241b2b", size: "short" },
+    { title: "Outpaint", body: "Connect AI tools into a single, reusable creative pipeline.", icon: <IconPalette />, video: "/media/capabilities/video-reframe.mp4", tint: "#141417", size: "short" },
+    { title: "Image Upscaler", body: "Sharper and larger, ready for print at full resolution.", icon: <IconBox />, video: "/media/capabilities/upscale.mp4", tint: "#241b2b", size: "short" },
   ],
   [
     { title: "Motion Sync", body: "70+ ready-made AI effects. Transform any visual in seconds.", icon: <IconPlay />, image: "/media/tools/motion-sync.jpg", size: "tall" },
     { title: "VFX", body: "Create a track for any video, in any style.", icon: <IconClapper />, image: "/media/tools/vfx.jpg", size: "short" },
-    { title: "Video Extend", body: "Add seconds to the end of a shot without cutting away.", icon: <IconVideo />, tint: "#1f2a22", size: "short" },
+    { title: "Video Extend", body: "Add seconds to the end of a shot without cutting away.", icon: <IconVideo />, video: "/media/capabilities/video-extend.mp4", tint: "#1f2a22", size: "short" },
   ],
   [
     { title: "Dub Video", body: "Change spoken language with lipsync.", icon: <IconAudio />, tint: "#46211e", size: "mini" },
     { title: "Remove Background", body: "Generate without leaving your timeline.", icon: <IconImage />, tint: "#171726", size: "mini" },
     { title: "Create Characters", body: "Create high-end AI video production with precise control.", icon: <IconCamera />, image: "/media/tools/create-characters.jpg", size: "fill" },
-    { title: "Outfit Try-on", body: "Dress a model in your garment from a single product photo.", icon: <IconHanger />, tint: "#2b201a", size: "short" },
+    { title: "Outfit Try-on", body: "Dress a model in your garment from a single product photo.", icon: <IconHanger />, video: "/media/capabilities/outfit-tryon.mp4", tint: "#2b201a", size: "short" },
   ],
 ];
 
@@ -89,16 +99,33 @@ export function CreativeTools() {
               {col.map((card) => (
                 <a
                   key={card.title}
-                  className={`bt-card bt-${card.size} ${card.image ? "bt-has-image" : ""}`}
+                  className={`bt-card bt-${card.size} ${card.image || card.video ? "bt-has-image" : ""}`}
                   href={appsHref()}
                   target="_blank"
                   rel="noopener noreferrer"
                   style={card.tint ? { background: card.tint } : undefined}
                 >
-                  {card.image && (
+                  {(card.image || card.video) && (
                     <>
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img className="bt-img" src={withBasePath(card.image)} alt="" aria-hidden />
+                      {card.image ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img className="bt-img" src={withBasePath(card.image)} alt="" aria-hidden />
+                      ) : card.video ? (
+                        /* The tint stays underneath as the poster: these clips
+                           have none, so a card would be a black rectangle
+                           until its first frame arrives. eslint-disable-next-line jsx-a11y/media-has-caption */
+                        <video
+                          className="bt-img"
+                          src={withBasePath(card.video)}
+                          autoPlay
+                          muted
+                          loop
+                          playsInline
+                          preload="none"
+                          aria-hidden
+                          disablePictureInPicture
+                        />
+                      ) : null}
                       <span className="bt-scrim" aria-hidden />
                     </>
                   )}

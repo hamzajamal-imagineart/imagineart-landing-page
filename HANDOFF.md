@@ -23,9 +23,9 @@ components, not forked from it.
 
 | Section | Component | What it is |
 |---|---|---|
-| Hero | `sections/Hero` | One centred column over a mosaic of work: headline "Imagine, design, animate, / edit. One platform." flat and all at weight 500, the copy, then one CTA, "Start creating for free". Below it a centred row of pill tabs, Creative · Workflows · Computer, standing on the page rather than inside the panel; then the panel itself. **Creative is one full-width clip over a chip row** (Image Generator · Upscaler · Variations · Relight · Camera Angles); Workflows and Computer are one 16:9 clip each, with native controls on hover or focus. Tabs are manual, no auto-advance. |
+| Hero | `sections/Hero` | One centred column over a mosaic of work: headline "Imagine, design, animate, / edit. One platform." flat and all at weight 500, the copy, then one CTA, "Start creating for free". Below it a 16:9 panel holding one clip edge to edge, with its chip row (Image Generator · Upscaler · Variations · Relight · Camera Angles) floating over the footage in glass. |
 | Partners | `sections/Partners` | Six partner marks (ByteDance, Kling AI, MINIMAX, Wan, fal, Grok) with two captions. |
-| Creative Tools `#tools` | `sections/CreativeTools` | A 13-card bento from Figma: four 308px columns, 16px gutter, columns split 372/172 or 130/130/268. Picture cards carry a photograph under a scrim, the rest are flat tinted panels. Title always showing, description on hover. "View all tools" at the foot. |
+| Creative Tools `#tools` | `sections/CreativeTools` | A 13-card bento from Figma: four 308px columns, 16px gutter, columns split 372/172 or 130/130/268. Six cards carry a photograph under a scrim, five carry that tool's own clip under the same scrim, two stay flat tinted panels. Title always showing, description on hover. "View all tools" at the foot. |
 | Workflows `#workflows` | `sections/Workflows` | Bento, spans [2,1] / [1,1,1]: Node canvas (wide, clip), Brand Guidelines (clip), Creative Analyser (clip), Connectors as a `MarkCluster`, Plugins as a linked list of host apps. Every tile carries a gradient ground. No borders, 460px rows. |
 | Studios `#studios` | `sections/AdStudio` | Heading "Studios" + lede, then the **Ad Studio banner**: five vertical marquee columns of 9:16 ad clips (30 clips, CDN, posters, `preload="none"`) and a frosted left panel. |
 | Fashion Studio `#fashion-studio` | `sections/FashionStudio` | Banner: campaign clip full-bleed, rising scrim, white wordmark, glass "Try Now". |
@@ -158,6 +158,31 @@ text transparent and fills it with a gradient plus a halo; the hero overrides
 all three (`background: none`, `-webkit-text-fill-color`, `text-shadow: none`)
 to one flat ink at weight 500, both clauses the same. Setting only `color`
 would have done nothing, per the trap in §4.
+
+**The hero has no tab bar** (18 Sep). Creative · Workflows · Computer is gone,
+and with it the two clips only those tabs reached, so `hero/computer.mp4` is
+unused. The panel is one 16:9 clip filling it edge to edge, no padding and no
+inner chrome.
+
+**The chip row floats on the clip, in glass.** It used to sit on a band under
+the video, which was eating the bottom of the panel. It is now absolutely
+placed over the footage on `rgba(255,255,255,0.1)` with a
+`backdrop-filter: blur(22px)` and a hairline, so it belongs to the clip rather
+than to a strip beneath it. Its colours are fixed white and `#0b0b0c`, not
+tokens: these sit on the footage, not on the page, so they do not follow the
+theme — and the selected chip takes the ground colour against the near-white
+fill, per the pairing rule in §4.
+
+**Five Tools cards carry their tool's own clip** (18 Sep): Inpaint, Image
+Upscaler, Video Extend and Outfit Try-on have exact footage in
+`capabilities/`; Outpaint borrows `video-reframe.mp4`, which is the same
+operation seen from the other side. Each keeps its tint underneath as a
+stand-in poster, since none of these clips has one and the card would
+otherwise be black until the first frame lands, and each takes the same scrim
+the photographs do. **Dub Video and Remove Background are still flat on
+purpose**: no clip for either exists anywhere in `public/media`, and lending
+them a neighbour's footage would repeat the mismatch already flagged in §6,
+where three card bodies describe the wrong tool.
 
 **The hero CTA is built from a supplied SVG**, not approximated: shape 48 tall
 on an 18 radius; the fill is that SVG's radial gradient, whose rx and ry were
@@ -330,7 +355,7 @@ ffmpeg on this machine; see the B2B Guidelines §7 for the recipe):
 | `hero/mosaic/*.jpg` | 568KB | the hero's ground, eighteen tiles; in use |
 | `hero/showcase/*.jpg` | 2.6MB | the originals behind seven of the mosaic tiles; keep |
 | `hero/creative-suite-image.webm` | 1.4MB | the Creative clip; in use |
-| `hero/computer.mp4` | 1.9MB | the Computer tab's clip; in use |
+| `hero/computer.mp4` | 1.9MB | unused since the hero tab bar went; delete |
 | `cta/hills.jpg` | 195KB | unused since the closing band changed; delete |
 
 `hero/hero.mp4` (6MB) and `hero/backdrop.jpg` were deleted on 18 Sep.
