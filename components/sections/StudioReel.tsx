@@ -25,23 +25,39 @@ import { SectionGuides } from "@/components/primitives/SectionGuides";
  * section would have carried for one card of three. `withBasePath()` passes an
  * absolute URL through untouched, so it needs no local copy.
  */
+/** The same CDN the Ad Studio banner streams its marquee from. */
+const AD_CDN = "https://cdn-imagine.vyro.ai/imagine-one/marketingstudio/home";
+
 const REELS = [
-  { id: "ad", label: "Ad Studio", href: STUDIO_HREFS.ad, video: "/media/studios/ad-studio.mp4", logo: "/media/studios/logos/ad-studio-white.svg" },
-  { id: "fashion", label: "Fashion Studio", href: STUDIO_HREFS.fashion, video: "/media/studios/fashion-studio.mp4", logo: "/media/studios/logos/fashion-studio-white.svg" },
-  { id: "film", label: "Film Studio", href: STUDIO_HREFS.film, video: "https://imagine.animagic.art/imagine-one/film-studio/video/27.mp4", logo: "/media/studios/film/logo.webp" },
+  {
+    id: "ad",
+    label: "Ad Studio",
+    href: STUDIO_HREFS.ad,
+    logo: "/media/studios/logos/ad-studio-white.svg",
+    /* Three at once, because an ad is a vertical and three of them fill a
+       16:9 card where one would sit in a letterbox. They are posterless
+       elsewhere on the page but not here: the CDN carries a .webp per clip,
+       so the card is never three black rectangles while it loads. */
+    videos: [`${AD_CDN}/UGC_1.mp4`, `${AD_CDN}/Unboxing_4.mp4`, `${AD_CDN}/Tutorial_And_Review_2.mp4`],
+    posters: [`${AD_CDN}/UGC_1.webp`, `${AD_CDN}/Unboxing_4.webp`, `${AD_CDN}/Tutorial_And_Review_2.webp`],
+  },
+  { id: "fashion", label: "Fashion Studio", href: STUDIO_HREFS.fashion, logo: "/media/studios/logos/fashion-studio-white.svg", videos: ["/media/studios/fashion-studio.mp4"] },
+  { id: "film", label: "Film Studio", href: STUDIO_HREFS.film, logo: "/media/studios/film/logo.webp", videos: ["https://imagine.animagic.art/imagine-one/film-studio/video/27.mp4"] },
 ];
 
 export function StudioReel() {
   const [active, setActive] = useState(0);
-  const clips = useRef<(HTMLVideoElement | null)[]>([]);
+  const clips = useRef<(HTMLVideoElement | null)[][]>([]);
 
   // Only the selected clip plays. Three at once is three decoders running for
   // two pictures nobody is looking straight at.
   useEffect(() => {
-    clips.current.forEach((v, i) => {
-      if (!v) return;
-      if (i === active) void v.play().catch(() => {});
-      else v.pause();
+    clips.current.forEach((card, i) => {
+      card?.forEach((v) => {
+        if (!v) return;
+        if (i === active) void v.play().catch(() => {});
+        else v.pause();
+      });
     });
   }, [active]);
 
@@ -74,16 +90,25 @@ export function StudioReel() {
               aria-hidden={d !== 0}
               tabIndex={d === 0 ? 0 : -1}
             >
-              {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-              <video
-                ref={(el) => { clips.current[i] = el; }}
-                src={withBasePath(r.video)}
-                muted
-                loop
-                playsInline
-                preload="metadata"
-                disablePictureInPicture
-              />
+              <span className={`sr-media ${r.videos.length > 1 ? "sr-media-split" : ""}`}>
+                {r.videos.map((v, j) => (
+                  /* eslint-disable-next-line jsx-a11y/media-has-caption */
+                  <video
+                    key={v}
+                    ref={(el) => {
+                      clips.current[i] = clips.current[i] ?? [];
+                      clips.current[i][j] = el;
+                    }}
+                    src={withBasePath(v)}
+                    poster={r.posters?.[j]}
+                    muted
+                    loop
+                    playsInline
+                    preload="metadata"
+                    disablePictureInPicture
+                  />
+                ))}
+              </span>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img className="sr-mark" src={withBasePath(r.logo)} alt={r.label} />
             </a>
@@ -160,7 +185,8 @@ export function StudioReel() {
           opacity: 1;
           z-index: 2;
         }
-        .sr-card video {
+        .sr-media { position: absolute; inset: 0; display: block; }
+        .sr-media video {
           position: absolute;
           inset: 0;
           width: 100%;
@@ -168,6 +194,16 @@ export function StudioReel() {
           object-fit: cover;
           display: block;
         }
+        /* Three verticals side by side, filling the card between them. They
+           keep a hairline between them rather than a gap, so the card still
+           reads as one picture. */
+        .sr-media-split {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 1px;
+          background: rgba(255, 255, 255, 0.1);
+        }
+        .sr-media-split video { position: relative; inset: auto; }
         /* The mark alone, no pill and no label beside it: the studios are
            recognised by their wordmarks. A drop shadow rather than a plate,
            so nothing sits between the mark and the footage; these are white
@@ -176,7 +212,7 @@ export function StudioReel() {
           position: absolute;
           top: clamp(14px, 2.4%, 26px);
           left: clamp(14px, 2.4%, 26px);
-          height: clamp(22px, 2.6%, 34px);
+          height: clamp(28px, 3.6%, 48px);
           width: auto;
           display: block;
           filter: drop-shadow(0 2px 10px rgba(0, 0, 0, 0.55));
@@ -223,7 +259,7 @@ export function StudioReel() {
 
         @media (max-width: 880px) {
           .sr-card { width: 84vw; }
-          .sr-mark { height: 20px; }
+          .sr-mark { height: 24px; }
         }
         @media (prefers-reduced-motion: reduce) {
           .sr-card { transition: none; }
