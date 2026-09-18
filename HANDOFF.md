@@ -23,7 +23,7 @@ components, not forked from it.
 
 | Section | Component | What it is |
 |---|---|---|
-| Hero | `sections/Hero` | Headline "Bringing / imagination to life" ("Bringing" at weight 400) left, one-line copy right, Get Started + Book a demo, over a full-bleed photograph. Framed panel with a Creative · Workflows · Computer tab bar. **Creative holds a five-card carousel** (Image Generator · Upscaler · Variations · Relight · Camera Angles) driven by the chip row under it; Workflows and Computer are one 16:9 clip each, with native controls on hover or focus. Tabs are manual, no auto-advance. |
+| Hero | `sections/Hero` | Headline "Bringing / imagination to life" ("Bringing" at weight 400) left, one-line copy right, Get Started + Book a demo, over a full-bleed photograph. Framed panel with a Creative · Workflows · Computer tab bar. **Creative is one full-width clip over a chip row** (Image Generator · Upscaler · Variations · Relight · Camera Angles); Workflows and Computer are one 16:9 clip each, with native controls on hover or focus. Tabs are manual, no auto-advance. |
 | Partners | `sections/Partners` | Six partner marks (ByteDance, Kling AI, MINIMAX, Wan, fal, Grok) with two captions. |
 | Creative Tools `#tools` | `sections/CreativeTools` | A 13-card bento from Figma: four 308px columns, 16px gutter, columns split 372/172 or 130/130/268. Picture cards carry a photograph under a scrim, the rest are flat tinted panels. Title always showing, description on hover. "View all tools" at the foot. |
 | Workflows `#workflows` | `sections/Workflows` | Bento, spans [2,1] / [1,1,1]: Node canvas (wide, clip), Brand Guidelines (clip), Creative Analyser (clip), Connectors as a `MarkCluster`, Plugins as a linked list of host apps. Tiles on `--tile`, no borders, 460px rows. |
@@ -121,23 +121,20 @@ This is the page's one saturated surface. The rest of the design system is
 still monochrome, and the colour rule (§3) is unchanged: colour comes from
 imagery, and this is imagery.
 
-**The Creative tab is a carousel, and it is a ring.** Five 16:9 cards, the
-selected one at full size in the centre and its two neighbours held back and
-peeking in from the edges; a chip row below is the control, with arrows on the
-stage. Stepping left from the first card lands on the fifth, and the fifth is
-already sitting to the first one's left before you press anything.
+**The Creative tab is one full-width clip over a chip row.** The chips select
+a tool and the clip is meant to be that tool's own footage, but every entry in
+`CREATIVE` currently points at the same file, `hero/creative-suite-image.webm`,
+while the shape of the section is being tried out: picking a chip changes the
+selection and nothing else. Give each entry its own `video` and it starts
+working with no other change.
 
-It is a ring because each card is placed from the centre of the stage by its
-own circular offset `--d` (`-2 -1 0 1 2`), not because a strip is scrolled. So
-`--cw` and `--gap` must stay lengths, never percentages: they place every
-card. The pair at `|--d| = 2` is the staging area, held at zero opacity, and
-that is where the card crossing from one end of the ring to the other makes
-its jump. It keeps the same transition as every other card on purpose: it is
-invisible at both ends, so its run across the stage is never seen, while a
-card merely leaving the edge fades out as it travels instead of snapping.
-
-All five clips play, since none of them has a poster and a paused card would
-be a black rectangle.
+It went through two shapes first, both removed, and the reason is worth
+keeping: five cards showing one file meant five `<video>` elements on one URL,
+firing five range requests in the same millisecond. None of them can hit the
+cache the others are still filling, so it cost 7MB for a 1.4MB file, on a CDN
+as much as on the dev server. **Never point more than one video element at one
+URL.** If a multi-card layout comes back and the cards still share a file,
+fetch it once and hand every element the same object URL.
 
 **Headings do not animate** (17 Sep). BlurHeading used to wrap
 `components/ui/blur-reveal` and reveal per character on scroll; it was pulled
@@ -240,12 +237,10 @@ Note `/apps/outfit-tryon`, which Fashion Studio used to point at, returns 500.
 - **FAQ** reuses the B2B repo's "we never train on your content" and "full
   commercial rights" lines; "free to start" assumes a free tier.
 - **Hero clips:** Workflows streams real footage; Computer is still a
-  placeholder. Of the five Creative carousel cards only **Upscaler** and
-  **Variations** show their own tool: Image Generator borrows
-  `pillars/creative.mp4`, Relight `use-cases/photography.mp4` and Camera
-  Angles `capabilities/reframe-presets.mp4`, because no clip exists for those
-  three. **Swap them before shipping.** The carousel also has no links yet;
-  the cards are not clickable.
+  placeholder. All five Creative chips play one file,
+  `hero/creative-suite-image.webm` (1.4MB), so the clip does not change when
+  you pick a chip. **Give each entry its own footage before shipping.** WebM
+  is the only one on the page; every other clip is MP4.
 - **Remote runtime dependencies:** MCP connect recordings and the 30 Ad Studio
   clips stream from `cdn-imagine.vyro.ai`; the hero's Creative clip from
   `imagine.animagic.art` and its Workflows clip from `www.imagine.art`.
@@ -261,6 +256,7 @@ ffmpeg on this machine; see the B2B Guidelines §7 for the recipe):
 | `studios/film-studio.mp4` | 16MB | unused; delete |
 | `studios/fashion/banner.mp4` | 13MB | in use; re-encode |
 | `hero/backdrop-veil.jpg` | 410KB | the hero photograph; in use |
+| `hero/creative-suite-image.webm` | 1.4MB | the Creative clip; in use, all five chips |
 | `cta/hills.jpg` | 195KB | unused since the closing band changed; delete |
 
 `hero/hero.mp4` (6MB) and `hero/backdrop.jpg` were deleted on 18 Sep.
@@ -274,9 +270,8 @@ replacing one changes every card that shows it.
 
 1. **Fix the three mismatched bento descriptions** (§6) and give the cards per-tool links.
 2. Confirm the remaining inferred URL (§5) and the flagged model names (§6).
-3. Replace the Computer hero clip, the three stand-in Creative carousel clips,
-   and the remaining invented copy (§6). Decide whether the carousel cards
-   should link to their tools.
+3. Replace the Computer hero clip, give each Creative chip its own footage,
+   and replace the remaining invented copy (§6).
 4. Re-encode the Fashion clip and delete the unused media (§7).
 5. ~~Headings invisible without JS~~ and ~~`text-wrap: balance` not applying~~:
    both resolved by removing the heading animation (§3).

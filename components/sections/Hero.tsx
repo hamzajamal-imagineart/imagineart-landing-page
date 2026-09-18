@@ -34,55 +34,49 @@ const LINES = [
  * held back at reduced scale. The chips below are the control: they are the
  * same five names, so there is no caption under the card repeating them.
  *
- * Only `upscale` and `variate` are that tool's own footage. The other three
- * are stand-ins from the clips already on disk, since no Image Generator,
- * Relight or Camera Angles clip exists yet. Swap them before shipping.
+ * **Every entry is currently the same clip**, while the shape of the section
+ * is being tried out, so picking a chip does not change what is playing. Give
+ * each entry its own `video` when the real footage exists and that starts
+ * working on its own.
  */
+const PLACEHOLDER = "/media/hero/creative-suite-image.webm";
+
 const CREATIVE = [
-  { id: "image", label: "Image Generator", video: "/media/pillars/creative.mp4" },
-  { id: "upscale", label: "Upscaler", video: "/media/capabilities/upscale.mp4" },
-  { id: "variations", label: "Variations", video: "/media/capabilities/variate.mp4" },
-  { id: "relight", label: "Relight", video: "/media/use-cases/photography.mp4" },
-  { id: "angles", label: "Camera Angles", video: "/media/capabilities/reframe-presets.mp4" },
+  { id: "image", label: "Image Generator", video: PLACEHOLDER },
+  { id: "upscale", label: "Upscaler", video: PLACEHOLDER },
+  { id: "variations", label: "Variations", video: PLACEHOLDER },
+  { id: "relight", label: "Relight", video: PLACEHOLDER },
+  { id: "angles", label: "Camera Angles", video: PLACEHOLDER },
 ];
 
-/**
- * How far either side of the selected card the ring reaches. With five cards
- * that is two, and the pair at exactly two is the staging area: they are the
- * cards that have to cross from one end to the other, so they are held at
- * zero opacity and make that jump unseen.
- */
-const HALF = Math.floor(CREATIVE.length / 2);
 
 /**
- * A row of five clips with the selected one brought forward.
+ * The Creative tab: one clip, full width, and a chip row under it.
  *
- * The track is centred on the selected card by translating it by that card's
- * own offset, so the arithmetic is one line of CSS rather than a measurement:
- * every card is the same width, and the active one only *scales*, which
- * changes what you see without moving what is underneath it.
+ * The chips select a tool and the clip is the selected tool's own footage.
+ * While the section is being tried out every chip points at the same file, so
+ * the clip does not change when you pick one; give each entry in CREATIVE its
+ * own `video` and this starts working with no other change.
  *
- * All five play. They are small local clips, together under 2MB, and a
- * paused card shows a black rectangle unless it has a poster, which none of
- * these have.
+ * Single-source, so there is nothing here to load twice: the earlier version
+ * showed five cards at once, which meant five <video> elements on one URL
+ * firing five range requests in the same millisecond, none of them able to
+ * hit the cache the others were still filling.
  */
 function CreativeCarousel({ live }: { live: boolean }) {
   const [card, setCard] = useState(0);
   const chips = useSlidingIndicator<HTMLButtonElement>(card);
-  const clips = useRef<(HTMLVideoElement | null)[]>([]);
+  const clip = useRef<HTMLVideoElement | null>(null);
 
-  // The autoplay attribute alone is not enough: it only fires when the
-  // element first enters the document, so a clip that was paused because the
-  // tab moved away never restarts. Drive them from the tab's state instead,
-  // the way the three panel clips already are.
+  // The autoplay attribute only fires when the element first enters the
+  // document, so a clip paused because the tab moved away never restarts.
+  // Drive it from the tab's state instead, as the other two panels are.
   useEffect(() => {
-    clips.current.forEach((v) => {
-      if (!v) return;
-      if (live) void v.play().catch(() => {});
-      else v.pause();
-    });
+    const v = clip.current;
+    if (!v) return;
+    if (live) void v.play().catch(() => {});
+    else v.pause();
   }, [live]);
-  const step = (d: number) => setCard((c) => (c + d + CREATIVE.length) % CREATIVE.length);
 
   const onChipKey = (e: React.KeyboardEvent) => {
     const d = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
@@ -95,45 +89,18 @@ function CreativeCarousel({ live }: { live: boolean }) {
 
   return (
     <div className="hc">
-      <div className="hc-stage">
-        <div className="hc-track">
-          {CREATIVE.map((c, i) => {
-            // Where this card sits relative to the selected one, the short way
-            // round: -2 -1 0 1 2 for five cards. This is what makes the row a
-            // ring rather than a strip: the card before the first is the last
-            // one, so a step left from the first slides the fifth in from the
-            // left instead of running the whole row back.
-            const d = ((i - card + HALF + CREATIVE.length) % CREATIVE.length) - HALF;
-            return (
-            <figure
-              key={c.id}
-              id={`hero-card-${c.id}`}
-              className={`hc-card ${d === 0 ? "hc-card-on" : ""} ${Math.abs(d) === HALF ? "hc-card-off" : ""}`}
-              style={{ ["--d" as string]: d }}
-              aria-hidden={i !== card}
-            >
-              {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-              <video
-                ref={(el) => { clips.current[i] = el; }}
-                src={withBasePath(c.video)}
-                title={`${c.label} in ImagineArt`}
-                muted
-                loop
-                playsInline
-                preload="auto"
-                disablePictureInPicture
-              />
-            </figure>
-            );
-          })}
-        </div>
-
-        <button type="button" className="hc-arrow hc-arrow-l" onClick={() => step(-1)} aria-label="Previous tool">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden><path d="M15 5l-7 7 7 7" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-        </button>
-        <button type="button" className="hc-arrow hc-arrow-r" onClick={() => step(1)} aria-label="Next tool">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden><path d="M9 5l7 7-7 7" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-        </button>
+      <div className="hc-stage" id={`hero-card-${CREATIVE[card].id}`}>
+        {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+        <video
+          ref={clip}
+          src={withBasePath(CREATIVE[card].video)}
+          title={`${CREATIVE[card].label} in ImagineArt`}
+          muted
+          loop
+          playsInline
+          preload="auto"
+          disablePictureInPicture
+        />
       </div>
 
       <div
@@ -432,78 +399,22 @@ export function Hero() {
         .hero-panel-on { opacity: 1; visibility: visible; transition: opacity 320ms ease, visibility 0s; }
         .hero-panel video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
 
-        /* The Creative carousel, laid out as a ring.
-           Every card is placed from the centre of the stage by its own
-           circular offset --d, rather than a strip being scrolled: that is
-           what lets the row wrap, so the card before the first is the last
-           one. The pair at the far edge (|--d| = 2) is the staging area,
-           hidden, which is where the crossing from one end to the other
-           happens unseen. */
+        /* The Creative tab: one full-width clip over a chip row. */
         .hc {
-          /* One card width and one gap. Both are used to place every card, so
-             they have to stay lengths, not percentages. */
-          --cw: clamp(220px, 44vw, 620px);
-          --gap: clamp(12px, 1.6vw, 24px);
           position: absolute;
           inset: 0;
           display: grid;
           grid-template-rows: 1fr auto;
         }
-        .hc-stage { position: relative; overflow: hidden; }
-        .hc-track { position: absolute; inset: 0; }
-        .hc-card {
+        .hc-stage { position: relative; overflow: hidden; background: var(--tile-2); }
+        .hc-stage video {
           position: absolute;
-          top: 50%;
-          left: 50%;
-          width: var(--cw);
-          aspect-ratio: 16 / 9;
-          margin: 0;
-          border-radius: var(--radius-4);
-          overflow: hidden;
-          background: var(--tile-2);
-          opacity: 0.4;
-          transform:
-            translate(calc(-50% + var(--d) * (var(--cw) + var(--gap))), -50%)
-            scale(0.86);
-          transition:
-            transform 520ms cubic-bezier(0.22, 1, 0.36, 1),
-            opacity 420ms ease;
+          inset: 0;
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          display: block;
         }
-        .hc-card-on {
-          opacity: 1;
-          transform: translate(-50%, -50%) scale(1);
-          box-shadow: 0 18px 48px rgba(0, 0, 0, 0.42);
-        }
-        /* The two cards waiting at the ends, hidden. They keep the same
-           transition as the rest: the card crossing the ring each step is at
-           zero opacity at both ends, so its run across the stage is never
-           seen, and the one merely leaving the edge fades out as it goes
-           instead of snapping. */
-        .hc-card-off {
-          opacity: 0;
-          pointer-events: none;
-        }
-        .hc-card video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
-        .hc-arrow {
-          position: absolute;
-          top: 50%;
-          transform: translateY(-50%);
-          width: 34px;
-          height: 34px;
-          border: 0;
-          border-radius: 999px;
-          display: grid;
-          place-items: center;
-          background: var(--panel);
-          color: var(--ink);
-          cursor: pointer;
-          opacity: 0.85;
-          transition: opacity 200ms ease, transform 200ms ease;
-        }
-        .hc-arrow:hover { opacity: 1; }
-        .hc-arrow:active { transform: translateY(-50%) scale(0.94); }
-        .hc-arrow-l { left: 14px; }
-        .hc-arrow-r { right: 14px; }
         .hc-chips {
           position: relative;
           display: flex;
@@ -534,15 +445,13 @@ export function Hero() {
         .hc-chip-on { color: var(--ink-heading); }
 
         @media (max-width: 880px) {
-          .hc { --cw: min(78vw, 360px); --gap: 10px; }
-          .hc-arrow { display: none; }
           .hc-chip { height: 30px; padding: 0 12px; font-size: 12.5px; }
           .hero-top { grid-template-columns: 1fr; gap: 18px; }
           .hero-copy { padding-top: 0; }
           .hero-tab { height: 44px; font-size: 14px; }
         }
         @media (prefers-reduced-motion: reduce) {
-          .hero-panel, .hc-card { transition: none; }
+          .hero-panel { transition: none; }
         }
       `}</style>
     </section>
