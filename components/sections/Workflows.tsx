@@ -52,6 +52,10 @@ export function Workflows() {
 
         <div className="wf-bento mt-14">
           <article className="wf-tile wf-wide">
+            <span className="wf-bg" aria-hidden>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={withBasePath("/media/workflows/bg/blue.jpg")} alt="" />
+            </span>
             <h3 className="wf-title">Node canvas.</h3>
             <p className="wf-body">Chain models, tools and connectors into one pipeline.</p>
             <div className="wf-media">
@@ -61,6 +65,10 @@ export function Workflows() {
           </article>
 
           <article className="wf-tile">
+            <span className="wf-bg" aria-hidden>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={withBasePath("/media/workflows/bg/amber.jpg")} alt="" />
+            </span>
             <h3 className="wf-title">Brand Guidelines.</h3>
             <p className="wf-body">Every output on brand, without re-briefing it each time.</p>
             <div className="wf-media">
@@ -70,6 +78,10 @@ export function Workflows() {
           </article>
 
           <article className="wf-tile">
+            <span className="wf-bg" aria-hidden>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={withBasePath("/media/workflows/bg/green.jpg")} alt="" />
+            </span>
             <h3 className="wf-title">Creative Analyser.</h3>
             <p className="wf-body">See what performs, and what to change next.</p>
             <div className="wf-media">
@@ -119,12 +131,47 @@ export function Workflows() {
         }
         .wf-wide { grid-column: span 2; }
         .wf-tile {
+          position: relative;
+          isolation: isolate;
+          overflow: hidden;
           display: flex;
           flex-direction: column;
           padding: clamp(22px, 2.4vw, 32px);
           border-radius: var(--radius-5);
           background: var(--tile);
           min-width: 0;
+        }
+        /* The tile's ground, where it has one. The copy sits at the top of
+           the tile and the media covers the foot, so this reads mainly behind
+           the title and body, which is exactly where it has to be scrimmed:
+           the gradients carry bright oranges and greens and the title is
+           near-white. The scrim is heaviest at the top for that reason and
+           lets the picture through lower down, where only the media sits. */
+        .wf-bg {
+          position: absolute;
+          inset: 0;
+          z-index: -1;
+          overflow: hidden;
+        }
+        .wf-bg img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          display: block;
+        }
+        .wf-bg::after {
+          content: "";
+          position: absolute;
+          inset: 0;
+          background:
+            linear-gradient(rgba(10, 10, 12, 0.42), rgba(10, 10, 12, 0.42)),
+            linear-gradient(
+              to bottom,
+              rgba(10, 10, 12, 0.66) 0%,
+              rgba(10, 10, 12, 0.46) 34%,
+              rgba(10, 10, 12, 0.3) 60%,
+              rgba(10, 10, 12, 0.3) 100%
+            );
         }
         .wf-title { font-size: clamp(20px, 1.8vw, 26px); line-height: 1.2; letter-spacing: -0.015em; color: var(--ink-heading); }
         .wf-body { margin-top: 10px; font-size: 15px; line-height: 1.6; color: var(--ink-2); max-width: 34ch; }
