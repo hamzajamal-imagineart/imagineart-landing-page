@@ -194,31 +194,33 @@ export function CreativeTools() {
           object-fit: cover;
           display: block;
         }
-        /* Only the picture cards need a scrim; the flat ones are already dark
-           enough for white type. */
+        /* At rest the picture is left alone apart from a fade under the
+           copy, which sits at the foot of the card. The wash over the whole
+           card is the hover state.
+
+           The fade is not optional: measured against the raw pictures with no
+           fade at all, twelve of the thirteen titles land between 1.0:1 and
+           2.2:1, which is white on white. */
         .bt-scrim {
           position: absolute;
           inset: 0;
-          background: linear-gradient(to top, rgba(10, 10, 11, 0.88) 0%, rgba(10, 10, 11, 0.45) 30%, transparent 62%);
+          background: linear-gradient(to top, rgba(10, 10, 11, 0.9) 0%, rgba(10, 10, 11, 0.6) 18%, rgba(10, 10, 11, 0) 44%);
           transition: background 320ms ease;
         }
-        /* The scrim's fade is sized for a 410px card: it is gone by 62% of
-           the way up, which is above a mini card's title but well below a
-           tall one's. On the short cards the gradient has to reach the whole
-           height, or a bright picture puts the title under AA — measured, the
-           Remove Background card came out at 3.5:1 with the tall card's
-           scrim. */
+        /* The short cards give the copy a larger share of their height, so
+           the fade runs further up them. */
         .bt-mini .bt-scrim, .bt-short .bt-scrim, .bt-fill .bt-scrim {
-          background: linear-gradient(to top, rgba(10, 10, 11, 0.93) 0%, rgba(10, 10, 11, 0.76) 48%, rgba(10, 10, 11, 0.55) 100%);
+          background: linear-gradient(to top, rgba(10, 10, 11, 0.92) 0%, rgba(10, 10, 11, 0.7) 40%, rgba(10, 10, 11, 0.18) 78%, rgba(10, 10, 11, 0) 100%);
         }
+        /* Hover is the overlay: the whole card washes, so the description has
+           a ground to appear on. */
+        .bt-card:hover .bt-scrim, .bt-card:focus-visible .bt-scrim,
         .bt-mini:hover .bt-scrim, .bt-short:hover .bt-scrim, .bt-fill:hover .bt-scrim,
         .bt-mini:focus-visible .bt-scrim, .bt-short:focus-visible .bt-scrim, .bt-fill:focus-visible .bt-scrim {
-          background: linear-gradient(to top, rgba(10, 10, 11, 0.95) 0%, rgba(10, 10, 11, 0.84) 48%, rgba(10, 10, 11, 0.66) 100%);
-        }
-        .bt-card:hover .bt-scrim, .bt-card:focus-visible .bt-scrim {
-          background: linear-gradient(to top, rgba(10, 10, 11, 0.92) 0%, rgba(10, 10, 11, 0.66) 44%, rgba(10, 10, 11, 0.2) 100%);
+          background: linear-gradient(to top, rgba(10, 10, 11, 0.94) 0%, rgba(10, 10, 11, 0.8) 48%, rgba(10, 10, 11, 0.55) 100%);
         }
 
+        /* The copy block, pinned to the foot of the card. */
         .bt-meta {
           position: absolute;
           left: 0; right: 0; bottom: 0;
@@ -226,7 +228,6 @@ export function CreativeTools() {
           padding: 20px;
         }
         .bt-mini .bt-meta { padding: 16px; }
-
         .bt-title {
           display: block;
           font-size: 16px;
@@ -234,9 +235,9 @@ export function CreativeTools() {
           letter-spacing: -0.01em;
           color: #fff;
         }
-        /* The description is the hover: at rest a card is its picture, its
-           icon and its name. max-height rather than a 0fr-to-1fr grid row,
-           which cannot both close and open in an auto-height box. */
+        /* The description is the hover: at rest a card is its picture and its
+           name. max-height rather than a 0fr-to-1fr grid row, which cannot
+           both close and open in an auto-height box. */
         .bt-reveal {
           display: block;
           max-height: 0;

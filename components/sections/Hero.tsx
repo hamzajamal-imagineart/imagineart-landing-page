@@ -367,7 +367,7 @@ export function Hero() {
              the clip rather than a hairline. border-box keeps the panel's
              outer size, so the clip loses 8px a side rather than the layout
              moving. */
-          border: 8px solid rgba(255, 255, 255, 0.2);
+          border: 2px solid rgba(255, 255, 255, 0.2);
           border-radius: var(--radius-6);
           background: var(--tile);
           overflow: hidden;

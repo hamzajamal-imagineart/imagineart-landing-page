@@ -26,11 +26,11 @@ components, not forked from it.
 | Hero | `sections/Hero` | One centred column over a mosaic of work: headline "Imagine, design, animate, / edit. One platform." flat and all at weight 500, the copy, then one CTA, "Start creating for free". Below it a 16:9 panel holding one clip edge to edge, with its chip row (Image Generator · Upscaler · Variations · Relight · Camera Angles) floating over the footage in glass. |
 | Partners | `sections/Partners` | Six partner marks (ByteDance, Kling AI, MINIMAX, Wan, fal, Grok) with two captions. |
 | Creative Tools `#tools` | `sections/CreativeTools` | A 13-card bento from Figma: four 308px columns, 16px gutter, columns split 410/190/190 or 144/144/296/190 so all four end level at 822. Eight cards carry a photograph under a scrim, five carry that tool's own clip under the same scrim. No icons. Title always showing, description on hover. "View all tools" at the foot. |
-| Workflows `#workflows` | `sections/Workflows` | Bento, spans [2,1] / [1,1,1]: Node canvas (wide, clip), Brand Guidelines (clip), Creative Analyser (clip), Connectors as a `MarkCluster`, Plugins as a linked list of host apps. Every tile carries a gradient ground. No borders, 460px rows. |
 | Studios `#studios` | `sections/AdStudio` | Heading "Studios" + lede, then the **Ad Studio banner**: five vertical marquee columns of 9:16 ad clips (30 clips, CDN, posters, `preload="none"`) and a frosted left panel. |
 | Fashion Studio `#fashion-studio` | `sections/FashionStudio` | Banner: campaign clip full-bleed, rising scrim, white wordmark, glass "Try Now". |
 | Film Studio `#film-studio` | `sections/FilmStudio` | Banner: CSS marquee of 24 film thumbnails behind blurred edges and a frosted centre disc. Whole band links to the studio. |
-| Studio reel `#studio-reel` | `sections/StudioReel` | The three studios as a coverflow: the selected clip flat and centred, its neighbours turned away and cut by the edges of the section, each carrying its studio's mark alone in the corner. **Ad Studio holds three verticals side by side**; the other two hold one clip each. Chevrons and dots, no auto-advance. |
+| Studio reel `#studio-reel` | `sections/StudioReel` | The three studios as a coverflow: the selected clip flat and centred, its neighbours turned away and cut by the edges of the section, each carrying a tag in the corner naming the work — Advertising, Fashion, Filmmaking — rather than the studio. **Ad Studio holds three verticals side by side**; the other two hold one clip each. Chevrons and dots, no auto-advance. |
+| Workflows `#workflows` | `sections/Workflows` | Bento, spans [2,1] / [1,1,1]: Node canvas (wide, clip), Brand Guidelines (clip), Creative Analyser (clip), Connectors as a `MarkCluster`, Plugins as a linked list of host apps. Every tile carries a gradient ground. No borders, 460px rows. |
 | Use Cases `#use-cases` | `sections/UseCases` + `UseCaseWheel` | "USE CASES" eyebrow, heading "One-click skills for every creative task". A centred vertical list of six use cases advancing every 3s, the active one in a pill with an inline arrow into the template gallery, four of its clips scattered either side. "Browse all templates" at the foot. |
 | MCP `#mcp` | `sections/Mcp` | Connect panel ported from `Vyro-ai/imagine-web-mcp-landing`: the Imagine MCP wordmark, client tabs and an MCP / CLI segment, three numbered steps with copy buttons and deep links, and the client's real connect recording. |
 | Models | `sections/Models` | Eight model cards, four by two: provider sample full-bleed fading into a per-card tone. |
@@ -42,7 +42,7 @@ The three studio banners share one height, `--studio-band-h` in `globals.css`,
 and follow each other with no rules between them. The studio reel sits under
 the three of them.
 
-Nav is **Tools · Workflows · Studios · Use Cases · MCP · Pricing**, CTA Get
+Nav is **Tools · Studios · Workflows · Use Cases · MCP · Pricing**, CTA Get
 Started. Keep the nav in the same order as the page so no link scrolls backwards.
 
 **`sections/Apps` is pulled, not deleted.** The component and its eight-app data
@@ -203,6 +203,18 @@ passes behind the selected one, and emerges on the other. That needs no
 special case, and the teleport that a ring usually needs is what reads as a
 glitch here. This is the opposite call to the hero carousel that used to have
 five cards, where the crossing card was hidden at both ends and so could jump.
+
+**The Tools cards wash only on hover** (18 Sep). At rest a card is its
+picture, with a fade under the copy at the foot; hover brings the wash across
+the whole card so the description has a ground to appear on. The fade at rest
+is not optional: measured against the raw pictures with none at all, twelve of
+the thirteen titles land between **1.0:1 and 2.2:1**, which is white on white.
+With it, the worst at rest is 9.2:1 and the worst on hover 13.9:1.
+
+**The copy sits at the foot of a Tools card** (`.bt-meta` is
+`position: absolute; bottom: 0`). That is easy to get wrong from the markup
+alone, where it reads as the first thing in the card, and a scrim anchored to
+the wrong edge protects nothing.
 
 **The Ad card holds three clips, the others one.** An ad is a vertical, and
 three of them fill a 16:9 card where one sits in a letterbox. They come from

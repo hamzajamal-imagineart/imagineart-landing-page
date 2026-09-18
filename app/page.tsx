@@ -31,10 +31,11 @@ const softwareSchema = {
 /**
  * The ImagineArt product overview.
  *
- * Order follows the funnel: what it is and how it is organised (hero, with
- * its Creative · Workflows · Computer tabs), what it can do (creative tools),
- * how to put it on rails (workflows, with its connectors and plugins), where
- * to do the work (the three studio banners), what to start from (use cases),
+ * Order follows the funnel: what it is (hero), what it can do (creative
+ * tools),
+ * where to do the work (the three studio banners and the reel under them), how
+ * to put it on rails (workflows, with its connectors and plugins), what to
+ * start from (use cases),
  * how it plugs into your own agents (MCP), what powers it (models), who
  * vouches for it (reviews), what people ask (FAQ), then the closing action.
  *
@@ -53,11 +54,11 @@ export default function Page() {
         <Hero />
         <Partners />
         <CreativeTools />
-        <Workflows />
         <AdStudio />
         <FashionStudio />
         <FilmStudio />
         <StudioReel />
+        <Workflows />
         <UseCases />
         <Mcp />
         <Models />

@@ -11,8 +11,10 @@ import { SectionGuides } from "@/components/primitives/SectionGuides";
  *
  * Three clips on a ring: the selected one flat and centred, its neighbours
  * turned away on either side and cut by the edges of the section. Chevrons
- * step it; the dots say where you are. Each clip carries its studio's name
- * and mark in the corner, and the whole card is a link into that studio.
+ * step it; the dots say where you are. Each card is a link into its studio,
+ * and carries a tag naming the kind of work rather than the studio: the
+ * section heading above already names all three, and the link is what says
+ * where the card goes.
  *
  * With three items every step wraps one card from one end of the ring to the
  * other, and it is left to animate the long way on purpose: the selected card
@@ -33,7 +35,7 @@ const REELS = [
     id: "ad",
     label: "Ad Studio",
     href: STUDIO_HREFS.ad,
-    logo: "/media/studios/logos/ad-studio-white.svg",
+    tag: "Advertising",
     /* Three at once, because an ad is a vertical and three of them fill a
        16:9 card where one would sit in a letterbox. They are posterless
        elsewhere on the page but not here: the CDN carries a .webp per clip,
@@ -41,8 +43,8 @@ const REELS = [
     videos: [`${AD_CDN}/UGC_1.mp4`, `${AD_CDN}/Unboxing_4.mp4`, `${AD_CDN}/Tutorial_And_Review_2.mp4`],
     posters: [`${AD_CDN}/UGC_1.webp`, `${AD_CDN}/Unboxing_4.webp`, `${AD_CDN}/Tutorial_And_Review_2.webp`],
   },
-  { id: "fashion", label: "Fashion Studio", href: STUDIO_HREFS.fashion, logo: "/media/studios/logos/fashion-studio-white.svg", videos: ["/media/studios/fashion-studio.mp4"] },
-  { id: "film", label: "Film Studio", href: STUDIO_HREFS.film, logo: "/media/studios/film/logo.webp", videos: ["https://imagine.animagic.art/imagine-one/film-studio/video/27.mp4"] },
+  { id: "fashion", label: "Fashion Studio", href: STUDIO_HREFS.fashion, tag: "Fashion", videos: ["/media/studios/fashion-studio.mp4"] },
+  { id: "film", label: "Film Studio", href: STUDIO_HREFS.film, tag: "Filmmaking", videos: ["https://imagine.animagic.art/imagine-one/film-studio/video/27.mp4"] },
 ];
 
 export function StudioReel() {
@@ -109,8 +111,7 @@ export function StudioReel() {
                   />
                 ))}
               </span>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img className="sr-mark" src={withBasePath(r.logo)} alt={r.label} />
+              <span className="sr-tag">{r.tag}</span>
             </a>
           );
         })}
@@ -204,18 +205,25 @@ export function StudioReel() {
           background: rgba(255, 255, 255, 0.1);
         }
         .sr-media-split video { position: relative; inset: auto; }
-        /* The mark alone, no pill and no label beside it: the studios are
-           recognised by their wordmarks. A drop shadow rather than a plate,
-           so nothing sits between the mark and the footage; these are white
-           marks and the shadow is what holds them over a bright frame. */
-        .sr-mark {
+        /* The tag names the work, not the studio: a card showing an ad says
+           Advertising. The studio itself is where the card goes, which the
+           link carries, and the section above already names all three. */
+        .sr-tag {
           position: absolute;
           top: clamp(14px, 2.4%, 26px);
           left: clamp(14px, 2.4%, 26px);
-          height: clamp(28px, 3.6%, 48px);
-          width: auto;
-          display: block;
-          filter: drop-shadow(0 2px 10px rgba(0, 0, 0, 0.55));
+          display: inline-flex;
+          align-items: center;
+          height: 32px;
+          padding: 0 14px;
+          border-radius: 999px;
+          font-size: 12.5px;
+          font-weight: 500;
+          letter-spacing: 0.02em;
+          text-transform: uppercase;
+          color: #fff;
+          background: rgba(10, 10, 11, 0.6);
+          border: 1px solid rgba(255, 255, 255, 0.14);
         }
 
         .sr-controls {
@@ -259,7 +267,7 @@ export function StudioReel() {
 
         @media (max-width: 880px) {
           .sr-card { width: 84vw; }
-          .sr-mark { height: 24px; }
+          .sr-tag { height: 28px; padding: 0 11px; font-size: 11.5px; }
         }
         @media (prefers-reduced-motion: reduce) {
           .sr-card { transition: none; }
