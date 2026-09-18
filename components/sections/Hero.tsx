@@ -61,27 +61,26 @@ export function Hero() {
         <span className="hero-bg-scrim" />
       </div>
       <div className="container-page">
+        {/* Heading, then body, then the actions: one column, in that order. */}
         <div className="hero-top">
-          <div>
-            <BlurHeading
-              as="h1"
-              className="display hero-h1"
-              lead="Bringing"
-              leadClassName="hero-h1-light"
-              muted="imagination to life"
-              mutedClassName=""
-              lineBreak
-            />
-            <div className="hero-actions">
-              <a href={START_HREF} className="hero-btn hero-btn-dark">Get Started</a>
-              <a href={DEMO_HREF} target="_blank" rel="noopener noreferrer" className="hero-btn hero-btn-ghost">Book a demo</a>
-            </div>
-          </div>
+          <BlurHeading
+            as="h1"
+            className="display hero-h1"
+            lead="Bringing"
+            leadClassName="hero-h1-light"
+            muted="imagination to life"
+            mutedClassName=""
+            lineBreak
+          />
           <p className="hero-copy">
             ImagineArt is the best AI creative suite that generates images, videos,
             shorts, and voice from text prompt. Built for creators, teams and the
             developers shipping alongside them.
           </p>
+          <div className="hero-actions">
+            <a href={START_HREF} className="hero-btn hero-btn-dark">Get Started</a>
+            <a href={DEMO_HREF} target="_blank" rel="noopener noreferrer" className="hero-btn hero-btn-ghost">Book a demo</a>
+          </div>
         </div>
 
       </div>
@@ -92,18 +91,9 @@ export function Hero() {
         <div className="hs-rail">
           {SHOWCASE.map((c) => (
             <div key={c.id} className="hs-item" role="listitem" style={{ ["--k" as string]: c.k }}>
-              <p className="hs-label">
-                <span className="hs-dot" aria-hidden />
-                {c.label}
-              </p>
+              <p className="hs-label">{c.label}</p>
               <div className="hs-card">
                 <img src={withBasePath(c.image)} alt="" loading="lazy" />
-                <span className="hs-badge" aria-hidden>
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
-                    <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.7" />
-                    <path d="M3 12h18M12 3c2.4 2.6 3.6 5.6 3.6 9S14.4 18.4 12 21c-2.4-2.6-3.6-5.6-3.6-9S9.6 5.6 12 3Z" stroke="currentColor" strokeWidth="1.7" />
-                  </svg>
-                </span>
               </div>
             </div>
           ))}
@@ -147,10 +137,10 @@ export function Hero() {
         }
         .hero-section .container-page { position: relative; z-index: 1; }
         .hero-top {
-          display: grid;
-          grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-          gap: clamp(24px, 4vw, 64px);
-          align-items: start;
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 0;
         }
         .hero-h1 { font-size: clamp(34px, 4vw, 52px); text-align: left; text-wrap: initial; }
         .hero-h1-light { font-weight: 400; }
@@ -158,8 +148,8 @@ export function Hero() {
           font-size: clamp(16px, 1.25vw, 18px);
           line-height: 1.6;
           color: var(--ink);
-          max-width: 46ch;
-          padding-top: 10px;
+          max-width: 56ch;
+          margin-top: 18px;
         }
         .hero-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 28px; }
         .hero-btn {
@@ -185,8 +175,26 @@ export function Hero() {
            Bottoms align and each card takes its own share --k of the tallest
            height, which is what draws the arch; the width follows from the
            3:4 ratio, so one number per card sets both. */
+        /* The showcase rail.
+           Bottoms align and each card takes its own share --k of the tallest
+           height, which is what draws the arch; the width follows from the
+           3:4 ratio, so one number per card sets both.
+
+           --peak is solved so the row fills the page exactly: every card is
+           0.75 * --peak * its own k wide, so the widths add up to
+           0.75 * --peak * --ksum, and that plus the gaps has to be the page.
+           Change SHOWCASE and --ksum has to change with it.
+
+           The width comes from cqw, not vw: 100vw counts the vertical
+           scrollbar, so on any platform that reserves space for one the row
+           would be a few pixels wider than the page and give the whole
+           document a horizontal scrollbar. */
         .hs {
-          --peak: clamp(230px, 27vw, 430px);
+          container-type: inline-size;
+          --ksum: 5.31;
+          --gap: clamp(6px, 0.7vw, 14px);
+          --peak: calc((100cqw - (var(--count) - 1) * var(--gap)) / (0.75 * var(--ksum)));
+          --count: 8;
           margin-top: clamp(36px, 5vh, 56px);
           overflow-x: auto;
           overflow-y: hidden;
@@ -195,18 +203,14 @@ export function Hero() {
           /* Rails on this page need headroom rather than margins, or the
              scroll container clips what sits above the cards. */
           padding-block: 4px 2px;
-          /* The row runs past both edges of the screen. */
-          -webkit-mask-image: linear-gradient(to right, transparent 0, #000 7%, #000 93%, transparent 100%);
-          mask-image: linear-gradient(to right, transparent 0, #000 7%, #000 93%, transparent 100%);
         }
         .hs::-webkit-scrollbar { display: none; }
         .hs-rail {
           display: flex;
           align-items: flex-end;
           justify-content: center;
-          gap: clamp(10px, 1.1vw, 18px);
+          gap: var(--gap);
           min-width: max-content;
-          padding-inline: clamp(16px, 4vw, 64px);
         }
         .hs-item {
           display: flex;
@@ -216,21 +220,14 @@ export function Hero() {
           flex: 0 0 auto;
         }
         .hs-label {
-          display: flex;
-          align-items: center;
-          gap: 7px;
           font-size: 13px;
           font-weight: 500;
           letter-spacing: -0.005em;
           color: var(--ink-2);
           white-space: nowrap;
-        }
-        .hs-dot {
-          width: 9px;
-          height: 9px;
-          border-radius: 999px;
-          border: 1.4px solid var(--ink-3);
-          flex: 0 0 auto;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          max-width: 100%;
         }
         .hs-card {
           position: relative;
@@ -241,28 +238,14 @@ export function Hero() {
           background: var(--tile);
         }
         .hs-card img { width: 100%; height: 100%; object-fit: cover; display: block; }
-        /* The badge is the page's one square corner, as in the reference: it
-           sits flush into the card's own corner, so a radius there would read
-           as a mistake. */
-        .hs-badge {
-          position: absolute;
-          top: 0;
-          right: 0;
-          width: 30px;
-          height: 30px;
-          display: grid;
-          place-items: center;
-          background: var(--page-bg);
-          color: var(--ink);
-          border-bottom-left-radius: 10px;
-        }
-
         @media (max-width: 880px) {
           .hc-chip { height: 30px; padding: 0 12px; font-size: 12.5px; }
           .hero-top { grid-template-columns: 1fr; gap: 18px; }
           .hero-copy { padding-top: 0; }
+          /* Eight cards across a phone would be slivers, so the rail stops
+             solving for the page width and goes back to scrolling. */
           .hs { --peak: clamp(190px, 46vw, 300px); }
-          .hs-rail { justify-content: flex-start; }
+          .hs-rail { justify-content: flex-start; padding-inline: 16px; }
           .hs-label { font-size: 12px; }
         }
       `}</style>

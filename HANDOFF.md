@@ -23,7 +23,7 @@ components, not forked from it.
 
 | Section | Component | What it is |
 |---|---|---|
-| Hero | `sections/Hero` | Headline "Bringing / imagination to life" ("Bringing" at weight 400) left, one-line copy right, Get Started + Book a demo, over a full-bleed photograph. At the foot, a clipped rail of portrait cards, bottoms aligned and heights arching to the middle, each with its name above and a badge in its corner. |
+| Hero | `sections/Hero` | One column: headline "Bringing / imagination to life" ("Bringing" at weight 400), then the copy, then Get Started + Book a demo, over a full-bleed photograph. At the foot, a rail of portrait cards filling the page edge to edge, bottoms aligned and heights arching to the middle, each with its name above. |
 | Partners | `sections/Partners` | Six partner marks (ByteDance, Kling AI, MINIMAX, Wan, fal, Grok) with two captions. |
 | Creative Tools `#tools` | `sections/CreativeTools` | A 13-card bento from Figma: four 308px columns, 16px gutter, columns split 372/172 or 130/130/268. Picture cards carry a photograph under a scrim, the rest are flat tinted panels. Title always showing, description on hover. "View all tools" at the foot. |
 | Workflows `#workflows` | `sections/Workflows` | Bento, spans [2,1] / [1,1,1]: Node canvas (wide, clip), Brand Guidelines (clip), Creative Analyser (clip), Connectors as a `MarkCluster`, Plugins as a linked list of host apps. Tiles on `--tile`, no borders, 460px rows. |
@@ -138,9 +138,17 @@ object URL.
 **In its place, the showcase rail.** A row of 3:4 cards with their bottoms
 aligned and each one taking its own share `--k` of the tallest height, which
 is what draws the arch; the width follows from the ratio, so one number per
-card sets both. The rail sits outside `.container-page` and runs wider than
-the page, clipped with a `mask-image` so the end cards are cut and the row
-reads as continuing past the screen. It is a scroll rail, so it takes
+card sets both.
+
+It fills the page edge to edge, and that is solved rather than set: the widths
+come to `0.75 * --peak * --ksum`, so `--peak` is whatever makes that plus the
+gaps equal the page. **`--ksum` is the sum of every `k` in `SHOWCASE` and has
+to be edited whenever that list is** — add a card without it and the row stops
+meeting the edges. The width comes from `100cqw`, not `100vw`: `vw` counts the
+vertical scrollbar, which on any platform that reserves space for one would
+make the row wider than the page and put a horizontal scrollbar on the whole
+document. Under 880px it stops solving for the page and goes back to a scroll
+rail, since eight cards across a phone are slivers; either way it takes
 `padding-block` headroom rather than margins, per the kit rule.
 
 **Headings do not animate** (17 Sep). BlurHeading used to wrap
@@ -249,7 +257,8 @@ Note `/apps/outfit-tryon`, which Fashion Studio used to point at, returns 500.
   screenshot**, so they are another company's customer names (Superpower,
   Girlfriends, Character AI, Bastion Bees, Eliza Dolittle, Waverly, Timmons,
   POGA). **Both must be replaced before this is shown to anyone.** Swapping
-  `image` and `label` on each `SHOWCASE` entry is the whole job.
+  `image` and `label` on each `SHOWCASE` entry is the whole job, but if the
+  number of cards changes, `--ksum` in the rail's CSS has to change too.
 - **Remote runtime dependencies:** MCP connect recordings and the 30 Ad Studio
   clips stream from `cdn-imagine.vyro.ai`; the hero's Creative clip from
   `imagine.animagic.art` and its Workflows clip from `www.imagine.art`.
