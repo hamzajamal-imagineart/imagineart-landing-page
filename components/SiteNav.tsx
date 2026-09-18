@@ -140,8 +140,11 @@ export function SiteNav({
           justifyContent: "space-between",
           gap: 16,
           background: compact ? "rgba(10,10,11,0.42)" : "transparent",
-          backdropFilter: compact ? "blur(32px) saturate(180%)" : "blur(20px)",
-          WebkitBackdropFilter: compact ? "blur(32px) saturate(180%)" : "blur(20px)",
+          // At the top the bar is fully transparent: no fill and no blur
+          // either. A backdrop blur with no background still frosts whatever
+          // is behind it, which read as a band across the hero's mosaic.
+          backdropFilter: compact ? "blur(32px) saturate(180%)" : "none",
+          WebkitBackdropFilter: compact ? "blur(32px) saturate(180%)" : "none",
           borderRadius: compact ? 999 : 0,
           boxShadow: scrolled
             ? "0 20px 48px rgba(0,0,0,0.32), inset 0 1px 0 rgba(255,255,255,0.08), 0 0 0 1px rgba(255,255,255,0.1)"

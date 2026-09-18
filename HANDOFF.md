@@ -109,29 +109,43 @@ hero's two lines at different weights.
 
 ### Hero
 
-**The hero's ground is a mosaic of work** (18 Sep), thirteen tiles run edge to
-edge behind the copy: the seven showcase pieces and the bento's six
-photographs, downscaled to 440px wide in `hero/mosaic/`. That is **432KB for
-all thirteen** against 2.6MB for the originals, which would have rendered at a
-third of their size. Rebuild them with `sips -Z 440` if the set changes.
+**The hero's ground is a mosaic of work** (18 Sep), eighteen tiles run edge to
+edge behind the copy, downscaled to 440px wide in `hero/mosaic/`: **568KB for
+the set**, against several MB for the originals, which would have rendered at
+a fraction of their size. Rebuild with `sips -Z 440` and update `MOSAIC`'s
+length if the set changes.
 
 It is laid out in CSS **columns**, not a grid. The tiles are a mix of 1:1, 3:4
 and 9:16, and columns let each keep its own ratio and pack against its
 neighbours, which is what makes the edges ragged rather than a tidy grid of
-equal boxes. The mosaic is 130% of the section's height so the columns are
+equal boxes. The mosaic runs 130% of the section's height so the columns are
 always cut off rather than running out partway down and leaving a bald foot;
 six columns, three under 880px.
 
-The scrim is three layers: a flat wash over the whole mosaic, a radial pool
-behind the copy, and the fade to `--page-bg` that lands the foot of the
-section on the page so the seam into Partners stays invisible. It has to be
-heavy — these tiles are faces and bright grounds and the copy sits right over
-the middle of them. Measured at 1440 by compositing the mosaic as laid out and
-applying the scrim at the copy's real position: **15.1:1 under the headline
-and 8.7:1 under the copy, 11.0:1 and 6.5:1 against the brightest pixel in each
-band.** A first pass at `0.58` flat and `0.70` pool measured 16.1 / 9.2 and
-left the mosaic barely visible, so it came down to `0.44` and `0.70`; there is
-still room to lift it further if the work should read more.
+**Making the copy readable over it took three things, and the obvious one
+mattered least.**
+
+1. **`SectionGlow` came out of the hero.** It sat above the mosaic and poured
+   white light into the middle of the section, which is exactly where the
+   headline is. It was working against the scrim.
+2. **The mosaic is blurred**, `blur(14px)`. It takes the hard edges out from
+   under the letterforms. It also needs `transform: scale(1.09)`: a blurred
+   layer samples transparent past its own edges, so without it the mosaic
+   haloes along every edge of the section (§4).
+3. **The scrim's pool is wide.** This is the one that carries it. Swept
+   against the real mosaic at 1440: a pool of `64% x 48%` gave 11.2:1 behind
+   the headline, `80% x 62%` gave 13.2:1 and halved the variation across the
+   text box, while blurring from 9px to 24px moved the worst case by 0.3.
+   **The pool has to be wider than the copy, not tighter.**
+
+Measured at 1440 per pixel across each text box, worst case: **13.2:1 behind
+the headline, 9.6:1 behind the copy, 17.1:1 behind the CTA.** Variation across
+the headline's box fell from 0.83 to 0.41.
+
+The first attempt at this measured 15:1 and still read badly, which is the
+lesson: **a contrast ratio against the mean is not legibility over a
+photograph.** Sample per pixel, take the worst, and look at the variation
+across the box as well as the ratio.
 
 **The hero headline does not take the page's gradient.** `.display` paints its
 text transparent and fills it with a gradient plus a halo; the hero overrides
@@ -215,7 +229,7 @@ Unused, kept on disk: `ui/blur-reveal`, `Backdrop`, `RailGrid`, `MediaCard`,
   Tools, Workflows, Studios and MCP, each `edge="top"` with `lg:border-t-0` on
   the section.
 - **Section glow.** `SectionGlow` puts a faint pool of light at the head of
-  the hero and of alternate sections (Tools, Studios, Use Cases, Models, FAQ).
+  alternate sections (Tools, Studios, Use Cases, Models, FAQ).
   The hero's sits at `50% 20%` rather than the usual `50% 0%`, since a pool at
   the very top would fall behind the fixed bar. Sits at
   `z-index: -1`, so its host needs `isolation: isolate`.
@@ -307,7 +321,7 @@ ffmpeg on this machine; see the B2B Guidelines §7 for the recipe):
 | `studios/film-studio.mp4` | 16MB | unused; delete |
 | `studios/fashion/banner.mp4` | 13MB | in use; re-encode |
 | `hero/backdrop-veil.jpg` | 410KB | unused since the hero photograph was dropped; delete |
-| `hero/mosaic/*.jpg` | 432KB | the hero's ground, thirteen tiles; in use |
+| `hero/mosaic/*.jpg` | 568KB | the hero's ground, eighteen tiles; in use |
 | `hero/showcase/*.jpg` | 2.6MB | the originals behind seven of the mosaic tiles; keep |
 | `hero/creative-suite-image.webm` | 1.4MB | the Creative clip; in use |
 | `hero/computer.mp4` | 1.9MB | the Computer tab's clip; in use |

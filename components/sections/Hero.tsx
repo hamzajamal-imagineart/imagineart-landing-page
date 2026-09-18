@@ -5,7 +5,6 @@ import { withBasePath } from "@/lib/assets";
 import { START_HREF } from "@/lib/links";
 import { SlidingIndicator, slidingIndicatorCss, useSlidingIndicator } from "@/components/primitives/SlidingIndicator";
 import { BlurHeading } from "@/components/BlurHeading";
-import { SectionGlow, sectionGlowCss } from "@/components/primitives/SectionGlow";
 
 /**
  * Hero, on the ElevenLabs pattern, pared down.
@@ -135,16 +134,16 @@ function CreativeCarousel({ live }: { live: boolean }) {
 /**
  * The hero's ground: a mosaic of work, run edge to edge behind the copy.
  *
- * The tiles are the seven showcase pieces and the bento's six photographs,
- * downscaled to 440px wide in `hero/mosaic/` — 432KB for all thirteen, where
- * the originals are 2.6MB and would render at a third of their size. Rebuild
- * them with `sips -Z 440` if the set changes.
+ * The tiles are eighteen pieces of work, downscaled to 440px wide in
+ * `hero/mosaic/` — 568KB for the set, where the originals are several MB and
+ * would render at a fraction of their size. Rebuild with `sips -Z 440` if the
+ * set changes, and update MOSAIC's length to match.
  *
  * Laid out in CSS columns rather than a grid: the tiles are a mix of 1:1,
  * 3:4 and 9:16, and columns let each keep its own ratio and pack, which is
  * what makes the edges ragged rather than a tidy grid of equal boxes.
  */
-const MOSAIC = Array.from({ length: 13 }, (_, i) => `/media/hero/mosaic/m${i + 1}.jpg`);
+const MOSAIC = Array.from({ length: 18 }, (_, i) => `/media/hero/mosaic/m${i + 1}.jpg`);
 
 export function Hero() {
   const [line, setLine] = useState(0);
@@ -177,10 +176,10 @@ export function Hero() {
 
   return (
     <section id="top" className="hero-section">
-      {/* Lower than the sections further down: the hero opens under a fixed
-          bar and a pool at 0% would sit behind it, so it is centred on the
-          headline instead. */}
-      <SectionGlow position="50% 20%" />
+      {/* No <SectionGlow> here. It sat above the mosaic and poured white
+          light into the middle of the section, which is exactly where the
+          headline is: it was working against the scrim. The mosaic gives the
+          section its interest now. */}
       {/* The ground, and the scrim that makes the copy legible over it. */}
       <div className="hero-bg" aria-hidden>
         <div className="hero-mosaic">
@@ -210,8 +209,8 @@ export function Hero() {
           <div className="hero-actions">
             <a href={START_HREF} className="hero-cta">
               Start creating for free
-              <svg className="hero-cta-go" width="12" height="11" viewBox="0 0 12 11" fill="none" aria-hidden>
-                <path d="M11.17 5.5H1M7.75 10l3.585-3.97c.53-.53.54-.52 0-1.06L7.75 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+              <svg className="hero-cta-go" width="13" height="12" viewBox="0 0 12 11" fill="none" aria-hidden>
+                <path d="M11.17 5.5H1M7.75 10l3.585-3.97c.53-.53.54-.52 0-1.06L7.75 1" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
               </svg>
             </a>
           </div>
@@ -293,14 +292,13 @@ export function Hero() {
       </div>
 
       <style>{`
-        /* Hosts a <SectionGlow> at z-index -1, and the mosaic below it. */
+        /* Hosts the mosaic at z-index -2. */
         .hero-section {
           position: relative;
           isolation: isolate;
           padding-top: clamp(168px, 20vh, 232px);
           padding-bottom: clamp(40px, 6vh, 72px);
         }
-        ${sectionGlowCss}
         .hero-bg {
           position: absolute;
           inset: 0;
@@ -315,6 +313,18 @@ export function Hero() {
           /* Taller than the section so the columns are always cut off rather
              than running out partway down and leaving a bald foot. */
           height: 130%;
+          /* The real reason the copy was hard to read. Contrast was already
+             15:1; what hurt was the detail — faces and hard edges directly
+             behind the letterforms. Blurring the ground leaves the colour and
+             the movement and takes away the competition.
+
+             The scale is not decoration: a blurred layer samples transparent
+             past its own edges, so without it the mosaic haloes along every
+             edge of the section. Scaling it out pushes that fade outside the
+             clip. */
+          filter: blur(14px);
+          transform: scale(1.09);
+          transform-origin: center top;
         }
         .hero-mosaic img {
           display: block;
@@ -332,9 +342,15 @@ export function Hero() {
           position: absolute;
           inset: 0;
           background:
-            linear-gradient(rgba(9, 9, 11, 0.44), rgba(9, 9, 11, 0.44)),
-            radial-gradient(76% 56% at 50% 34%, rgba(9, 9, 11, 0.7) 0%, rgba(9, 9, 11, 0.4) 60%, rgba(9, 9, 11, 0.12) 100%),
-            linear-gradient(to bottom, rgba(9, 9, 11, 0.5) 0%, rgba(9, 9, 11, 0.2) 30%, rgba(9, 9, 11, 0.55) 72%, var(--page-bg) 98%);
+            linear-gradient(rgba(9, 9, 11, 0.46), rgba(9, 9, 11, 0.46)),
+            /* Wide on purpose. Sweeping this against the real mosaic, the
+               pool's size is what carries legibility and the blur barely
+               registers: 64%x48% gave 11.2:1 behind the headline, 80%x62%
+               gave 13.2:1 and halved the variation across the text box, while
+               blurring 9px to 24px moved the worst case by 0.3. The pool has
+               to be wider than the copy, not tighter. */
+            radial-gradient(80% 62% at 50% 32%, rgba(9, 9, 11, 0.86) 0%, rgba(9, 9, 11, 0.52) 62%, rgba(9, 9, 11, 0.12) 100%),
+            linear-gradient(to bottom, rgba(9, 9, 11, 0.46) 0%, rgba(9, 9, 11, 0.18) 28%, rgba(9, 9, 11, 0.55) 72%, var(--page-bg) 98%);
         }
         .hero-section .container-page { position: relative; z-index: 1; }
         .hero-top {
@@ -379,14 +395,14 @@ export function Hero() {
         .hero-cta {
           display: inline-flex;
           align-items: center;
-          gap: 10px;
-          height: 48px;
+          gap: 11px;
+          height: 56px;
           /* The 4px lip eats the bottom of the button, so the visible face is
-             the top 44px. Centring on the box put the label 1.8px below the
-             middle of what you actually see; this pads it back up. */
-          padding: 0 26px 4px;
-          border-radius: 18px;
-          font-size: 15px;
+             the top 52px. Centring on the box put the label below the middle
+             of what you actually see; this pads it back up. */
+          padding: 0 32px 4px;
+          border-radius: 21px;
+          font-size: 16.5px;
           font-weight: 500;
           letter-spacing: -0.005em;
           white-space: nowrap;
@@ -408,7 +424,7 @@ export function Hero() {
         .hero-cta-go { flex: 0 0 auto; }
 
         .hero-frame {
-          margin-top: clamp(20px, 3vh, 32px);
+          margin-top: clamp(8px, 1.4vh, 14px);
           border: 1px solid var(--line);
           border-radius: var(--radius-6);
           background: var(--tile);
