@@ -1,53 +1,166 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
 import { withBasePath } from "@/lib/assets";
 import { DEMO_HREF, START_HREF } from "@/lib/links";
+import { SlidingIndicator, slidingIndicatorCss, useSlidingIndicator } from "@/components/primitives/SlidingIndicator";
 import { BlurHeading } from "@/components/BlurHeading";
 import { SectionGlow, sectionGlowCss } from "@/components/primitives/SectionGlow";
 
 /**
  * Hero, on the ElevenLabs pattern, pared down.
  *
- * Headline left, supporting copy right, two pill buttons, over a full-bleed
- * photograph. At the foot, a clipped rail of portrait cards.
+ * Headline left, supporting copy right, two pill buttons. Below, one framed
+ * panel: a three-way tab bar (Creative · Workflows · Computer) and one 16:9
+ * clip per tab. Nothing else in the panel.
  *
- * The framed panel that used to sit here, a Creative · Workflows · Computer
- * tab bar over one clip each, is gone: no tabs, no video, nothing to play or
- * pause. `hero/computer.mp4` and `hero/creative-suite-image.webm` are unused
- * as a result.
+ * All three clips render into the HTML, stacked in one cell; only the visible
+ * one plays, and the visible one shows native controls while the pointer is
+ * over the frame. Creative and Workflows stream real footage; Computer is
+ * still a placeholder.
  */
+const LINES = [
+  // Real campaign footage, streamed. withBasePath() passes an absolute URL
+  // through untouched, so it needs no local copy.
+  { id: "creative", label: "Creative", video: null },
+  { id: "workflows", label: "Workflows", video: "https://www.imagine.art/business/media/modes/quick-iterations.mp4" },
+  { id: "computer", label: "Computer", video: "/media/hero/computer.mp4" },
+];
+
 /**
- * The showcase rail at the foot of the hero.
+ * The Creative tab's carousel.
  *
- * A row of portrait cards, bottoms aligned and heights falling away from the
- * middle, so the row reads as an arch. Each card carries its name above it
- * and a small badge in its corner; the rail runs wider than the page and is
- * clipped, so the cards at either end are cut off and the row continues past
- * the edge of the screen.
+ * Five tools, one card each, the selected one brought forward and the rest
+ * held back at reduced scale. The chips below are the control: they are the
+ * same five names, so there is no caption under the card repeating them.
  *
- * `k` is the card's share of the tallest height, which is what makes the
- * arch. It is written per entry rather than derived from the index so the
- * shape can be tuned by hand and does not have to stay symmetrical.
- *
- * The images are real work. The labels are descriptions of what each one is,
- * not confirmed copy: they say what the piece shows, which is the job the
- * reference's labels were doing, but nobody has signed off on the words.
- *
- * Adding or removing an entry means changing `--ksum` and `--count` in the
- * rail's CSS to match, or the row stops meeting the edges of the page.
+ * **Every entry is currently the same clip**, while the shape of the section
+ * is being tried out, so picking a chip does not change what is playing. Give
+ * each entry its own `video` when the real footage exists and that starts
+ * working on its own.
  */
-const SHOWCASE = [
-  { id: "illustration", label: "Illustration", image: "/media/hero/showcase/illustration.jpg", k: 0.54 },
-  { id: "editorial", label: "Editorial", image: "/media/hero/showcase/editorial.jpg", k: 0.7 },
-  { id: "product", label: "Product", image: "/media/hero/showcase/product.jpg", k: 0.86 },
-  { id: "character", label: "Character", image: "/media/hero/showcase/character.jpg", k: 1 },
-  { id: "portrait", label: "Portrait", image: "/media/hero/showcase/portrait.jpg", k: 0.86 },
-  { id: "album", label: "Album Art", image: "/media/hero/showcase/album-art.jpg", k: 0.7 },
-  { id: "fashion", label: "Fashion", image: "/media/hero/showcase/fashion.jpg", k: 0.54 },
+const PLACEHOLDER = "/media/hero/creative-suite-image.webm";
+
+const CREATIVE = [
+  { id: "image", label: "Image Generator", video: PLACEHOLDER },
+  { id: "upscale", label: "Upscaler", video: PLACEHOLDER },
+  { id: "variations", label: "Variations", video: PLACEHOLDER },
+  { id: "relight", label: "Relight", video: PLACEHOLDER },
+  { id: "angles", label: "Camera Angles", video: PLACEHOLDER },
 ];
 
 
+/**
+ * The Creative tab: one clip, full width, and a chip row under it.
+ *
+ * The chips select a tool and the clip is the selected tool's own footage.
+ * While the section is being tried out every chip points at the same file, so
+ * the clip does not change when you pick one; give each entry in CREATIVE its
+ * own `video` and this starts working with no other change.
+ *
+ * Single-source, so there is nothing here to load twice: the earlier version
+ * showed five cards at once, which meant five <video> elements on one URL
+ * firing five range requests in the same millisecond, none of them able to
+ * hit the cache the others were still filling.
+ */
+function CreativeCarousel({ live }: { live: boolean }) {
+  const [card, setCard] = useState(0);
+  const chips = useSlidingIndicator<HTMLButtonElement>(card);
+  const clip = useRef<HTMLVideoElement | null>(null);
+
+  // The autoplay attribute only fires when the element first enters the
+  // document, so a clip paused because the tab moved away never restarts.
+  // Drive it from the tab's state instead, as the other two panels are.
+  useEffect(() => {
+    const v = clip.current;
+    if (!v) return;
+    if (live) void v.play().catch(() => {});
+    else v.pause();
+  }, [live]);
+
+  const onChipKey = (e: React.KeyboardEvent) => {
+    const d = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
+    if (!d) return;
+    e.preventDefault();
+    const next = (card + d + CREATIVE.length) % CREATIVE.length;
+    setCard(next);
+    document.getElementById(`hero-chip-${CREATIVE[next].id}`)?.focus();
+  };
+
+  return (
+    <div className="hc">
+      <div className="hc-stage" id={`hero-card-${CREATIVE[card].id}`}>
+        {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+        <video
+          ref={clip}
+          src={withBasePath(CREATIVE[card].video)}
+          title={`${CREATIVE[card].label} in ImagineArt`}
+          muted
+          loop
+          playsInline
+          preload="auto"
+          disablePictureInPicture
+        />
+      </div>
+
+      <div
+        className="hc-chips"
+        role="tablist"
+        aria-label="Creative tools"
+        onKeyDown={onChipKey}
+        ref={chips.containerRef as React.Ref<HTMLDivElement>}
+      >
+        <SlidingIndicator box={chips.box} ready={chips.ready} className="hc-chip-fill" />
+        {CREATIVE.map((c, i) => (
+          <button
+            key={c.id}
+            ref={(el) => { chips.itemRefs.current[i] = el; }}
+            id={`hero-chip-${c.id}`}
+            role="tab"
+            type="button"
+            aria-selected={i === card}
+            aria-controls={`hero-card-${c.id}`}
+            tabIndex={i === card ? 0 : -1}
+            className={`hc-chip ${i === card ? "hc-chip-on" : ""}`}
+            onClick={() => setCard(i)}
+          >
+            {c.label}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export function Hero() {
+  const [line, setLine] = useState(0);
+  /**
+   * Native controls appear on the visible clip while the pointer is over the
+   * frame, or while anything inside it has focus. `controls` is an attribute,
+   * not a style, so it cannot be a CSS hover; and it goes on the active panel
+   * only, since the other two are stacked behind it in the same cell.
+   */
+  const [showControls, setShowControls] = useState(false);
+  const tabs = useSlidingIndicator<HTMLButtonElement>(line);
+  const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
+
+  useEffect(() => {
+    videoRefs.current.forEach((v, i) => {
+      if (!v) return;
+      if (i === line) void v.play().catch(() => {});
+      else v.pause();
+    });
+  }, [line]);
+
+  const onTabKey = (e: React.KeyboardEvent) => {
+    const d = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
+    if (!d) return;
+    e.preventDefault();
+    const next = (line + d + LINES.length) % LINES.length;
+    setLine(next);
+    document.getElementById(`hero-tab-${LINES[next].id}`)?.focus();
+  };
+
   return (
     <section id="top" className="hero-section">
       {/* Lower than the sections further down: the hero opens under a fixed
@@ -64,60 +177,107 @@ export function Hero() {
         <span className="hero-bg-scrim" />
       </div>
       <div className="container-page">
-        {/* Heading, then body, then the actions: one column, in that order. */}
         <div className="hero-top">
-          <BlurHeading
-            as="h1"
-            className="display hero-h1"
-            lead="Bringing"
-            muted="imagination to life"
-            mutedClassName=""
-            lineBreak
-          />
+          <div>
+            <BlurHeading
+              as="h1"
+              className="display hero-h1"
+              lead="Bringing"
+              leadClassName="hero-h1-light"
+              muted="imagination to life"
+              mutedClassName=""
+              lineBreak
+            />
+            <div className="hero-actions">
+              <a href={START_HREF} className="hero-btn hero-btn-dark">Get Started</a>
+              <a href={DEMO_HREF} target="_blank" rel="noopener noreferrer" className="hero-btn hero-btn-ghost">Book a demo</a>
+            </div>
+          </div>
           <p className="hero-copy">
             ImagineArt is the best AI creative suite that generates images, videos,
             shorts, and voice from text prompt. Built for creators, teams and the
             developers shipping alongside them.
           </p>
-          <div className="hero-actions">
-            <a href={START_HREF} className="hero-btn hero-btn-dark">Get Started</a>
-            <a href={DEMO_HREF} target="_blank" rel="noopener noreferrer" className="hero-btn hero-btn-ghost">Book a demo</a>
-          </div>
         </div>
 
-      </div>
+        <div className="hero-frame">
+          <div
+            className="hero-tabs"
+            ref={tabs.containerRef as React.Ref<HTMLDivElement>}
+            role="tablist"
+            aria-label="Product lines"
+            onKeyDown={onTabKey}
+          >
+            {/* The hero tabs do not walk themselves: under the headline, a
+                panel changing on its own competes with the copy for the eye.
+                The Use Cases wheel, further down, does. */}
+            <SlidingIndicator box={tabs.box} ready={tabs.ready} className="hero-tab-fill" />
+            {LINES.map((l, i) => (
+              <button
+                key={l.id}
+                ref={(el) => { tabs.itemRefs.current[i] = el; }}
+                id={`hero-tab-${l.id}`}
+                role="tab"
+                type="button"
+                aria-selected={i === line}
+                aria-controls={`hero-panel-${l.id}`}
+                tabIndex={i === line ? 0 : -1}
+                className={`hero-tab ${i === line ? "hero-tab-on" : ""}`}
+                onClick={() => setLine(i)}
+              >
+                {l.label}
+              </button>
+            ))}
+          </div>
 
-      {/* Outside .container-page on purpose: the rail is wider than the page
-          and clipped, which is what cuts the cards at either end. */}
-      <div className="hs" role="list" aria-label="Made with ImagineArt">
-        <div className="hs-rail">
-          {SHOWCASE.map((c) => (
-            <div key={c.id} className="hs-item" role="listitem" style={{ ["--k" as string]: c.k }}>
-              <p className="hs-label">{c.label}</p>
-              <div className="hs-card">
-                <img src={withBasePath(c.image)} alt="" loading="lazy" />
+          <div className="hero-body">
+            <div
+              className="hero-stack"
+              onMouseEnter={() => setShowControls(true)}
+              onMouseLeave={() => setShowControls(false)}
+              onFocusCapture={() => setShowControls(true)}
+              onBlurCapture={() => setShowControls(false)}
+            >
+            {LINES.map((l, i) => (
+              <div
+                key={l.id}
+                id={`hero-panel-${l.id}`}
+                role="tabpanel"
+                aria-labelledby={`hero-tab-${l.id}`}
+                aria-hidden={i !== line}
+                className={`hero-panel ${i === line ? "hero-panel-on" : ""}`}
+              >
+                {l.video === null ? (
+                  <CreativeCarousel live={i === line} />
+                ) : (
+                  /* eslint-disable-next-line jsx-a11y/media-has-caption */
+                  <video
+                    ref={(el) => { videoRefs.current[i] = el; }}
+                    src={withBasePath(l.video)}
+                    title={`${l.label} in ImagineArt`}
+                    muted
+                    loop
+                    playsInline
+                    preload="metadata"
+                    controls={showControls && i === line}
+                    controlsList="nodownload noremoteplayback"
+                    disablePictureInPicture
+                  />
+                )}
               </div>
+            ))}
             </div>
-          ))}
+          </div>
         </div>
       </div>
 
       <style>{`
-        /* Hosts a <SectionGlow> at z-index -1, and the photograph below it.
-
-           One viewport tall, in svh rather than vh so a phone's collapsing
-           address bar does not make it taller than the screen. The copy takes
-           the space the rail leaves and centres in it, so everything inside
-           is sized against the height as well as the width: see --hfit. */
+        /* Hosts a <SectionGlow> at z-index -1, and the photograph below it. */
         .hero-section {
           position: relative;
           isolation: isolate;
-          display: flex;
-          flex-direction: column;
-          min-height: 100vh;
-          min-height: 100svh;
-          padding-top: clamp(72px, 11svh, 140px);
-          padding-bottom: clamp(20px, 3svh, 40px);
+          padding-top: clamp(168px, 20vh, 232px);
+          padding-bottom: clamp(40px, 6vh, 72px);
         }
         ${sectionGlowCss}
         .hero-bg {
@@ -140,66 +300,29 @@ export function Hero() {
           position: absolute;
           inset: 0;
           background:
-            /* A flat wash over the whole photograph first. The gradients
-               below shape it, but on their own they left the copy sitting on
-               whatever the picture happened to be doing behind it. */
-            linear-gradient(rgba(8, 4, 5, 0.34), rgba(8, 4, 5, 0.34)),
-            /* Then the top, where the headline and copy are. */
-            linear-gradient(
-              to bottom,
-              rgba(8, 4, 5, 0.72) 0%,
-              rgba(8, 4, 5, 0.58) 38%,
-              rgba(8, 4, 5, 0.3) 62%,
-              rgba(8, 4, 5, 0) 80%
-            ),
+            /* Under the headline and copy, so both hold AA over the red. */
+            linear-gradient(to bottom, rgba(10, 4, 6, 0.62) 0%, rgba(10, 4, 6, 0.28) 34%, rgba(10, 4, 6, 0) 52%),
             /* And down into the page, so the band ends on --page-bg rather
                than a cut. */
-            linear-gradient(to bottom, transparent 46%, var(--page-bg) 97%);
+            linear-gradient(to bottom, transparent 40%, var(--page-bg) 96%);
         }
-        .hero-section .container-page {
-          position: relative;
-          z-index: 1;
-          flex: 1 1 auto;
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          min-height: 0;
-        }
+        .hero-section .container-page { position: relative; z-index: 1; }
         .hero-top {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          text-align: center;
-          gap: 0;
+          display: grid;
+          grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+          gap: clamp(24px, 4vw, 64px);
+          align-items: start;
         }
-        /* Sized off whichever axis is tighter, so a short laptop screen gets
-           a smaller headline rather than a hero that will not fit. */
-        .hero-h1 {
-          font-size: clamp(32px, min(4.6vw, 7.4svh), 62px);
-          line-height: 1.04;
-          text-align: center;
-          text-wrap: initial;
-          font-weight: 500;
-        }
-        /* Flat, not the page's gradient heading: one ink, one weight. The
-           fill has to be set as well as the colour, since .display paints its
-           text transparent for the gradient, and the halo goes with it. */
-        .hero-h1, .hero-h1 span {
-          font-weight: 500;
-          color: var(--ink-heading);
-          background: none;
-          -webkit-text-fill-color: var(--ink-heading);
-          text-shadow: none;
-        }
+        .hero-h1 { font-size: clamp(34px, 4vw, 52px); text-align: left; text-wrap: initial; }
+        .hero-h1-light { font-weight: 400; }
         .hero-copy {
           font-size: clamp(16px, 1.25vw, 18px);
           line-height: 1.6;
           color: var(--ink);
-          max-width: 58ch;
-          margin-top: clamp(12px, 2svh, 22px);
-          margin-inline: auto;
+          max-width: 46ch;
+          padding-top: 10px;
         }
-        .hero-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: clamp(16px, 3svh, 30px); }
+        .hero-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 28px; }
         .hero-btn {
           display: inline-flex;
           align-items: center;
@@ -219,92 +342,116 @@ export function Hero() {
         .hero-btn-ghost { background: var(--panel); color: var(--ink); border: 1px solid var(--line-strong); }
         .hero-btn-ghost:hover { border-color: var(--ink-3); }
 
-        /* The showcase rail.
-           Bottoms align and each card takes its own share --k of the tallest
-           height, which is what draws the arch; the width follows from the
-           3:4 ratio, so one number per card sets both. */
-        /* The showcase rail.
-           Bottoms align and each card takes its own share --k of the tallest
-           height, which is what draws the arch; the width follows from the
-           3:4 ratio, so one number per card sets both.
-
-           --peak is solved so the row fills the page exactly: every card is
-           0.75 * --peak * its own k wide, so the widths add up to
-           0.75 * --peak * --ksum, and that plus the gaps has to be the page.
-           Change SHOWCASE and --ksum has to change with it.
-
-           The width comes from cqw, not vw: 100vw counts the vertical
-           scrollbar, so on any platform that reserves space for one the row
-           would be a few pixels wider than the page and give the whole
-           document a horizontal scrollbar.
-
-           --fit caps that by the viewport's height, because the hero is one
-           screen tall and the rail is the part that has to give. On a tall
-           screen the width solve wins and the row meets both edges; on a
-           short one the height cap wins, the cards come down with it and the
-           row sits inset instead. That trade is the point: a row that always
-           filled the width would push the copy off a laptop screen. */
-        .hs {
-          container-type: inline-size;
-          --ksum: 5.2;
-          --gap: clamp(6px, 0.7vw, 14px);
-          --fill: calc((100cqw - (var(--count) - 1) * var(--gap)) / (0.75 * var(--ksum)));
-          --fit: 36svh;
-          --peak: min(var(--fill), var(--fit));
-          --count: 7;
-          flex: 0 0 auto;
-          margin-top: clamp(14px, 3svh, 44px);
-          overflow-x: auto;
-          overflow-y: hidden;
-          overscroll-behavior-x: contain;
-          scrollbar-width: none;
-          /* Rails on this page need headroom rather than margins, or the
-             scroll container clips what sits above the cards. */
-          padding-block: 4px 2px;
-        }
-        .hs::-webkit-scrollbar { display: none; }
-        .hs-rail {
-          display: flex;
-          align-items: flex-end;
-          justify-content: center;
-          gap: var(--gap);
-          min-width: max-content;
-        }
-        .hs-item {
-          display: flex;
-          flex-direction: column;
-          justify-content: flex-end;
-          gap: 10px;
-          flex: 0 0 auto;
-        }
-        .hs-label {
-          font-size: 13px;
-          font-weight: 500;
-          letter-spacing: -0.005em;
-          color: var(--ink-2);
-          white-space: nowrap;
+        .hero-frame {
+          margin-top: clamp(36px, 5vh, 56px);
+          border: 1px solid var(--line);
+          border-radius: var(--radius-6);
+          background: var(--tile);
           overflow: hidden;
-          text-overflow: ellipsis;
-          max-width: 100%;
         }
-        .hs-card {
+        .hero-tabs { display: flex; gap: 6px; padding: 6px; position: relative; }
+        /* Tabs are squarer than the pill buttons on purpose: the radius is
+           what separates a tab from a button at a glance. No border either,
+           the fill and its shadow carry it. */
+        .hero-tab-fill {
+          border-radius: 16px;
+          background: var(--panel);
+          box-shadow: 0 1px 2px rgba(0,0,0,0.06), 0 4px 14px rgba(16,20,30,0.06);
+        }
+        .hero-tab {
           position: relative;
-          height: calc(var(--peak) * var(--k));
-          aspect-ratio: 3 / 4;
-          border-radius: var(--radius-3);
+          z-index: 1;
+          flex: 1 1 0;
+          height: 50px;
+          border: 0;
+          border-radius: 16px;
+          background: transparent;
+          font-family: inherit;
+          font-size: 15.5px;
+          font-weight: 500;
+          letter-spacing: -0.01em;
+          color: var(--ink-3);
+          cursor: pointer;
+          transition: color 260ms ease;
+        }
+        .hero-tab:hover { color: var(--ink-heading); }
+        .hero-tab-on { color: var(--ink-heading); }
+        ${slidingIndicatorCss}
+
+        /* One 16:9 frame directly in the panel; the three clips stack in it and
+           only the active one shows. */
+        .hero-body { margin: 0 6px 6px; }
+        .hero-stack {
+          display: grid;
+          border-radius: var(--radius-4);
+          border: 1px solid var(--line);
           overflow: hidden;
           background: var(--tile);
+          aspect-ratio: 16 / 9;
         }
-        .hs-card img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .hero-panel {
+          grid-area: 1 / 1;
+          position: relative;
+          opacity: 0;
+          visibility: hidden;
+          transition: opacity 320ms ease, visibility 0s linear 320ms;
+        }
+        .hero-panel-on { opacity: 1; visibility: visible; transition: opacity 320ms ease, visibility 0s; }
+        .hero-panel video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+
+        /* The Creative tab: one full-width clip over a chip row. */
+        .hc {
+          position: absolute;
+          inset: 0;
+          display: grid;
+          grid-template-rows: 1fr auto;
+        }
+        .hc-stage { position: relative; overflow: hidden; background: var(--tile-2); }
+        .hc-stage video {
+          position: absolute;
+          inset: 0;
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          display: block;
+        }
+        .hc-chips {
+          position: relative;
+          display: flex;
+          justify-content: center;
+          flex-wrap: wrap;
+          gap: 4px;
+          padding: 10px 12px 14px;
+        }
+        .hc-chip-fill { border-radius: 999px; background: var(--panel); }
+        .hc-chip {
+          position: relative;
+          z-index: 1;
+          border: 0;
+          border-radius: 999px;
+          padding: 0 16px;
+          height: 34px;
+          background: transparent;
+          font-family: inherit;
+          font-size: 13.5px;
+          font-weight: 500;
+          letter-spacing: -0.005em;
+          color: var(--ink-3);
+          cursor: pointer;
+          white-space: nowrap;
+          transition: color 260ms ease;
+        }
+        .hc-chip:hover { color: var(--ink-heading); }
+        .hc-chip-on { color: var(--ink-heading); }
+
         @media (max-width: 880px) {
           .hc-chip { height: 30px; padding: 0 12px; font-size: 12.5px; }
           .hero-top { grid-template-columns: 1fr; gap: 18px; }
           .hero-copy { padding-top: 0; }
-          /* Eight cards across a phone would be slivers, so the rail stops
-             solving for the page width and goes back to scrolling. */
-          .hs { --fill: clamp(190px, 46vw, 300px); --fit: 30svh; }
-          .hs-rail { justify-content: flex-start; padding-inline: 16px; }
-          .hs-label { font-size: 12px; }
+          .hero-tab { height: 44px; font-size: 14px; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .hero-panel { transition: none; }
         }
       `}</style>
     </section>

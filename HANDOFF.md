@@ -23,7 +23,7 @@ components, not forked from it.
 
 | Section | Component | What it is |
 |---|---|---|
-| Hero | `sections/Hero` | **One viewport tall.** A centred column: headline "Bringing / imagination to life", flat and all at weight 500, then the copy, then Get Started + Book a demo, over a full-bleed photograph. At the foot, a rail of seven portrait cards, bottoms aligned and heights arching to the middle, each with its name above. |
+| Hero | `sections/Hero` | Headline "Bringing / imagination to life" ("Bringing" at weight 400) left, one-line copy right, Get Started + Book a demo, over a full-bleed photograph. Framed panel with a Creative · Workflows · Computer tab bar. **Creative is one full-width clip over a chip row** (Image Generator · Upscaler · Variations · Relight · Camera Angles); Workflows and Computer are one 16:9 clip each, with native controls on hover or focus. Tabs are manual, no auto-advance. |
 | Partners | `sections/Partners` | Six partner marks (ByteDance, Kling AI, MINIMAX, Wan, fal, Grok) with two captions. |
 | Creative Tools `#tools` | `sections/CreativeTools` | A 13-card bento from Figma: four 308px columns, 16px gutter, columns split 372/172 or 130/130/268. Picture cards carry a photograph under a scrim, the rest are flat tinted panels. Title always showing, description on hover. "View all tools" at the foot. |
 | Workflows `#workflows` | `sections/Workflows` | Bento, spans [2,1] / [1,1,1]: Node canvas (wide, clip), Brand Guidelines (clip), Creative Analyser (clip), Connectors as a `MarkCluster`, Plugins as a linked list of host apps. Every tile carries a gradient ground. No borders, 460px rows. |
@@ -164,60 +164,29 @@ currently overflows a tile, and the Connectors marks sit 32px clear of the
 edges against the 22px they travel on hover, so nothing is clipped; a tile
 whose contents grow past its edge would be.
 
-**The hero is one screen** (18 Sep), `min-height: 100svh` — `svh`, not `vh`,
-so a phone's collapsing address bar cannot make it taller than the screen. It
-is a flex column: the copy takes whatever the rail leaves and centres in it.
+**The hero panel is the tabbed one** (18 Sep). A Creative · Workflows ·
+Computer tab bar over one clip each; Creative is a full-width clip with a chip
+row under it (Image Generator · Upscaler · Variations · Relight · Camera
+Angles), every chip pointing at the same file, so picking one changes the
+selection and nothing else. Give each `CREATIVE` entry its own `video` and it
+starts working with no other change.
 
-Because the height is fixed, everything inside is sized against **both** axes.
-The headline is `clamp(32px, min(4.6vw, 7.4svh), 62px)`, so a short laptop
-gets a smaller headline rather than a hero that overflows, and every vertical
-gap is in `svh`. Measured: 1440x900 gives a 62px headline in exactly 900px,
-1440x650 gives 48px in exactly 650px, 375x812 gives 32px in exactly 812px.
-**If you add anything to this section, re-measure at 650px tall** — that is
-where it is tightest, and it fits with nothing to spare.
+**A showcase rail replaced this panel for part of 18 Sep and was reverted.**
+It was a row of seven 3:4 cards arching to the middle, filling the page edge
+to edge, with the copy centred under a larger flat headline and the section
+locked to `100svh`. `Hero.tsx` was restored wholesale from the commit before
+it, so the two-column top, the gradient headline and the auto-height section
+came back with it. The seven images are still on disk at `hero/showcase/`
+(2.6MB) and are now unused. `git show 4e3143f:components/sections/Hero.tsx`
+has the rail version if any of it is wanted again.
 
-**The hero headline does not take the page's gradient.** `.display` paints its
-text transparent and fills it with a gradient plus a halo; the hero overrides
-all three (`background: none`, `-webkit-text-fill-color`, `text-shadow: none`)
-to one flat ink at one weight. Setting only `color` would have done nothing,
-per the trap in §4.
-
-**The rail's size is the smaller of two answers.** `--fill` is the width that
-makes the row meet both edges of the page; `--fit` is a ceiling of `36svh`.
-`--peak` is `min()` of them, so on a tall screen the row is edge to edge and on
-a short one it comes down with the height and sits inset instead. At 1440x900
-the cap wins and the row is inset 58px a side; raise `--fit` if it should
-touch the edges more often, at the cost of height on short screens.
-
-**The hero's framed panel is gone** (18 Sep). It held a Creative · Workflows ·
-Computer tab bar over one clip each, and before that a five-card carousel in
-the Creative tab. All of it is deleted: no tabs, no video, nothing to play or
-pause in the hero. `hero/computer.mp4` and `hero/creative-suite-image.webm`
-are unused as a result, and so are `SlidingIndicator` and `useState` in this
-file.
-
-One thing from that work is worth keeping even though its code went: **never
-point more than one `<video>` at one URL.** Five elements sharing a file fire
-five range requests in the same millisecond, and none can hit the cache the
-others are still filling, so a 1.4MB file cost 7MB, on a CDN as much as on the
-dev server. If that layout returns, fetch once and hand every element the same
-object URL.
-
-**In its place, the showcase rail.** A row of 3:4 cards with their bottoms
-aligned and each one taking its own share `--k` of the tallest height, which
-is what draws the arch; the width follows from the ratio, so one number per
-card sets both.
-
-It fills the page edge to edge, and that is solved rather than set: the widths
-come to `0.75 * --peak * --ksum`, so `--peak` is whatever makes that plus the
-gaps equal the page. **`--ksum` is the sum of every `k` in `SHOWCASE` and has
-to be edited whenever that list is** — add a card without it and the row stops
-meeting the edges. The width comes from `100cqw`, not `100vw`: `vw` counts the
-vertical scrollbar, which on any platform that reserves space for one would
-make the row wider than the page and put a horizontal scrollbar on the whole
-document. Under 880px it stops solving for the page and goes back to a scroll
-rail, since eight cards across a phone are slivers; either way it takes
-`padding-block` headroom rather than margins, per the kit rule.
+Two things from that stretch are worth keeping in mind whatever the hero does
+next. **Never point more than one `<video>` at one URL**: five elements
+sharing a file fire five range requests in the same millisecond, none able to
+hit the cache the others are still filling, so a 1.4MB file cost 7MB. And
+**measure a scrim over a photograph, do not eyeball it**: the method is to
+composite the picture with the scrim layers at the text's real position and
+take the ratio, including against the brightest pixel in the band.
 
 **Headings do not animate** (17 Sep). BlurHeading used to wrap
 `components/ui/blur-reveal` and reveal per character on scroll; it was pulled
@@ -319,12 +288,11 @@ Note `/apps/outfit-tryon`, which Fashion Studio used to point at, returns 500.
   Selected view; no aggregate rating claim is made.
 - **FAQ** reuses the B2B repo's "we never train on your content" and "full
   commercial rights" lines; "free to start" assumes a free tier.
-- **Showcase rail:** the seven images are real work, in
-  `hero/showcase/` (2.6MB). Five are square and two portrait, cropped to 3:4
-  by `object-fit`. The labels (Illustration, Editorial, Product, Character,
-  Portrait, Album Art, Fashion) are descriptions of what each piece shows, not
-  confirmed copy. Adding or removing a card means editing `--ksum` and
-  `--count` in the rail's CSS to match.
+- **Hero clips:** Workflows streams real footage; Computer is still a
+  placeholder. All five Creative chips play one file,
+  `hero/creative-suite-image.webm` (1.4MB), so the clip does not change when
+  you pick a chip. **Give each entry its own footage before shipping.** WebM
+  is the only one on the page; every other clip is MP4.
 - **Remote runtime dependencies:** MCP connect recordings and the 30 Ad Studio
   clips stream from `cdn-imagine.vyro.ai`; the hero's Creative clip from
   `imagine.animagic.art` and its Workflows clip from `www.imagine.art`.
@@ -340,9 +308,9 @@ ffmpeg on this machine; see the B2B Guidelines §7 for the recipe):
 | `studios/film-studio.mp4` | 16MB | unused; delete |
 | `studios/fashion/banner.mp4` | 13MB | in use; re-encode |
 | `hero/backdrop-veil.jpg` | 410KB | the hero photograph; in use |
-| `hero/showcase/*.jpg` | 2.6MB | the seven rail cards; in use |
-| `hero/creative-suite-image.webm` | 1.4MB | unused since the hero panel went; delete |
-| `hero/computer.mp4` | 1.9MB | unused since the hero panel went; delete |
+| `hero/showcase/*.jpg` | 2.6MB | unused since the rail was reverted; keep or delete |
+| `hero/creative-suite-image.webm` | 1.4MB | the Creative clip; in use |
+| `hero/computer.mp4` | 1.9MB | the Computer tab's clip; in use |
 | `cta/hills.jpg` | 195KB | unused since the closing band changed; delete |
 
 `hero/hero.mp4` (6MB) and `hero/backdrop.jpg` were deleted on 18 Sep.
@@ -356,8 +324,8 @@ replacing one changes every card that shows it.
 
 1. **Fix the three mismatched bento descriptions** (§6) and give the cards per-tool links.
 2. Confirm the remaining inferred URL (§5) and the flagged model names (§6).
-3. Confirm the showcase rail's labels (§6) and replace the remaining invented
-   copy (§6).
+3. Replace the Computer hero clip, give each Creative chip its own footage,
+   and replace the remaining invented copy (§6).
 4. Re-encode the Fashion clip and delete the unused media (§7).
 5. ~~Headings invisible without JS~~ and ~~`text-wrap: balance` not applying~~:
    both resolved by removing the heading animation (§3).
