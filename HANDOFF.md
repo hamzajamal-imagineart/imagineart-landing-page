@@ -23,7 +23,7 @@ components, not forked from it.
 
 | Section | Component | What it is |
 |---|---|---|
-| Hero | `sections/Hero` | Headline "Bringing / imagination to life" ("Bringing" at weight 400) left, one-line copy right, Get Started + Book a demo, over a full-bleed photograph. Framed panel with a Creative · Workflows · Computer tab bar. **Creative is one full-width clip over a chip row** (Image Generator · Upscaler · Variations · Relight · Camera Angles); Workflows and Computer are one 16:9 clip each, with native controls on hover or focus. Tabs are manual, no auto-advance. |
+| Hero | `sections/Hero` | One centred column on the plain page: headline "Bringing / imagination to life" flat and all at weight 500, the copy, then Get Started + Book a demo. Below it a centred row of pill tabs, Creative · Workflows · Computer, standing on the page rather than inside the panel; then the panel itself. **Creative is one full-width clip over a chip row** (Image Generator · Upscaler · Variations · Relight · Camera Angles); Workflows and Computer are one 16:9 clip each, with native controls on hover or focus. Tabs are manual, no auto-advance. |
 | Partners | `sections/Partners` | Six partner marks (ByteDance, Kling AI, MINIMAX, Wan, fal, Grok) with two captions. |
 | Creative Tools `#tools` | `sections/CreativeTools` | A 13-card bento from Figma: four 308px columns, 16px gutter, columns split 372/172 or 130/130/268. Picture cards carry a photograph under a scrim, the rest are flat tinted panels. Title always showing, description on hover. "View all tools" at the foot. |
 | Workflows `#workflows` | `sections/Workflows` | Bento, spans [2,1] / [1,1,1]: Node canvas (wide, clip), Brand Guidelines (clip), Creative Analyser (clip), Connectors as a `MarkCluster`, Plugins as a linked list of host apps. Every tile carries a gradient ground. No borders, 460px rows. |
@@ -109,60 +109,25 @@ hero's two lines at different weights.
 
 ### Hero
 
-**The hero carries a photograph** (18 Sep), `hero/backdrop-veil.jpg`, full bleed
-behind the whole section. It is an `<img>` rather than a `background-image` so
-it can be `object-fit: cover` at `50% 12%`, which keeps the crown in frame as
-the section shortens. Its scrim is three layers in one element: a flat wash over the whole
-photograph, a heavier gradient over the top where the copy sits, and a fade to
-`--page-bg` at the foot so the seam into Partners stays invisible. The flat
-wash is the one that matters — the gradients alone left the copy sitting on
-whatever the picture happened to be doing behind it. The wash is the number to tune when the photograph
-changes, and it has to be measured rather than eyeballed: a pale picture and a
-dark one want different values. Measured at 1440 by compositing the picture
-with all three scrim layers at the copy's actual position: **16.3:1 under the
-headline, 17.5:1 under the copy, and 9.2:1 against the brightest pixel in the
-band** (the crown). AA wants 4.5:1, so there is room to lift the wash if the
-photograph reads too dark. The
-`SectionGlow` still sits above it, at `z-index: -1` to the photograph's `-2`.
+**The hero has no photograph** (18 Sep). It sits on the plain page, on the
+Kyoso pattern: a centred column of headline, copy and actions, then a centred
+row of pill tabs, then the panel. `backdrop-veil.jpg` and the whole
+`.hero-bg` layer with its scrim are gone, so nothing in this section needs
+compositing to stay legible any more. `SectionGlow` is what keeps the top of
+the section from being flat black now, so do not remove it without replacing
+it with something.
 
-This is the page's one saturated surface. The rest of the design system is
-still monochrome, and the colour rule (§3) is unchanged: colour comes from
-imagery, and this is imagery.
+**The hero headline does not take the page's gradient.** `.display` paints its
+text transparent and fills it with a gradient plus a halo; the hero overrides
+all three (`background: none`, `-webkit-text-fill-color`, `text-shadow: none`)
+to one flat ink at weight 500, both clauses the same. Setting only `color`
+would have done nothing, per the trap in §4.
 
-**Every Workflows tile carries a gradient ground** (18 Sep), from
-`workflows/bg/`: blue on Node canvas, amber on Brand Guidelines, green on
-Creative Analyser, ember on Connectors, violet on Plugins. The two warm
-images are placed diagonally rather than in the same column: the grid is Node
-canvas across columns 1 and 2, so Brand Guidelines sits directly above
-Plugins, and amber over violet reads better than amber over a second warm
-ground.
-
-The ground is an `<img>` behind the tile at `z-index: -1`, with a scrim over
-it in `::after`: a flat wash plus a gradient heaviest at the top, because the
-copy sits at the top of a tile and the media covers the foot. These gradients
-carry bright golds, oranges and light greens under near-white text, so the
-scrim is not optional. Measured at 1440 by compositing each picture with the
-scrim at the title's and body's real positions:
-
-| Tile | Ground | Title | Body | Worst pixel, body |
-|---|---|---|---|---|
-| Node canvas | blue | 14.9:1 | 8.6:1 | 8.2:1 |
-| Brand Guidelines | amber | 13.0:1 | 6.7:1 | 6.3:1 |
-| Creative Analyser | green | 15.3:1 | 8.2:1 | 5.3:1 |
-| Connectors | ember | 17.0:1 | 9.5:1 | 9.1:1 |
-| Plugins | violet | 13.0:1 | 6.7:1 | 5.4:1 |
-
-The green tile's body is now the tightest at 5.3:1 against the brightest pixel
-behind it, well over AA's 4.5. Ember is the darkest of the five and measures
-the best of them. **A brighter image than these needs the scrim raised**, and
-the check is worth redoing rather than eyeballing: the gold ground ember
-replaced measured 5.0:1 on the same scrim. The Connectors marks are unaffected by any of this: they sit on
-their own `--tile-2` circles with their own border.
-
-`.wf-tile` gained `overflow: hidden` so the ground follows the radius. Nothing
-currently overflows a tile, and the Connectors marks sit 32px clear of the
-edges against the 22px they travel on hover, so nothing is clipped; a tile
-whose contents grow past its edge would be.
+**The tab bar stands on the page, not in the panel.** It is centred, pills
+rather than squares, and each tab is only as wide as its label: three tabs
+stretched across the page would read as a segmented control. The fill is still
+`SlidingIndicator`, on `--tile` now that it sits on the page rather than the
+panel. The panel below it is media only.
 
 **The hero panel is the tabbed one** (18 Sep). A Creative · Workflows ·
 Computer tab bar over one clip each; Creative is a full-width clip with a chip
@@ -307,7 +272,7 @@ ffmpeg on this machine; see the B2B Guidelines §7 for the recipe):
 |---|---|---|
 | `studios/film-studio.mp4` | 16MB | unused; delete |
 | `studios/fashion/banner.mp4` | 13MB | in use; re-encode |
-| `hero/backdrop-veil.jpg` | 410KB | the hero photograph; in use |
+| `hero/backdrop-veil.jpg` | 410KB | unused since the hero photograph was dropped; delete |
 | `hero/showcase/*.jpg` | 2.6MB | unused since the rail was reverted; keep or delete |
 | `hero/creative-suite-image.webm` | 1.4MB | the Creative clip; in use |
 | `hero/computer.mp4` | 1.9MB | the Computer tab's clip; in use |

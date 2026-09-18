@@ -167,69 +167,60 @@ export function Hero() {
           bar and a pool at 0% would sit behind it, so it is centred on the
           headline instead. */}
       <SectionGlow position="50% 20%" />
-      {/* The hero photograph, full bleed behind everything. It is its own
-          element rather than a background-image so it can be object-fit and
-          carry its own scrim; the scrim is what keeps the headline over it at
-          AA and lands the foot of the section on --page-bg, so the seam into
-          Partners stays invisible. */}
-      <div className="hero-bg" aria-hidden>
-        <img src={withBasePath("/media/hero/backdrop-veil.jpg")} alt="" />
-        <span className="hero-bg-scrim" />
-      </div>
       <div className="container-page">
+        {/* One centred column: heading, copy, actions. */}
         <div className="hero-top">
-          <div>
-            <BlurHeading
-              as="h1"
-              className="display hero-h1"
-              lead="Bringing"
-              leadClassName="hero-h1-light"
-              muted="imagination to life"
-              mutedClassName=""
-              lineBreak
-            />
-            <div className="hero-actions">
-              <a href={START_HREF} className="hero-btn hero-btn-dark">Get Started</a>
-              <a href={DEMO_HREF} target="_blank" rel="noopener noreferrer" className="hero-btn hero-btn-ghost">Book a demo</a>
-            </div>
-          </div>
+          <BlurHeading
+            as="h1"
+            className="display hero-h1"
+            lead="Bringing"
+            muted="imagination to life"
+            mutedClassName=""
+            lineBreak
+          />
           <p className="hero-copy">
             ImagineArt is the best AI creative suite that generates images, videos,
             shorts, and voice from text prompt. Built for creators, teams and the
             developers shipping alongside them.
           </p>
+          <div className="hero-actions">
+            <a href={START_HREF} className="hero-btn hero-btn-dark">Get Started</a>
+            <a href={DEMO_HREF} target="_blank" rel="noopener noreferrer" className="hero-btn hero-btn-ghost">Book a demo</a>
+          </div>
+        </div>
+
+        {/* The tab bar stands on the page between the actions and the panel,
+            rather than sitting inside the panel's own chrome. */}
+        <div
+          className="hero-tabs"
+          ref={tabs.containerRef as React.Ref<HTMLDivElement>}
+          role="tablist"
+          aria-label="Product lines"
+          onKeyDown={onTabKey}
+        >
+          {/* The hero tabs do not walk themselves: under the headline, a
+              panel changing on its own competes with the copy for the eye.
+              The Use Cases wheel, further down, does. */}
+          <SlidingIndicator box={tabs.box} ready={tabs.ready} className="hero-tab-fill" />
+          {LINES.map((l, i) => (
+            <button
+              key={l.id}
+              ref={(el) => { tabs.itemRefs.current[i] = el; }}
+              id={`hero-tab-${l.id}`}
+              role="tab"
+              type="button"
+              aria-selected={i === line}
+              aria-controls={`hero-panel-${l.id}`}
+              tabIndex={i === line ? 0 : -1}
+              className={`hero-tab ${i === line ? "hero-tab-on" : ""}`}
+              onClick={() => setLine(i)}
+            >
+              {l.label}
+            </button>
+          ))}
         </div>
 
         <div className="hero-frame">
-          <div
-            className="hero-tabs"
-            ref={tabs.containerRef as React.Ref<HTMLDivElement>}
-            role="tablist"
-            aria-label="Product lines"
-            onKeyDown={onTabKey}
-          >
-            {/* The hero tabs do not walk themselves: under the headline, a
-                panel changing on its own competes with the copy for the eye.
-                The Use Cases wheel, further down, does. */}
-            <SlidingIndicator box={tabs.box} ready={tabs.ready} className="hero-tab-fill" />
-            {LINES.map((l, i) => (
-              <button
-                key={l.id}
-                ref={(el) => { tabs.itemRefs.current[i] = el; }}
-                id={`hero-tab-${l.id}`}
-                role="tab"
-                type="button"
-                aria-selected={i === line}
-                aria-controls={`hero-panel-${l.id}`}
-                tabIndex={i === line ? 0 : -1}
-                className={`hero-tab ${i === line ? "hero-tab-on" : ""}`}
-                onClick={() => setLine(i)}
-              >
-                {l.label}
-              </button>
-            ))}
-          </div>
-
           <div className="hero-body">
             <div
               className="hero-stack"
@@ -272,7 +263,7 @@ export function Hero() {
       </div>
 
       <style>{`
-        /* Hosts a <SectionGlow> at z-index -1, and the photograph below it. */
+        /* Hosts a <SectionGlow> at z-index -1. */
         .hero-section {
           position: relative;
           isolation: isolate;
@@ -280,49 +271,39 @@ export function Hero() {
           padding-bottom: clamp(40px, 6vh, 72px);
         }
         ${sectionGlowCss}
-        .hero-bg {
-          position: absolute;
-          inset: 0;
-          z-index: -2;
-          overflow: hidden;
-          pointer-events: none;
-        }
-        .hero-bg img {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-          /* The subject is centred and top-weighted, so the crown stays in
-             frame as the section gets shorter. */
-          object-position: 50% 12%;
-          display: block;
-        }
-        .hero-bg-scrim {
-          position: absolute;
-          inset: 0;
-          background:
-            /* Under the headline and copy, so both hold AA over the red. */
-            linear-gradient(to bottom, rgba(10, 4, 6, 0.62) 0%, rgba(10, 4, 6, 0.28) 34%, rgba(10, 4, 6, 0) 52%),
-            /* And down into the page, so the band ends on --page-bg rather
-               than a cut. */
-            linear-gradient(to bottom, transparent 40%, var(--page-bg) 96%);
-        }
         .hero-section .container-page { position: relative; z-index: 1; }
         .hero-top {
-          display: grid;
-          grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-          gap: clamp(24px, 4vw, 64px);
-          align-items: start;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          text-align: center;
         }
-        .hero-h1 { font-size: clamp(34px, 4vw, 52px); text-align: left; text-wrap: initial; }
-        .hero-h1-light { font-weight: 400; }
+        .hero-h1 {
+          font-size: clamp(36px, 5.2vw, 72px);
+          line-height: 1.04;
+          letter-spacing: -0.025em;
+          text-align: center;
+          text-wrap: initial;
+        }
+        /* Flat white, not the page's gradient heading: one ink at one weight,
+           as the rest of the hero now is. .display paints its text
+           transparent to carry that gradient, so the fill has to be set as
+           well as the colour, and the halo goes with it. */
+        .hero-h1, .hero-h1 span {
+          font-weight: 500;
+          color: var(--ink-heading);
+          background: none;
+          -webkit-text-fill-color: var(--ink-heading);
+          text-shadow: none;
+        }
         .hero-copy {
           font-size: clamp(16px, 1.25vw, 18px);
           line-height: 1.6;
-          color: var(--ink);
-          max-width: 46ch;
-          padding-top: 10px;
+          color: var(--ink-2);
+          max-width: 56ch;
+          margin-top: 20px;
         }
-        .hero-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 28px; }
+        .hero-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 28px; }
         .hero-btn {
           display: inline-flex;
           align-items: center;
@@ -343,28 +324,39 @@ export function Hero() {
         .hero-btn-ghost:hover { border-color: var(--ink-3); }
 
         .hero-frame {
-          margin-top: clamp(36px, 5vh, 56px);
+          margin-top: clamp(20px, 3vh, 32px);
           border: 1px solid var(--line);
           border-radius: var(--radius-6);
           background: var(--tile);
           overflow: hidden;
+          padding: 6px;
         }
-        .hero-tabs { display: flex; gap: 6px; padding: 6px; position: relative; }
+        /* Standing on the page rather than inside the panel, so it is centred
+           and each tab is only as wide as its label: a row of three that
+           stretched to the page would read as a segmented control. */
+        .hero-tabs {
+          display: flex;
+          justify-content: center;
+          flex-wrap: wrap;
+          gap: 4px;
+          position: relative;
+          margin-top: clamp(30px, 5vh, 52px);
+        }
         /* Tabs are squarer than the pill buttons on purpose: the radius is
            what separates a tab from a button at a glance. No border either,
            the fill and its shadow carry it. */
         .hero-tab-fill {
-          border-radius: 16px;
-          background: var(--panel);
-          box-shadow: 0 1px 2px rgba(0,0,0,0.06), 0 4px 14px rgba(16,20,30,0.06);
+          border-radius: 999px;
+          background: var(--tile);
         }
         .hero-tab {
           position: relative;
           z-index: 1;
-          flex: 1 1 0;
-          height: 50px;
+          flex: 0 0 auto;
+          height: 42px;
+          padding: 0 18px;
           border: 0;
-          border-radius: 16px;
+          border-radius: 999px;
           background: transparent;
           font-family: inherit;
           font-size: 15.5px;
@@ -380,7 +372,7 @@ export function Hero() {
 
         /* One 16:9 frame directly in the panel; the three clips stack in it and
            only the active one shows. */
-        .hero-body { margin: 0 6px 6px; }
+        .hero-body { margin: 0; }
         .hero-stack {
           display: grid;
           border-radius: var(--radius-4);
@@ -446,9 +438,7 @@ export function Hero() {
 
         @media (max-width: 880px) {
           .hc-chip { height: 30px; padding: 0 12px; font-size: 12.5px; }
-          .hero-top { grid-template-columns: 1fr; gap: 18px; }
-          .hero-copy { padding-top: 0; }
-          .hero-tab { height: 44px; font-size: 14px; }
+          .hero-tab { height: 38px; padding: 0 14px; font-size: 14px; }
         }
         @media (prefers-reduced-motion: reduce) {
           .hero-panel { transition: none; }
