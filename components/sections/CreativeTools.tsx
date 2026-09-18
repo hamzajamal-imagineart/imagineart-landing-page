@@ -3,10 +3,6 @@ import { appsHref } from "@/lib/links";
 import { BlurHeading } from "@/components/BlurHeading";
 import { SectionGuides } from "@/components/primitives/SectionGuides";
 import { ButtonLink } from "@/components/Button";
-import {
-  IconAudio, IconBox, IconCamera, IconClapper, IconHanger, IconImage, IconPalette, IconPerson,
-  IconPlay, IconVideo,
-} from "@/components/icons";
 import { SectionGlow, sectionGlowCss } from "@/components/primitives/SectionGlow";
 
 /**
@@ -42,7 +38,6 @@ import { SectionGlow, sectionGlowCss } from "@/components/primitives/SectionGlow
 type Card = {
   title: string;
   body: string;
-  icon: React.ReactNode;
   /** Photograph, full-bleed. */
   image?: string;
   /** That tool's own clip, full-bleed, for cards with no photograph. */
@@ -55,25 +50,25 @@ type Card = {
 
 const COLUMNS: Card[][] = [
   [
-    { title: "Lipsync", body: "Create high-end visuals from prompts or images.", icon: <IconPerson />, image: "/media/tools/lipsync.jpg", size: "tall" },
-    { title: "AI Voiceover", body: "Studio-quality voiceovers in every major language.", icon: <IconAudio />, image: "/media/tools/ai-voiceover.jpg", size: "short" },
-    { title: "Inpaint", body: "Change one part of an image and keep the rest exactly as it was.", icon: <IconImage />, video: "/media/capabilities/inpaint.mp4", tint: "#1b2430", size: "short" },
+    { title: "Lipsync", body: "Create high-end visuals from prompts or images.", image: "/media/tools/lipsync.jpg", size: "tall" },
+    { title: "AI Voiceover", body: "Studio-quality voiceovers in every major language.", image: "/media/tools/ai-voiceover.jpg", size: "short" },
+    { title: "Inpaint", body: "Change one part of an image and keep the rest exactly as it was.", video: "/media/capabilities/inpaint.mp4", tint: "#1b2430", size: "short" },
   ],
   [
-    { title: "Relight Video", body: "Make cinematic videos that feel professionally directed.", icon: <IconVideo />, image: "/media/tools/relight-video.jpg", size: "tall", badge: "New" },
-    { title: "Outpaint", body: "Connect AI tools into a single, reusable creative pipeline.", icon: <IconPalette />, video: "/media/capabilities/video-reframe.mp4", tint: "#141417", size: "short" },
-    { title: "Image Upscaler", body: "Sharper and larger, ready for print at full resolution.", icon: <IconBox />, video: "/media/capabilities/upscale.mp4", tint: "#241b2b", size: "short" },
+    { title: "Relight Video", body: "Make cinematic videos that feel professionally directed.", image: "/media/tools/relight-video.jpg", size: "tall", badge: "New" },
+    { title: "Outpaint", body: "Connect AI tools into a single, reusable creative pipeline.", video: "/media/capabilities/video-reframe.mp4", tint: "#141417", size: "short" },
+    { title: "Image Upscaler", body: "Sharper and larger, ready for print at full resolution.", video: "/media/capabilities/upscale.mp4", tint: "#241b2b", size: "short" },
   ],
   [
-    { title: "Motion Sync", body: "70+ ready-made AI effects. Transform any visual in seconds.", icon: <IconPlay />, image: "/media/tools/motion-sync.jpg", size: "tall" },
-    { title: "VFX", body: "Create a track for any video, in any style.", icon: <IconClapper />, image: "/media/tools/vfx.jpg", size: "short" },
-    { title: "Video Extend", body: "Add seconds to the end of a shot without cutting away.", icon: <IconVideo />, video: "/media/capabilities/video-extend.mp4", tint: "#1f2a22", size: "short" },
+    { title: "Motion Sync", body: "70+ ready-made AI effects. Transform any visual in seconds.", image: "/media/tools/motion-sync.jpg", size: "tall" },
+    { title: "VFX", body: "Create a track for any video, in any style.", image: "/media/tools/vfx.jpg", size: "short" },
+    { title: "Video Extend", body: "Add seconds to the end of a shot without cutting away.", video: "/media/capabilities/video-extend.mp4", tint: "#1f2a22", size: "short" },
   ],
   [
-    { title: "Dub Video", body: "Change spoken language with lipsync.", icon: <IconAudio />, tint: "#46211e", size: "mini" },
-    { title: "Remove Background", body: "Generate without leaving your timeline.", icon: <IconImage />, tint: "#171726", size: "mini" },
-    { title: "Create Characters", body: "Create high-end AI video production with precise control.", icon: <IconCamera />, image: "/media/tools/create-characters.jpg", size: "fill" },
-    { title: "Outfit Try-on", body: "Dress a model in your garment from a single product photo.", icon: <IconHanger />, video: "/media/capabilities/outfit-tryon.mp4", tint: "#2b201a", size: "short" },
+    { title: "Dub Video", body: "Change spoken language with lipsync.", image: "/media/tools/dub-video.jpg", size: "mini" },
+    { title: "Remove Background", body: "Generate without leaving your timeline.", image: "/media/tools/remove-background.jpg", size: "mini" },
+    { title: "Create Characters", body: "Create high-end AI video production with precise control.", image: "/media/tools/create-characters.jpg", size: "fill" },
+    { title: "Outfit Try-on", body: "Dress a model in your garment from a single product photo.", video: "/media/capabilities/outfit-tryon.mp4", tint: "#2b201a", size: "short" },
   ],
 ];
 
@@ -131,7 +126,6 @@ export function CreativeTools() {
                   )}
                   {card.badge && <span className="bt-badge">{card.badge}</span>}
                   <span className="bt-meta">
-                    <span className="bt-icon" aria-hidden>{card.icon}</span>
                     <span className="bt-title">{card.title}</span>
                     <span className="bt-reveal">
                       <span className="bt-body">{card.body}</span>
@@ -208,6 +202,19 @@ export function CreativeTools() {
           background: linear-gradient(to top, rgba(10, 10, 11, 0.88) 0%, rgba(10, 10, 11, 0.45) 30%, transparent 62%);
           transition: background 320ms ease;
         }
+        /* The scrim's fade is sized for a 410px card: it is gone by 62% of
+           the way up, which is above a mini card's title but well below a
+           tall one's. On the short cards the gradient has to reach the whole
+           height, or a bright picture puts the title under AA — measured, the
+           Remove Background card came out at 3.5:1 with the tall card's
+           scrim. */
+        .bt-mini .bt-scrim, .bt-short .bt-scrim, .bt-fill .bt-scrim {
+          background: linear-gradient(to top, rgba(10, 10, 11, 0.93) 0%, rgba(10, 10, 11, 0.76) 48%, rgba(10, 10, 11, 0.55) 100%);
+        }
+        .bt-mini:hover .bt-scrim, .bt-short:hover .bt-scrim, .bt-fill:hover .bt-scrim,
+        .bt-mini:focus-visible .bt-scrim, .bt-short:focus-visible .bt-scrim, .bt-fill:focus-visible .bt-scrim {
+          background: linear-gradient(to top, rgba(10, 10, 11, 0.95) 0%, rgba(10, 10, 11, 0.84) 48%, rgba(10, 10, 11, 0.66) 100%);
+        }
         .bt-card:hover .bt-scrim, .bt-card:focus-visible .bt-scrim {
           background: linear-gradient(to top, rgba(10, 10, 11, 0.92) 0%, rgba(10, 10, 11, 0.66) 44%, rgba(10, 10, 11, 0.2) 100%);
         }
@@ -218,18 +225,7 @@ export function CreativeTools() {
           display: block;
           padding: 20px;
         }
-        .bt-icon {
-          width: 32px; height: 32px;
-          border-radius: 10px;
-          display: grid; place-items: center;
-          background: rgba(255, 255, 255, 0.12);
-          color: #fff;
-          margin-bottom: 10px;
-        }
-        .bt-icon svg { width: 17px; height: 17px; }
         .bt-mini .bt-meta { padding: 16px; }
-        .bt-mini .bt-icon { width: 28px; height: 28px; border-radius: 9px; margin-bottom: 8px; }
-        .bt-mini .bt-icon svg { width: 15px; height: 15px; }
 
         .bt-title {
           display: block;

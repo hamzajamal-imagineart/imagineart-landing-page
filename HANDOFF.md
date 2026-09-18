@@ -25,7 +25,7 @@ components, not forked from it.
 |---|---|---|
 | Hero | `sections/Hero` | One centred column over a mosaic of work: headline "Imagine, design, animate, / edit. One platform." flat and all at weight 500, the copy, then one CTA, "Start creating for free". Below it a 16:9 panel holding one clip edge to edge, with its chip row (Image Generator · Upscaler · Variations · Relight · Camera Angles) floating over the footage in glass. |
 | Partners | `sections/Partners` | Six partner marks (ByteDance, Kling AI, MINIMAX, Wan, fal, Grok) with two captions. |
-| Creative Tools `#tools` | `sections/CreativeTools` | A 13-card bento from Figma: four 308px columns, 16px gutter, columns split 410/190/190 or 144/144/296/190 so all four end level at 822. Six cards carry a photograph under a scrim, five carry that tool's own clip under the same scrim, two stay flat tinted panels. Title always showing, description on hover. "View all tools" at the foot. |
+| Creative Tools `#tools` | `sections/CreativeTools` | A 13-card bento from Figma: four 308px columns, 16px gutter, columns split 410/190/190 or 144/144/296/190 so all four end level at 822. Eight cards carry a photograph under a scrim, five carry that tool's own clip under the same scrim. No icons. Title always showing, description on hover. "View all tools" at the foot. |
 | Workflows `#workflows` | `sections/Workflows` | Bento, spans [2,1] / [1,1,1]: Node canvas (wide, clip), Brand Guidelines (clip), Creative Analyser (clip), Connectors as a `MarkCluster`, Plugins as a linked list of host apps. Every tile carries a gradient ground. No borders, 460px rows. |
 | Studios `#studios` | `sections/AdStudio` | Heading "Studios" + lede, then the **Ad Studio banner**: five vertical marquee columns of 9:16 ad clips (30 clips, CDN, posters, `preload="none"`) and a frosted left panel. |
 | Fashion Studio `#fashion-studio` | `sections/FashionStudio` | Banner: campaign clip full-bleed, rising scrim, white wordmark, glass "Try Now". |
@@ -173,16 +173,23 @@ tokens: these sit on the footage, not on the page, so they do not follow the
 theme — and the selected chip takes the ground colour against the near-white
 fill, per the pairing rule in §4.
 
-**Five Tools cards carry their tool's own clip** (18 Sep): Inpaint, Image
-Upscaler, Video Extend and Outfit Try-on have exact footage in
-`capabilities/`; Outpaint borrows `video-reframe.mp4`, which is the same
-operation seen from the other side. Each keeps its tint underneath as a
-stand-in poster, since none of these clips has one and the card would
-otherwise be black until the first frame lands, and each takes the same scrim
-the photographs do. **Dub Video and Remove Background are still flat on
-purpose**: no clip for either exists anywhere in `public/media`, and lending
-them a neighbour's footage would repeat the mismatch already flagged in §6,
-where three card bodies describe the wrong tool.
+**Every Tools card carries media now** (18 Sep), and none carries an icon.
+Five have their tool's own clip: Inpaint, Image Upscaler, Video Extend and
+Outfit Try-on have exact footage in `capabilities/`, and Outpaint borrows
+`video-reframe.mp4`, the same operation seen from the other side. Each keeps
+its tint underneath as a stand-in poster, since none of these clips has one
+and the card would otherwise be black until the first frame lands. The last
+two flat cards, Dub Video and Remove Background, took stills cut down from the
+showcase set.
+
+**The short cards need their own scrim.** The original is sized for a 410px
+card — it is gone by 62% of the way up, which is above a mini card's title but
+well below a tall one's. Putting a photograph on a 144px card with that scrim
+measured **3.5:1 on Remove Background's title, under AA**, and Inpaint was
+marginal at 4.7:1. `.bt-mini`, `.bt-short` and `.bt-fill` now take a gradient
+that reaches their full height. Measured per pixel across every card title at
+1440 afterwards: the worst on the page is **9.4:1**, and nothing is near AA.
+**Check this again if a brighter still goes on a short card.**
 
 **The hero CTA is built from a supplied SVG**, not approximated: shape 48 tall
 on an 18 radius; the fill is that SVG's radial gradient, whose rx and ry were
