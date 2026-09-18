@@ -163,16 +163,19 @@ export function CreativeTools() {
         }
         .bt-col { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
 
-        /* Heights are the Figma's, and the uneven column splits are the
-           layout: 372/172 against 112/112/300. */
-        .bt-tall  { height: 372px; }
-        .bt-short { height: 172px; }
+        /* The Figma's heights (372/172 against 112/112/300) taken up about a
+           tenth. The uneven column split is the layout, and the four columns
+           have to end level: three run tall + short + short and the fourth
+           runs mini + mini + fill + short, so every column totals 822 with
+           its gaps. Change one height and the rest have to absorb it. */
+        .bt-tall  { height: 410px; }
+        .bt-short { height: 190px; }
         /* Taller than the Figma's 112, and the fill card shorter than its
-           300, so the column still totals 560 like the other three. At 112 a
-           mini card could not hold its icon, title and description at once
-           and the description was cut off. */
-        .bt-mini  { height: 130px; }
-        .bt-fill  { height: 268px; }
+           300, so the fourth column still lands level with the other three.
+           At 112 a mini card could not hold its icon, title and description
+           at once and the description was cut off. */
+        .bt-mini  { height: 144px; }
+        .bt-fill  { height: 296px; }
 
         .bt-card {
           position: relative;
@@ -284,15 +287,15 @@ export function CreativeTools() {
            the cards take whatever height that needs. */
         @media (hover: none) {
           .bt-reveal { max-height: 80px; opacity: 1; }
-          .bt-mini { height: auto; min-height: 130px; }
+          .bt-mini { height: auto; min-height: 144px; }
           .bt-mini .bt-meta { position: static; }
         }
         @media (max-width: 680px) {
           .bt-grid { grid-template-columns: minmax(0, 1fr); }
-          .bt-tall { height: 300px; }
-          .bt-fill { height: 260px; }
-          .bt-short { height: 172px; }
-          .bt-mini { height: auto; min-height: 130px; }
+          .bt-tall { height: 330px; }
+          .bt-fill { height: 286px; }
+          .bt-short { height: 190px; }
+          .bt-mini { height: auto; min-height: 144px; }
           .bt-mini .bt-meta { position: static; }
         }
         @media (prefers-reduced-motion: reduce) {
