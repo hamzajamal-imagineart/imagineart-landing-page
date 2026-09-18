@@ -150,8 +150,24 @@ export function Hero() {
    * no explanation.
    */
   const [moved, setMoved] = useState(false);
+  const frame = useRef<HTMLDivElement | null>(null);
+
+  /**
+   * One listener for both scroll effects: the mosaic's blur, and the panel
+   * growing to full size as the page moves.
+   *
+   * The growth is written straight to the element as a custom property rather
+   * than held in state, so a scroll does not re-render the section on every
+   * frame. The panel starts a tenth under size and reaches full size half a
+   * screen down; with no JS it simply stays at its starting size, which is a
+   * slightly smaller panel and not a broken one.
+   */
   useEffect(() => {
-    const onScroll = () => setMoved(window.scrollY > 24);
+    const onScroll = () => {
+      setMoved(window.scrollY > 24);
+      const p = Math.min(1, Math.max(0, window.scrollY / (window.innerHeight * 0.5)));
+      frame.current?.style.setProperty("--grow", String(0.9 + 0.1 * p));
+    };
     window.addEventListener("scroll", onScroll, { passive: true });
     onScroll();
     return () => window.removeEventListener("scroll", onScroll);
@@ -200,7 +216,7 @@ export function Hero() {
           </div>
         </div>
 
-        <div className="hero-frame">
+        <div className="hero-frame" ref={frame}>
           <CreativeCarousel live />
         </div>
       </div>
@@ -347,14 +363,23 @@ export function Hero() {
         .hero-frame {
           position: relative;
           margin-top: clamp(20px, 3vh, 36px);
-          /* A wide white rule at 8%: the frame reads as a lit edge around the
-             clip rather than a hairline. border-box keeps the panel's outer
-             size, so the clip loses 8px a side rather than the layout moving. */
-          border: 8px solid rgba(255, 255, 255, 0.08);
+          /* A wide white rule at 20%: the frame reads as a lit edge around
+             the clip rather than a hairline. border-box keeps the panel's
+             outer size, so the clip loses 8px a side rather than the layout
+             moving. */
+          border: 8px solid rgba(255, 255, 255, 0.2);
           border-radius: var(--radius-6);
           background: var(--tile);
           overflow: hidden;
           aspect-ratio: 16 / 9;
+          /* Set by <Hero> from the scroll position. Transform rather than
+             width, so the panel grows without reflowing the section under it
+             on every frame; the origin is the top so it opens downward into
+             the page rather than pushing back up under the copy. */
+          --grow: 0.9;
+          transform: scale(var(--grow));
+          transform-origin: center top;
+          will-change: transform;
         }
         ${slidingIndicatorCss}
 
@@ -371,10 +396,10 @@ export function Hero() {
           object-fit: cover;
           display: block;
         }
-        /* Glass, sitting on the clip. A translucent white over a blur of
-           whatever the video is doing, so it belongs to the footage rather
-           than to a band beneath it; the hairline is what keeps its edge
-           legible over a light frame as well as a dark one. */
+        /* A solid dark bar on the clip, not glass: frosting it let whatever
+           the video was doing show through the control, which read as noise
+           under the labels. The hairline is what keeps its edge legible over
+           a light frame as well as a dark one. */
         .hc-chips {
           position: absolute;
           left: 50%;
@@ -386,11 +411,9 @@ export function Hero() {
           gap: 4px;
           padding: 5px;
           border-radius: 999px;
-          background: rgba(255, 255, 255, 0.1);
-          border: 1px solid rgba(255, 255, 255, 0.16);
-          backdrop-filter: blur(22px) saturate(150%);
-          -webkit-backdrop-filter: blur(22px) saturate(150%);
-          box-shadow: 0 8px 28px rgba(0, 0, 0, 0.3);
+          background: rgba(10, 10, 11, 0.82);
+          border: 1px solid rgba(255, 255, 255, 0.12);
+          box-shadow: 0 8px 28px rgba(0, 0, 0, 0.36);
           overflow-x: auto;
           scrollbar-width: none;
         }
@@ -431,6 +454,7 @@ export function Hero() {
         }
         @media (prefers-reduced-motion: reduce) {
           .hero-mosaic { transition: none; }
+          .hero-frame { transform: none; }
           .hero-mosaic { transition: none; }
         }
       `}</style>

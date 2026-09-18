@@ -166,11 +166,12 @@ and with it the two clips only those tabs reached, so `hero/computer.mp4` is
 unused. The panel is one 16:9 clip filling it edge to edge, no padding and no
 inner chrome.
 
-**The chip row floats on the clip, in glass.** It used to sit on a band under
-the video, which was eating the bottom of the panel. It is now absolutely
-placed over the footage on `rgba(255,255,255,0.1)` with a
-`backdrop-filter: blur(22px)` and a hairline, so it belongs to the clip rather
-than to a strip beneath it. Its colours are fixed white and `#0b0b0c`, not
+**The chip row floats on the clip, on a solid dark bar.** It used to sit on a
+band under the video, which was eating the bottom of the panel. It is now
+absolutely placed over the footage on `rgba(10,10,11,0.82)` with a hairline.
+It was frosted glass first and that was worse: the backdrop blur let whatever
+the video was doing show through the control, which read as noise under the
+labels. Its colours are fixed white and `#0b0b0c`, not
 tokens: these sit on the footage, not on the page, so they do not follow the
 theme — and the selected chip takes the ground colour against the near-white
 fill, per the pairing rule in §4.
@@ -222,6 +223,17 @@ instead, which is the same geometry read inside out and looks almost right
 until you compare it with the reference. `getBoxQuads` is not available to
 check this; project the corners through the element's `DOMMatrix` and the
 stage's perspective instead.
+
+**The hero panel grows as the page scrolls**, from `0.9` to full size over
+half a screen. The growth is written straight to the element as a custom
+property from the same passive listener that drives the mosaic's blur, rather
+than held in React state, so scrolling does not re-render the section on every
+frame. It is a `transform`, not a width, so nothing reflows under it, and the
+origin is the top so the panel opens downward into the page rather than
+pushing back up under the copy. With no JS it stays at its starting size: a
+slightly smaller panel, not a broken one. Its border is an 8px white rule at
+20%, inside `border-box`, so the clip loses 8px a side and the layout does
+not move.
 
 **The hero CTA is built from a supplied SVG**, not approximated: shape 48 tall
 on an 18 radius; the fill is that SVG's radial gradient, whose rx and ry were
