@@ -91,6 +91,10 @@ export function Workflows() {
           </article>
 
           <article className="wf-tile">
+            <span className="wf-bg" aria-hidden>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={withBasePath("/media/workflows/bg/gold.jpg")} alt="" />
+            </span>
             <h3 className="wf-title">Connectors.</h3>
             <p className="wf-body">Bring assets in, publish results out.</p>
             <div className="wf-cluster">
@@ -99,6 +103,10 @@ export function Workflows() {
           </article>
 
           <article className="wf-tile">
+            <span className="wf-bg" aria-hidden>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={withBasePath("/media/workflows/bg/violet.jpg")} alt="" />
+            </span>
             <h3 className="wf-title">Plugins.</h3>
             <p className="wf-body">ImagineArt inside the apps you already use.</p>
             <ul className="wf-plugins">

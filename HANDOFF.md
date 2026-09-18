@@ -26,7 +26,7 @@ components, not forked from it.
 | Hero | `sections/Hero` | **One viewport tall.** A centred column: headline "Bringing / imagination to life", flat and all at weight 500, then the copy, then Get Started + Book a demo, over a full-bleed photograph. At the foot, a rail of seven portrait cards, bottoms aligned and heights arching to the middle, each with its name above. |
 | Partners | `sections/Partners` | Six partner marks (ByteDance, Kling AI, MINIMAX, Wan, fal, Grok) with two captions. |
 | Creative Tools `#tools` | `sections/CreativeTools` | A 13-card bento from Figma: four 308px columns, 16px gutter, columns split 372/172 or 130/130/268. Picture cards carry a photograph under a scrim, the rest are flat tinted panels. Title always showing, description on hover. "View all tools" at the foot. |
-| Workflows `#workflows` | `sections/Workflows` | Bento, spans [2,1] / [1,1,1]: Node canvas (wide, clip), Brand Guidelines (clip), Creative Analyser (clip), Connectors as a `MarkCluster`, Plugins as a linked list of host apps. The three clip tiles carry a gradient ground; Connectors and Plugins stay on `--tile`. No borders, 460px rows. |
+| Workflows `#workflows` | `sections/Workflows` | Bento, spans [2,1] / [1,1,1]: Node canvas (wide, clip), Brand Guidelines (clip), Creative Analyser (clip), Connectors as a `MarkCluster`, Plugins as a linked list of host apps. Every tile carries a gradient ground. No borders, 460px rows. |
 | Studios `#studios` | `sections/AdStudio` | Heading "Studios" + lede, then the **Ad Studio banner**: five vertical marquee columns of 9:16 ad clips (30 clips, CDN, posters, `preload="none"`) and a frosted left panel. |
 | Fashion Studio `#fashion-studio` | `sections/FashionStudio` | Banner: campaign clip full-bleed, rising scrim, white wordmark, glass "Try Now". |
 | Film Studio `#film-studio` | `sections/FilmStudio` | Banner: CSS marquee of 24 film thumbnails behind blurred edges and a frosted centre disc. Whole band links to the studio. |
@@ -129,29 +129,33 @@ This is the page's one saturated surface. The rest of the design system is
 still monochrome, and the colour rule (§3) is unchanged: colour comes from
 imagery, and this is imagery.
 
-**Three Workflows tiles carry a gradient ground** (18 Sep), from
+**Every Workflows tile carries a gradient ground** (18 Sep), from
 `workflows/bg/`: blue on Node canvas, amber on Brand Guidelines, green on
-Creative Analyser. Connectors and Plugins stay on flat `--tile`, which is the
-pair that is already the odd one out (a cluster and a list rather than a
-clip), so it reads as deliberate rather than unfinished. Two more images would
-complete the set.
+Creative Analyser, gold on Connectors, violet on Plugins. The two warm images
+are placed diagonally rather than in the same column: the grid is Node canvas
+across columns 1 and 2, so Brand Guidelines sits directly above Plugins, and
+amber over violet reads better than amber over gold.
 
 The ground is an `<img>` behind the tile at `z-index: -1`, with a scrim over
 it in `::after`: a flat wash plus a gradient heaviest at the top, because the
-copy sits at the top of a tile and the media covers the foot. The gradients
-carry bright oranges and light greens and the title is near-white, so this is
-not optional. Measured at 1440 by compositing each picture with the scrim at
-the title's and body's real positions:
+copy sits at the top of a tile and the media covers the foot. These gradients
+carry bright golds, oranges and light greens under near-white text, so the
+scrim is not optional. Measured at 1440 by compositing each picture with the
+scrim at the title's and body's real positions:
 
-| Tile | Title | Body | Worst pixel, body |
-|---|---|---|---|
-| Node canvas, blue | 14.9:1 | 8.6:1 | 8.2:1 |
-| Brand Guidelines, amber | 13.0:1 | 6.7:1 | 6.3:1 |
-| Creative Analyser, green | 15.3:1 | 8.2:1 | **5.3:1** |
+| Tile | Ground | Title | Body | Worst pixel, body |
+|---|---|---|---|---|
+| Node canvas | blue | 14.9:1 | 8.6:1 | 8.2:1 |
+| Brand Guidelines | amber | 13.0:1 | 6.7:1 | 6.3:1 |
+| Creative Analyser | green | 15.3:1 | 8.2:1 | 5.3:1 |
+| Connectors | gold | 12.5:1 | 6.6:1 | **5.0:1** |
+| Plugins | violet | 13.0:1 | 6.7:1 | 5.4:1 |
 
-The green tile's body is the tightest at 5.3:1, still over AA. **A brighter
-image than these needs the scrim raised**, and the check is worth redoing
-rather than eyeballing.
+Gold's body is the tightest in the bento at 5.0:1 against the brightest pixel
+behind it, over AA's 4.5 but without much left. **A brighter image than these
+needs the scrim raised**, and the check is worth redoing rather than
+eyeballing. The Connectors marks are unaffected by any of this: they sit on
+their own `--tile-2` circles with their own border.
 
 `.wf-tile` gained `overflow: hidden` so the ground follows the radius. Nothing
 currently overflows a tile, and the Connectors marks sit 32px clear of the
