@@ -23,7 +23,7 @@ components, not forked from it.
 
 | Section | Component | What it is |
 |---|---|---|
-| Hero | `sections/Hero` | Headline "Bringing / imagination to life" ("Bringing" at weight 400) left, one-line copy right, Get Started + Book a demo, over a full-bleed photograph. Framed panel with a Creative · Workflows · Computer tab bar. **Creative is one full-width clip over a chip row** (Image Generator · Upscaler · Variations · Relight · Camera Angles); Workflows and Computer are one 16:9 clip each, with native controls on hover or focus. Tabs are manual, no auto-advance. |
+| Hero | `sections/Hero` | Headline "Bringing / imagination to life" ("Bringing" at weight 400) left, one-line copy right, Get Started + Book a demo, over a full-bleed photograph. At the foot, a clipped rail of portrait cards, bottoms aligned and heights arching to the middle, each with its name above and a badge in its corner. |
 | Partners | `sections/Partners` | Six partner marks (ByteDance, Kling AI, MINIMAX, Wan, fal, Grok) with two captions. |
 | Creative Tools `#tools` | `sections/CreativeTools` | A 13-card bento from Figma: four 308px columns, 16px gutter, columns split 372/172 or 130/130/268. Picture cards carry a photograph under a scrim, the rest are flat tinted panels. Title always showing, description on hover. "View all tools" at the foot. |
 | Workflows `#workflows` | `sections/Workflows` | Bento, spans [2,1] / [1,1,1]: Node canvas (wide, clip), Brand Guidelines (clip), Creative Analyser (clip), Connectors as a `MarkCluster`, Plugins as a linked list of host apps. Tiles on `--tile`, no borders, 460px rows. |
@@ -121,20 +121,27 @@ This is the page's one saturated surface. The rest of the design system is
 still monochrome, and the colour rule (§3) is unchanged: colour comes from
 imagery, and this is imagery.
 
-**The Creative tab is one full-width clip over a chip row.** The chips select
-a tool and the clip is meant to be that tool's own footage, but every entry in
-`CREATIVE` currently points at the same file, `hero/creative-suite-image.webm`,
-while the shape of the section is being tried out: picking a chip changes the
-selection and nothing else. Give each entry its own `video` and it starts
-working with no other change.
+**The hero's framed panel is gone** (18 Sep). It held a Creative · Workflows ·
+Computer tab bar over one clip each, and before that a five-card carousel in
+the Creative tab. All of it is deleted: no tabs, no video, nothing to play or
+pause in the hero. `hero/computer.mp4` and `hero/creative-suite-image.webm`
+are unused as a result, and so are `SlidingIndicator` and `useState` in this
+file.
 
-It went through two shapes first, both removed, and the reason is worth
-keeping: five cards showing one file meant five `<video>` elements on one URL,
-firing five range requests in the same millisecond. None of them can hit the
-cache the others are still filling, so it cost 7MB for a 1.4MB file, on a CDN
-as much as on the dev server. **Never point more than one video element at one
-URL.** If a multi-card layout comes back and the cards still share a file,
-fetch it once and hand every element the same object URL.
+One thing from that work is worth keeping even though its code went: **never
+point more than one `<video>` at one URL.** Five elements sharing a file fire
+five range requests in the same millisecond, and none can hit the cache the
+others are still filling, so a 1.4MB file cost 7MB, on a CDN as much as on the
+dev server. If that layout returns, fetch once and hand every element the same
+object URL.
+
+**In its place, the showcase rail.** A row of 3:4 cards with their bottoms
+aligned and each one taking its own share `--k` of the tallest height, which
+is what draws the arch; the width follows from the ratio, so one number per
+card sets both. The rail sits outside `.container-page` and runs wider than
+the page, clipped with a `mask-image` so the end cards are cut and the row
+reads as continuing past the screen. It is a scroll rail, so it takes
+`padding-block` headroom rather than margins, per the kit rule.
 
 **Headings do not animate** (17 Sep). BlurHeading used to wrap
 `components/ui/blur-reveal` and reveal per character on scroll; it was pulled
@@ -236,11 +243,13 @@ Note `/apps/outfit-tryon`, which Fashion Studio used to point at, returns 500.
   Selected view; no aggregate rating claim is made.
 - **FAQ** reuses the B2B repo's "we never train on your content" and "full
   commercial rights" lines; "free to start" assumes a free tier.
-- **Hero clips:** Workflows streams real footage; Computer is still a
-  placeholder. All five Creative chips play one file,
-  `hero/creative-suite-image.webm` (1.4MB), so the clip does not change when
-  you pick a chip. **Give each entry its own footage before shipping.** WebM
-  is the only one on the page; every other clip is MP4.
+- **The showcase rail is entirely placeholder.** Its eight images are the
+  bento's photographs reused, because they are the only 3:4 stills on disk.
+  Its eight labels are worse: they are **copied from the ElevenLabs reference
+  screenshot**, so they are another company's customer names (Superpower,
+  Girlfriends, Character AI, Bastion Bees, Eliza Dolittle, Waverly, Timmons,
+  POGA). **Both must be replaced before this is shown to anyone.** Swapping
+  `image` and `label` on each `SHOWCASE` entry is the whole job.
 - **Remote runtime dependencies:** MCP connect recordings and the 30 Ad Studio
   clips stream from `cdn-imagine.vyro.ai`; the hero's Creative clip from
   `imagine.animagic.art` and its Workflows clip from `www.imagine.art`.
@@ -256,7 +265,8 @@ ffmpeg on this machine; see the B2B Guidelines §7 for the recipe):
 | `studios/film-studio.mp4` | 16MB | unused; delete |
 | `studios/fashion/banner.mp4` | 13MB | in use; re-encode |
 | `hero/backdrop-veil.jpg` | 410KB | the hero photograph; in use |
-| `hero/creative-suite-image.webm` | 1.4MB | the Creative clip; in use, all five chips |
+| `hero/creative-suite-image.webm` | 1.4MB | unused since the hero panel went; delete |
+| `hero/computer.mp4` | 1.9MB | unused since the hero panel went; delete |
 | `cta/hills.jpg` | 195KB | unused since the closing band changed; delete |
 
 `hero/hero.mp4` (6MB) and `hero/backdrop.jpg` were deleted on 18 Sep.
@@ -270,8 +280,9 @@ replacing one changes every card that shows it.
 
 1. **Fix the three mismatched bento descriptions** (§6) and give the cards per-tool links.
 2. Confirm the remaining inferred URL (§5) and the flagged model names (§6).
-3. Replace the Computer hero clip, give each Creative chip its own footage,
-   and replace the remaining invented copy (§6).
+3. **Replace the showcase rail's placeholder images and labels** (§6): the
+   labels are currently another company's customer names. Then the remaining
+   invented copy (§6).
 4. Re-encode the Fashion clip and delete the unused media (§7).
 5. ~~Headings invisible without JS~~ and ~~`text-wrap: balance` not applying~~:
    both resolved by removing the heading animation (§3).
