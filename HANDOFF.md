@@ -121,14 +121,23 @@ This is the page's one saturated surface. The rest of the design system is
 still monochrome, and the colour rule (§3) is unchanged: colour comes from
 imagery, and this is imagery.
 
-**The Creative tab is a carousel.** Five cards in a row, the selected one
-scaled up and the rest held back, with a chip row below as the control and
-arrows on the stage. The track is centred by shifting it by the selected
-card's own offset, which is why `--cw` and `--gap` must stay the same lengths
-in both the card width and the transform: change one without the other and the
-centring drifts. The selected card only *scales*, so it never moves what is
-underneath it. All five clips play, since none of them has a poster and a
-paused card would be a black rectangle.
+**The Creative tab is a carousel, and it is a ring.** Five 16:9 cards, the
+selected one at full size in the centre and its two neighbours held back and
+peeking in from the edges; a chip row below is the control, with arrows on the
+stage. Stepping left from the first card lands on the fifth, and the fifth is
+already sitting to the first one's left before you press anything.
+
+It is a ring because each card is placed from the centre of the stage by its
+own circular offset `--d` (`-2 -1 0 1 2`), not because a strip is scrolled. So
+`--cw` and `--gap` must stay lengths, never percentages: they place every
+card. The pair at `|--d| = 2` is the staging area, held at zero opacity, and
+that is where the card crossing from one end of the ring to the other makes
+its jump. It keeps the same transition as every other card on purpose: it is
+invisible at both ends, so its run across the stage is never seen, while a
+card merely leaving the edge fades out as it travels instead of snapping.
+
+All five clips play, since none of them has a poster and a paused card would
+be a black rectangle.
 
 **Headings do not animate** (17 Sep). BlurHeading used to wrap
 `components/ui/blur-reveal` and reveal per character on scroll; it was pulled

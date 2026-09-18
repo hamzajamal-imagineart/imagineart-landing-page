@@ -47,6 +47,14 @@ const CREATIVE = [
 ];
 
 /**
+ * How far either side of the selected card the ring reaches. With five cards
+ * that is two, and the pair at exactly two is the staging area: they are the
+ * cards that have to cross from one end to the other, so they are held at
+ * zero opacity and make that jump unseen.
+ */
+const HALF = Math.floor(CREATIVE.length / 2);
+
+/**
  * A row of five clips with the selected one brought forward.
  *
  * The track is centred on the selected card by translating it by that card's
@@ -88,12 +96,20 @@ function CreativeCarousel({ live }: { live: boolean }) {
   return (
     <div className="hc">
       <div className="hc-stage">
-        <div className="hc-track" style={{ ["--i" as string]: card }}>
-          {CREATIVE.map((c, i) => (
+        <div className="hc-track">
+          {CREATIVE.map((c, i) => {
+            // Where this card sits relative to the selected one, the short way
+            // round: -2 -1 0 1 2 for five cards. This is what makes the row a
+            // ring rather than a strip: the card before the first is the last
+            // one, so a step left from the first slides the fifth in from the
+            // left instead of running the whole row back.
+            const d = ((i - card + HALF + CREATIVE.length) % CREATIVE.length) - HALF;
+            return (
             <figure
               key={c.id}
               id={`hero-card-${c.id}`}
-              className={`hc-card ${i === card ? "hc-card-on" : ""}`}
+              className={`hc-card ${d === 0 ? "hc-card-on" : ""} ${Math.abs(d) === HALF ? "hc-card-off" : ""}`}
+              style={{ ["--d" as string]: d }}
               aria-hidden={i !== card}
             >
               {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
@@ -108,7 +124,8 @@ function CreativeCarousel({ live }: { live: boolean }) {
                 disablePictureInPicture
               />
             </figure>
-          ))}
+            );
+          })}
         </div>
 
         <button type="button" className="hc-arrow hc-arrow-l" onClick={() => step(-1)} aria-label="Previous tool">
@@ -415,51 +432,56 @@ export function Hero() {
         .hero-panel-on { opacity: 1; visibility: visible; transition: opacity 320ms ease, visibility 0s; }
         .hero-panel video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
 
-        /* The Creative carousel. Cards are one width; the track is shifted by
-           the selected card's own offset and the selected card scales in
-           place, so nothing has to be measured. */
+        /* The Creative carousel, laid out as a ring.
+           Every card is placed from the centre of the stage by its own
+           circular offset --d, rather than a strip being scrolled: that is
+           what lets the row wrap, so the card before the first is the last
+           one. The pair at the far edge (|--d| = 2) is the staging area,
+           hidden, which is where the crossing from one end to the other
+           happens unseen. */
         .hc {
-          /* One card width and one gap, used both to size the cards and to
-             shift the track. They have to be the same lengths or the track
-             stops centring on the selected card. */
-          --cw: clamp(120px, 15vw, 210px);
-          --gap: clamp(10px, 1.4vw, 20px);
+          /* One card width and one gap. Both are used to place every card, so
+             they have to stay lengths, not percentages. */
+          --cw: clamp(220px, 44vw, 620px);
+          --gap: clamp(12px, 1.6vw, 24px);
           position: absolute;
           inset: 0;
           display: grid;
           grid-template-rows: 1fr auto;
         }
         .hc-stage { position: relative; overflow: hidden; }
-        .hc-track {
+        .hc-track { position: absolute; inset: 0; }
+        .hc-card {
           position: absolute;
           top: 50%;
           left: 50%;
-          display: flex;
-          gap: var(--gap);
-          width: max-content;
-          transform: translate(
-            calc(-1 * (var(--i) * (var(--cw) + var(--gap)) + var(--cw) / 2)),
-            -50%
-          );
-          transition: transform 520ms cubic-bezier(0.22, 1, 0.36, 1);
-        }
-        .hc-card {
-          position: relative;
-          flex: 0 0 auto;
           width: var(--cw);
-          aspect-ratio: 3 / 4;
+          aspect-ratio: 16 / 9;
           margin: 0;
           border-radius: var(--radius-4);
           overflow: hidden;
           background: var(--tile-2);
-          opacity: 0.42;
-          transform: scale(0.84);
-          transition: opacity 420ms ease, transform 520ms cubic-bezier(0.22, 1, 0.36, 1);
+          opacity: 0.4;
+          transform:
+            translate(calc(-50% + var(--d) * (var(--cw) + var(--gap))), -50%)
+            scale(0.86);
+          transition:
+            transform 520ms cubic-bezier(0.22, 1, 0.36, 1),
+            opacity 420ms ease;
         }
         .hc-card-on {
           opacity: 1;
-          transform: scale(1.14);
+          transform: translate(-50%, -50%) scale(1);
           box-shadow: 0 18px 48px rgba(0, 0, 0, 0.42);
+        }
+        /* The two cards waiting at the ends, hidden. They keep the same
+           transition as the rest: the card crossing the ring each step is at
+           zero opacity at both ends, so its run across the stage is never
+           seen, and the one merely leaving the edge fades out as it goes
+           instead of snapping. */
+        .hc-card-off {
+          opacity: 0;
+          pointer-events: none;
         }
         .hc-card video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
         .hc-arrow {
@@ -512,7 +534,7 @@ export function Hero() {
         .hc-chip-on { color: var(--ink-heading); }
 
         @media (max-width: 880px) {
-          .hc { --cw: clamp(96px, 26vw, 150px); --gap: 10px; }
+          .hc { --cw: min(78vw, 360px); --gap: 10px; }
           .hc-arrow { display: none; }
           .hc-chip { height: 30px; padding: 0 12px; font-size: 12.5px; }
           .hero-top { grid-template-columns: 1fr; gap: 18px; }
@@ -520,7 +542,7 @@ export function Hero() {
           .hero-tab { height: 44px; font-size: 14px; }
         }
         @media (prefers-reduced-motion: reduce) {
-          .hero-panel, .hc-track, .hc-card { transition: none; }
+          .hero-panel, .hc-card { transition: none; }
         }
       `}</style>
     </section>
