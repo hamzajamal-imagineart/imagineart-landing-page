@@ -23,7 +23,7 @@ components, not forked from it.
 
 | Section | Component | What it is |
 |---|---|---|
-| Hero | `sections/Hero` | One centred column on the plain page: headline "Imagine, design, animate, / edit. One platform." flat and all at weight 500, the copy, then one CTA, "Start creating for free". Below it a centred row of pill tabs, Creative · Workflows · Computer, standing on the page rather than inside the panel; then the panel itself. **Creative is one full-width clip over a chip row** (Image Generator · Upscaler · Variations · Relight · Camera Angles); Workflows and Computer are one 16:9 clip each, with native controls on hover or focus. Tabs are manual, no auto-advance. |
+| Hero | `sections/Hero` | One centred column over a mosaic of work: headline "Imagine, design, animate, / edit. One platform." flat and all at weight 500, the copy, then one CTA, "Start creating for free". Below it a centred row of pill tabs, Creative · Workflows · Computer, standing on the page rather than inside the panel; then the panel itself. **Creative is one full-width clip over a chip row** (Image Generator · Upscaler · Variations · Relight · Camera Angles); Workflows and Computer are one 16:9 clip each, with native controls on hover or focus. Tabs are manual, no auto-advance. |
 | Partners | `sections/Partners` | Six partner marks (ByteDance, Kling AI, MINIMAX, Wan, fal, Grok) with two captions. |
 | Creative Tools `#tools` | `sections/CreativeTools` | A 13-card bento from Figma: four 308px columns, 16px gutter, columns split 372/172 or 130/130/268. Picture cards carry a photograph under a scrim, the rest are flat tinted panels. Title always showing, description on hover. "View all tools" at the foot. |
 | Workflows `#workflows` | `sections/Workflows` | Bento, spans [2,1] / [1,1,1]: Node canvas (wide, clip), Brand Guidelines (clip), Creative Analyser (clip), Connectors as a `MarkCluster`, Plugins as a linked list of host apps. Every tile carries a gradient ground. No borders, 460px rows. |
@@ -109,13 +109,29 @@ hero's two lines at different weights.
 
 ### Hero
 
-**The hero has no photograph** (18 Sep). It sits on the plain page, on the
-Kyoso pattern: a centred column of headline, copy and actions, then a centred
-row of pill tabs, then the panel. `backdrop-veil.jpg` and the whole
-`.hero-bg` layer with its scrim are gone, so nothing in this section needs
-compositing to stay legible any more. `SectionGlow` is what keeps the top of
-the section from being flat black now, so do not remove it without replacing
-it with something.
+**The hero's ground is a mosaic of work** (18 Sep), thirteen tiles run edge to
+edge behind the copy: the seven showcase pieces and the bento's six
+photographs, downscaled to 440px wide in `hero/mosaic/`. That is **432KB for
+all thirteen** against 2.6MB for the originals, which would have rendered at a
+third of their size. Rebuild them with `sips -Z 440` if the set changes.
+
+It is laid out in CSS **columns**, not a grid. The tiles are a mix of 1:1, 3:4
+and 9:16, and columns let each keep its own ratio and pack against its
+neighbours, which is what makes the edges ragged rather than a tidy grid of
+equal boxes. The mosaic is 130% of the section's height so the columns are
+always cut off rather than running out partway down and leaving a bald foot;
+six columns, three under 880px.
+
+The scrim is three layers: a flat wash over the whole mosaic, a radial pool
+behind the copy, and the fade to `--page-bg` that lands the foot of the
+section on the page so the seam into Partners stays invisible. It has to be
+heavy — these tiles are faces and bright grounds and the copy sits right over
+the middle of them. Measured at 1440 by compositing the mosaic as laid out and
+applying the scrim at the copy's real position: **15.1:1 under the headline
+and 8.7:1 under the copy, 11.0:1 and 6.5:1 against the brightest pixel in each
+band.** A first pass at `0.58` flat and `0.70` pool measured 16.1 / 9.2 and
+left the mosaic barely visible, so it came down to `0.44` and `0.70`; there is
+still room to lift it further if the work should read more.
 
 **The hero headline does not take the page's gradient.** `.display` paints its
 text transparent and fills it with a gradient plus a halo; the hero overrides
@@ -291,7 +307,8 @@ ffmpeg on this machine; see the B2B Guidelines §7 for the recipe):
 | `studios/film-studio.mp4` | 16MB | unused; delete |
 | `studios/fashion/banner.mp4` | 13MB | in use; re-encode |
 | `hero/backdrop-veil.jpg` | 410KB | unused since the hero photograph was dropped; delete |
-| `hero/showcase/*.jpg` | 2.6MB | unused since the rail was reverted; keep or delete |
+| `hero/mosaic/*.jpg` | 432KB | the hero's ground, thirteen tiles; in use |
+| `hero/showcase/*.jpg` | 2.6MB | the originals behind seven of the mosaic tiles; keep |
 | `hero/creative-suite-image.webm` | 1.4MB | the Creative clip; in use |
 | `hero/computer.mp4` | 1.9MB | the Computer tab's clip; in use |
 | `cta/hills.jpg` | 195KB | unused since the closing band changed; delete |

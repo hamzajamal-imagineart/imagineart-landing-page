@@ -132,6 +132,20 @@ function CreativeCarousel({ live }: { live: boolean }) {
   );
 }
 
+/**
+ * The hero's ground: a mosaic of work, run edge to edge behind the copy.
+ *
+ * The tiles are the seven showcase pieces and the bento's six photographs,
+ * downscaled to 440px wide in `hero/mosaic/` — 432KB for all thirteen, where
+ * the originals are 2.6MB and would render at a third of their size. Rebuild
+ * them with `sips -Z 440` if the set changes.
+ *
+ * Laid out in CSS columns rather than a grid: the tiles are a mix of 1:1,
+ * 3:4 and 9:16, and columns let each keep its own ratio and pack, which is
+ * what makes the edges ragged rather than a tidy grid of equal boxes.
+ */
+const MOSAIC = Array.from({ length: 13 }, (_, i) => `/media/hero/mosaic/m${i + 1}.jpg`);
+
 export function Hero() {
   const [line, setLine] = useState(0);
   /**
@@ -167,6 +181,16 @@ export function Hero() {
           bar and a pool at 0% would sit behind it, so it is centred on the
           headline instead. */}
       <SectionGlow position="50% 20%" />
+      {/* The ground, and the scrim that makes the copy legible over it. */}
+      <div className="hero-bg" aria-hidden>
+        <div className="hero-mosaic">
+          {MOSAIC.map((src) => (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img key={src} src={withBasePath(src)} alt="" />
+          ))}
+        </div>
+        <span className="hero-bg-scrim" />
+      </div>
       <div className="container-page">
         {/* One centred column: heading, copy, actions. */}
         <div className="hero-top">
@@ -269,7 +293,7 @@ export function Hero() {
       </div>
 
       <style>{`
-        /* Hosts a <SectionGlow> at z-index -1. */
+        /* Hosts a <SectionGlow> at z-index -1, and the mosaic below it. */
         .hero-section {
           position: relative;
           isolation: isolate;
@@ -277,6 +301,41 @@ export function Hero() {
           padding-bottom: clamp(40px, 6vh, 72px);
         }
         ${sectionGlowCss}
+        .hero-bg {
+          position: absolute;
+          inset: 0;
+          z-index: -2;
+          overflow: hidden;
+          pointer-events: none;
+        }
+        .hero-mosaic {
+          column-count: 6;
+          column-gap: 8px;
+          padding: 8px;
+          /* Taller than the section so the columns are always cut off rather
+             than running out partway down and leaving a bald foot. */
+          height: 130%;
+        }
+        .hero-mosaic img {
+          display: block;
+          width: 100%;
+          margin-bottom: 8px;
+          border-radius: 10px;
+          break-inside: avoid;
+        }
+        /* Heavy, because the tiles are faces and bright grounds and the copy
+           is centred right over the middle of them. Three layers: a flat wash
+           over the whole mosaic, a heavier pool behind the copy, and the fade
+           to --page-bg that lands the foot of the section on the page so the
+           seam into Partners stays invisible. */
+        .hero-bg-scrim {
+          position: absolute;
+          inset: 0;
+          background:
+            linear-gradient(rgba(9, 9, 11, 0.44), rgba(9, 9, 11, 0.44)),
+            radial-gradient(76% 56% at 50% 34%, rgba(9, 9, 11, 0.7) 0%, rgba(9, 9, 11, 0.4) 60%, rgba(9, 9, 11, 0.12) 100%),
+            linear-gradient(to bottom, rgba(9, 9, 11, 0.5) 0%, rgba(9, 9, 11, 0.2) 30%, rgba(9, 9, 11, 0.55) 72%, var(--page-bg) 98%);
+        }
         .hero-section .container-page { position: relative; z-index: 1; }
         .hero-top {
           display: flex;
@@ -477,6 +536,7 @@ export function Hero() {
 
         @media (max-width: 880px) {
           .hc-chip { height: 30px; padding: 0 12px; font-size: 12.5px; }
+          .hero-mosaic { column-count: 3; }
           .hero-tab { height: 38px; padding: 0 14px; font-size: 14px; }
         }
         @media (prefers-reduced-motion: reduce) {
