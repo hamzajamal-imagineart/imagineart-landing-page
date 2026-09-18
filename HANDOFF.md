@@ -131,10 +131,11 @@ imagery, and this is imagery.
 
 **Every Workflows tile carries a gradient ground** (18 Sep), from
 `workflows/bg/`: blue on Node canvas, amber on Brand Guidelines, green on
-Creative Analyser, gold on Connectors, violet on Plugins. The two warm images
-are placed diagonally rather than in the same column: the grid is Node canvas
-across columns 1 and 2, so Brand Guidelines sits directly above Plugins, and
-amber over violet reads better than amber over gold.
+Creative Analyser, ember on Connectors, violet on Plugins. The two warm
+images are placed diagonally rather than in the same column: the grid is Node
+canvas across columns 1 and 2, so Brand Guidelines sits directly above
+Plugins, and amber over violet reads better than amber over a second warm
+ground.
 
 The ground is an `<img>` behind the tile at `z-index: -1`, with a scrim over
 it in `::after`: a flat wash plus a gradient heaviest at the top, because the
@@ -148,13 +149,14 @@ scrim at the title's and body's real positions:
 | Node canvas | blue | 14.9:1 | 8.6:1 | 8.2:1 |
 | Brand Guidelines | amber | 13.0:1 | 6.7:1 | 6.3:1 |
 | Creative Analyser | green | 15.3:1 | 8.2:1 | 5.3:1 |
-| Connectors | gold | 12.5:1 | 6.6:1 | **5.0:1** |
+| Connectors | ember | 17.0:1 | 9.5:1 | 9.1:1 |
 | Plugins | violet | 13.0:1 | 6.7:1 | 5.4:1 |
 
-Gold's body is the tightest in the bento at 5.0:1 against the brightest pixel
-behind it, over AA's 4.5 but without much left. **A brighter image than these
-needs the scrim raised**, and the check is worth redoing rather than
-eyeballing. The Connectors marks are unaffected by any of this: they sit on
+The green tile's body is now the tightest at 5.3:1 against the brightest pixel
+behind it, well over AA's 4.5. Ember is the darkest of the five and measures
+the best of them. **A brighter image than these needs the scrim raised**, and
+the check is worth redoing rather than eyeballing: the gold ground ember
+replaced measured 5.0:1 on the same scrim. The Connectors marks are unaffected by any of this: they sit on
 their own `--tile-2` circles with their own border.
 
 `.wf-tile` gained `overflow: hidden` so the ground follows the radius. Nothing
