@@ -22,10 +22,131 @@ import { SectionGlow, sectionGlowCss } from "@/components/primitives/SectionGlow
 const LINES = [
   // Real campaign footage, streamed. withBasePath() passes an absolute URL
   // through untouched, so it needs no local copy.
-  { id: "creative", label: "Creative", video: "https://imagine.animagic.art/imagine-one/home/campaigns/gpt-2.5.mp4" },
+  { id: "creative", label: "Creative", video: null },
   { id: "workflows", label: "Workflows", video: "https://www.imagine.art/business/media/modes/quick-iterations.mp4" },
   { id: "computer", label: "Computer", video: "/media/hero/computer.mp4" },
 ];
+
+/**
+ * The Creative tab's carousel.
+ *
+ * Five tools, one card each, the selected one brought forward and the rest
+ * held back at reduced scale. The chips below are the control: they are the
+ * same five names, so there is no caption under the card repeating them.
+ *
+ * Only `upscale` and `variate` are that tool's own footage. The other three
+ * are stand-ins from the clips already on disk, since no Image Generator,
+ * Relight or Camera Angles clip exists yet. Swap them before shipping.
+ */
+const CREATIVE = [
+  { id: "image", label: "Image Generator", video: "/media/pillars/creative.mp4" },
+  { id: "upscale", label: "Upscaler", video: "/media/capabilities/upscale.mp4" },
+  { id: "variations", label: "Variations", video: "/media/capabilities/variate.mp4" },
+  { id: "relight", label: "Relight", video: "/media/use-cases/photography.mp4" },
+  { id: "angles", label: "Camera Angles", video: "/media/capabilities/reframe-presets.mp4" },
+];
+
+/**
+ * A row of five clips with the selected one brought forward.
+ *
+ * The track is centred on the selected card by translating it by that card's
+ * own offset, so the arithmetic is one line of CSS rather than a measurement:
+ * every card is the same width, and the active one only *scales*, which
+ * changes what you see without moving what is underneath it.
+ *
+ * All five play. They are small local clips, together under 2MB, and a
+ * paused card shows a black rectangle unless it has a poster, which none of
+ * these have.
+ */
+function CreativeCarousel({ live }: { live: boolean }) {
+  const [card, setCard] = useState(0);
+  const chips = useSlidingIndicator<HTMLButtonElement>(card);
+  const clips = useRef<(HTMLVideoElement | null)[]>([]);
+
+  // The autoplay attribute alone is not enough: it only fires when the
+  // element first enters the document, so a clip that was paused because the
+  // tab moved away never restarts. Drive them from the tab's state instead,
+  // the way the three panel clips already are.
+  useEffect(() => {
+    clips.current.forEach((v) => {
+      if (!v) return;
+      if (live) void v.play().catch(() => {});
+      else v.pause();
+    });
+  }, [live]);
+  const step = (d: number) => setCard((c) => (c + d + CREATIVE.length) % CREATIVE.length);
+
+  const onChipKey = (e: React.KeyboardEvent) => {
+    const d = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
+    if (!d) return;
+    e.preventDefault();
+    const next = (card + d + CREATIVE.length) % CREATIVE.length;
+    setCard(next);
+    document.getElementById(`hero-chip-${CREATIVE[next].id}`)?.focus();
+  };
+
+  return (
+    <div className="hc">
+      <div className="hc-stage">
+        <div className="hc-track" style={{ ["--i" as string]: card }}>
+          {CREATIVE.map((c, i) => (
+            <figure
+              key={c.id}
+              id={`hero-card-${c.id}`}
+              className={`hc-card ${i === card ? "hc-card-on" : ""}`}
+              aria-hidden={i !== card}
+            >
+              {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+              <video
+                ref={(el) => { clips.current[i] = el; }}
+                src={withBasePath(c.video)}
+                title={`${c.label} in ImagineArt`}
+                muted
+                loop
+                playsInline
+                preload="auto"
+                disablePictureInPicture
+              />
+            </figure>
+          ))}
+        </div>
+
+        <button type="button" className="hc-arrow hc-arrow-l" onClick={() => step(-1)} aria-label="Previous tool">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden><path d="M15 5l-7 7 7 7" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+        </button>
+        <button type="button" className="hc-arrow hc-arrow-r" onClick={() => step(1)} aria-label="Next tool">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden><path d="M9 5l7 7-7 7" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+        </button>
+      </div>
+
+      <div
+        className="hc-chips"
+        role="tablist"
+        aria-label="Creative tools"
+        onKeyDown={onChipKey}
+        ref={chips.containerRef as React.Ref<HTMLDivElement>}
+      >
+        <SlidingIndicator box={chips.box} ready={chips.ready} className="hc-chip-fill" />
+        {CREATIVE.map((c, i) => (
+          <button
+            key={c.id}
+            ref={(el) => { chips.itemRefs.current[i] = el; }}
+            id={`hero-chip-${c.id}`}
+            role="tab"
+            type="button"
+            aria-selected={i === card}
+            aria-controls={`hero-card-${c.id}`}
+            tabIndex={i === card ? 0 : -1}
+            className={`hc-chip ${i === card ? "hc-chip-on" : ""}`}
+            onClick={() => setCard(i)}
+          >
+            {c.label}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 export function Hero() {
   const [line, setLine] = useState(0);
@@ -62,6 +183,15 @@ export function Hero() {
           bar and a pool at 0% would sit behind it, so it is centred on the
           headline instead. */}
       <SectionGlow position="50% 20%" />
+      {/* The hero photograph, full bleed behind everything. It is its own
+          element rather than a background-image so it can be object-fit and
+          carry its own scrim; the scrim is what keeps the headline over it at
+          AA and lands the foot of the section on --page-bg, so the seam into
+          Partners stays invisible. */}
+      <div className="hero-bg" aria-hidden>
+        <img src={withBasePath("/media/hero/backdrop-veil.jpg")} alt="" />
+        <span className="hero-bg-scrim" />
+      </div>
       <div className="container-page">
         <div className="hero-top">
           <div>
@@ -133,20 +263,23 @@ export function Hero() {
                 aria-hidden={i !== line}
                 className={`hero-panel ${i === line ? "hero-panel-on" : ""}`}
               >
-                {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-                <video
-                  ref={(el) => { videoRefs.current[i] = el; }}
-                  src={withBasePath(l.video)}
-                  title={`${l.label} in ImagineArt`}
-                  autoPlay={i === 0}
-                  muted
-                  loop
-                  playsInline
-                  preload={i === 0 ? "auto" : "metadata"}
-                  controls={showControls && i === line}
-                  controlsList="nodownload noremoteplayback"
-                  disablePictureInPicture
-                />
+                {l.video === null ? (
+                  <CreativeCarousel live={i === line} />
+                ) : (
+                  /* eslint-disable-next-line jsx-a11y/media-has-caption */
+                  <video
+                    ref={(el) => { videoRefs.current[i] = el; }}
+                    src={withBasePath(l.video)}
+                    title={`${l.label} in ImagineArt`}
+                    muted
+                    loop
+                    playsInline
+                    preload="metadata"
+                    controls={showControls && i === line}
+                    controlsList="nodownload noremoteplayback"
+                    disablePictureInPicture
+                  />
+                )}
               </div>
             ))}
             </div>
@@ -155,7 +288,7 @@ export function Hero() {
       </div>
 
       <style>{`
-        /* Hosts a <SectionGlow> at z-index -1. */
+        /* Hosts a <SectionGlow> at z-index -1, and the photograph below it. */
         .hero-section {
           position: relative;
           isolation: isolate;
@@ -163,6 +296,33 @@ export function Hero() {
           padding-bottom: clamp(40px, 6vh, 72px);
         }
         ${sectionGlowCss}
+        .hero-bg {
+          position: absolute;
+          inset: 0;
+          z-index: -2;
+          overflow: hidden;
+          pointer-events: none;
+        }
+        .hero-bg img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          /* The subject is centred and top-weighted, so the crown stays in
+             frame as the section gets shorter. */
+          object-position: 50% 12%;
+          display: block;
+        }
+        .hero-bg-scrim {
+          position: absolute;
+          inset: 0;
+          background:
+            /* Under the headline and copy, so both hold AA over the red. */
+            linear-gradient(to bottom, rgba(10, 4, 6, 0.62) 0%, rgba(10, 4, 6, 0.28) 34%, rgba(10, 4, 6, 0) 52%),
+            /* And down into the page, so the band ends on --page-bg rather
+               than a cut. */
+            linear-gradient(to bottom, transparent 40%, var(--page-bg) 96%);
+        }
+        .hero-section .container-page { position: relative; z-index: 1; }
         .hero-top {
           display: grid;
           grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
@@ -255,13 +415,112 @@ export function Hero() {
         .hero-panel-on { opacity: 1; visibility: visible; transition: opacity 320ms ease, visibility 0s; }
         .hero-panel video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
 
+        /* The Creative carousel. Cards are one width; the track is shifted by
+           the selected card's own offset and the selected card scales in
+           place, so nothing has to be measured. */
+        .hc {
+          /* One card width and one gap, used both to size the cards and to
+             shift the track. They have to be the same lengths or the track
+             stops centring on the selected card. */
+          --cw: clamp(120px, 15vw, 210px);
+          --gap: clamp(10px, 1.4vw, 20px);
+          position: absolute;
+          inset: 0;
+          display: grid;
+          grid-template-rows: 1fr auto;
+        }
+        .hc-stage { position: relative; overflow: hidden; }
+        .hc-track {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          display: flex;
+          gap: var(--gap);
+          width: max-content;
+          transform: translate(
+            calc(-1 * (var(--i) * (var(--cw) + var(--gap)) + var(--cw) / 2)),
+            -50%
+          );
+          transition: transform 520ms cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .hc-card {
+          position: relative;
+          flex: 0 0 auto;
+          width: var(--cw);
+          aspect-ratio: 3 / 4;
+          margin: 0;
+          border-radius: var(--radius-4);
+          overflow: hidden;
+          background: var(--tile-2);
+          opacity: 0.42;
+          transform: scale(0.84);
+          transition: opacity 420ms ease, transform 520ms cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .hc-card-on {
+          opacity: 1;
+          transform: scale(1.14);
+          box-shadow: 0 18px 48px rgba(0, 0, 0, 0.42);
+        }
+        .hc-card video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+        .hc-arrow {
+          position: absolute;
+          top: 50%;
+          transform: translateY(-50%);
+          width: 34px;
+          height: 34px;
+          border: 0;
+          border-radius: 999px;
+          display: grid;
+          place-items: center;
+          background: var(--panel);
+          color: var(--ink);
+          cursor: pointer;
+          opacity: 0.85;
+          transition: opacity 200ms ease, transform 200ms ease;
+        }
+        .hc-arrow:hover { opacity: 1; }
+        .hc-arrow:active { transform: translateY(-50%) scale(0.94); }
+        .hc-arrow-l { left: 14px; }
+        .hc-arrow-r { right: 14px; }
+        .hc-chips {
+          position: relative;
+          display: flex;
+          justify-content: center;
+          flex-wrap: wrap;
+          gap: 4px;
+          padding: 10px 12px 14px;
+        }
+        .hc-chip-fill { border-radius: 999px; background: var(--panel); }
+        .hc-chip {
+          position: relative;
+          z-index: 1;
+          border: 0;
+          border-radius: 999px;
+          padding: 0 16px;
+          height: 34px;
+          background: transparent;
+          font-family: inherit;
+          font-size: 13.5px;
+          font-weight: 500;
+          letter-spacing: -0.005em;
+          color: var(--ink-3);
+          cursor: pointer;
+          white-space: nowrap;
+          transition: color 260ms ease;
+        }
+        .hc-chip:hover { color: var(--ink-heading); }
+        .hc-chip-on { color: var(--ink-heading); }
+
         @media (max-width: 880px) {
+          .hc { --cw: clamp(96px, 26vw, 150px); --gap: 10px; }
+          .hc-arrow { display: none; }
+          .hc-chip { height: 30px; padding: 0 12px; font-size: 12.5px; }
           .hero-top { grid-template-columns: 1fr; gap: 18px; }
           .hero-copy { padding-top: 0; }
           .hero-tab { height: 44px; font-size: 14px; }
         }
         @media (prefers-reduced-motion: reduce) {
-          .hero-panel { transition: none; }
+          .hero-panel, .hc-track, .hc-card { transition: none; }
         }
       `}</style>
     </section>

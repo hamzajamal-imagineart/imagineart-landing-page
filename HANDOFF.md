@@ -23,7 +23,7 @@ components, not forked from it.
 
 | Section | Component | What it is |
 |---|---|---|
-| Hero | `sections/Hero` | Headline "Bringing / imagination to life" ("Bringing" at weight 400) left, one-line copy right, Get Started + Book a demo. Framed panel with a Creative · Workflows · Computer tab bar and one 16:9 clip per tab; the visible clip shows native controls on hover or focus. Tabs are manual, no auto-advance. |
+| Hero | `sections/Hero` | Headline "Bringing / imagination to life" ("Bringing" at weight 400) left, one-line copy right, Get Started + Book a demo, over a full-bleed photograph. Framed panel with a Creative · Workflows · Computer tab bar. **Creative holds a five-card carousel** (Image Generator · Upscaler · Variations · Relight · Camera Angles) driven by the chip row under it; Workflows and Computer are one 16:9 clip each, with native controls on hover or focus. Tabs are manual, no auto-advance. |
 | Partners | `sections/Partners` | Six partner marks (ByteDance, Kling AI, MINIMAX, Wan, fal, Grok) with two captions. |
 | Creative Tools `#tools` | `sections/CreativeTools` | A 13-card bento from Figma: four 308px columns, 16px gutter, columns split 372/172 or 130/130/268. Picture cards carry a photograph under a scrim, the rest are flat tinted panels. Title always showing, description on hover. "View all tools" at the foot. |
 | Workflows `#workflows` | `sections/Workflows` | Bento, spans [2,1] / [1,1,1]: Node canvas (wide, clip), Brand Guidelines (clip), Creative Analyser (clip), Connectors as a `MarkCluster`, Plugins as a linked list of host apps. Tiles on `--tile`, no borders, 460px rows. |
@@ -106,6 +106,29 @@ from the heading ink to a `color-mix` of it and the page, plus a `--head-glow`
 halo. They render through `components/BlurHeading`, which carries the three
 shapes the page uses: one clause, a clause plus a muted second clause, and the
 hero's two lines at different weights.
+
+### Hero
+
+**The hero carries a photograph** (18 Sep), `hero/backdrop-veil.jpg`, full bleed
+behind the whole section. It is an `<img>` rather than a `background-image` so
+it can be `object-fit: cover` at `50% 12%`, which keeps the crown in frame as
+the section shortens. Its scrim does two jobs in one element: a dark wash over
+the top half so the headline and copy hold AA over the red, and a fade to
+`--page-bg` at the foot so the seam into Partners stays invisible. The
+`SectionGlow` still sits above it, at `z-index: -1` to the photograph's `-2`.
+
+This is the page's one saturated surface. The rest of the design system is
+still monochrome, and the colour rule (§3) is unchanged: colour comes from
+imagery, and this is imagery.
+
+**The Creative tab is a carousel.** Five cards in a row, the selected one
+scaled up and the rest held back, with a chip row below as the control and
+arrows on the stage. The track is centred by shifting it by the selected
+card's own offset, which is why `--cw` and `--gap` must stay the same lengths
+in both the card width and the transform: change one without the other and the
+centring drifts. The selected card only *scales*, so it never moves what is
+underneath it. All five clips play, since none of them has a poster and a
+paused card would be a black rectangle.
 
 **Headings do not animate** (17 Sep). BlurHeading used to wrap
 `components/ui/blur-reveal` and reveal per character on scroll; it was pulled
@@ -207,8 +230,13 @@ Note `/apps/outfit-tryon`, which Fashion Studio used to point at, returns 500.
   Selected view; no aggregate rating claim is made.
 - **FAQ** reuses the B2B repo's "we never train on your content" and "full
   commercial rights" lines; "free to start" assumes a free tier.
-- **Hero clips:** Creative and Workflows stream real footage; Computer is still
-  a placeholder.
+- **Hero clips:** Workflows streams real footage; Computer is still a
+  placeholder. Of the five Creative carousel cards only **Upscaler** and
+  **Variations** show their own tool: Image Generator borrows
+  `pillars/creative.mp4`, Relight `use-cases/photography.mp4` and Camera
+  Angles `capabilities/reframe-presets.mp4`, because no clip exists for those
+  three. **Swap them before shipping.** The carousel also has no links yet;
+  the cards are not clickable.
 - **Remote runtime dependencies:** MCP connect recordings and the 30 Ad Studio
   clips stream from `cdn-imagine.vyro.ai`; the hero's Creative clip from
   `imagine.animagic.art` and its Workflows clip from `www.imagine.art`.
@@ -223,9 +251,10 @@ ffmpeg on this machine; see the B2B Guidelines §7 for the recipe):
 |---|---|---|
 | `studios/film-studio.mp4` | 16MB | unused; delete |
 | `studios/fashion/banner.mp4` | 13MB | in use; re-encode |
-| `hero/hero.mp4` | 6MB | unused; delete |
-| `hero/backdrop.jpg` | 122KB | unused since the hero photograph was dropped; delete with `Backdrop.tsx` |
+| `hero/backdrop-veil.jpg` | 410KB | the hero photograph; in use |
 | `cta/hills.jpg` | 195KB | unused since the closing band changed; delete |
+
+`hero/hero.mp4` (6MB) and `hero/backdrop.jpg` were deleted on 18 Sep.
 
 Also unused: `models/*.png` icons other than the eight on the model cards,
 `pillars/chat.mp4`, `pillars/creative.mp4`, and the six `models/providers/*`
@@ -236,7 +265,9 @@ replacing one changes every card that shows it.
 
 1. **Fix the three mismatched bento descriptions** (§6) and give the cards per-tool links.
 2. Confirm the remaining inferred URL (§5) and the flagged model names (§6).
-3. Replace the Computer hero clip and the remaining invented copy (§6).
+3. Replace the Computer hero clip, the three stand-in Creative carousel clips,
+   and the remaining invented copy (§6). Decide whether the carousel cards
+   should link to their tools.
 4. Re-encode the Fashion clip and delete the unused media (§7).
 5. ~~Headings invisible without JS~~ and ~~`text-wrap: balance` not applying~~:
    both resolved by removing the heading animation (§3).
