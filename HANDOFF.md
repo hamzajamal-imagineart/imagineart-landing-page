@@ -132,13 +132,20 @@ which is 12px and 24px of CSS blur; and the lip is its inner shadow, offset up
 page's only saturated control, and its white label measures 5.0:1 on the
 gradient's mid purple.
 
-**The tab bar stands on the page, not in the panel.** It is centred, pills
-rather than squares, and each tab is only as wide as its label: three tabs
-stretched across the page would read as a segmented control. The fill is still
+The lip costs one thing that is easy to miss: it eats the bottom 4px, so the
+visible face is the top 44px of a 48px button and a label centred on the box
+sits 1.8px below the middle of what you see. `padding-bottom: 4px` puts it
+back.
+
+**The tab bar stands on the page as a segmented control.** A groove on
+`--track`, the token for exactly this, hugging its three tabs rather than
+stretching, so it stays centred at any width; `overflow-x: auto` on the groove
+rather than wrapping, so the control never becomes two rows. The fill is still
 `SlidingIndicator`, on **`--panel`**: `--tile` is only six values off the page
-in dark, so the selected tab was all but invisible once the bar left the panel
-and stood on `--page-bg`. `--panel` is the token for a raised surface, which
-is what the bar is now. The panel below it is media only.
+in dark, so the selected tab was all but invisible when the bar first left the
+panel and stood on `--page-bg`. `--panel` is the token for a raised surface,
+which is what the selected tab is, and it now sits in a groove that is darker
+than the page, so the selection reads at a glance. The panel below it is media only.
 
 **The hero panel is the tabbed one** (18 Sep). A Creative · Workflows ·
 Computer tab bar over one clip each; Creative is a full-width clip with a chip

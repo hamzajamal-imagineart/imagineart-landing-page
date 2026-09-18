@@ -195,6 +195,7 @@ export function Hero() {
 
         {/* The tab bar stands on the page between the actions and the panel,
             rather than sitting inside the panel's own chrome. */}
+        <div className="hero-tabbar">
         <div
           className="hero-tabs"
           ref={tabs.containerRef as React.Ref<HTMLDivElement>}
@@ -222,6 +223,7 @@ export function Hero() {
               {l.label}
             </button>
           ))}
+        </div>
         </div>
 
         <div className="hero-frame">
@@ -320,7 +322,10 @@ export function Hero() {
           align-items: center;
           gap: 10px;
           height: 48px;
-          padding: 0 26px;
+          /* The 4px lip eats the bottom of the button, so the visible face is
+             the top 44px. Centring on the box put the label 1.8px below the
+             middle of what you actually see; this pads it back up. */
+          padding: 0 26px 4px;
           border-radius: 18px;
           font-size: 15px;
           font-weight: 500;
@@ -351,17 +356,26 @@ export function Hero() {
           overflow: hidden;
           padding: 6px;
         }
-        /* Standing on the page rather than inside the panel, so it is centred
-           and each tab is only as wide as its label: a row of three that
-           stretched to the page would read as a segmented control. */
-        .hero-tabs {
+        /* A segmented control standing on the page: the groove is the token
+           for exactly this, --track, and it hugs its tabs rather than
+           stretching, so the row stays centred at any width. */
+        .hero-tabbar {
           display: flex;
           justify-content: center;
-          flex-wrap: wrap;
-          gap: 4px;
-          position: relative;
           margin-top: clamp(30px, 5vh, 52px);
         }
+        .hero-tabs {
+          display: inline-flex;
+          gap: 4px;
+          padding: 5px;
+          position: relative;
+          border-radius: 999px;
+          background: var(--track);
+          max-width: 100%;
+          overflow-x: auto;
+          scrollbar-width: none;
+        }
+        .hero-tabs::-webkit-scrollbar { display: none; }
         /* Tabs are squarer than the pill buttons on purpose: the radius is
            what separates a tab from a button at a glance. No border either,
            the fill and its shadow carry it. */
