@@ -30,6 +30,7 @@ components, not forked from it.
 | Studios `#studios` | `sections/AdStudio` | Heading "Studios" + lede, then the **Ad Studio banner**: five vertical marquee columns of 9:16 ad clips (30 clips, CDN, posters, `preload="none"`) and a frosted left panel. |
 | Fashion Studio `#fashion-studio` | `sections/FashionStudio` | Banner: campaign clip full-bleed, rising scrim, white wordmark, glass "Try Now". |
 | Film Studio `#film-studio` | `sections/FilmStudio` | Banner: CSS marquee of 24 film thumbnails behind blurred edges and a frosted centre disc. Whole band links to the studio. |
+| Studio reel `#studio-reel` | `sections/StudioReel` | The three studios as a coverflow: the selected clip flat and centred, its neighbours turned away and cut by the edges of the section, each tagged with its studio's name and mark. Chevrons and dots, no auto-advance. |
 | Use Cases `#use-cases` | `sections/UseCases` + `UseCaseWheel` | "USE CASES" eyebrow, heading "One-click skills for every creative task". A centred vertical list of six use cases advancing every 3s, the active one in a pill with an inline arrow into the template gallery, four of its clips scattered either side. "Browse all templates" at the foot. |
 | MCP `#mcp` | `sections/Mcp` | Connect panel ported from `Vyro-ai/imagine-web-mcp-landing`: the Imagine MCP wordmark, client tabs and an MCP / CLI segment, three numbered steps with copy buttons and deep links, and the client's real connect recording. |
 | Models | `sections/Models` | Eight model cards, four by two: provider sample full-bleed fading into a per-card tone. |
@@ -38,7 +39,8 @@ components, not forked from it.
 | Closing CTA | `sections/ClosingCta` | Full-bleed `cta/portal.jpg`, scrim in from the left, copy on the page grid, white + glass buttons. |
 
 The three studio banners share one height, `--studio-band-h` in `globals.css`,
-and follow each other with no rules between them.
+and follow each other with no rules between them. The studio reel sits under
+the three of them.
 
 Nav is **Tools · Workflows · Studios · Use Cases · MCP · Pricing**, CTA Get
 Started. Keep the nav in the same order as the page so no link scrolls backwards.
@@ -190,6 +192,20 @@ marginal at 4.7:1. `.bt-mini`, `.bt-short` and `.bt-fill` now take a gradient
 that reaches their full height. Measured per pixel across every card title at
 1440 afterwards: the worst on the page is **9.4:1**, and nothing is near AA.
 **Check this again if a brighter still goes on a short card.**
+
+**The studio reel's ring wraps by animating the long way** (18 Sep). With
+three cards every step moves one of them from one end of the ring to the
+other. It is left to travel across the stage rather than teleporting, because
+the selected card sits above its neighbours (`z-index` 2 against 1) and is
+wide enough to hide the journey: the wrapping card slides out of one side,
+passes behind the selected one, and emerges on the other. That needs no
+special case, and the teleport that a ring usually needs is what reads as a
+glitch here. This is the opposite call to the hero carousel that used to have
+five cards, where the crossing card was hidden at both ends and so could jump.
+
+**Film Studio plays `use-cases/film.mp4` in the reel**, not
+`studios/film-studio.mp4`. The latter is the right footage and 14MB of it,
+which this section would have carried for one card of three.
 
 **The hero CTA is built from a supplied SVG**, not approximated: shape 48 tall
 on an 18 radius; the fill is that SVG's radial gradient, whose rx and ry were
@@ -356,7 +372,7 @@ ffmpeg on this machine; see the B2B Guidelines §7 for the recipe):
 
 | File | Size | Status |
 |---|---|---|
-| `studios/film-studio.mp4` | 16MB | unused; delete |
+| `studios/film-studio.mp4` | 15MB | still unused: the reel plays `use-cases/film.mp4` instead. Delete, or re-encode and use it |
 | `studios/fashion/banner.mp4` | 13MB | in use; re-encode |
 | `hero/backdrop-veil.jpg` | 410KB | unused since the hero photograph was dropped; delete |
 | `hero/mosaic/*.jpg` | 568KB | the hero's ground, eighteen tiles; in use |

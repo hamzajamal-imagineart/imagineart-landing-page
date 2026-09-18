@@ -347,7 +347,10 @@ export function Hero() {
         .hero-frame {
           position: relative;
           margin-top: clamp(20px, 3vh, 36px);
-          border: 1px solid var(--line);
+          /* A wide white rule at 8%: the frame reads as a lit edge around the
+             clip rather than a hairline. border-box keeps the panel's outer
+             size, so the clip loses 8px a side rather than the layout moving. */
+          border: 8px solid rgba(255, 255, 255, 0.08);
           border-radius: var(--radius-6);
           background: var(--tile);
           overflow: hidden;

@@ -12,6 +12,7 @@ import { Mcp } from "@/components/sections/Mcp";
 import { AdStudio } from "@/components/sections/AdStudio";
 import { FashionStudio } from "@/components/sections/FashionStudio";
 import { FilmStudio } from "@/components/sections/FilmStudio";
+import { StudioReel } from "@/components/sections/StudioReel";
 import { UseCases } from "@/components/sections/UseCases";
 import { Models } from "@/components/sections/Models";
 import { ClosingCta } from "@/components/sections/ClosingCta";
@@ -56,6 +57,7 @@ export default function Page() {
         <AdStudio />
         <FashionStudio />
         <FilmStudio />
+        <StudioReel />
         <UseCases />
         <Mcp />
         <Models />
