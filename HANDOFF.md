@@ -30,7 +30,7 @@ components, not forked from it.
 | Studios `#studios` | `sections/AdStudio` | Heading "Studios" + lede, then the **Ad Studio banner**: five vertical marquee columns of 9:16 ad clips (30 clips, CDN, posters, `preload="none"`) and a frosted left panel. |
 | Fashion Studio `#fashion-studio` | `sections/FashionStudio` | Banner: campaign clip full-bleed, rising scrim, white wordmark, glass "Try Now". |
 | Film Studio `#film-studio` | `sections/FilmStudio` | Banner: CSS marquee of 24 film thumbnails behind blurred edges and a frosted centre disc. Whole band links to the studio. |
-| Studio reel `#studio-reel` | `sections/StudioReel` | The three studios as a coverflow: the selected clip flat and centred, its neighbours turned away and cut by the edges of the section, each tagged with its studio's name and mark. Chevrons and dots, no auto-advance. |
+| Studio reel `#studio-reel` | `sections/StudioReel` | The three studios as a coverflow: the selected clip flat and centred, its neighbours turned away and cut by the edges of the section, each carrying its studio's mark alone in the corner. Chevrons and dots, no auto-advance. |
 | Use Cases `#use-cases` | `sections/UseCases` + `UseCaseWheel` | "USE CASES" eyebrow, heading "One-click skills for every creative task". A centred vertical list of six use cases advancing every 3s, the active one in a pill with an inline arrow into the template gallery, four of its clips scattered either side. "Browse all templates" at the foot. |
 | MCP `#mcp` | `sections/Mcp` | Connect panel ported from `Vyro-ai/imagine-web-mcp-landing`: the Imagine MCP wordmark, client tabs and an MCP / CLI segment, three numbered steps with copy buttons and deep links, and the client's real connect recording. |
 | Models | `sections/Models` | Eight model cards, four by two: provider sample full-bleed fading into a per-card tone. |
@@ -203,9 +203,18 @@ special case, and the teleport that a ring usually needs is what reads as a
 glitch here. This is the opposite call to the hero carousel that used to have
 five cards, where the crossing card was hidden at both ends and so could jump.
 
-**Film Studio plays `use-cases/film.mp4` in the reel**, not
-`studios/film-studio.mp4`. The latter is the right footage and 14MB of it,
-which this section would have carried for one card of three.
+**Film Studio streams its reel clip** from `imagine.animagic.art`. The local
+`studios/film-studio.mp4` is the right footage and 14MB of it, which this
+section would have carried for one card of three.
+
+**The turn's sign is easy to get backwards, and measuring it is the only way
+to be sure.** The side cards read as leaning in toward the middle: for the
+card on the left, the inner edge sits 217px nearer the viewer and the outer
+edge 217px further. Negating the angle gives the same cards leaning out
+instead, which is the same geometry read inside out and looks almost right
+until you compare it with the reference. `getBoxQuads` is not available to
+check this; project the corners through the element's `DOMMatrix` and the
+stage's perspective instead.
 
 **The hero CTA is built from a supplied SVG**, not approximated: shape 48 tall
 on an 18 radius; the fill is that SVG's radial gradient, whose rx and ry were
@@ -361,8 +370,8 @@ Note `/apps/outfit-tryon`, which Fashion Studio used to point at, returns 500.
   you pick a chip. **Give each entry its own footage before shipping.** WebM
   is the only one on the page; every other clip is MP4.
 - **Remote runtime dependencies:** MCP connect recordings and the 30 Ad Studio
-  clips stream from `cdn-imagine.vyro.ai`; the hero's Creative clip from
-  `imagine.animagic.art` and its Workflows clip from `www.imagine.art`.
+  clips stream from `cdn-imagine.vyro.ai`; the studio reel's Film clip from
+  `imagine.animagic.art`; Brand Guidelines' clip from `www.imagine.art`.
   Everything else is local.
 
 ## 7. Media

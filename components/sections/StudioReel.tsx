@@ -20,14 +20,15 @@ import { SectionGuides } from "@/components/primitives/SectionGuides";
  * out the far side. That costs nothing and needs no special case — the
  * alternative, teleporting it, is what reads as a glitch.
  *
- * Film Studio plays `use-cases/film.mp4`, not `studios/film-studio.mp4`. The
- * latter is the right footage and 14MB of it; this section would have carried
- * that weight for one of three cards.
+ * Film Studio streams its clip rather than serving it: the local
+ * `studios/film-studio.mp4` is the right footage and 14MB of it, which this
+ * section would have carried for one card of three. `withBasePath()` passes an
+ * absolute URL through untouched, so it needs no local copy.
  */
 const REELS = [
   { id: "ad", label: "Ad Studio", href: STUDIO_HREFS.ad, video: "/media/studios/ad-studio.mp4", logo: "/media/studios/logos/ad-studio-white.svg" },
   { id: "fashion", label: "Fashion Studio", href: STUDIO_HREFS.fashion, video: "/media/studios/fashion-studio.mp4", logo: "/media/studios/logos/fashion-studio-white.svg" },
-  { id: "film", label: "Film Studio", href: STUDIO_HREFS.film, video: "/media/use-cases/film.mp4", logo: "/media/studios/film/logo.webp" },
+  { id: "film", label: "Film Studio", href: STUDIO_HREFS.film, video: "https://imagine.animagic.art/imagine-one/film-studio/video/27.mp4", logo: "/media/studios/film/logo.webp" },
 ];
 
 export function StudioReel() {
@@ -83,11 +84,8 @@ export function StudioReel() {
                 preload="metadata"
                 disablePictureInPicture
               />
-              <span className="sr-tag">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={withBasePath(r.logo)} alt="" aria-hidden />
-                {r.label}
-              </span>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img className="sr-mark" src={withBasePath(r.logo)} alt={r.label} />
             </a>
           );
         })}
@@ -138,11 +136,18 @@ export function StudioReel() {
           box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
           /* The neighbours are turned away and pushed out; the selected card
              is flat, centred and above them, which is also what hides the
-             card wrapping from one end of the ring to the other. */
+             card wrapping from one end of the ring to the other.
+
+             The sign matters and it is easy to get backwards. A positive
+             rotateY brings an element's right edge toward the viewer, so
+             --d * 30deg turns the left card's outer edge forward and its
+             inner edge away, which is the concave arrangement in the
+             reference. Negating it gives the convex one, where the cards lean
+             in toward the middle: the same angle, read inside out. */
           transform:
             translate(-50%, -50%)
             translateX(calc(var(--d) * 62%))
-            rotateY(calc(var(--d) * -30deg))
+            rotateY(calc(var(--d) * 30deg))
             scale(0.82);
           opacity: 0.62;
           z-index: 1;
@@ -163,26 +168,19 @@ export function StudioReel() {
           object-fit: cover;
           display: block;
         }
-        .sr-tag {
+        /* The mark alone, no pill and no label beside it: the studios are
+           recognised by their wordmarks. A drop shadow rather than a plate,
+           so nothing sits between the mark and the footage; these are white
+           marks and the shadow is what holds them over a bright frame. */
+        .sr-mark {
           position: absolute;
-          top: 16px;
-          left: 16px;
-          display: inline-flex;
-          align-items: center;
-          gap: 8px;
-          height: 34px;
-          padding: 0 14px;
-          border-radius: 999px;
-          font-size: 13px;
-          font-weight: 500;
-          letter-spacing: -0.005em;
-          color: #fff;
-          background: rgba(10, 10, 11, 0.44);
-          border: 1px solid rgba(255, 255, 255, 0.16);
-          backdrop-filter: blur(18px) saturate(150%);
-          -webkit-backdrop-filter: blur(18px) saturate(150%);
+          top: clamp(14px, 2.4%, 26px);
+          left: clamp(14px, 2.4%, 26px);
+          height: clamp(22px, 2.6%, 34px);
+          width: auto;
+          display: block;
+          filter: drop-shadow(0 2px 10px rgba(0, 0, 0, 0.55));
         }
-        .sr-tag img { height: 13px; width: auto; display: block; }
 
         .sr-controls {
           display: flex;
@@ -225,7 +223,7 @@ export function StudioReel() {
 
         @media (max-width: 880px) {
           .sr-card { width: 84vw; }
-          .sr-tag { height: 30px; padding: 0 11px; font-size: 12px; }
+          .sr-mark { height: 20px; }
         }
         @media (prefers-reduced-motion: reduce) {
           .sr-card { transition: none; }
