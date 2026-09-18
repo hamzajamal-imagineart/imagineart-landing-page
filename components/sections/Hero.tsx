@@ -29,20 +29,23 @@ import { SectionGlow, sectionGlowCss } from "@/components/primitives/SectionGlow
  * arch. It is written per entry rather than derived from the index so the
  * shape can be tuned by hand and does not have to stay symmetrical.
  *
- * **The images are placeholders.** They are the bento's photographs, reused
- * because they are the only 3:4 stills on disk. Replace `image` on each entry
- * and nothing else has to change; the labels are placeholders too.
+ * The images are real work. The labels are descriptions of what each one is,
+ * not confirmed copy: they say what the piece shows, which is the job the
+ * reference's labels were doing, but nobody has signed off on the words.
+ *
+ * Adding or removing an entry means changing `--ksum` and `--count` in the
+ * rail's CSS to match, or the row stops meeting the edges of the page.
  */
 const SHOWCASE = [
-  { id: "superpower", label: "Superpower", image: "/media/tools/lipsync.jpg", k: 0.5 },
-  { id: "girlfriends", label: "Girlfriends", image: "/media/tools/motion-sync.jpg", k: 0.62 },
-  { id: "character", label: "Character AI", image: "/media/tools/create-characters.jpg", k: 0.79 },
-  { id: "bastion", label: "Bastion Bees", image: "/media/tools/vfx.jpg", k: 1 },
-  { id: "eliza", label: "Eliza Dolittle", image: "/media/tools/relight-video.jpg", k: 0.79 },
-  { id: "waverly", label: "Waverly", image: "/media/tools/ai-voiceover.jpg", k: 0.64 },
-  { id: "timmons", label: "Timmons", image: "/media/tools/lipsync.jpg", k: 0.53 },
-  { id: "poga", label: "POGA", image: "/media/tools/motion-sync.jpg", k: 0.44 },
+  { id: "illustration", label: "Illustration", image: "/media/hero/showcase/illustration.jpg", k: 0.54 },
+  { id: "editorial", label: "Editorial", image: "/media/hero/showcase/editorial.jpg", k: 0.7 },
+  { id: "product", label: "Product", image: "/media/hero/showcase/product.jpg", k: 0.86 },
+  { id: "character", label: "Character", image: "/media/hero/showcase/character.jpg", k: 1 },
+  { id: "portrait", label: "Portrait", image: "/media/hero/showcase/portrait.jpg", k: 0.86 },
+  { id: "album", label: "Album Art", image: "/media/hero/showcase/album-art.jpg", k: 0.7 },
+  { id: "fashion", label: "Fashion", image: "/media/hero/showcase/fashion.jpg", k: 0.54 },
 ];
+
 
 export function Hero() {
   return (
@@ -129,29 +132,41 @@ export function Hero() {
           position: absolute;
           inset: 0;
           background:
-            /* Under the headline and copy, so both hold AA over the red. */
-            linear-gradient(to bottom, rgba(10, 4, 6, 0.62) 0%, rgba(10, 4, 6, 0.28) 34%, rgba(10, 4, 6, 0) 52%),
+            /* A flat wash over the whole photograph first. The gradients
+               below shape it, but on their own they left the copy sitting on
+               whatever the picture happened to be doing behind it. */
+            linear-gradient(rgba(8, 4, 5, 0.34), rgba(8, 4, 5, 0.34)),
+            /* Then the top, where the headline and copy are. */
+            linear-gradient(
+              to bottom,
+              rgba(8, 4, 5, 0.72) 0%,
+              rgba(8, 4, 5, 0.58) 38%,
+              rgba(8, 4, 5, 0.3) 62%,
+              rgba(8, 4, 5, 0) 80%
+            ),
             /* And down into the page, so the band ends on --page-bg rather
                than a cut. */
-            linear-gradient(to bottom, transparent 40%, var(--page-bg) 96%);
+            linear-gradient(to bottom, transparent 46%, var(--page-bg) 97%);
         }
         .hero-section .container-page { position: relative; z-index: 1; }
         .hero-top {
           display: flex;
           flex-direction: column;
-          align-items: flex-start;
+          align-items: center;
+          text-align: center;
           gap: 0;
         }
-        .hero-h1 { font-size: clamp(34px, 4vw, 52px); text-align: left; text-wrap: initial; }
+        .hero-h1 { font-size: clamp(42px, 6vw, 86px); text-align: center; text-wrap: initial; line-height: 1.02; }
         .hero-h1-light { font-weight: 400; }
         .hero-copy {
           font-size: clamp(16px, 1.25vw, 18px);
           line-height: 1.6;
           color: var(--ink);
-          max-width: 56ch;
-          margin-top: 18px;
+          max-width: 58ch;
+          margin-top: 22px;
+          margin-inline: auto;
         }
-        .hero-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 28px; }
+        .hero-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 30px; }
         .hero-btn {
           display: inline-flex;
           align-items: center;
@@ -191,10 +206,10 @@ export function Hero() {
            document a horizontal scrollbar. */
         .hs {
           container-type: inline-size;
-          --ksum: 5.31;
+          --ksum: 5.2;
           --gap: clamp(6px, 0.7vw, 14px);
           --peak: calc((100cqw - (var(--count) - 1) * var(--gap)) / (0.75 * var(--ksum)));
-          --count: 8;
+          --count: 7;
           margin-top: clamp(36px, 5vh, 56px);
           overflow-x: auto;
           overflow-y: hidden;

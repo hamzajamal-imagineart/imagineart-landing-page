@@ -23,7 +23,7 @@ components, not forked from it.
 
 | Section | Component | What it is |
 |---|---|---|
-| Hero | `sections/Hero` | One column: headline "Bringing / imagination to life" ("Bringing" at weight 400), then the copy, then Get Started + Book a demo, over a full-bleed photograph. At the foot, a rail of portrait cards filling the page edge to edge, bottoms aligned and heights arching to the middle, each with its name above. |
+| Hero | `sections/Hero` | One centred column: headline "Bringing / imagination to life" ("Bringing" at weight 400) up to 86px, then the copy, then Get Started + Book a demo, over a full-bleed photograph. At the foot, a rail of seven portrait cards filling the page edge to edge, bottoms aligned and heights arching to the middle, each with its name above. |
 | Partners | `sections/Partners` | Six partner marks (ByteDance, Kling AI, MINIMAX, Wan, fal, Grok) with two captions. |
 | Creative Tools `#tools` | `sections/CreativeTools` | A 13-card bento from Figma: four 308px columns, 16px gutter, columns split 372/172 or 130/130/268. Picture cards carry a photograph under a scrim, the rest are flat tinted panels. Title always showing, description on hover. "View all tools" at the foot. |
 | Workflows `#workflows` | `sections/Workflows` | Bento, spans [2,1] / [1,1,1]: Node canvas (wide, clip), Brand Guidelines (clip), Creative Analyser (clip), Connectors as a `MarkCluster`, Plugins as a linked list of host apps. Tiles on `--tile`, no borders, 460px rows. |
@@ -112,9 +112,15 @@ hero's two lines at different weights.
 **The hero carries a photograph** (18 Sep), `hero/backdrop-veil.jpg`, full bleed
 behind the whole section. It is an `<img>` rather than a `background-image` so
 it can be `object-fit: cover` at `50% 12%`, which keeps the crown in frame as
-the section shortens. Its scrim does two jobs in one element: a dark wash over
-the top half so the headline and copy hold AA over the red, and a fade to
-`--page-bg` at the foot so the seam into Partners stays invisible. The
+the section shortens. Its scrim is three layers in one element: a flat wash over the whole
+photograph, a heavier gradient over the top where the copy sits, and a fade to
+`--page-bg` at the foot so the seam into Partners stays invisible. The flat
+wash is the one that matters — the gradients alone left the copy sitting on
+whatever the picture happened to be doing behind it. Measured at 1440 by
+compositing the photograph and the scrim: **16.3:1 under the headline, 17.5:1
+under the copy, and 9.2:1 against the brightest pixel in the band** (the
+crown). That is a long way past AA, so there is room to lift the wash if the
+photograph is reading too dark. The
 `SectionGlow` still sits above it, at `z-index: -1` to the photograph's `-2`.
 
 This is the page's one saturated surface. The rest of the design system is
@@ -251,14 +257,12 @@ Note `/apps/outfit-tryon`, which Fashion Studio used to point at, returns 500.
   Selected view; no aggregate rating claim is made.
 - **FAQ** reuses the B2B repo's "we never train on your content" and "full
   commercial rights" lines; "free to start" assumes a free tier.
-- **The showcase rail is entirely placeholder.** Its eight images are the
-  bento's photographs reused, because they are the only 3:4 stills on disk.
-  Its eight labels are worse: they are **copied from the ElevenLabs reference
-  screenshot**, so they are another company's customer names (Superpower,
-  Girlfriends, Character AI, Bastion Bees, Eliza Dolittle, Waverly, Timmons,
-  POGA). **Both must be replaced before this is shown to anyone.** Swapping
-  `image` and `label` on each `SHOWCASE` entry is the whole job, but if the
-  number of cards changes, `--ksum` in the rail's CSS has to change too.
+- **Showcase rail:** the seven images are real work, in
+  `hero/showcase/` (2.6MB). Five are square and two portrait, cropped to 3:4
+  by `object-fit`. The labels (Illustration, Editorial, Product, Character,
+  Portrait, Album Art, Fashion) are descriptions of what each piece shows, not
+  confirmed copy. Adding or removing a card means editing `--ksum` and
+  `--count` in the rail's CSS to match.
 - **Remote runtime dependencies:** MCP connect recordings and the 30 Ad Studio
   clips stream from `cdn-imagine.vyro.ai`; the hero's Creative clip from
   `imagine.animagic.art` and its Workflows clip from `www.imagine.art`.
@@ -274,6 +278,7 @@ ffmpeg on this machine; see the B2B Guidelines §7 for the recipe):
 | `studios/film-studio.mp4` | 16MB | unused; delete |
 | `studios/fashion/banner.mp4` | 13MB | in use; re-encode |
 | `hero/backdrop-veil.jpg` | 410KB | the hero photograph; in use |
+| `hero/showcase/*.jpg` | 2.6MB | the seven rail cards; in use |
 | `hero/creative-suite-image.webm` | 1.4MB | unused since the hero panel went; delete |
 | `hero/computer.mp4` | 1.9MB | unused since the hero panel went; delete |
 | `cta/hills.jpg` | 195KB | unused since the closing band changed; delete |
@@ -289,9 +294,8 @@ replacing one changes every card that shows it.
 
 1. **Fix the three mismatched bento descriptions** (§6) and give the cards per-tool links.
 2. Confirm the remaining inferred URL (§5) and the flagged model names (§6).
-3. **Replace the showcase rail's placeholder images and labels** (§6): the
-   labels are currently another company's customer names. Then the remaining
-   invented copy (§6).
+3. Confirm the showcase rail's labels (§6) and replace the remaining invented
+   copy (§6).
 4. Re-encode the Fashion clip and delete the unused media (§7).
 5. ~~Headings invisible without JS~~ and ~~`text-wrap: balance` not applying~~:
    both resolved by removing the heading animation (§3).
