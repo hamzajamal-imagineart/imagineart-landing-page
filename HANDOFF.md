@@ -109,18 +109,22 @@ hero's two lines at different weights.
 
 ### Hero
 
-**The hero carries a photograph** (18 Sep), `hero/backdrop-veil.jpg`, full bleed
-behind the whole section. It is an `<img>` rather than a `background-image` so
+**The hero carries a photograph** (18 Sep), `hero/backdrop-mirrors.jpg`, full
+bleed behind the whole section. It is an `<img>` rather than a `background-image` so
 it can be `object-fit: cover` at `50% 12%`, which keeps the crown in frame as
 the section shortens. Its scrim is three layers in one element: a flat wash over the whole
 photograph, a heavier gradient over the top where the copy sits, and a fade to
 `--page-bg` at the foot so the seam into Partners stays invisible. The flat
 wash is the one that matters — the gradients alone left the copy sitting on
-whatever the picture happened to be doing behind it. Measured at 1440 by
-compositing the photograph and the scrim: **16.3:1 under the headline, 17.5:1
-under the copy, and 9.2:1 against the brightest pixel in the band** (the
-crown). That is a long way past AA, so there is room to lift the wash if the
-photograph is reading too dark. The
+whatever the picture happened to be doing behind it. The wash is the number to tune when the photograph
+changes. Measured at 1440 by compositing the picture with all three scrim
+layers at the copy's actual position: **12.5:1 under the headline, 14.2:1
+under the copy, and 10.2:1 / 9.0:1 against the brightest pixel in each band.**
+AA wants 4.5:1, so there is still room to lift it; the current picture is pale
+and composites to about `rgb(50,38,35)` behind the headline, which is most of
+the way to black. Re-measure rather than eyeball it if the photograph is
+swapped again: the first one here was dark red and needed a heavier wash than
+this one does. The
 `SectionGlow` still sits above it, at `z-index: -1` to the photograph's `-2`.
 
 This is the page's one saturated surface. The rest of the design system is
@@ -302,7 +306,8 @@ ffmpeg on this machine; see the B2B Guidelines §7 for the recipe):
 |---|---|---|
 | `studios/film-studio.mp4` | 16MB | unused; delete |
 | `studios/fashion/banner.mp4` | 13MB | in use; re-encode |
-| `hero/backdrop-veil.jpg` | 410KB | the hero photograph; in use |
+| `hero/backdrop-mirrors.jpg` | 407KB | the hero photograph; in use |
+| `hero/backdrop-veil.jpg` | 410KB | the previous hero photograph; unused, delete |
 | `hero/showcase/*.jpg` | 2.6MB | the seven rail cards; in use |
 | `hero/creative-suite-image.webm` | 1.4MB | unused since the hero panel went; delete |
 | `hero/computer.mp4` | 1.9MB | unused since the hero panel went; delete |

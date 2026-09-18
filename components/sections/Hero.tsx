@@ -60,7 +60,7 @@ export function Hero() {
           AA and lands the foot of the section on --page-bg, so the seam into
           Partners stays invisible. */}
       <div className="hero-bg" aria-hidden>
-        <img src={withBasePath("/media/hero/backdrop-veil.jpg")} alt="" />
+        <img src={withBasePath("/media/hero/backdrop-mirrors.jpg")} alt="" />
         <span className="hero-bg-scrim" />
       </div>
       <div className="container-page">
@@ -131,9 +131,9 @@ export function Hero() {
           width: 100%;
           height: 100%;
           object-fit: cover;
-          /* The subject is centred and top-weighted, so the crown stays in
-             frame as the section gets shorter. */
-          object-position: 50% 12%;
+          /* The face sits a little above centre, so the crop holds it as the
+             section gets taller than the picture. */
+          object-position: 50% 42%;
           display: block;
         }
         .hero-bg-scrim {
@@ -143,7 +143,7 @@ export function Hero() {
             /* A flat wash over the whole photograph first. The gradients
                below shape it, but on their own they left the copy sitting on
                whatever the picture happened to be doing behind it. */
-            linear-gradient(rgba(8, 4, 5, 0.34), rgba(8, 4, 5, 0.34)),
+            linear-gradient(rgba(8, 4, 5, 0.2), rgba(8, 4, 5, 0.2)),
             /* Then the top, where the headline and copy are. */
             linear-gradient(
               to bottom,
