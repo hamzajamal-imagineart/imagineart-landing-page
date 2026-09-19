@@ -874,7 +874,12 @@ export function Hero() {
           transform: translateX(-50%);
           max-width: calc(100% - 24px);
           display: flex;
-          justify-content: center;
+          /* Not center. The row is absolutely positioned and shrinks to fit,
+             so it is already centred by the translate above; asking flex to
+             centre as well does nothing until the chips overflow, and then it
+             pushes the first one out of the scroller's reach — scrollLeft is
+             already 0 and "Image" is cut off the left edge. */
+          justify-content: flex-start;
           gap: 4px;
           padding: 5px;
           border-radius: 999px;

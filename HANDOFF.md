@@ -322,6 +322,12 @@ Each failed **silently**. Re-read before touching the same ground.
   `::selection` must restore `-webkit-text-fill-color`, and anything overriding
   `.h-muted` — or opting out of the gradient, as the hero does — must set the
   fill as well as the colour.
+- **A centred flex row that overflows puts its own start out of reach.**
+  `justify-content: center` on an `overflow-x: auto` row pushes the first
+  item past the scroller's left edge, where `scrollLeft` is already 0 and
+  nothing can scroll back to it: the hero's Image chip was cut in half on a
+  phone. The row is absolutely positioned and shrinks to fit, so it was
+  already centred by its own transform; `flex-start` is what it wants.
 - **The `0fr` → `1fr` grid reveal does not work here.** A bare `0fr` keeps an
   automatic min-content floor so it never closes; `minmax(0, 1fr)` closes but
   has no minimum to size against in an auto-height box, so it never opens. Use
