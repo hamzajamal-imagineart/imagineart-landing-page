@@ -1,17 +1,19 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { withBasePath } from "@/lib/assets";
 import { STUDIO_HREFS } from "@/lib/links";
 import { BlurHeading } from "@/components/BlurHeading";
 import { SectionGuides } from "@/components/primitives/SectionGuides";
+import { useAutoAdvance } from "@/components/primitives/useAutoAdvance";
 
 /**
  * The studios, as a coverflow of their own work.
  *
  * Three clips on a ring: the selected one flat and centred, its neighbours
- * turned away on either side and cut by the edges of the section. Chevrons
- * step it; the dots say where you are. Each card is a link into its studio,
+ * turned away on either side and cut by the edges of the section. It walks
+ * itself every 5s and holds while the pointer is over it; chevrons, dots and
+ * a horizontal wheel or swipe step it by hand. Each card is a link into its studio,
  * and carries a tag naming the kind of work rather than the studio: the
  * section heading above already names all three, and the link is what says
  * where the card goes.
@@ -48,8 +50,17 @@ const REELS = [
 ];
 
 export function StudioReel() {
-  const [active, setActive] = useState(0);
+  /**
+   * The ring walks itself every 5s (Hamza, 19 Sep), on the same primitive the
+   * Use Cases wheel uses: it holds while the pointer or focus is inside, and
+   * does not run at all under reduced motion, where something moving on its
+   * own is what the setting is asking you not to do.
+   */
+  const { active, pick, hold } = useAutoAdvance(REELS.length, 5000);
   const clips = useRef<(HTMLVideoElement | null)[][]>([]);
+  const stage = useRef<HTMLDivElement | null>(null);
+  const at = useRef(active);
+  at.current = active;
 
   // Only the selected clip plays. Three at once is three decoders running for
   // two pictures nobody is looking straight at.
@@ -63,7 +74,43 @@ export function StudioReel() {
     });
   }, [active]);
 
-  const step = (d: number) => setActive((a) => (a + d + REELS.length) % REELS.length);
+  const step = useCallback(
+    (d: number) => pick((at.current + d + REELS.length) % REELS.length),
+    [pick],
+  );
+
+  /**
+   * A horizontal wheel or two-finger swipe steps the ring.
+   *
+   * Bound by hand rather than with `onWheel` so the listener can be
+   * non-passive: without `preventDefault` the same gesture triggers the
+   * browser's own swipe-back, and the page leaves instead of the card moving.
+   * Only claimed when the gesture is more horizontal than vertical, so
+   * scrolling the page past the stage still scrolls the page.
+   *
+   * Deltas arrive in a long stream — a trackpad flick is dozens of events —
+   * so they are accumulated to a threshold and then locked out for the length
+   * of the card transition. One flick moves one card.
+   */
+  useEffect(() => {
+    const el = stage.current;
+    if (!el) return;
+    let sum = 0;
+    let until = 0;
+    const onWheel = (e: WheelEvent) => {
+      if (Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return;
+      e.preventDefault();
+      const now = performance.now();
+      if (now < until) return;
+      sum += e.deltaX;
+      if (Math.abs(sum) < 40) return;
+      step(sum > 0 ? 1 : -1);
+      sum = 0;
+      until = now + 620;
+    };
+    el.addEventListener("wheel", onWheel, { passive: false });
+    return () => el.removeEventListener("wheel", onWheel);
+  }, [step]);
 
   return (
     <section id="studio-reel" className="relative border-t border-[color:var(--line)] py-24 md:py-32 lg:border-t-0">
@@ -78,7 +125,7 @@ export function StudioReel() {
         </div>
       </div>
 
-      <div className="sr-stage">
+      <div className="sr-stage" ref={stage} {...hold}>
         {REELS.map((r, i) => {
           const d = ((i - active + 1 + REELS.length) % REELS.length) - 1;
           return (
@@ -117,7 +164,7 @@ export function StudioReel() {
         })}
       </div>
 
-      <div className="sr-controls">
+      <div className="sr-controls" {...hold}>
         <button type="button" className="sr-arrow" onClick={() => step(-1)} aria-label="Previous studio">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden><path d="M15 5l-7 7 7 7" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
         </button>
@@ -127,7 +174,7 @@ export function StudioReel() {
               key={r.id}
               type="button"
               className={`sr-dot ${i === active ? "sr-dot-on" : ""}`}
-              onClick={() => setActive(i)}
+              onClick={() => pick(i)}
               aria-label={r.label}
               aria-current={i === active}
             />

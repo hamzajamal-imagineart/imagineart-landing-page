@@ -45,7 +45,7 @@ Verify with `npx next build` plus grep or DOM measurement. Keep replies short.
 | Studios `#studios` | `sections/AdStudio` | Heading "Studios" + lede, then the **Ad Studio banner**: five vertical marquee columns of 9:16 ad clips (30 clips, CDN, posters, `preload="none"`) and a frosted left panel. |
 | Fashion Studio `#fashion-studio` | `sections/FashionStudio` | Banner: campaign clip full-bleed, rising scrim, white wordmark, glass "Try Now". |
 | Film Studio `#film-studio` | `sections/FilmStudio` | Banner: CSS marquee of 24 film thumbnails behind blurred edges and a frosted centre disc. The whole band links to the studio. |
-| Studio reel `#studio-reel` | `sections/StudioReel` | The three studios as a coverflow: selected clip flat and centred, neighbours turned away and cut by the section edges, each tagged **Advertising · Fashion · Filmmaking**. The Ad card holds three verticals side by side; the other two hold one clip each. Chevrons and dots, no auto-advance. |
+| Studio reel `#studio-reel` | `sections/StudioReel` | The three studios as a coverflow: selected clip flat and centred, neighbours turned away and cut by the section edges, each tagged **Advertising · Fashion · Filmmaking**. The Ad card holds three verticals side by side; the other two hold one clip each. Walks itself every 5s on `useAutoAdvance`, held while the pointer or focus is inside; chevrons, dots and a horizontal wheel or swipe step it by hand. |
 | Workflows `#workflows` | `sections/Workflows` | Bento, spans [2,1] / [1,1,1]: Node canvas (wide, clip), Brand Guidelines (clip), Creative Analyser (clip), Connectors as a `MarkCluster`, Plugins as a linked list. Every tile carries a gradient ground. No borders, 460px rows. |
 | Agents `#agents` | `sections/Agent` | A split, deliberately not another bento: three numbered steps and a text link on the left, one clip filling the panel on the right. Stacks under 1024px. |
 | Use Cases `#use-cases` | `sections/UseCases` + `UseCaseWheel` | "USE CASES" eyebrow, heading "One-click skills for every creative task". A centred vertical list of six use cases advancing every 3s, the active one in a pill with an arrow into the template gallery, four of its clips scattered either side. |
@@ -154,8 +154,9 @@ Unused, kept on disk: `ui/blur-reveal`, `Backdrop`, `RailGrid`, `MediaCard`,
 - **Tabs.** Every tab list (MCP clients, MCP route, the hero chips, the wheel)
   uses `SlidingIndicator`: one fill that travels on
   `transform`/`width`/`height`, leaving each tab nothing to animate but its
-  text colour. Only the wheel walks itself, on `useAutoAdvance` (3s), drawing
-  the dwell as a faint fill in `--progress-wash`.
+  text colour. Of the tab lists only the wheel walks itself, on
+  `useAutoAdvance` (3s), drawing the dwell as a faint fill in
+  `--progress-wash`; the studio reel is on the same primitive at 5s.
 - **Section guides.** `SectionGuides` is the Enterprise repo's version, ported
   wholesale — keep it in sync with the B2B repo rather than editing this copy.
   It diverges in one place: rule and dot colours come from `--guide-line` /
@@ -264,6 +265,14 @@ column. `.wf-tile` has `overflow: hidden` so the ground follows the radius.
 Measured per pixel at 1440, the tightest is the green tile's body at 5.3:1
 against the brightest pixel behind it. **A brighter image needs the scrim
 raised.**
+
+**The reel's horizontal wheel listener is bound by hand, not with `onWheel`,**
+so it can be non-passive: without `preventDefault` the same two-finger
+gesture triggers the browser's own swipe-back and the page leaves instead of
+the card moving. It only claims the gesture when it is more horizontal than
+vertical, so scrolling past the stage still scrolls the page, and it
+accumulates deltas to a threshold then locks out for the length of the card
+transition — a trackpad flick is dozens of events and should move one card.
 
 **The studio reel's ring wraps by animating the long way.** With three cards
 every step moves one from one end of the ring to the other. It travels across
