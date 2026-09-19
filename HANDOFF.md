@@ -39,7 +39,7 @@ Verify with `npx next build` plus grep or DOM measurement. Keep replies short.
 
 | Section | Component | What it is |
 |---|---|---|
-| Hero | `sections/Hero` | A centred column over a mosaic of work: headline "Imagine, design, animate. / edit. One platform.", the copy, one CTA. Below it a 16:9 panel holding a single clip edge to edge, with a chip row floating on the footage. |
+| Hero | `sections/Hero` | A centred column over a mosaic of work: headline "Imagine, design, animate. / edit. One platform.", the copy, one CTA. Below it a 16:9 panel holding a single clip edge to edge, with the **mode chips** floating on the footage at its head: Image · Video · Music · Workflows · Agent · Computer. Image and Video play their clips in turn, Music is a wall of track cards, and the rest loop one clip. The three modes that carry sound get a control bar above the chips. |
 | Partners | `sections/Partners` | Six partner marks (ByteDance, Kling AI, MINIMAX, Wan, fal, Grok) with two captions. |
 | Creative Tools `#tools` | `sections/CreativeTools` | A 13-card bento from Figma: four 308px columns, 16px gutter, split 410/190/190 or 144/144/296/190 so every column ends level at 822. Eight cards carry a photograph, five carry that tool's own clip. No icons. Title always showing, description on hover. "View all tools" at the foot. |
 | Studios `#studios` | `sections/AdStudio` | Heading "Studios" + lede, then the **Ad Studio banner**: five vertical marquee columns of 9:16 ad clips (30 clips, CDN, posters, `preload="none"`) and a frosted left panel. |
@@ -47,6 +47,7 @@ Verify with `npx next build` plus grep or DOM measurement. Keep replies short.
 | Film Studio `#film-studio` | `sections/FilmStudio` | Banner: CSS marquee of 24 film thumbnails behind blurred edges and a frosted centre disc. The whole band links to the studio. |
 | Studio reel `#studio-reel` | `sections/StudioReel` | The three studios as a coverflow: selected clip flat and centred, neighbours turned away and cut by the section edges, each tagged **Advertising · Fashion · Filmmaking**. The Ad card holds three verticals side by side; the other two hold one clip each. Chevrons and dots, no auto-advance. |
 | Workflows `#workflows` | `sections/Workflows` | Bento, spans [2,1] / [1,1,1]: Node canvas (wide, clip), Brand Guidelines (clip), Creative Analyser (clip), Connectors as a `MarkCluster`, Plugins as a linked list. Every tile carries a gradient ground. No borders, 460px rows. |
+| Agents `#agents` | `sections/Agent` | A split, deliberately not another bento: three numbered steps and a text link on the left, one clip filling the panel on the right. Stacks under 1024px. |
 | Use Cases `#use-cases` | `sections/UseCases` + `UseCaseWheel` | "USE CASES" eyebrow, heading "One-click skills for every creative task". A centred vertical list of six use cases advancing every 3s, the active one in a pill with an arrow into the template gallery, four of its clips scattered either side. |
 | MCP `#mcp` | `sections/Mcp` | Connect panel ported from `Vyro-ai/imagine-web-mcp-landing`: the Imagine MCP wordmark, client tabs, an MCP / CLI segment, three numbered steps with copy buttons and deep links, and the client's real connect recording. |
 | Models | `sections/Models` | Eight model cards, four by two: provider sample full-bleed fading into a per-card tone. |
@@ -58,7 +59,7 @@ The three studio banners share one height, `--studio-band-h` in
 `globals.css`, and follow each other with no rules between them. The studio
 reel sits under them.
 
-Nav is **Tools · Studios · Workflows · Use Cases · MCP · Pricing**, CTA Get
+Nav is **Tools · Studios · Workflows · Agents · Use Cases · MCP · Pricing**, CTA Get
 Started. **Keep the nav in the same order as the page** so no link scrolls
 backwards.
 
@@ -371,11 +372,50 @@ point at, returns 500.
   as pipeline copy, Lipsync as image copy, because the Figma frames were
   renamed without their bodies. **Fix before shipping.** Every card links to
   `/apps`, since per-tool URLs are not confirmed.
-- **Hero chips.** All five (Image Generator · Upscaler · Variations · Relight ·
-  Camera Angles) play one file, `hero/creative-suite-image.webm`, so picking a
-  chip changes the selection and nothing else. Give each `CREATIVE` entry its
-  own `video` and it starts working with no other change. This is the page's
-  only WebM; everything else is MP4.
+- **Hero chips.** Six modes (Hamza, 19 Sep). Five own a list of clips:
+  **Image plays four in turn** and **Video three**, since no single recording
+  shows what either does; Workflows, Agent and Computer loop one. Image,
+  Video, Workflows and Agent are the product's own recordings under
+  `hero/modes/`; Computer is `hero/computer.mp4`, no longer unused.
+- **Music is not a clip at all.** A recording of the music tool shows a
+  waveform moving, which says nothing about what it produced, so the mode is
+  **four track cards with a chevron each side**, paged four at a time through
+  sixteen tracks, each card with its own play button. One `<audio>` element
+  serves every card, so starting one stops the last and only one file is ever
+  in flight; switching modes unmounts it, which stops the sound. Chevrons stop
+  at the ends rather than wrapping. On a phone the panel grows to 3:4 (via
+  `.hero-frame:has(.hc-music)`) and the four cards wrap two by two — at 375 a
+  16:9 panel is about 175px tall, shorter than one card.
+  - Tracks, artwork and avatars are the product's own, from the live music
+    gallery. **Artwork and avatars are local and downscaled**
+    (`sips -s format jpeg -Z 440` and `-Z 48`; the originals are 1024px and
+    146KB each against a card 260px wide). **The songs stream from
+    `imagine.animagic.art/imagine-one/audio/music/songs/<n>.mp3`** — about
+    960KB each, so sixteen local would be 15MB. That path is not in the
+    gallery's markup, which plays them from JS; it was found by probing.
+  - The cards clear the chip row with `padding-top` on `.hc-music`.
+  - `capabilities/music.mp4`, the mode's old clip, is still in `Apps` (pulled
+    from the page) and is otherwise unused.
+- **Only Workflows, Agent and Computer carry an audio track**, and only those
+  three get the control bar — play/pause, seek, elapsed, mute. `audio` is set
+  per entry in `MODES` rather than sniffed: there is no portable way to ask a
+  video whether it has sound. These three were read off the files' own `soun`
+  handlers (`grep -c soun` on the moov will do it); **re-check when a clip is
+  swapped**, or a silent mode gets a dead bar. Note the Music chip's clip is
+  itself silent.
+- **The chips sit at the head of the panel** (Hamza, 19 Sep), and the control
+  bar at its foot. Both float off one inset, `--hc-float` on `.hc` — the chips
+  that far from the top, the bar the same from the bottom — so they cannot
+  collide however the panel is sized. The bar sat above the chips while the
+  chips were at the foot. Playback always starts muted — autoplay
+  with sound is blocked everywhere — and `pick()` resets that with the clip.
+- **Four of the Image sources were served as `.webm` and are MP4 inside**, and
+  are stored as `.mp4`. The static server sets the media type from the
+  extension, and a lying one stops some browsers playing the file at all.
+  `hero/creative-suite-image.webm` is now unused — it was the Image clip.
+- **Agents section copy is written, not the product's own.** The three steps
+  and the "Put the agent to work" link (which goes to the app home, since no
+  agent URL is confirmed) are drafts.
 - **Written from names alone, treat as draft:** Workflows tile bodies, the four
   second-row bento cards (Inpaint, Image Upscaler, Video Extend, Outfit
   Try-on), the studio reel's heading and lede, and its tags (Advertising,
@@ -393,8 +433,9 @@ point at, returns 500.
   commercial rights" lines; "free to start" assumes a free tier.
 - **Remote runtime dependencies:** MCP connect recordings, the 30 Ad Studio
   banner clips and the reel's three Ad clips stream from `cdn-imagine.vyro.ai`;
-  the reel's Film clip from `imagine.animagic.art`; Brand Guidelines' clip from
-  `www.imagine.art`. Everything else is local.
+  the hero's 16 music tracks and the reel's Film clip from
+  `imagine.animagic.art`; Brand Guidelines' clip from `www.imagine.art`.
+  Everything else is local.
 
 ### Media
 
@@ -406,7 +447,14 @@ point at, returns 500.
 | `studios/film-studio.mp4` | 15MB | **unused** — the reel streams its film clip instead. Delete, or re-encode and use it |
 | `studios/fashion/banner.mp4` | 13MB | in use; re-encode |
 | `hero/showcase/*.jpg` | 2.6MB | originals behind seven of the mosaic tiles; keep |
-| `hero/computer.mp4` | 1.9MB | **unused** since the hero tab bar went; delete |
+| `hero/modes/agent.mp4` | 11MB | the hero's Agent chip; loads only when the chip is picked. Re-encode |
+| `hero/modes/image/*.mp4` | 3.8MB | the Image chip's four clips; in use |
+| `hero/modes/video/*.mp4` | 1.9MB | the Video chip's three clips; in use |
+| `music/art/*.jpg` | 1.1MB | the Music chip's 16 covers, 440px; in use |
+| `music/avatar/*.jpg` | 64KB | the Music chip's 16 avatars, 48px; in use |
+| `hero/creative-suite-image.webm` | 1.4MB | **unused** since the Image chip became a playlist; delete |
+| `hero/modes/workflows.mp4` | 4.7MB | the hero's Workflows chip; re-encode |
+| `hero/computer.mp4` | 1.9MB | back in use as the hero's Computer chip |
 | `hero/creative-suite-image.webm` | 1.4MB | the hero clip; in use |
 | `hero/mosaic/*.jpg` | 568KB | the hero's ground, 18 tiles; in use |
 | `hero/backdrop-veil.jpg` | 410KB | **unused** since the hero photograph was dropped; delete |
@@ -423,8 +471,10 @@ replacing one changes every card that shows it.
 
 1. **Fix the three mismatched bento descriptions** (§7) and give the cards
    per-tool links.
-2. **Give each hero chip its own footage** (§7).
+2. Re-encode `hero/modes/agent.mp4` (11MB) and `workflows.mp4` (4.7MB).
 3. Confirm the inferred Avatar URL (§7) and the flagged model names (§7).
+   Confirm the Agent section's steps, and whether an agent URL exists to
+   point its link at instead of the app home.
 4. Confirm the studio reel's heading, lede and tags (§7).
 5. Re-encode the Fashion banner clip and delete the unused media (§7).
 6. **Deployment.** `next.config.ts` reads `BASE_PATH` at build time; there is
@@ -458,7 +508,10 @@ Two gaps were found and fixed:
   are `display:none` under 1080px, so a phone without JS got a wordmark and a
   dead burger. A `<noscript>` block now lays the same links out in flow.
 
-Left alone on purpose: MCP renders only the selected client's steps (the
+Left alone on purpose: the hero panel renders only the selected mode, so the
+Music wall's track names are not in the static HTML (the same trade the MCP
+panel makes, and the mode strip has never rendered more than one mode); MCP
+renders only the selected client's steps (the
 default panel is complete and the others are the same instructions with a
 different name); bento descriptions are hover-revealed but in the DOM and
 forced open under `@media (hover: none)`; 89 of 95 images carry `alt=""` and

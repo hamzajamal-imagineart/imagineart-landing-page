@@ -13,6 +13,7 @@ import { AdStudio } from "@/components/sections/AdStudio";
 import { FashionStudio } from "@/components/sections/FashionStudio";
 import { FilmStudio } from "@/components/sections/FilmStudio";
 import { StudioReel } from "@/components/sections/StudioReel";
+import { Agent } from "@/components/sections/Agent";
 import { UseCases } from "@/components/sections/UseCases";
 import { Models } from "@/components/sections/Models";
 import { ClosingCta } from "@/components/sections/ClosingCta";
@@ -35,7 +36,7 @@ const softwareSchema = {
  * tools),
  * where to do the work (the three studio banners and the reel under them), how
  * to put it on rails (workflows, with its connectors and plugins), what to
- * start from (use cases),
+ * do instead of building one (the agent), what to start from (use cases),
  * how it plugs into your own agents (MCP), what powers it (models), who
  * vouches for it (reviews), what people ask (FAQ), then the closing action.
  *
@@ -59,6 +60,7 @@ export default function Page() {
         <FilmStudio />
         <StudioReel />
         <Workflows />
+        <Agent />
         <UseCases />
         <Mcp />
         <Models />
