@@ -49,7 +49,7 @@ const VIDEO_SET = [
  * A mode without it gets no control bar rather than a dead one.
  */
 const MODES = [
-  { id: "image", label: "Image", videos: IMAGE_SET, audio: false },
+  { id: "image", label: "Image", videos: IMAGE_SET, audio: false, reel: true },
   { id: "video", label: "Video", videos: VIDEO_SET, audio: false },
   { id: "music", label: "Music", videos: [], audio: false, wall: true },
   { id: "workflows", label: "Workflows", videos: ["/media/hero/modes/workflows.mp4"], audio: true },
@@ -198,6 +198,74 @@ const fmtTime = (t: number) => {
 };
 
 /**
+ * Image, as a coverflow of its four clips.
+ *
+ * The four show different ways of working an image, so they are a set rather
+ * than a sequence: the centre one plays, its neighbours sit turned down
+ * either side, and the chevrons under the card step the ring. When the centre
+ * clip ends the next one comes in on its own (Hamza, 20 Sep), which is what
+ * the plain playlist did before, only now you can see what is coming.
+ *
+ * All four elements stay mounted so a step has something to move to, but only
+ * the centre one plays: four decoders running for three pictures nobody is
+ * looking straight at is the same waste the studio reel avoids.
+ */
+function ImageReel({ videos }: { videos: string[] }) {
+  const [active, setActive] = useState(0);
+  const clips = useRef<(HTMLVideoElement | null)[]>([]);
+  const n = videos.length;
+
+  useEffect(() => {
+    clips.current.forEach((v, i) => {
+      if (!v) return;
+      if (i === active) { v.currentTime = 0; void v.play().catch(() => {}); }
+      else v.pause();
+    });
+  }, [active]);
+
+  const step = (d: number) => setActive((a) => (a + d + n) % n);
+
+  return (
+    <div className="hc-reel">
+      {videos.map((src, i) => {
+        // Signed distance around the ring, so the card behind wraps to the
+        // short side rather than travelling the whole way across.
+        const raw = (i - active + n) % n;
+        const d = raw > n / 2 ? raw - n : raw;
+        return (
+          <span
+            key={src}
+            className={`hc-slide ${d === 0 ? "hc-slide-on" : ""} ${Math.abs(d) > 1 ? "hc-slide-far" : ""}`}
+            style={{ ["--d" as string]: d }}
+            aria-hidden={d !== 0}
+          >
+            {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+            <video
+              ref={(el) => { clips.current[i] = el; }}
+              src={withBasePath(src)}
+              muted
+              playsInline
+              preload="auto"
+              disablePictureInPicture
+              onEnded={d === 0 ? () => step(1) : undefined}
+            />
+          </span>
+        );
+      })}
+
+      <div className="hc-reel-nav">
+        <button type="button" className="hc-round" aria-label="Previous clip" onClick={() => step(-1)}>
+          <Chevron back />
+        </button>
+        <button type="button" className="hc-round" aria-label="Next clip" onClick={() => step(1)}>
+          <Chevron />
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/**
  * The panel: one clip, full width, and the chip row floating over it.
  *
  * Single-source, so there is nothing here to load twice: the earlier version
@@ -219,7 +287,8 @@ function ModeStrip({ live }: { live: boolean }) {
 
   const mode = MODES[card];
   const wall = !!mode.wall;
-  const src = wall ? "" : mode.videos[shot % mode.videos.length];
+  const reel = !!mode.reel;
+  const src = wall || reel ? "" : mode.videos[shot % mode.videos.length];
   const single = mode.videos.length === 1;
 
   const pick = (i: number) => { setCard(i); setShot(0); setMuted(true); };
@@ -308,7 +377,7 @@ function ModeStrip({ live }: { live: boolean }) {
   return (
     <div className="hc">
       <div className="hc-stage" id={`hero-card-${mode.id}`}>
-        {wall ? <MusicWall /> : (<>
+        {wall ? <MusicWall /> : reel ? <ImageReel videos={mode.videos} /> : (<>
         {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
         <video
           key={src}
@@ -698,6 +767,82 @@ export function Hero() {
           object-fit: cover;
           display: block;
         }
+        /* Image: the four clips on a ring, the centre one playing and its
+           neighbours turned down either side. Sits on the panel's ground, so
+           the cards read as cards rather than as one clip cropped. */
+        .hc-reel {
+          position: absolute;
+          inset: 0;
+          background: var(--tile);
+          perspective: 1600px;
+          overflow: hidden;
+        }
+        .hc-slide {
+          position: absolute;
+          top: calc(50% - 6px);
+          left: 50%;
+          width: 62%;
+          aspect-ratio: 16 / 9;
+          border-radius: var(--radius-4);
+          overflow: hidden;
+          background: var(--tile-2);
+          box-shadow: 0 24px 60px rgba(0, 0, 0, 0.42);
+          /* Neighbours pushed out and turned away from the viewer, the same
+             concave arrangement the studio reel uses: a positive rotateY
+             brings an element's right edge forward, so --d * 26deg turns the
+             left card's outer edge toward you. */
+          transform:
+            translate(-50%, -50%)
+            translateX(calc(var(--d) * 58%))
+            rotateY(calc(var(--d) * -26deg))
+            scale(0.82);
+          opacity: 0.42;
+          z-index: 1;
+          transition: transform 560ms cubic-bezier(0.22, 1, 0.36, 1), opacity 420ms ease;
+        }
+        .hc-slide-on {
+          transform: translate(-50%, -50%) rotateY(0deg) scale(1);
+          opacity: 1;
+          z-index: 2;
+        }
+        /* The card round the back of the ring. Held at the centre rather than
+           thrown further out, so it is behind the selected card when it comes
+           round and the wrap is never seen crossing the stage. */
+        .hc-slide-far { opacity: 0; transform: translate(-50%, -50%) scale(0.7); z-index: 0; }
+        .hc-slide video {
+          position: absolute;
+          inset: 0;
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          display: block;
+        }
+        .hc-reel-nav {
+          position: absolute;
+          left: 50%;
+          bottom: var(--hc-float);
+          transform: translateX(-50%);
+          z-index: 3;
+          display: flex;
+          gap: 8px;
+        }
+        /* Fixed white on a dark disc, like the chips: these sit over footage,
+           not on the page, so they do not follow the theme. */
+        .hc-round {
+          width: 34px; height: 34px;
+          display: grid; place-items: center;
+          border: 1px solid rgba(255, 255, 255, 0.14);
+          border-radius: 999px;
+          background: rgba(10, 10, 11, 0.72);
+          backdrop-filter: blur(10px);
+          -webkit-backdrop-filter: blur(10px);
+          color: #fff;
+          cursor: pointer;
+          transition: background 160ms ease;
+        }
+        .hc-round:hover { background: rgba(10, 10, 11, 0.9); }
+        .hc-round:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
         /* Music: four track cards, a chevron each side, sitting on the
            panel's own ground rather than on footage. Padded clear of the
            chip row at the foot. */
@@ -925,6 +1070,15 @@ export function Hero() {
            by two, so a page is still the same four tracks it is on a desktop.
            :has is what lets the child mode resize its own host. */
         @media (max-width: 880px) {
+          /* The panel grows for the reel as it does for the music wall: at
+             375 a 16:9 panel is about 175px tall, and a 76% card is 139 of
+             that, which leaves the chips and the chevrons sitting on it. */
+          .hero-frame:has(.hc-reel) { aspect-ratio: 1 / 1; }
+          /* Wider cards and a shallower turn: at 375 a 62% card is 190px
+             across and the copy inside the footage stops being readable. */
+          .hc-slide { width: 76%; }
+          .hc-slide:not(.hc-slide-on) { transform: translate(-50%, -50%) translateX(calc(var(--d) * 56%)) rotateY(calc(var(--d) * -18deg)) scale(0.8); }
+          .hc-round { width: 28px; height: 28px; }
           .hero-frame:has(.hc-music) { aspect-ratio: 3 / 4; }
           .hc-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); align-content: center; }
           .hc-music { padding-top: calc(var(--hc-float) + 56px); }
@@ -941,6 +1095,7 @@ export function Hero() {
           .hc-chip { height: 30px; padding: 0 12px; font-size: 12.5px; }
         }
         @media (prefers-reduced-motion: reduce) {
+          .hc-slide { transition: none; }
           .hc-controls { transition: none; transform: none; }
           .hc:hover .hc-controls, .hc-controls:focus-within { transform: none; }
           .hero-mosaic { transition: none; }
