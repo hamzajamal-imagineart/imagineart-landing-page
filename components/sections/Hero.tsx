@@ -781,34 +781,40 @@ export function Hero() {
           position: absolute;
           top: calc(50% - 6px);
           left: 50%;
-          width: 62%;
+          width: 52%;
           aspect-ratio: 16 / 9;
           border-radius: var(--radius-4);
           overflow: hidden;
           background: var(--tile-2);
           box-shadow: 0 24px 60px rgba(0, 0, 0, 0.42);
-          /* Neighbours pushed out and turned away from the viewer, the same
-             concave arrangement the studio reel uses: a positive rotateY
-             brings an element's right edge forward, so --d * 26deg turns the
-             left card's outer edge toward you. */
+          /* Every card is flat — no rotateY. The neighbours are pushed
+             clear of the centre card rather than tucked behind it: the shift
+             is a share of the card's own width, so at 97% of 52% the
+             neighbour's inner edge lands about 2% of the panel past the
+             centre card's, which is the gap. Depth comes from the blur and
+             the fade instead of from a turn. */
           transform:
             translate(-50%, -50%)
-            translateX(calc(var(--d) * 58%))
-            rotateY(calc(var(--d) * -26deg))
-            scale(0.82);
-          opacity: 0.42;
+            translateX(calc(var(--d) * 97%))
+            scale(0.85);
+          opacity: 0.5;
+          filter: blur(5px);
           z-index: 1;
-          transition: transform 560ms cubic-bezier(0.22, 1, 0.36, 1), opacity 420ms ease;
+          transition:
+            transform 560ms cubic-bezier(0.22, 1, 0.36, 1),
+            opacity 420ms ease,
+            filter 420ms ease;
         }
         .hc-slide-on {
-          transform: translate(-50%, -50%) rotateY(0deg) scale(1);
+          transform: translate(-50%, -50%) scale(1);
           opacity: 1;
+          filter: none;
           z-index: 2;
         }
         /* The card round the back of the ring. Held at the centre rather than
            thrown further out, so it is behind the selected card when it comes
            round and the wrap is never seen crossing the stage. */
-        .hc-slide-far { opacity: 0; transform: translate(-50%, -50%) scale(0.7); z-index: 0; }
+        .hc-slide-far { opacity: 0; filter: blur(8px); transform: translate(-50%, -50%) scale(0.7); z-index: 0; }
         .hc-slide video {
           position: absolute;
           inset: 0;
@@ -1074,10 +1080,10 @@ export function Hero() {
              375 a 16:9 panel is about 175px tall, and a 76% card is 139 of
              that, which leaves the chips and the chevrons sitting on it. */
           .hero-frame:has(.hc-reel) { aspect-ratio: 1 / 1; }
-          /* Wider cards and a shallower turn: at 375 a 62% card is 190px
+          /* Wider cards and a softer blur: at 375 a 52% card is 160px
              across and the copy inside the footage stops being readable. */
-          .hc-slide { width: 76%; }
-          .hc-slide:not(.hc-slide-on) { transform: translate(-50%, -50%) translateX(calc(var(--d) * 56%)) rotateY(calc(var(--d) * -18deg)) scale(0.8); }
+          .hc-slide { width: 72%; }
+          .hc-slide:not(.hc-slide-on) { filter: blur(3px); }
           .hc-round { width: 28px; height: 28px; }
           .hero-frame:has(.hc-music) { aspect-ratio: 3 / 4; }
           .hc-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); align-content: center; }
