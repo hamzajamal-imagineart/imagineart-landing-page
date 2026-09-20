@@ -31,7 +31,7 @@ Verify with `npx next build` plus grep or DOM measurement. Keep replies short.
    (the earlier hero), Higgsfield's ChatGPT-skills page (Use Cases wheel),
    Figma *H-Drafts* `483:442` (tools bento), the ImagineArt product site
    (studio banners, Fashion and Ad copy), the Enterprise page (partners strip,
-   integrations cluster, capabilities bento).
+   integrations cluster, capabilities bento, and the whole Security section).
 
 ---
 
@@ -53,6 +53,7 @@ Verify with `npx next build` plus grep or DOM measurement. Keep replies short.
 | Models | `sections/Models` | Eight model cards, four by two: provider sample full-bleed fading into a per-card tone. |
 | Reviews `#reviews` | `ReviewsSection` | Sticky summary + auto-scrolling column of real Trustpilot five-star reviews. |
 | FAQ `#faq` | `FAQSection` | Sticky heading rail + accordion, rows open by default, FAQPage JSON-LD from the same array. |
+| Security `#security` | `sections/Security` | The Enterprise page's own Security section, ported and re-toned for dark: eyebrow, two-tone heading, lede, then a seven-tile bento — six half-width, the zero-retention tile full width with its three-node flow diagram. |
 | Closing CTA | `sections/ClosingCta` | Full-bleed `cta/portal.jpg`, scrim in from the left, copy on the page grid, white + glass buttons. |
 
 The three studio banners share one height, `--studio-band-h` in
@@ -116,7 +117,7 @@ media tiles; every hand-written asset path through `withBasePath()`; assets
 one directory deep under `public/media/`.
 
 Deviations, all by request: two-tone headings on Creative Tools, Use Cases and
-the closing band (`.h-muted`); Use Cases carries the page's only eyebrow;
+the closing band (`.h-muted`); Use Cases and Security carry the page's only eyebrows, and Security's heading and lede sit left rather than centred, as they do on the Enterprise page;
 every section lede is one short line, centred (Reviews and FAQ stay left
 because they sit beside content); the studio banners, closing band and the
 hero CTA's purple are surfaces beyond the kit's two.
@@ -257,6 +258,18 @@ Video Extend and Outfit Try-on have exact footage in `capabilities/`; Outpaint
 borrows `video-reframe.mp4`, the same operation from the other side. Each
 keeps its tint underneath as a stand-in poster, since none of these clips has
 one and the card would otherwise be black until the first frame lands.
+
+**Security's tiles do not use the kit's `.grain-*` palettes**, and the kit
+copy in `globals.css` is left alone. Those palettes are built for a white page
+— mineral and sand are near-white — and six of them would be a bright slab two
+sections above the closing band. The grain machinery is the same (`.grain`
+draws its noise from `--grain-1/2/3`); only the tones are local, four neutral
+steps off the page floor. The two Enterprise photographs survived the re-tone
+because they were already dark abstracts, but **dark is not the same as
+even**: measured per pixel under the real text boxes, the green one put its
+bright middle behind the diagram's labels at 2.0:1, so both carry a wash and
+the eyebrow number went from the kit's 0.55 opacity to 0.62 (4.43:1 on the
+lightest tone). Worst case anywhere in the section is now 5.2:1.
 
 **Every Workflows tile carries a gradient ground** from `workflows/bg/`: blue
 on Node canvas, amber on Brand Guidelines, green on Creative Analyser, ember
@@ -465,6 +478,7 @@ point at, returns 500.
 | `hero/modes/agent.mp4` | 11MB | the hero's Agent chip; loads only when the chip is picked. Re-encode |
 | `hero/modes/image/*.mp4` | 3.8MB | the Image chip's four clips; in use |
 | `hero/modes/video/*.mp4` | 1.9MB | the Video chip's three clips; in use |
+| `security/*.jpg` | 329KB | the two Security tile backdrops, from the B2B repo; in use |
 | `music/art/*.jpg` | 1.1MB | the Music chip's 16 covers, 440px; in use |
 | `music/avatar/*.jpg` | 64KB | the Music chip's 16 avatars, 48px; in use |
 | `hero/creative-suite-image.webm` | 1.4MB | **unused** since the Image chip became a playlist; delete |
@@ -532,7 +546,8 @@ different name); bento descriptions are hover-revealed but in the DOM and
 forced open under `@media (hover: none)`; 89 of 95 images carry `alt=""` and
 are decorative, each beside real text.
 
-**Re-run this after any section is added or restructured.**
+**Re-run this after any section is added or restructured.** Security is plain
+markup with no hidden state, so it needs nothing beyond this note.
 
 ### Layout and contrast
 

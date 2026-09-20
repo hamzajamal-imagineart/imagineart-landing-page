@@ -16,6 +16,7 @@ import { StudioReel } from "@/components/sections/StudioReel";
 import { Agent } from "@/components/sections/Agent";
 import { UseCases } from "@/components/sections/UseCases";
 import { Models } from "@/components/sections/Models";
+import { Security } from "@/components/sections/Security";
 import { ClosingCta } from "@/components/sections/ClosingCta";
 
 // Kept in sync with layout.tsx's metadata. The FAQ emits its own FAQPage
@@ -38,7 +39,8 @@ const softwareSchema = {
  * to put it on rails (workflows, with its connectors and plugins), what to
  * do instead of building one (the agent), what to start from (use cases),
  * how it plugs into your own agents (MCP), what powers it (models), who
- * vouches for it (reviews), what people ask (FAQ), then the closing action.
+ * vouches for it (reviews), what people ask (FAQ), whether it is
+ * safe to put work into (security), then the closing action.
  *
  * <Apps> is pulled for now, not deleted: the component and its data are still
  * in components/sections/Apps.tsx, so recovering it is one import and one
@@ -66,6 +68,7 @@ export default function Page() {
         <Models />
         <ReviewsSection />
         <FAQSection />
+        <Security />
         <ClosingCta />
       </main>
 
