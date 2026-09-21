@@ -46,7 +46,7 @@ Verify with `npx next build` plus grep or DOM measurement. Keep replies short.
 | Fashion Studio `#fashion-studio` | `sections/FashionStudio` | Banner: campaign clip full-bleed, rising scrim, white wordmark, glass "Try Now". |
 | Film Studio `#film-studio` | `sections/FilmStudio` | Banner: CSS marquee of 24 film thumbnails, with a left-hand block (presents line, logo, one line, pill) on a scrim raked in from the left. The whole band links to the studio. |
 | Workflows `#workflows` | `sections/Workflows` | Bento, spans [2,1] / [1,1,1]: Node canvas (wide, clip), Brand Guidelines (clip), Creative Analyser (clip), Connectors as a `MarkCluster`, Plugins as a linked list. Every tile carries a gradient ground. No borders, 460px rows. |
-| Agents `#agents` | `sections/Agent` | Eyebrow, two-clause heading, then the agent recording at its own aspect ratio, capped at 880 and centred, with nothing over it, and the three steps as a rail of equal columns underneath. |
+| Agents `#agents` | `sections/Agent` | Eyebrow, two-clause heading, then the agent recording full width with its height following the file's own ratio and nothing over it, and the three steps as a rail of equal columns underneath. |
 | Use Cases `#use-cases` | `sections/UseCases` + `UseCaseWheel` | "USE CASES" eyebrow, heading "One-click skills for every creative task". A centred vertical list of six use cases advancing every 3s, the active one in a pill with an arrow into the template gallery, four of its clips scattered either side. |
 | Models | `sections/Models` | Eight model cards, four by two: provider sample full-bleed fading into a per-card tone. |
 | Security `#security` | `sections/Security` | The Enterprise page's own Security section, ported and re-toned for dark: eyebrow, two-tone heading, lede, then a seven-tile bento — six half-width, the zero-retention tile full width with its three-node flow diagram. |
@@ -283,10 +283,10 @@ steps out as a rail with the numbers as quiet marks.
 **Nothing sits on that recording** and it keeps its own aspect ratio (Hamza,
 21 Sep). It briefly carried a claim and two buttons over a scrim, and was
 cropped to 21:9; the element is now in flow at `width: 100%; height: auto`, so
-the band is whatever shape the file is. **The band is capped at 880 and
-centred** because the file is only 636x416: across the full 1176 grid it is
-upscaled 1.85x, which a screen recording shows immediately. At 880 it is
-1.38x. Raise the cap when a larger recording lands.
+the band is whatever shape the file is: full width of the page grid, 1174x768
+at 1440. **That upscales the 636x416 source 1.85x**, by request — a screen
+recording shows that, so a larger recording of the same run is the fix, not a
+CSS change.
 
 **The studio banners and the Agents band all carry a 1px white hairline at
 12%** (Hamza, 21 Sep), so each reads as a panel on the page rather than a hole

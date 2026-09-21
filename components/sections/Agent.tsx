@@ -18,8 +18,9 @@ import { SectionGuides } from "@/components/primitives/SectionGuides";
  * **Nothing sits on the recording** (Hamza, 21 Sep): it carried a claim and
  * two buttons over a scrim, and both are gone. It also keeps its own aspect
  * ratio rather than being cropped to a band — the element is in flow at
- * `width: 100%; height: auto`, so the frame is whatever shape the file is and
- * none of the run is cut off.
+ * `width: 100%; height: auto`: full width of the page grid, with the height
+ * following the file, so none of the run is cut off. That upscales the
+ * 636x416 source 1.85x, by request.
  *
  * The clip is `capabilities/agents.mp4` (581KB), not the hero's
  * `hero/modes/agent.mp4` (11MB). The hero's only loads when its chip is
@@ -90,13 +91,6 @@ export function Agent() {
       <style>{`
         .ag-band {
           position: relative;
-          /* Capped and centred rather than run to the full 1176: the file is
-             only 636x416, so the page grid would upscale it 1.85x and a
-             screen recording shows that immediately. At 880 it is 1.38x,
-             which the footage carries. Raise this when a larger recording
-             lands. */
-          max-width: 880px;
-          margin-inline: auto;
           overflow: hidden;
           border-radius: var(--radius-6);
           /* The same hairline the studio banners carry, and fixed white for
@@ -105,8 +99,10 @@ export function Agent() {
           background: var(--ground);
           line-height: 0;
         }
-        /* In flow rather than absolute, so the band takes the file's own
-           ratio and the recording is never cropped. */
+        /* Full width of the page grid, with the height following the file's
+           own ratio — in flow rather than absolute, so nothing is cropped.
+           The file is 636x416, so at 1176 it is upscaled 1.85x; a larger
+           recording would hold up better at this size. */
         .ag-video {
           display: block;
           width: 100%;
