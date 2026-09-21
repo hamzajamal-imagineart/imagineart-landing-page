@@ -164,6 +164,17 @@ Unused, kept on disk: `ui/blur-reveal`, `Backdrop`, `RailGrid`, `MediaCard`,
   It diverges in one place: rule and dot colours come from `--guide-line` /
   `--guide-dot` so they survive dark. In use on Partners, Tools, Workflows,
   Studios and MCP, each `edge="top"` with `lg:border-t-0` on the section.
+- **Media skeleton.** `.skel` in `globals.css` is what stands in for a clip
+  until it has a frame — a tile with a sweep mixed off `--ink`, so it reads in
+  either theme, and it fades rather than unmounts. In use on the hero's mode
+  strip, the hero's Image reel (one per slide) and the Agents band (Hamza,
+  21 Sep). Two rules it depends on: it is **armed from an effect, never from
+  the markup**, so a reader without JS gets the video rather than a shimmer
+  that can never clear (it is absent from `out/index.html`); and the same
+  effect **reads `readyState` instead of only listening**, because a cached
+  clip reaches HAVE_CURRENT_DATA before React attaches its handlers, fires
+  nothing afterwards, and leaves a listener-only skeleton up for good. That is
+  exactly what happened to the four reel slides on the first pass.
 - **Section glow.** `SectionGlow` puts a faint pool of light at the head of
   alternate sections (Tools, Studios, Use Cases, Models, FAQ). It sits at
   `z-index: -1`, so its host needs `isolation: isolate`. **Not on the hero** —
@@ -279,6 +290,12 @@ was a split panel — three numbered rows beside a clip — which read as a
 feature tile rather than as one of the page's claims. It now leads with an
 eyebrow and a two-clause heading, puts the recording under it, and lays the
 steps out as a rail with the numbers as quiet marks.
+
+**The Agents clip states its own ratio in CSS** (`aspect-ratio: 636 / 416` on
+`.ag-video`, matching the file). A `<video>` with no metadata yet falls back
+to 300x150, so without it the band is the wrong height until the header lands
+and then jumps — with a skeleton sitting in it, which makes the jump the first
+thing you see. Update the two together if the file changes.
 
 **Nothing sits on that recording** and it keeps its own aspect ratio (Hamza,
 21 Sep). It briefly carried a claim and two buttons over a scrim, and was

@@ -515,3 +515,43 @@ body::before {
   background-image: var(--page-noise);
   background-size: 140px 140px;
 }
+
+/* ═════════════════════════════════════════════════════════════
+   Media skeleton: what stands in for a clip until it has a frame.
+
+   Armed from JS, never from the markup, so a reader without it gets the
+   video and not a shimmer that can never clear. It fades rather than
+   unmounts, so the frame arriving is a dissolve and not a snap; under
+   reduced motion the sweep stops and it is a flat tile.
+   ═════════════════════════════════════════════════════════════ */
+.skel {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  background: var(--tile-2);
+  pointer-events: none;
+  transition: opacity 320ms ease;
+}
+.skel::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  /* Mixed off --ink so the sweep reads on a dark tile and a light one
+     without two sets of values. */
+  background: linear-gradient(
+    100deg,
+    transparent 24%,
+    color-mix(in srgb, var(--ink) 9%, transparent) 46%,
+    transparent 68%
+  );
+  transform: translateX(-100%);
+  animation: skel-sweep 1.5s ease-in-out infinite;
+}
+.skel-off { opacity: 0; }
+@keyframes skel-sweep {
+  to { transform: translateX(100%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .skel::after { animation: none; }
+}

@@ -217,8 +217,24 @@ const fmtTime = (t: number) => {
  */
 function ImageReel({ videos }: { videos: string[] }) {
   const [active, setActive] = useState(0);
+  /** Which clips have a frame. Armed from an effect, so with no JS there is
+      no skeleton to clear and the cards are simply the videos. */
+  const [armed, setArmed] = useState(false);
+  const [ready, setReady] = useState<boolean[]>(() => videos.map(() => false));
   const clips = useRef<(HTMLVideoElement | null)[]>([]);
   const n = videos.length;
+
+  /**
+   * Armed and measured in one pass. A cached clip can reach HAVE_CURRENT_DATA
+   * before React attaches its handlers, so `loadeddata` never fires for it
+   * and a skeleton that only listened would sit there for good; the
+   * readyState check is what catches that. Setting both flags together also
+   * keeps a cached clip from flashing a skeleton for one frame.
+   */
+  useEffect(() => {
+    setArmed(true);
+    setReady((r) => r.map((v, i) => v || (clips.current[i]?.readyState ?? 0) >= 2));
+  }, []);
 
   useEffect(() => {
     clips.current.forEach((v, i) => {
@@ -253,7 +269,10 @@ function ImageReel({ videos }: { videos: string[] }) {
               preload="auto"
               disablePictureInPicture
               onEnded={d === 0 ? () => step(1) : undefined}
+              onLoadedData={() => setReady((r) => (r[i] ? r : r.map((v, k) => (k === i ? true : v))))}
+              onCanPlay={() => setReady((r) => (r[i] ? r : r.map((v, k) => (k === i ? true : v))))}
             />
+            {armed && <span className={`skel ${ready[i] ? "skel-off" : ""}`} aria-hidden />}
           </span>
         );
       })}
@@ -284,6 +303,10 @@ function ModeStrip({ live, frameRef }: { live: boolean; frameRef: React.Ref<HTML
   const [shot, setShot] = useState(0);
   const chips = useSlidingIndicator<HTMLButtonElement>(card);
   const clip = useRef<HTMLVideoElement | null>(null);
+  /** Cleared when the current clip has a frame, and set again on every
+      source change. Armed from an effect: no JS, no skeleton. */
+  const [armed, setArmed] = useState(false);
+  const [ready, setReady] = useState(false);
   const seek = useRef<HTMLInputElement | null>(null);
   const time = useRef<HTMLSpanElement | null>(null);
   const [playing, setPlaying] = useState(true);
@@ -309,6 +332,14 @@ function ModeStrip({ live, frameRef }: { live: boolean; frameRef: React.Ref<HTML
    * element is also keyed on the source, so a mode change remounts it and
    * nothing of the previous clip's buffer is carried over.
    */
+  /** Same two-in-one as the reel, re-run on every source change: arm, then
+      take the element's own word for it, since a clip that was ready before
+      React started listening fires nothing. */
+  useEffect(() => {
+    setArmed(true);
+    setReady((clip.current?.readyState ?? 0) >= 2);
+  }, [src]);
+
   useEffect(() => {
     const v = clip.current;
     if (!v) return;
@@ -448,7 +479,10 @@ function ModeStrip({ live, frameRef }: { live: boolean; frameRef: React.Ref<HTML
                the first; one with a single clip loops on the element instead,
                so there is no state change per repeat. */
             onEnded={single ? undefined : () => setShot((n) => (n + 1) % mode.videos.length)}
+            onLoadedData={() => setReady(true)}
+            onCanPlay={() => setReady(true)}
           />
+          {armed && <span className={`skel ${ready ? "skel-off" : ""}`} aria-hidden />}
 
           {/* Only a mode that actually carries sound gets a bar: on the silent
               ones there is nothing here a viewer needs, and a scrubber over

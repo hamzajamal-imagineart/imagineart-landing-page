@@ -1,3 +1,6 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
 import { withBasePath } from "@/lib/assets";
 import { BlurHeading } from "@/components/BlurHeading";
 import { SectionGuides } from "@/components/primitives/SectionGuides";
@@ -22,6 +25,10 @@ import { SectionGuides } from "@/components/primitives/SectionGuides";
  * following the file, so none of the run is cut off. That upscales the
  * 636x416 source 1.85x, by request.
  *
+ * The band shows a skeleton until the clip has a frame (Hamza, 21 Sep). It is
+ * armed from an effect rather than from the markup, so a reader without JS
+ * gets the video and not a shimmer that can never clear.
+ *
  * The clip is `capabilities/agents.mp4` (581KB), not the hero's
  * `hero/modes/agent.mp4` (11MB). The hero's only loads when its chip is
  * picked; a section clip autoplays for everyone who scrolls past.
@@ -45,6 +52,18 @@ const STEPS = [
 ];
 
 export function Agent() {
+  const [armed, setArmed] = useState(false);
+  const [ready, setReady] = useState(false);
+  const clip = useRef<HTMLVideoElement | null>(null);
+
+  /* Armed and measured together: a cached clip can be ready before React is
+     listening, so `loadeddata` never fires and a skeleton that only listened
+     would never clear. */
+  useEffect(() => {
+    setArmed(true);
+    setReady((clip.current?.readyState ?? 0) >= 2);
+  }, []);
+
   return (
     <section id="agents" className="relative border-t border-[color:var(--line)] py-24 md:py-32 lg:border-t-0">
       <SectionGuides edge="top" />
@@ -65,6 +84,7 @@ export function Agent() {
         <div className="ag-band mt-14">
           {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
           <video
+            ref={clip}
             className="ag-video"
             src={withBasePath("/media/capabilities/agents.mp4")}
             title="An agent run in ImagineArt"
@@ -74,7 +94,10 @@ export function Agent() {
             playsInline
             preload="metadata"
             aria-hidden
+            onLoadedData={() => setReady(true)}
+            onCanPlay={() => setReady(true)}
           />
+          {armed && <span className={`skel ${ready ? "skel-off" : ""}`} aria-hidden />}
         </div>
 
         <ol className="ag-rail">
@@ -91,6 +114,9 @@ export function Agent() {
       <style>{`
         .ag-band {
           position: relative;
+          /* The skeleton is absolute over the clip; before the first frame
+             the band still has the video's height, since the element keeps
+             its intrinsic ratio once metadata lands. */
           overflow: hidden;
           border-radius: var(--radius-6);
           /* The same hairline the studio banners carry, and fixed white for
@@ -107,6 +133,12 @@ export function Agent() {
           display: block;
           width: 100%;
           height: auto;
+          /* The file's own ratio, stated up front. A <video> with no metadata
+             yet falls back to 300x150, so without this the band is the wrong
+             height until the header lands and then jumps — with a skeleton
+             sitting in it, which makes the jump the first thing you see.
+             Matches capabilities/agents.mp4 (636x416); update both together. */
+          aspect-ratio: 636 / 416;
         }
 
         /* Three steps as a rail, not a list: equal columns with a hairline
