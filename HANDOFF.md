@@ -39,17 +39,15 @@ Verify with `npx next build` plus grep or DOM measurement. Keep replies short.
 
 | Section | Component | What it is |
 |---|---|---|
-| Hero | `sections/Hero` | A centred column over a mosaic of work: headline "Imagine, design, animate. / edit. One platform.", the copy, one CTA. Below it a 16:9 panel holding a single clip edge to edge, with the **mode chips** floating on the footage at its head: Image · Video · Music · Workflows · Agents · Computer. Image is a coverflow of its four clips, Video plays its three in turn, Music is a wall of track cards, and the rest loop one clip. The three modes that carry sound get a control bar at its foot. |
+| Hero | `sections/Hero` | A centred column over a mosaic of work: headline "Imagine, design, animate. / edit. One platform.", the copy, one CTA. Below it a 16:9 panel holding a single clip edge to edge, with the **mode chips** on the page above it, between the CTA and the panel: Image · Video · Music · Workflows · Agents · MCP. Image is a coverflow of its four clips, Video plays its three in turn, Music is a wall of track cards, and the rest loop one clip. MCP is the connect panel that used to be its own section. The two modes that carry sound get a control bar at the panel's foot. |
 | Partners | `sections/Partners` | Six partner marks (ByteDance, Kling AI, MINIMAX, Wan, fal, Grok) with two captions. |
 | Creative Tools `#tools` | `sections/CreativeTools` | A 13-card bento from Figma: four 308px columns, 16px gutter, split 410/190/190 or 144/144/296/190 so every column ends level at 822. Eight cards carry a photograph, five carry that tool's own clip. No icons. Title always showing, description on hover. "View all tools" at the foot. |
 | Studios `#studios` | `sections/AdStudio` | Heading "Studios" + lede, then the **Ad Studio banner**: five vertical marquee columns of 9:16 ad clips (30 clips, CDN, posters, `preload="none"`) and a frosted left panel. |
 | Fashion Studio `#fashion-studio` | `sections/FashionStudio` | Banner: campaign clip full-bleed, rising scrim, white wordmark, glass "Try Now". |
-| Film Studio `#film-studio` | `sections/FilmStudio` | Banner: CSS marquee of 24 film thumbnails behind blurred edges and a frosted centre disc. The whole band links to the studio. |
-| Studio reel `#studio-reel` | `sections/StudioReel` | The three studios as a coverflow: selected clip flat and centred, neighbours turned away and cut by the section edges, each tagged **Advertising · Fashion · Filmmaking**. The Ad card holds three verticals side by side; the other two hold one clip each. Walks itself every 5s on `useAutoAdvance`, held while the pointer or focus is inside; chevrons, dots and a horizontal wheel or swipe step it by hand. |
+| Film Studio `#film-studio` | `sections/FilmStudio` | Banner: CSS marquee of 24 film thumbnails, with a left-hand block (presents line, logo, one line, pill) on a scrim raked in from the left. The whole band links to the studio. |
 | Workflows `#workflows` | `sections/Workflows` | Bento, spans [2,1] / [1,1,1]: Node canvas (wide, clip), Brand Guidelines (clip), Creative Analyser (clip), Connectors as a `MarkCluster`, Plugins as a linked list. Every tile carries a gradient ground. No borders, 460px rows. |
 | Agents `#agents` | `sections/Agent` | A split, deliberately not another bento: three numbered steps and a text link on the left, one clip filling the panel on the right. Stacks under 1024px. |
 | Use Cases `#use-cases` | `sections/UseCases` + `UseCaseWheel` | "USE CASES" eyebrow, heading "One-click skills for every creative task". A centred vertical list of six use cases advancing every 3s, the active one in a pill with an arrow into the template gallery, four of its clips scattered either side. |
-| MCP `#mcp` | `sections/Mcp` | Connect panel ported from `Vyro-ai/imagine-web-mcp-landing`: the Imagine MCP wordmark, client tabs, an MCP / CLI segment, three numbered steps with copy buttons and deep links, and the client's real connect recording. |
 | Models | `sections/Models` | Eight model cards, four by two: provider sample full-bleed fading into a per-card tone. |
 | Security `#security` | `sections/Security` | The Enterprise page's own Security section, ported and re-toned for dark: eyebrow, two-tone heading, lede, then a seven-tile bento — six half-width, the zero-retention tile full width with its three-node flow diagram. |
 | Reviews `#reviews` | `ReviewsSection` | Sticky summary + auto-scrolling column of real Trustpilot five-star reviews. |
@@ -57,15 +55,17 @@ Verify with `npx next build` plus grep or DOM measurement. Keep replies short.
 | Closing CTA | `sections/ClosingCta` | Full-bleed `cta/portal.jpg`, scrim in from the left, copy on the page grid, white + glass buttons. |
 
 The three studio banners share one height, `--studio-band-h` in
-`globals.css`, and follow each other with no rules between them. The studio
-reel sits under them.
+`globals.css`, and follow each other with no rules between them.
 
-Nav is **Tools · Studios · Workflows · Agents · Use Cases · MCP · Pricing**, CTA Get
+Nav is **Tools · Studios · Workflows · Agents · Use Cases · MCP · Pricing**, where MCP now points at the hero frame (`id="mcp"`) and the strip selects that chip from the hash, CTA Get
 Started. **Keep the nav in the same order as the page** so no link scrolls
 backwards.
 
-`sections/Apps` is pulled, not deleted — the component and its eight-app data
-are on disk; recovering it is one import and one line in `app/page.tsx`.
+`sections/Apps`, `sections/StudioReel` and `sections/Mcp` are pulled, not
+deleted — all three are on disk and recovering any is one import and one line
+in `app/page.tsx`. **MCP is not gone from the page**: `McpPanel` is the same
+panel, now hosted by the hero's MCP chip, and `Mcp` is only the section
+wrapper around it. The reel came out at Hamza's request (21 Sep).
 
 ---
 
@@ -157,7 +157,8 @@ Unused, kept on disk: `ui/blur-reveal`, `Backdrop`, `RailGrid`, `MediaCard`,
   `transform`/`width`/`height`, leaving each tab nothing to animate but its
   text colour. Of the tab lists only the wheel walks itself, on
   `useAutoAdvance` (3s), drawing the dwell as a faint fill in
-  `--progress-wash`; the studio reel is on the same primitive at 5s.
+  `--progress-wash`. The studio reel used the same primitive at 5s; it is
+  pulled from the page but still on disk.
 - **Section guides.** `SectionGuides` is the Enterprise repo's version, ported
   wholesale — keep it in sync with the B2B repo rather than editing this copy.
   It diverges in one place: rule and dot colours come from `--guide-line` /
@@ -253,9 +254,11 @@ a 144px card with the tall card's scrim measured 3.5:1. `.bt-mini`,
 `.bt-short` and `.bt-fill` take a gradient that reaches their full height.
 **Re-check if a brighter still goes on a short card.**
 
-**Five Tools cards carry their tool's own clip.** Inpaint, Image Upscaler,
-Video Extend and Outfit Try-on have exact footage in `capabilities/`; Outpaint
-borrows `video-reframe.mp4`, the same operation from the other side. Each
+**Most Tools cards carry their tool's own clip.** Inpaint, Image Upscaler,
+Video Extend, Outfit Try-on and VFX have exact footage in `capabilities/`;
+Lipsync and Motion Sync have their own in `tools/`; Create Characters takes
+`use-cases/character.mp4`; Outpaint borrows `video-reframe.mp4`, the same
+operation from the other side. Each
 keeps its tint underneath as a stand-in poster, since none of these clips has
 one and the card would otherwise be black until the first frame lands.
 
@@ -287,7 +290,20 @@ vertical, so scrolling past the stage still scrolls the page, and it
 accumulates deltas to a threshold then locks out for the length of the card
 transition — a trackpad flick is dozens of events and should move one card.
 
-**The studio reel's ring wraps by animating the long way.** With three cards
+**The Film banner's copy is a left block, not a centred stack** (Hamza,
+21 Sep). It was a centred column over a frosted disc with the logo at up to
+400px: the logo read as the banner rather than as a mark on it, and the disc
+punched a hole in the reel it was meant to sit on. The block now sits where Ad
+Studio's panel does, the logo is roughly half the size, and the scrim is raked
+in from the left — **near solid over the block's width on purpose**, since the
+reel is posters and faces and a scrim that merely darkens them leaves
+thumbnails reading through the wordmark. On a phone the block drops to the
+foot and the scrim turns vertical.
+
+**The studio reel is pulled from the page but kept on disk, and the notes
+below still describe it.**
+
+**Its ring wraps by animating the long way.** With three cards
 every step moves one from one end of the ring to the other. It travels across
 the stage rather than teleporting, because the selected card sits above its
 neighbours (`z-index` 2 vs 1) and is wide enough to hide the journey. No
@@ -395,11 +411,20 @@ point at, returns 500.
 
 ### Content caveats
 
-- **The bento's photographs come from Figma** and are the real thing. **Three
-  descriptions do not match their titles**: VFX reads as music copy, Outpaint
-  as pipeline copy, Lipsync as image copy, because the Figma frames were
-  renamed without their bodies. **Fix before shipping.** Every card links to
+- **The bento's photographs come from Figma** and are the real thing. The
+  three descriptions that did not match their titles (VFX read as music copy,
+  Outpaint as pipeline copy, Lipsync as image copy, because the Figma frames
+  were renamed without their bodies) **are rewritten** (21 Sep) — the new
+  lines are written here, not the product's own. Every card still links to
   `/apps`, since per-tool URLs are not confirmed.
+- **Five Tools cards now carry footage that is actually theirs** (21 Sep):
+  Lipsync and Motion Sync from the URLs Hamza sent, pulled local into
+  `tools/`; VFX from `capabilities/vfx.mp4`, which was on disk all along while
+  the card showed a photograph; Create Characters from
+  `use-cases/character.mp4`. **AI Voiceover, Dub Video and Remove Background
+  are still photographs** — there is no clip of any of them anywhere in
+  `public/media`, and lending them a neighbour's footage is what produced the
+  mismatch above.
 - **Hero chips.** Six modes (Hamza, 19 Sep). Five own a list of clips:
   **Image plays four in turn** and **Video three**, since no single recording
   shows what either does; Workflows, Agent and Computer loop one. Image,
@@ -425,17 +450,28 @@ point at, returns 500.
   - `capabilities/music.mp4`, the mode's old clip, is still in `Apps` (pulled
     from the page) and is otherwise unused.
 - **Only Workflows, Agent and Computer carry an audio track**, and only those
-  three get the control bar — play/pause, seek, elapsed, mute. `audio` is set
+  two get the control bar — play/pause, seek, elapsed, mute. `audio` is set
   per entry in `MODES` rather than sniffed: there is no portable way to ask a
   video whether it has sound. These three were read off the files' own `soun`
   handlers (`grep -c soun` on the moov will do it); **re-check when a clip is
   swapped**, or a silent mode gets a dead bar. Note the Music chip's clip is
   itself silent.
-- **The chips sit at the head of the panel** (Hamza, 19 Sep), and the control
-  bar at its foot. Both float off one inset, `--hc-float` on `.hc` — the chips
-  that far from the top, the bar the same from the bottom — so they cannot
-  collide however the panel is sized. The bar sat above the chips while the
-  chips were at the foot. Playback always starts muted — autoplay
+- **The chips sit outside the panel** (Hamza, 21 Sep), between the CTA and
+  the frame, so the panel is the clip and nothing else. They kept the dark bar
+  and the fixed white labels: they now sit on the hero's mosaic, which is
+  still a picture rather than the page wash, so theme tokens would be as wrong
+  there as they were over the footage. The control bar stays on the panel, at
+  its foot, off `--hc-float`. Nothing inside the panel pads for the chips any
+  more.
+- **`ModeStrip` owns the frame**, since the chips have to render above it and
+  the panel below it. `<Hero>` passes the ref that the scroll-grow writes to.
+- **The MCP mode is the connect panel** (Hamza, 21 Sep), which replaced the
+  Computer chip. It is far taller than 16:9 can hold, so the frame drops its
+  ratio for that one mode (`.hero-frame:has(.hc-panel)`) and sizes to the
+  panel; the panel's own border and ground are removed inside the frame, which
+  would otherwise be a border inside a border. The nav still links to `#mcp`:
+  the frame carries that id, and the strip selects the matching chip from the
+  hash on load and on `hashchange`. Playback always starts muted — autoplay
   with sound is blocked everywhere — and `pick()` resets that with the clip.
 - **Four of the Image sources were served as `.webm` and are MP4 inside**, and
   are stored as `.mp4`. The static server sets the media type from the
@@ -446,8 +482,8 @@ point at, returns 500.
   agent URL is confirmed) are drafts.
 - **Written from names alone, treat as draft:** Workflows tile bodies, the four
   second-row bento cards (Inpaint, Image Upscaler, Video Extend, Outfit
-  Try-on), the studio reel's heading and lede, and its tags (Advertising,
-  Fashion, Filmmaking). MCP copy and commands are the MCP repo's own. Fashion
+  Try-on), the Film banner's line, and — in the pulled studio reel — its
+  heading, lede and tags. MCP copy and commands are the MCP repo's own. Fashion
   and Ad banner copy is the product's own, shortened.
 - **Model names** are copied from the B2B repo's Workflows page. Flagged there
   as unverified: Alibaba and Lightricks inferred, Kling used as the brand, Flux
@@ -461,9 +497,8 @@ point at, returns 500.
   commercial rights" lines; "free to start" assumes a free tier.
 - **Remote runtime dependencies:** MCP connect recordings, the 30 Ad Studio
   banner clips and the reel's three Ad clips stream from `cdn-imagine.vyro.ai`;
-  the hero's 16 music tracks and the reel's Film clip from
-  `imagine.animagic.art`; Brand Guidelines' clip from `www.imagine.art`.
-  Everything else is local.
+  the hero's 16 music tracks from `imagine.animagic.art`; Brand Guidelines'
+  clip from `www.imagine.art`. Everything else is local.
 
 ### Media
 
@@ -472,18 +507,20 @@ point at, returns 500.
 
 | File | Size | Status |
 |---|---|---|
-| `studios/film-studio.mp4` | 15MB | **unused** — the reel streams its film clip instead. Delete, or re-encode and use it |
+| `studios/film-studio.mp4` | 15MB | **unused**; delete, or re-encode and use it |
 | `studios/fashion/banner.mp4` | 13MB | in use; re-encode |
 | `hero/showcase/*.jpg` | 2.6MB | originals behind seven of the mosaic tiles; keep |
 | `hero/modes/agent.mp4` | 11MB | the hero's Agent chip; loads only when the chip is picked. Re-encode |
 | `hero/modes/image/*.mp4` | 3.8MB | the Image chip's four clips; in use |
 | `hero/modes/video/*.mp4` | 1.9MB | the Video chip's three clips; in use |
+| `tools/lipsync.mp4` | 2.5MB | the Lipsync card; re-encode |
+| `tools/motion-sync.mp4` | 908KB | the Motion Sync card; in use |
 | `security/*.jpg` | 329KB | the two Security tile backdrops, from the B2B repo; in use |
 | `music/art/*.jpg` | 1.1MB | the Music chip's 16 covers, 440px; in use |
 | `music/avatar/*.jpg` | 64KB | the Music chip's 16 avatars, 48px; in use |
 | `hero/creative-suite-image.webm` | 1.4MB | **unused** since the Image chip became a playlist; delete |
 | `hero/modes/workflows.mp4` | 4.7MB | the hero's Workflows chip; re-encode |
-| `hero/computer.mp4` | 1.9MB | back in use as the hero's Computer chip |
+| `hero/computer.mp4` | 1.9MB | **unused** again since the Computer chip came out; delete |
 | `hero/creative-suite-image.webm` | 1.4MB | the hero clip; in use |
 | `hero/mosaic/*.jpg` | 568KB | the hero's ground, 18 tiles; in use |
 | `hero/backdrop-veil.jpg` | 410KB | **unused** since the hero photograph was dropped; delete |
@@ -491,20 +528,24 @@ point at, returns 500.
 
 Also unused: `models/*.png` icons beyond the eight on the model cards,
 `pillars/chat.mp4`, `pillars/creative.mp4`, and the six `models/providers/*`
-backdrops not on cards. **Clips are reused across sections on purpose**, so
+backdrops not on cards. Also unused now: `tools/lipsync.jpg`, `tools/motion-sync.jpg`,
+`tools/vfx.jpg` and `tools/create-characters.jpg`, whose cards took footage.
+**Clips are reused across sections on purpose**, so
 replacing one changes every card that shows it.
 
 ---
 
 ## 8. Open items
 
-1. **Fix the three mismatched bento descriptions** (§7) and give the cards
-   per-tool links.
-2. Re-encode `hero/modes/agent.mp4` (11MB) and `workflows.mp4` (4.7MB).
+1. Give the bento cards per-tool links (§7), and footage for AI Voiceover, Dub
+   Video and Remove Background if any exists.
+2. Re-encode `hero/modes/agent.mp4` (11MB), `workflows.mp4` (4.7MB) and
+   `tools/lipsync.mp4` (2.5MB).
 3. Confirm the inferred Avatar URL (§7) and the flagged model names (§7).
    Confirm the Agent section's steps, and whether an agent URL exists to
    point its link at instead of the app home.
-4. Confirm the studio reel's heading, lede and tags (§7).
+4. Confirm the Film banner's new line, "Script to scenes to a finished cut",
+   and the five rewritten bento descriptions (§7).
 5. Re-encode the Fashion banner clip and delete the unused media (§7).
 6. **Deployment.** `next.config.ts` reads `BASE_PATH` at build time; there is
    no deploy workflow yet. Reuse the B2B repo's R2 + BunnyCDN workflow once the

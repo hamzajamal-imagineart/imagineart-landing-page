@@ -50,24 +50,24 @@ type Card = {
 
 const COLUMNS: Card[][] = [
   [
-    { title: "Lipsync", body: "Create high-end visuals from prompts or images.", image: "/media/tools/lipsync.jpg", size: "tall" },
+    { title: "Lipsync", body: "Match any voice track to a face, frame by frame.", video: "/media/tools/lipsync.mp4", tint: "#1b1b24", size: "tall" },
     { title: "AI Voiceover", body: "Studio-quality voiceovers in every major language.", image: "/media/tools/ai-voiceover.jpg", size: "short" },
     { title: "Inpaint", body: "Change one part of an image and keep the rest exactly as it was.", video: "/media/capabilities/inpaint.mp4", tint: "#1b2430", size: "short" },
   ],
   [
     { title: "Relight Video", body: "Make cinematic videos that feel professionally directed.", image: "/media/tools/relight-video.jpg", size: "tall", badge: "New" },
-    { title: "Outpaint", body: "Connect AI tools into a single, reusable creative pipeline.", video: "/media/capabilities/video-reframe.mp4", tint: "#141417", size: "short" },
+    { title: "Outpaint", body: "Extend a frame past its edges and keep the scene.", video: "/media/capabilities/video-reframe.mp4", tint: "#141417", size: "short" },
     { title: "Image Upscaler", body: "Sharper and larger, ready for print at full resolution.", video: "/media/capabilities/upscale.mp4", tint: "#241b2b", size: "short" },
   ],
   [
-    { title: "Motion Sync", body: "70+ ready-made AI effects. Transform any visual in seconds.", image: "/media/tools/motion-sync.jpg", size: "tall" },
-    { title: "VFX", body: "Create a track for any video, in any style.", image: "/media/tools/vfx.jpg", size: "short" },
+    { title: "Motion Sync", body: "Drive a still with a reference clip and keep the motion.", video: "/media/tools/motion-sync.mp4", tint: "#171726", size: "tall" },
+    { title: "VFX", body: "70+ ready-made effects, applied to any shot.", video: "/media/capabilities/vfx.mp4", tint: "#46211e", size: "short" },
     { title: "Video Extend", body: "Add seconds to the end of a shot without cutting away.", video: "/media/capabilities/video-extend.mp4", tint: "#1f2a22", size: "short" },
   ],
   [
     { title: "Dub Video", body: "Change spoken language with lipsync.", image: "/media/tools/dub-video.jpg", size: "mini" },
     { title: "Remove Background", body: "Generate without leaving your timeline.", image: "/media/tools/remove-background.jpg", size: "mini" },
-    { title: "Create Characters", body: "Create high-end AI video production with precise control.", image: "/media/tools/create-characters.jpg", size: "fill" },
+    { title: "Create Characters", body: "One character, held consistent across every shot.", video: "/media/use-cases/character.mp4", tint: "#1d1a24", size: "fill" },
     { title: "Outfit Try-on", body: "Dress a model in your garment from a single product photo.", video: "/media/capabilities/outfit-tryon.mp4", tint: "#2b201a", size: "short" },
   ],
 ];

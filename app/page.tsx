@@ -8,11 +8,9 @@ import { Hero } from "@/components/sections/Hero";
 import { Partners } from "@/components/sections/Partners";
 import { CreativeTools } from "@/components/sections/CreativeTools";
 import { Workflows } from "@/components/sections/Workflows";
-import { Mcp } from "@/components/sections/Mcp";
 import { AdStudio } from "@/components/sections/AdStudio";
 import { FashionStudio } from "@/components/sections/FashionStudio";
 import { FilmStudio } from "@/components/sections/FilmStudio";
-import { StudioReel } from "@/components/sections/StudioReel";
 import { Agent } from "@/components/sections/Agent";
 import { UseCases } from "@/components/sections/UseCases";
 import { Models } from "@/components/sections/Models";
@@ -33,17 +31,18 @@ const softwareSchema = {
 /**
  * The ImagineArt product overview.
  *
- * Order follows the funnel: what it is (hero), what it can do (creative
- * tools), where to do the work (the three studio banners and the reel under
- * them), how to put it on rails (workflows, with its connectors and plugins),
- * what to do instead of building one (the agent), what to start from (use
- * cases), how it plugs into your own agents (MCP), what powers it (models),
- * whether it is safe to put work into (security), who vouches for it
- * (reviews), what people ask (FAQ), then the closing action.
+ * Order follows the funnel: what it is (hero, which also carries the MCP
+ * panel), what it can do (creative tools), where to do the work (the three
+ * studio banners), how to put it on rails (workflows, with its connectors and
+ * plugins), what to do instead of building one (the agent), what to start
+ * from (use cases), what powers it (models), whether it is safe to put work
+ * into (security), who vouches for it (reviews), what people ask (FAQ), then
+ * the closing action.
  *
- * <Apps> is pulled for now, not deleted: the component and its data are still
- * in components/sections/Apps.tsx, so recovering it is one import and one
- * line here, plus its nav entry if it earns one.
+ * <Apps>, <StudioReel> and <Mcp> are pulled, not deleted: all three are still
+ * on disk, so recovering any is one import and one line here. MCP is not
+ * gone from the page — the hero's MCP chip carries the same panel, which is
+ * why the section came out.
  */
 export default function Page() {
   return (
@@ -59,11 +58,9 @@ export default function Page() {
         <AdStudio />
         <FashionStudio />
         <FilmStudio />
-        <StudioReel />
         <Workflows />
         <Agent />
         <UseCases />
-        <Mcp />
         <Models />
         <Security />
         <ReviewsSection />

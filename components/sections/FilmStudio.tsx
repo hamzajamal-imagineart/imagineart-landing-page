@@ -3,10 +3,17 @@ import { withBasePath } from "@/lib/assets";
 import { STUDIO_HREFS } from "@/lib/links";
 
 /**
- * Film Studio banner, on the product's own treatment: a dark band with a
- * continuous reel of film thumbnails behind, blurred at the edges and under
- * a frosted disc at the centre, and over it "ImagineArt presents", the Film
- * Studio logo, and a pill to the studio.
+ * Film Studio banner: a dark band with a continuous reel of film thumbnails
+ * running behind it, and a left-hand block carrying "ImagineArt presents",
+ * the Film Studio logo, one line and a pill to the studio.
+ *
+ * **Left, not centred** (Hamza, 21 Sep). It was a centred stack over a
+ * frosted disc, with the logo at up to 400px — the logo read as the banner
+ * rather than as a mark on it, and the disc punched a hole in the middle of
+ * the reel it was meant to sit on. The copy now sits where Ad Studio's panel
+ * and Fashion's block sit, the logo is half the size, and the disc is gone in
+ * favour of a scrim raked in from the left, which lets the reel run
+ * uninterrupted across the rest of the band.
  *
  * The reel is a CSS marquee (track duplicated, translated by half), not the
  * original's per-tile 3D transform, so it costs no JS. Thumbnails and logo
@@ -29,27 +36,22 @@ export function FilmStudio() {
               ))}
             </div>
           </div>
-          <span className="fm-edge fm-edge-l" aria-hidden />
           <span className="fm-edge fm-edge-r" aria-hidden />
-          <span className="fm-disc" aria-hidden />
+          <span className="fm-scrim" aria-hidden />
 
-          <span className="fm-presents">
-            <span className="fm-brand">ImagineArt</span>
-            <span className="fm-sub">Presents</span>
-          </span>
-          <img src={withBasePath("/media/studios/film/logo.webp")} alt="Film Studio" className="fm-logo" />
-          <span className="fm-pill">See studio in action</span>
+          <div className="fm-panel">
+            <span className="fm-presents">ImagineArt presents</span>
+            <img src={withBasePath("/media/studios/film/logo.webp")} alt="Film Studio" className="fm-logo" />
+            <p className="fm-line">Script to scenes to a finished cut.</p>
+            <span className="fm-pill">See studio in action</span>
+          </div>
         </a>
       </div>
 
       <style>{`
         .fm-band {
           position: relative;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          gap: 16px;
+          display: block;
           height: var(--studio-band-h);
           border-radius: var(--radius-6);
           overflow: hidden;
@@ -66,8 +68,10 @@ export function FilmStudio() {
           display: flex;
           align-items: center;
           overflow: hidden;
-          -webkit-mask-image: linear-gradient(to right, transparent 0, #000 56px, #000 calc(100% - 56px), transparent 100%);
-          mask-image: linear-gradient(to right, transparent 0, #000 56px, #000 calc(100% - 56px), transparent 100%);
+          /* Only the right edge fades now: the left is under the scrim, and
+             fading it as well left a pale notch where the two met. */
+          -webkit-mask-image: linear-gradient(to right, #000 0, #000 calc(100% - 56px), transparent 100%);
+          mask-image: linear-gradient(to right, #000 0, #000 calc(100% - 56px), transparent 100%);
         }
         .fm-track {
           display: flex;
@@ -100,30 +104,62 @@ export function FilmStudio() {
           backdrop-filter: blur(24px);
           pointer-events: none;
         }
-        .fm-edge-l { left: 0; -webkit-mask-image: linear-gradient(to right, #000, transparent); mask-image: linear-gradient(to right, #000, transparent); }
         .fm-edge-r { right: 0; -webkit-mask-image: linear-gradient(to left, #000, transparent); mask-image: linear-gradient(to left, #000, transparent); }
-        /* Frosted disc behind the logo, so it reads over the reel. */
-        .fm-disc {
+        /* Raked in from the left, so the copy has a ground and the reel still
+           runs clear across the rest of the band. Wider than the panel on
+           purpose: a scrim tight to the text reads as a panel edge. */
+        .fm-scrim {
           position: absolute;
-          left: 50%; top: 50%;
-          width: clamp(340px, 42vw, 560px);
-          height: clamp(260px, 28vw, 360px);
-          transform: translate(-50%, -50%);
-          border-radius: 999px;
-          background: rgba(0, 0, 0, 0.26);
-          -webkit-backdrop-filter: blur(32px);
-          backdrop-filter: blur(32px);
-          -webkit-mask-image: radial-gradient(closest-side, #000 60%, transparent 100%);
-          mask-image: radial-gradient(closest-side, #000 60%, transparent 100%);
+          inset: 0;
           z-index: 2;
           pointer-events: none;
+          /* Near solid where the copy sits, then away quickly. The reel is
+             photographs of films — bright faces and posters — and a scrim
+             that merely darkens them leaves the thumbnails reading through
+             the wordmark. Over the block's width the ground is effectively
+             flat, so the copy's contrast does not depend on which frame
+             happens to be passing behind it. */
+          background: linear-gradient(
+            to right,
+            rgba(8, 9, 12, 0.97) 0%,
+            rgba(8, 9, 12, 0.95) 30%,
+            rgba(8, 9, 12, 0.6) 46%,
+            rgba(8, 9, 12, 0.14) 68%,
+            transparent 100%
+          );
         }
 
-        .fm-presents, .fm-logo, .fm-pill { position: relative; z-index: 3; }
-        .fm-presents { display: flex; flex-direction: column; align-items: center; gap: 4px; text-transform: uppercase; letter-spacing: 3px; }
-        .fm-brand { font-size: 12px; font-weight: 600; }
-        .fm-sub { font-size: 10.5px; color: rgba(255, 255, 255, 0.55); }
-        .fm-logo { display: block; width: clamp(260px, 30vw, 400px); height: auto; }
+        /* The same left block Ad Studio uses, at the same inset, so the three
+           banners read as one family stacked. */
+        .fm-panel {
+          position: absolute;
+          z-index: 3;
+          left: clamp(28px, 4vw, 56px);
+          top: 50%;
+          transform: translateY(-50%);
+          max-width: min(46%, 460px);
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 14px;
+        }
+        .fm-presents {
+          font-size: 11px;
+          font-weight: 600;
+          letter-spacing: 3px;
+          text-transform: uppercase;
+          color: rgba(255, 255, 255, 0.62);
+        }
+        /* Half what it was: a mark on the banner, not the banner itself. */
+        .fm-logo { display: block; width: clamp(180px, 17vw, 232px); height: auto; }
+        .fm-line {
+          font-size: clamp(19px, 1.7vw, 25px);
+          line-height: 1.25;
+          font-weight: 500;
+          letter-spacing: -0.015em;
+          max-width: 18ch;
+          color: #fff;
+        }
         .fm-pill {
           display: inline-flex;
           align-items: center;
@@ -137,6 +173,24 @@ export function FilmStudio() {
         }
         .fm-band:hover .fm-pill { border-color: rgba(255, 255, 255, 0.55); }
 
+        /* On a phone the band is short and the reel is the whole picture, so
+           the block sits at the foot rather than beside nothing. */
+        @media (max-width: 720px) {
+          .fm-panel {
+            left: 20px; right: 20px;
+            top: auto; bottom: 22px;
+            transform: none;
+            max-width: none;
+            gap: 10px;
+          }
+          .fm-scrim {
+            /* Near solid up past the block's head, for the same reason the
+               desktop scrim is: the block sits on the reel, and its ground
+               should not change with whichever poster is passing. */
+            background: linear-gradient(to top, rgba(8, 9, 12, 0.97) 0%, rgba(8, 9, 12, 0.95) 52%, rgba(8, 9, 12, 0.45) 78%, transparent 100%);
+          }
+          .fm-logo { width: 164px; }
+        }
         @media (prefers-reduced-motion: reduce) { .fm-track { animation: none; } }
       `}</style>
     </section>

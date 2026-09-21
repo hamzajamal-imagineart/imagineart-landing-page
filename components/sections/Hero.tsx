@@ -5,6 +5,7 @@ import { withBasePath } from "@/lib/assets";
 import { START_HREF } from "@/lib/links";
 import { SlidingIndicator, slidingIndicatorCss, useSlidingIndicator } from "@/components/primitives/SlidingIndicator";
 import { BlurHeading } from "@/components/BlurHeading";
+import { McpPanel } from "@/components/sections/Mcp";
 
 /**
  * Hero, on the ElevenLabs pattern, pared down.
@@ -43,6 +44,10 @@ const VIDEO_SET = [
 ];
 
 /**
+ * Three modes are not clips at all: Music is a wall of track cards, Image is
+ * a coverflow, and **MCP is the connect panel** that used to be its own
+ * section (Hamza, 21 Sep). Computer came out to make room for it.
+ *
  * `audio` is set per entry rather than sniffed: there is no portable way to
  * ask a video whether it carries an audio track, and the guesses that exist
  * are per-engine. These three were read off the files' own `soun` handlers.
@@ -54,7 +59,7 @@ const MODES = [
   { id: "music", label: "Music", videos: [], audio: false, wall: true },
   { id: "workflows", label: "Workflows", videos: ["/media/hero/modes/workflows.mp4"], audio: true },
   { id: "agent", label: "Agents", videos: ["/media/hero/modes/agent.mp4"], audio: true },
-  { id: "computer", label: "Computer", videos: ["/media/hero/computer.mp4"], audio: true },
+  { id: "mcp", label: "MCP", videos: [], audio: false, panel: true },
 ];
 
 /**
@@ -273,7 +278,7 @@ function ImageReel({ videos }: { videos: string[] }) {
  * firing five range requests in the same millisecond, none of them able to
  * hit the cache the others were still filling.
  */
-function ModeStrip({ live }: { live: boolean }) {
+function ModeStrip({ live, frameRef }: { live: boolean; frameRef: React.Ref<HTMLDivElement> }) {
   const [card, setCard] = useState(0);
   /** Which clip of the selected mode is playing. Only Image has more than one. */
   const [shot, setShot] = useState(0);
@@ -288,7 +293,8 @@ function ModeStrip({ live }: { live: boolean }) {
   const mode = MODES[card];
   const wall = !!mode.wall;
   const reel = !!mode.reel;
-  const src = wall || reel ? "" : mode.videos[shot % mode.videos.length];
+  const panel = !!mode.panel;
+  const src = wall || reel || panel ? "" : mode.videos[shot % mode.videos.length];
   const single = mode.videos.length === 1;
 
   const pick = (i: number) => { setCard(i); setShot(0); setMuted(true); };
@@ -365,6 +371,22 @@ function ModeStrip({ live }: { live: boolean }) {
     if (time.current) time.current.textContent = `${fmtTime(v.currentTime)} / ${fmtTime(v.duration)}`;
   };
 
+  /**
+   * The nav still links to #mcp, which is now a mode rather than a section.
+   * The frame carries that id so the browser scrolls to it on its own; this
+   * is what selects the matching chip, on load and on every later hash
+   * change. An unknown hash is left alone.
+   */
+  useEffect(() => {
+    const sync = () => {
+      const i = MODES.findIndex((m) => m.id === window.location.hash.slice(1));
+      if (i >= 0) pick(i);
+    };
+    sync();
+    window.addEventListener("hashchange", sync);
+    return () => window.removeEventListener("hashchange", sync);
+  }, []);
+
   const onChipKey = (e: React.KeyboardEvent) => {
     const d = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
     if (!d) return;
@@ -375,119 +397,127 @@ function ModeStrip({ live }: { live: boolean }) {
   };
 
   return (
-    <div className="hc">
-      <div className="hc-stage" id={`hero-card-${mode.id}`}>
-        {wall ? <MusicWall /> : reel ? <ImageReel videos={mode.videos} /> : (<>
-        {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-        <video
-          key={src}
-          ref={clip}
-          src={withBasePath(src)}
-          title={`${mode.label} in ImagineArt`}
-          autoPlay
-          muted
-          loop={single}
-          playsInline
-          preload="auto"
-          disablePictureInPicture
-          /* A mode with several clips runs them in order and comes back to
-             the first; one with a single clip loops on the element instead,
-             so there is no state change per repeat. */
-          onEnded={single ? undefined : () => setShot((n) => (n + 1) % mode.videos.length)}
-        />
-
-        {/* Only a mode that actually carries sound gets a bar: on the silent
-            ones there is nothing here a viewer needs, and a scrubber over
-            looping b-roll is chrome for its own sake. Revealed on hover, and
-            on focus-within so it does not vanish from under a keyboard user
-            mid-scrub; always visible where there is no hover to speak of. */}
-        {mode.audio && (
-          <div className="hc-controls">
-            <button
-              type="button"
-              className="hc-btn"
-              aria-label={playing ? "Pause video" : "Play video"}
-              onClick={togglePlay}
-            >
-              {playing ? (
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
-                  <rect x="6" y="5" width="4" height="14" rx="1" />
-                  <rect x="14" y="5" width="4" height="14" rx="1" />
-                </svg>
-              ) : (
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
-                  <path d="M8 5.5v13l11-6.5z" />
-                </svg>
-              )}
-            </button>
-
-            <input
-              ref={seek}
-              className="hc-seek"
-              type="range"
-              min="0"
-              max="100"
-              step="0.1"
-              defaultValue="0"
-              aria-label="Seek"
-              onPointerDown={() => setScrubbing(true)}
-              onPointerUp={() => setScrubbing(false)}
-              onBlur={() => setScrubbing(false)}
-              onChange={(e) => scrub(e.target.value)}
-            />
-
-            <span ref={time} className="hc-time">0:00 / 0:00</span>
-
-            <button
-              type="button"
-              className="hc-btn"
-              aria-label={muted ? "Unmute video" : "Mute video"}
-              aria-pressed={!muted}
-              onClick={toggleMuted}
-            >
-              {muted ? (
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-                  <path d="M11 5 6 9H3v6h3l5 4z" />
-                  <path d="M17 9l4 6M21 9l-4 6" />
-                </svg>
-              ) : (
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-                  <path d="M11 5 6 9H3v6h3l5 4z" />
-                  <path d="M16 8.5a4 4 0 0 1 0 7M18.5 6a7 7 0 0 1 0 12" />
-                </svg>
-              )}
-            </button>
-          </div>
-        )}
-        </>)}
-      </div>
-
-      <div
-        className="hc-chips"
-        role="tablist"
-        aria-label="ImagineArt modes"
-        onKeyDown={onChipKey}
-        ref={chips.containerRef as React.Ref<HTMLDivElement>}
-      >
-        <SlidingIndicator box={chips.box} ready={chips.ready} className="hc-chip-fill" />
-        {MODES.map((c, i) => (
-          <button
-            key={c.id}
-            ref={(el) => { chips.itemRefs.current[i] = el; }}
-            id={`hero-chip-${c.id}`}
-            role="tab"
-            type="button"
-            aria-selected={i === card}
-            aria-controls={`hero-card-${c.id}`}
-            tabIndex={i === card ? 0 : -1}
-            className={`hc-chip ${i === card ? "hc-chip-on" : ""}`}
-            onClick={() => pick(i)}
-          >
-            {c.label}
-          </button>
-        ))}
-      </div>
+    <>
+    <div
+      className="hc-chips"
+      role="tablist"
+      aria-label="ImagineArt modes"
+      onKeyDown={onChipKey}
+      ref={chips.containerRef as React.Ref<HTMLDivElement>}
+    >
+      <SlidingIndicator box={chips.box} ready={chips.ready} className="hc-chip-fill" />
+      {MODES.map((c, i) => (
+        <button
+          key={c.id}
+          ref={(el) => { chips.itemRefs.current[i] = el; }}
+          id={`hero-chip-${c.id}`}
+          role="tab"
+          type="button"
+          aria-selected={i === card}
+          aria-controls={`hero-card-${c.id}`}
+          tabIndex={i === card ? 0 : -1}
+          className={`hc-chip ${i === card ? "hc-chip-on" : ""}`}
+          onClick={() => pick(i)}
+        >
+          {c.label}
+        </button>
+      ))}
     </div>
+
+      {/* The chips are a control on the page, not on the footage: the
+          panel below is the clip and nothing else. */}
+      <div className="hero-frame" id="mcp" ref={frameRef}>
+      <div className="hc">
+        <div className="hc-stage" id={`hero-card-${mode.id}`}>
+          {wall ? <MusicWall /> : reel ? <ImageReel videos={mode.videos} /> : panel ? (
+            <div className="hc-panel"><McpPanel /></div>
+          ) : (<>
+          {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+          <video
+            key={src}
+            ref={clip}
+            src={withBasePath(src)}
+            title={`${mode.label} in ImagineArt`}
+            autoPlay
+            muted
+            loop={single}
+            playsInline
+            preload="auto"
+            disablePictureInPicture
+            /* A mode with several clips runs them in order and comes back to
+               the first; one with a single clip loops on the element instead,
+               so there is no state change per repeat. */
+            onEnded={single ? undefined : () => setShot((n) => (n + 1) % mode.videos.length)}
+          />
+
+          {/* Only a mode that actually carries sound gets a bar: on the silent
+              ones there is nothing here a viewer needs, and a scrubber over
+              looping b-roll is chrome for its own sake. Revealed on hover, and
+              on focus-within so it does not vanish from under a keyboard user
+              mid-scrub; always visible where there is no hover to speak of. */}
+          {mode.audio && (
+            <div className="hc-controls">
+              <button
+                type="button"
+                className="hc-btn"
+                aria-label={playing ? "Pause video" : "Play video"}
+                onClick={togglePlay}
+              >
+                {playing ? (
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+                    <rect x="6" y="5" width="4" height="14" rx="1" />
+                    <rect x="14" y="5" width="4" height="14" rx="1" />
+                  </svg>
+                ) : (
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+                    <path d="M8 5.5v13l11-6.5z" />
+                  </svg>
+                )}
+              </button>
+
+              <input
+                ref={seek}
+                className="hc-seek"
+                type="range"
+                min="0"
+                max="100"
+                step="0.1"
+                defaultValue="0"
+                aria-label="Seek"
+                onPointerDown={() => setScrubbing(true)}
+                onPointerUp={() => setScrubbing(false)}
+                onBlur={() => setScrubbing(false)}
+                onChange={(e) => scrub(e.target.value)}
+              />
+
+              <span ref={time} className="hc-time">0:00 / 0:00</span>
+
+              <button
+                type="button"
+                className="hc-btn"
+                aria-label={muted ? "Unmute video" : "Mute video"}
+                aria-pressed={!muted}
+                onClick={toggleMuted}
+              >
+                {muted ? (
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                    <path d="M11 5 6 9H3v6h3l5 4z" />
+                    <path d="M17 9l4 6M21 9l-4 6" />
+                  </svg>
+                ) : (
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                    <path d="M11 5 6 9H3v6h3l5 4z" />
+                    <path d="M16 8.5a4 4 0 0 1 0 7M18.5 6a7 7 0 0 1 0 12" />
+                  </svg>
+                )}
+              </button>
+            </div>
+          )}
+          </>)}
+        </div>
+        </div>
+      </div>
+    </>
   );
 }
 
@@ -584,9 +614,7 @@ export function Hero() {
           </div>
         </div>
 
-        <div className="hero-frame" ref={frame}>
-          <ModeStrip live />
-        </div>
+        <ModeStrip live frameRef={frame} />
       </div>
 
       <style>{`
@@ -730,7 +758,6 @@ export function Hero() {
            what was eating the bottom of the panel. */
         .hero-frame {
           position: relative;
-          margin-top: clamp(20px, 3vh, 36px);
           /* A wide white rule at 20%: the frame reads as a lit edge around
              the clip rather than a hairline. border-box keeps the panel's
              outer size, so the clip loses 8px a side rather than the layout
@@ -754,11 +781,14 @@ export function Hero() {
 
 
         /* One clip filling the panel, with the chips floating over it. */
-        /* One inset for both floating layers: the chip row sits this far
-           from the top of the panel, the control bar the same distance from
-           the foot, so they cannot collide however the panel is sized. */
+        /* The control bar is the only thing floating on the panel now, so
+           the inset is its alone. */
         .hc { position: absolute; inset: 0; --hc-float: clamp(12px, 2.2%, 22px); }
         .hc-stage { position: absolute; inset: 0; overflow: hidden; background: var(--tile-2); }
+        /* The one mode that sizes the frame instead of filling it. */
+        .hero-frame:has(.hc-panel) { aspect-ratio: auto; }
+        .hero-frame:has(.hc-panel) .hc,
+        .hero-frame:has(.hc-panel) .hc-stage { position: relative; inset: auto; }
         .hc-stage video {
           position: absolute;
           inset: 0;
@@ -767,6 +797,20 @@ export function Hero() {
           object-fit: cover;
           display: block;
         }
+        /* MCP: the connect panel, hosted in the hero rather than in a
+           section of its own. It is far taller than 16:9 can hold, so the
+           frame stops being a fixed ratio for this mode and sizes to the
+           panel; :has is what lets the child mode resize its own host, as
+           the music wall and the reel already do on a phone. */
+        .hc-panel {
+          position: relative;
+          padding: clamp(10px, 1.2%, 18px);
+          background: var(--tile);
+        }
+        /* The panel draws its own tile ground and hairline; inside the frame
+           that would be a border inside a border. */
+        .hc-panel .mcp-panel { border: 0; background: transparent; }
+
         /* Image: the four clips on a ring, the centre one playing and its
            neighbours turned down either side. Sits on the panel's ground, so
            the cards read as cards rather than as one clip cropped. */
@@ -859,7 +903,6 @@ export function Hero() {
           align-items: center;
           gap: clamp(8px, 1vw, 16px);
           padding: clamp(16px, 2.2%, 28px);
-          padding-top: calc(var(--hc-float) + 68px);
           background: var(--tile);
         }
         .hc-cards {
@@ -1018,12 +1061,16 @@ export function Hero() {
            the video was doing show through the control, which read as noise
            under the labels. The hairline is what keeps its edge legible over
            a light frame as well as a dark one. */
+        /* On the page above the panel, not on the footage (Hamza, 21 Sep).
+           It keeps the dark bar and fixed white labels even so: it now sits
+           on the hero's mosaic, which is still a picture and not the page
+           wash, so the theme tokens would be as wrong here as they were
+           over the clip. */
         .hc-chips {
-          position: absolute;
-          left: 50%;
-          top: var(--hc-float);
-          transform: translateX(-50%);
-          max-width: calc(100% - 24px);
+          position: relative;
+          margin: clamp(22px, 3vh, 34px) auto clamp(14px, 2vh, 20px);
+          width: max-content;
+          max-width: 100%;
           display: flex;
           /* Not center. The row is absolutely positioned and shrinks to fit,
              so it is already centred by the translate above; asking flex to
@@ -1087,7 +1134,6 @@ export function Hero() {
           .hc-round { width: 28px; height: 28px; }
           .hero-frame:has(.hc-music) { aspect-ratio: 3 / 4; }
           .hc-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); align-content: center; }
-          .hc-music { padding-top: calc(var(--hc-float) + 56px); }
           .hc-art { aspect-ratio: 1 / 1; }
           .hc-play { width: 38px; height: 38px; }
           .hc-nav { width: 28px; height: 28px; }
