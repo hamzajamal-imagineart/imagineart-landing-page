@@ -83,9 +83,14 @@ export function AdStudio() {
           position: relative;
           height: var(--studio-band-h);
           border-radius: var(--radius-6);
+          /* A hairline round all three bands (Hamza, 21 Sep), so each one
+             reads as a panel on the page rather than as a hole cut in it.
+             This band already carried one in --line; fixed white is what the
+             other two take, since the bands are dark surfaces in both themes
+             and the token would invert out from under them. */
+          border: 1px solid rgba(255, 255, 255, 0.12);
           overflow: hidden;
           background: var(--ground);
-          border: 1px solid var(--line);
           isolation: isolate;
         }
         .ad-cols { position: absolute; inset: 0; display: flex; gap: 8px; }

@@ -785,10 +785,12 @@ export function Hero() {
            the inset is its alone. */
         .hc { position: absolute; inset: 0; --hc-float: clamp(12px, 2.2%, 22px); }
         .hc-stage { position: absolute; inset: 0; overflow: hidden; background: var(--tile-2); }
-        /* The one mode that sizes the frame instead of filling it. */
-        .hero-frame:has(.hc-panel) { aspect-ratio: auto; }
-        .hero-frame:has(.hc-panel) .hc,
-        .hero-frame:has(.hc-panel) .hc-stage { position: relative; inset: auto; }
+        /* The panel keeps the frame's 16:9 like every other mode, so the
+           container does not change height when you pick a chip. aspect-ratio
+           is a floor rather than a fixed size for a block with content in it,
+           so the frame still grows where the panel genuinely needs more —
+           on a phone, where the panel's two columns stack. */
+
         .hc-stage video {
           position: absolute;
           inset: 0;
@@ -804,6 +806,12 @@ export function Hero() {
            the music wall and the reel already do on a phone. */
         .hc-panel {
           position: relative;
+          /* Centred in whatever height the frame has, rather than pinned to
+             the top with the slack under it. */
+          min-height: 100%;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
           padding: clamp(10px, 1.2%, 18px);
           background: var(--tile);
         }
@@ -1134,6 +1142,15 @@ export function Hero() {
           .hc-round { width: 28px; height: 28px; }
           .hero-frame:has(.hc-music) { aspect-ratio: 3 / 4; }
           .hc-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); align-content: center; }
+          /* The panel's two columns stack here and it grows well past 16:9,
+             so the frame drops the ratio and the panel sizes it. aspect-ratio
+             does not grow with content on a block — it computes a height from
+             the width — so without this the panel is simply clipped. Above
+             this width it fills and centres instead, which is what keeps the
+             frame the same height on every chip. */
+          .hero-frame:has(.hc-panel) { aspect-ratio: auto; }
+          .hero-frame:has(.hc-panel) .hc,
+          .hero-frame:has(.hc-panel) .hc-stage { position: relative; inset: auto; }
           .hc-art { aspect-ratio: 1 / 1; }
           .hc-play { width: 38px; height: 38px; }
           .hc-nav { width: 28px; height: 28px; }

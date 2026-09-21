@@ -46,7 +46,7 @@ Verify with `npx next build` plus grep or DOM measurement. Keep replies short.
 | Fashion Studio `#fashion-studio` | `sections/FashionStudio` | Banner: campaign clip full-bleed, rising scrim, white wordmark, glass "Try Now". |
 | Film Studio `#film-studio` | `sections/FilmStudio` | Banner: CSS marquee of 24 film thumbnails, with a left-hand block (presents line, logo, one line, pill) on a scrim raked in from the left. The whole band links to the studio. |
 | Workflows `#workflows` | `sections/Workflows` | Bento, spans [2,1] / [1,1,1]: Node canvas (wide, clip), Brand Guidelines (clip), Creative Analyser (clip), Connectors as a `MarkCluster`, Plugins as a linked list. Every tile carries a gradient ground. No borders, 460px rows. |
-| Agents `#agents` | `sections/Agent` | A split, deliberately not another bento: three numbered steps and a text link on the left, one clip filling the panel on the right. Stacks under 1024px. |
+| Agents `#agents` | `sections/Agent` | Eyebrow, two-clause heading, then the agent recording in a 21:9 band with the claim and two buttons over its foot, and the three steps as a rail of equal columns underneath. |
 | Use Cases `#use-cases` | `sections/UseCases` + `UseCaseWheel` | "USE CASES" eyebrow, heading "One-click skills for every creative task". A centred vertical list of six use cases advancing every 3s, the active one in a pill with an arrow into the template gallery, four of its clips scattered either side. |
 | Models | `sections/Models` | Eight model cards, four by two: provider sample full-bleed fading into a per-card tone. |
 | Security `#security` | `sections/Security` | The Enterprise page's own Security section, ported and re-toned for dark: eyebrow, two-tone heading, lede, then a seven-tile bento — six half-width, the zero-retention tile full width with its three-node flow diagram. |
@@ -274,6 +274,26 @@ bright middle behind the diagram's labels at 2.0:1, so both carry a wash and
 the eyebrow number went from the kit's 0.55 opacity to 0.62 (4.43:1 on the
 lightest tone). Worst case anywhere in the section is now 5.2:1.
 
+**The Agents section was rebuilt to carry more weight** (Hamza, 21 Sep). It
+was a split panel — three numbered rows beside a clip — which read as a
+feature tile rather than as one of the page's claims. It now leads with an
+eyebrow and a two-clause heading, puts the recording full width in a band with
+the claim over its foot, and lays the steps out as a rail with the numbers as
+quiet marks. The actions are real buttons; the ghost one takes fixed white,
+since the variant's own ink is the page's and it sits on footage. Measured per
+pixel against the real frame, the claim is 7.2:1.
+
+**The studio banners and the Agents band all carry a 1px white hairline at
+12%** (Hamza, 21 Sep), so each reads as a panel on the page rather than a hole
+cut in it. Fixed white rather than `--line`: they are dark surfaces in both
+themes, so the token would invert out from under them. Ad Studio already had
+one in `--line` and was brought into line with the rest.
+
+**Model names are 19px with a 26px mark** (Hamza, 21 Sep), up from 16.5 and
+20, and the fade under them starts at 40% of the card rather than 52% and
+lands on the tone by 84% rather than 100%. The worst per-pixel case across the
+eight cards is 12.4:1.
+
 **Every Workflows tile carries a gradient ground** from `workflows/bg/`: blue
 on Node canvas, amber on Brand Guidelines, green on Creative Analyser, ember
 on Connectors, violet on Plugins. The two warm ones sit diagonally, not in one
@@ -417,14 +437,13 @@ point at, returns 500.
   were renamed without their bodies) **are rewritten** (21 Sep) — the new
   lines are written here, not the product's own. Every card still links to
   `/apps`, since per-tool URLs are not confirmed.
-- **Five Tools cards now carry footage that is actually theirs** (21 Sep):
-  Lipsync and Motion Sync from the URLs Hamza sent, pulled local into
-  `tools/`; VFX from `capabilities/vfx.mp4`, which was on disk all along while
-  the card showed a photograph; Create Characters from
-  `use-cases/character.mp4`. **AI Voiceover, Dub Video and Remove Background
-  are still photographs** — there is no clip of any of them anywhere in
-  `public/media`, and lending them a neighbour's footage is what produced the
-  mismatch above.
+- **Six Tools cards now carry footage that is actually theirs** (21 Sep):
+  Lipsync, Motion Sync and AI Voiceover from the URLs Hamza sent, pulled local
+  into `tools/`; VFX from `capabilities/vfx.mp4`, which was on disk all along
+  while the card showed a photograph; Create Characters from
+  `use-cases/character.mp4`. **Dub Video and Remove Background are still
+  photographs** — there is no clip of either anywhere in `public/media`, and
+  lending them a neighbour's footage is what produced the mismatch above.
 - **Hero chips.** Six modes (Hamza, 19 Sep). Five own a list of clips:
   **Image plays four in turn** and **Video three**, since no single recording
   shows what either does; Workflows, Agent and Computer loop one. Image,
@@ -466,9 +485,13 @@ point at, returns 500.
 - **`ModeStrip` owns the frame**, since the chips have to render above it and
   the panel below it. `<Hero>` passes the ref that the scroll-grow writes to.
 - **The MCP mode is the connect panel** (Hamza, 21 Sep), which replaced the
-  Computer chip. It is far taller than 16:9 can hold, so the frame drops its
-  ratio for that one mode (`.hero-frame:has(.hc-panel)`) and sizes to the
-  panel; the panel's own border and ground are removed inside the frame, which
+  Computer chip. **Every mode gives the frame the same height** — the panel
+  fills it absolutely and centres, so picking a chip never resizes the
+  container. Under 880px the panel's two columns stack and it grows well past
+  16:9, so there and only there the frame drops the ratio
+  (`.hero-frame:has(.hc-panel)`) and the panel sizes it. **`aspect-ratio` does
+  not grow with content on a block** — it computes a height from the width —
+  so without that the panel is simply clipped. the panel's own border and ground are removed inside the frame, which
   would otherwise be a border inside a border. The nav still links to `#mcp`:
   the frame carries that id, and the strip selects the matching chip from the
   hash on load and on `hashchange`. Playback always starts muted — autoplay
@@ -515,6 +538,7 @@ point at, returns 500.
 | `hero/modes/video/*.mp4` | 1.9MB | the Video chip's three clips; in use |
 | `tools/lipsync.mp4` | 2.5MB | the Lipsync card; re-encode |
 | `tools/motion-sync.mp4` | 908KB | the Motion Sync card; in use |
+| `tools/ai-voiceover.mp4` | 256KB | the AI Voiceover card; in use |
 | `security/*.jpg` | 329KB | the two Security tile backdrops, from the B2B repo; in use |
 | `music/art/*.jpg` | 1.1MB | the Music chip's 16 covers, 440px; in use |
 | `music/avatar/*.jpg` | 64KB | the Music chip's 16 avatars, 48px; in use |
@@ -529,7 +553,8 @@ point at, returns 500.
 Also unused: `models/*.png` icons beyond the eight on the model cards,
 `pillars/chat.mp4`, `pillars/creative.mp4`, and the six `models/providers/*`
 backdrops not on cards. Also unused now: `tools/lipsync.jpg`, `tools/motion-sync.jpg`,
-`tools/vfx.jpg` and `tools/create-characters.jpg`, whose cards took footage.
+`tools/ai-voiceover.jpg`, `tools/vfx.jpg` and `tools/create-characters.jpg`,
+whose cards took footage.
 **Clips are reused across sections on purpose**, so
 replacing one changes every card that shows it.
 
@@ -537,15 +562,16 @@ replacing one changes every card that shows it.
 
 ## 8. Open items
 
-1. Give the bento cards per-tool links (§7), and footage for AI Voiceover, Dub
-   Video and Remove Background if any exists.
+1. Give the bento cards per-tool links (§7), and footage for Dub Video and
+   Remove Background if any exists.
 2. Re-encode `hero/modes/agent.mp4` (11MB), `workflows.mp4` (4.7MB) and
    `tools/lipsync.mp4` (2.5MB).
 3. Confirm the inferred Avatar URL (§7) and the flagged model names (§7).
    Confirm the Agent section's steps, and whether an agent URL exists to
    point its link at instead of the app home.
 4. Confirm the Film banner's new line, "Script to scenes to a finished cut",
-   and the five rewritten bento descriptions (§7).
+   the Agents band's claim, "One brief, a whole campaign back", and the
+   rewritten bento descriptions (§7).
 5. Re-encode the Fashion banner clip and delete the unused media (§7).
 6. **Deployment.** `next.config.ts` reads `BASE_PATH` at build time; there is
    no deploy workflow yet. Reuse the B2B repo's R2 + BunnyCDN workflow once the

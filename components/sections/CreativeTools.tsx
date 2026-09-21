@@ -51,7 +51,7 @@ type Card = {
 const COLUMNS: Card[][] = [
   [
     { title: "Lipsync", body: "Match any voice track to a face, frame by frame.", video: "/media/tools/lipsync.mp4", tint: "#1b1b24", size: "tall" },
-    { title: "AI Voiceover", body: "Studio-quality voiceovers in every major language.", image: "/media/tools/ai-voiceover.jpg", size: "short" },
+    { title: "AI Voiceover", body: "Studio-quality voiceovers in every major language.", video: "/media/tools/ai-voiceover.mp4", tint: "#1a2028", size: "short" },
     { title: "Inpaint", body: "Change one part of an image and keep the rest exactly as it was.", video: "/media/capabilities/inpaint.mp4", tint: "#1b2430", size: "short" },
   ],
   [

@@ -54,6 +54,12 @@ export function FilmStudio() {
           display: block;
           height: var(--studio-band-h);
           border-radius: var(--radius-6);
+          /* A hairline round all three bands (Hamza, 21 Sep), so each one
+             reads as a panel on the page rather than as a hole cut in it.
+             Fixed white rather than --line: the bands are dark surfaces in
+             both themes, so the token would invert out from under them.
+             border-box keeps the band's height at --studio-band-h. */
+          border: 1px solid rgba(255, 255, 255, 0.12);
           overflow: hidden;
           background:
             radial-gradient(60% 120% at 6% 100%, rgba(120, 80, 210, 0.55), transparent 60%),

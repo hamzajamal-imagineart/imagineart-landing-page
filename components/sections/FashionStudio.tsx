@@ -40,6 +40,12 @@ export function FashionStudio() {
           position: relative;
           height: var(--studio-band-h);
           border-radius: var(--radius-6);
+          /* A hairline round all three bands (Hamza, 21 Sep), so each one
+             reads as a panel on the page rather than as a hole cut in it.
+             Fixed white rather than --line: the bands are dark surfaces in
+             both themes, so the token would invert out from under them.
+             border-box keeps the band's height at --studio-band-h. */
+          border: 1px solid rgba(255, 255, 255, 0.12);
           overflow: hidden;
           background: var(--ground);
           color: #fff;

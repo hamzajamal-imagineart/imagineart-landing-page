@@ -64,7 +64,7 @@ export function Models() {
               <CardMedia src={m.media} />
               <span className="mdl-fade" aria-hidden />
               <h3 className="mdl-cap">
-                <img className="mdl-mark" src={withBasePath(`${DIR}/${m.icon}.png`)} alt="" aria-hidden width={20} height={20} />
+      <img className="mdl-mark" src={withBasePath(`${DIR}/${m.icon}.png`)} alt="" aria-hidden width={26} height={26} />
                 <span>{m.name}</span>
               </h3>
             </article>
@@ -104,7 +104,11 @@ export function Models() {
           display: block;
         }
         /* The backdrop dissolves into the card's own tone along the bottom
-           third, so the caption sits on a solid rather than on a scrim. */
+           third, so the caption sits on a solid rather than on a scrim. It
+           starts higher and lands on the tone sooner than it did (Hamza,
+           21 Sep): several of the samples are bright right where the name
+           sits, and the name is now large enough to need the whole width of
+           that foot to stay clean. */
         .mdl-fade {
           position: absolute;
           inset: 0;
@@ -113,10 +117,10 @@ export function Models() {
           background: linear-gradient(
             to bottom,
             transparent 0%,
-            transparent 52%,
-            color-mix(in srgb, var(--mdl-tone) 55%, transparent) 72%,
-            color-mix(in srgb, var(--mdl-tone) 92%, transparent) 88%,
-            var(--mdl-tone) 100%
+            transparent 40%,
+            color-mix(in srgb, var(--mdl-tone) 45%, transparent) 58%,
+            color-mix(in srgb, var(--mdl-tone) 82%, transparent) 72%,
+            var(--mdl-tone) 84%
           );
         }
         .mdl-cap {
@@ -125,17 +129,17 @@ export function Models() {
           display: flex;
           align-items: center;
           justify-content: center;
-          gap: 9px;
-          padding: 0 18px 26px;
-          font-size: clamp(14px, 1.2vw, 16.5px);
+          gap: 11px;
+          padding: 0 18px 28px;
+          font-size: clamp(15.5px, 1.45vw, 19px);
           font-weight: 500;
           letter-spacing: -0.01em;
           line-height: 1.2;
           text-align: center;
         }
         .mdl-mark {
-          width: 20px; height: 20px;
-          border-radius: 5px;
+          width: 26px; height: 26px;
+          border-radius: 7px;
           display: block;
           flex: 0 0 auto;
         }
