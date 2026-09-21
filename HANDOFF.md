@@ -39,7 +39,7 @@ Verify with `npx next build` plus grep or DOM measurement. Keep replies short.
 
 | Section | Component | What it is |
 |---|---|---|
-| Hero | `sections/Hero` | A centred column over a mosaic of work: headline "Imagine, design, animate. / edit. One platform.", the copy, one CTA. Below it a 16:9 panel holding a single clip edge to edge, with the **mode chips** on the page above it, between the CTA and the panel: Image · Video · Music · Workflows · Agents · MCP. Image is a coverflow of its four clips, Video plays its three in turn, Music is a wall of track cards, and the rest loop one clip. MCP is the connect panel that used to be its own section. The two modes that carry sound get a control bar at the panel's foot. |
+| Hero | `sections/Hero` | A centred column over a mosaic of work: headline "Imagine, design, animate. / edit. One platform.", the copy, one CTA. Below it a 16:9 panel holding a single clip edge to edge, with the **mode chips** on the page above it, between the CTA and the panel: Image · Video · Audio · Workflows · Agents · MCP. Image is a coverflow of its four clips, Video plays its three in turn, Audio is a wall of track cards, and the rest loop one clip. MCP is the connect panel that used to be its own section. The two modes that carry sound get a control bar at the panel's foot. |
 | Partners | `sections/Partners` | Six partner marks (ByteDance, Kling AI, MINIMAX, Wan, fal, Grok) with two captions. |
 | Creative Tools `#tools` | `sections/CreativeTools` | A 13-card bento from Figma: four 308px columns, 16px gutter, split 410/190/190 or 144/144/296/190 so every column ends level at 822. Eight cards carry a photograph, five carry that tool's own clip. No icons. Title always showing, description on hover. "View all tools" at the foot. |
 | Studios `#studios` | `sections/AdStudio` | Heading "Studios" + lede, then the **Ad Studio banner**: five vertical marquee columns of 9:16 ad clips (30 clips, CDN, posters, `preload="none"`) and a frosted left panel. |
@@ -471,7 +471,7 @@ point at, returns 500.
   shows what either does; Workflows, Agent and Computer loop one. Image,
   Video, Workflows and Agent are the product's own recordings under
   `hero/modes/`; Computer is `hero/computer.mp4`, no longer unused.
-- **Music is not a clip at all.** A recording of the music tool shows a
+- **Audio is not a clip at all** (the chip read Music until 21 Sep). A recording of the music tool shows a
   waveform moving, which says nothing about what it produced, so the mode is
   **four track cards with a chevron each side**, paged four at a time through
   sixteen tracks, each card with its own play button. One `<audio>` element

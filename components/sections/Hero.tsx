@@ -44,7 +44,7 @@ const VIDEO_SET = [
 ];
 
 /**
- * Three modes are not clips at all: Music is a wall of track cards, Image is
+ * Three modes are not clips at all: Audio is a wall of track cards, Image is
  * a coverflow, and **MCP is the connect panel** that used to be its own
  * section (Hamza, 21 Sep). Computer came out to make room for it.
  *
@@ -56,14 +56,16 @@ const VIDEO_SET = [
 const MODES = [
   { id: "image", label: "Image", videos: IMAGE_SET, audio: false, reel: true },
   { id: "video", label: "Video", videos: VIDEO_SET, audio: false },
-  { id: "music", label: "Music", videos: [], audio: false, wall: true },
+  { id: "audio", label: "Audio", videos: [], audio: false, wall: true },
   { id: "workflows", label: "Workflows", videos: ["/media/hero/modes/workflows.mp4"], audio: true },
   { id: "agent", label: "Agents", videos: ["/media/hero/modes/agent.mp4"], audio: true },
   { id: "mcp", label: "MCP", videos: [], audio: false, panel: true },
 ];
 
 /**
- * The Music mode is not a clip: it is four cards of real tracks, paged.
+ * The Audio mode is not a clip: it is four cards of real tracks, paged. The
+ * chip reads Audio (Hamza, 21 Sep) but the cards are music, which is all the
+ * gallery it is drawn from has.
  *
  * A recording of the music tool shows a waveform moving, which says nothing
  * about what it produced. Cards let you hear four different pieces, which is
