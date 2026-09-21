@@ -4,14 +4,14 @@ import { SectionGuides } from "@/components/primitives/SectionGuides";
 
 /**
  * Security, ported from the Enterprise page's own section and re-toned for a
- * dark page (Hamza, 20 Sep). Sits second to last, between the FAQ and the
- * closing band: the last thing asked before the action is usually whether
- * this is safe to put work into.
+ * dark page (Hamza, 20 Sep). Sits between Models and Reviews (Hamza, 21 Sep):
+ * what the platform runs on, then whether it is safe to put work into, then
+ * who vouches for it.
  *
  * **The tiles do not use the `.grain-*` palettes** the kit ships, and the kit
  * copy in `globals.css` is left alone. Those palettes are built for a white
  * page — mineral and sand are near-white — and six of them here would be a
- * bright slab two sections above the closing band. The grain machinery is the
+ * bright slab in the middle of a dark run. The grain machinery is the
  * same (`.grain` draws the noise from `--grain-1/2/3`); only the tones are
  * local, four neutral steps off the page floor, cycled so no two touching
  * tiles share one.

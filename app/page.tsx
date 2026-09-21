@@ -34,13 +34,12 @@ const softwareSchema = {
  * The ImagineArt product overview.
  *
  * Order follows the funnel: what it is (hero), what it can do (creative
- * tools),
- * where to do the work (the three studio banners and the reel under them), how
- * to put it on rails (workflows, with its connectors and plugins), what to
- * do instead of building one (the agent), what to start from (use cases),
- * how it plugs into your own agents (MCP), what powers it (models), who
- * vouches for it (reviews), what people ask (FAQ), whether it is
- * safe to put work into (security), then the closing action.
+ * tools), where to do the work (the three studio banners and the reel under
+ * them), how to put it on rails (workflows, with its connectors and plugins),
+ * what to do instead of building one (the agent), what to start from (use
+ * cases), how it plugs into your own agents (MCP), what powers it (models),
+ * whether it is safe to put work into (security), who vouches for it
+ * (reviews), what people ask (FAQ), then the closing action.
  *
  * <Apps> is pulled for now, not deleted: the component and its data are still
  * in components/sections/Apps.tsx, so recovering it is one import and one
@@ -66,9 +65,9 @@ export default function Page() {
         <UseCases />
         <Mcp />
         <Models />
+        <Security />
         <ReviewsSection />
         <FAQSection />
-        <Security />
         <ClosingCta />
       </main>
 

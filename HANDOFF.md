@@ -51,9 +51,9 @@ Verify with `npx next build` plus grep or DOM measurement. Keep replies short.
 | Use Cases `#use-cases` | `sections/UseCases` + `UseCaseWheel` | "USE CASES" eyebrow, heading "One-click skills for every creative task". A centred vertical list of six use cases advancing every 3s, the active one in a pill with an arrow into the template gallery, four of its clips scattered either side. |
 | MCP `#mcp` | `sections/Mcp` | Connect panel ported from `Vyro-ai/imagine-web-mcp-landing`: the Imagine MCP wordmark, client tabs, an MCP / CLI segment, three numbered steps with copy buttons and deep links, and the client's real connect recording. |
 | Models | `sections/Models` | Eight model cards, four by two: provider sample full-bleed fading into a per-card tone. |
+| Security `#security` | `sections/Security` | The Enterprise page's own Security section, ported and re-toned for dark: eyebrow, two-tone heading, lede, then a seven-tile bento — six half-width, the zero-retention tile full width with its three-node flow diagram. |
 | Reviews `#reviews` | `ReviewsSection` | Sticky summary + auto-scrolling column of real Trustpilot five-star reviews. |
 | FAQ `#faq` | `FAQSection` | Sticky heading rail + accordion, rows open by default, FAQPage JSON-LD from the same array. |
-| Security `#security` | `sections/Security` | The Enterprise page's own Security section, ported and re-toned for dark: eyebrow, two-tone heading, lede, then a seven-tile bento — six half-width, the zero-retention tile full width with its three-node flow diagram. |
 | Closing CTA | `sections/ClosingCta` | Full-bleed `cta/portal.jpg`, scrim in from the left, copy on the page grid, white + glass buttons. |
 
 The three studio banners share one height, `--studio-band-h` in
@@ -261,8 +261,8 @@ one and the card would otherwise be black until the first frame lands.
 
 **Security's tiles do not use the kit's `.grain-*` palettes**, and the kit
 copy in `globals.css` is left alone. Those palettes are built for a white page
-— mineral and sand are near-white — and six of them would be a bright slab two
-sections above the closing band. The grain machinery is the same (`.grain`
+— mineral and sand are near-white — and six of them would be a bright slab in the
+middle of a dark run. The grain machinery is the same (`.grain`
 draws its noise from `--grain-1/2/3`); only the tones are local, four neutral
 steps off the page floor. The two Enterprise photographs survived the re-tone
 because they were already dark abstracts, but **dark is not the same as
