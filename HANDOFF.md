@@ -46,7 +46,7 @@ Verify with `npx next build` plus grep or DOM measurement. Keep replies short.
 | Fashion Studio `#fashion-studio` | `sections/FashionStudio` | Banner: campaign clip full-bleed, rising scrim, white wordmark, glass "Try Now". |
 | Film Studio `#film-studio` | `sections/FilmStudio` | Banner: CSS marquee of 24 film thumbnails, with a left-hand block (presents line, logo, one line, pill) on a scrim raked in from the left. The whole band links to the studio. |
 | Workflows `#workflows` | `sections/Workflows` | Bento, spans [2,1] / [1,1,1]: Node canvas (wide, clip), Brand Guidelines (clip), Creative Analyser (clip), Connectors as a `MarkCluster`, Plugins as a linked list. Every tile carries a gradient ground. No borders, 460px rows. |
-| Agents `#agents` | `sections/Agent` | Eyebrow, two-clause heading, then the agent recording in a 21:9 band with the claim and two buttons over its foot, and the three steps as a rail of equal columns underneath. |
+| Agents `#agents` | `sections/Agent` | Eyebrow, two-clause heading, then the agent recording at its own aspect ratio, capped at 880 and centred, with nothing over it, and the three steps as a rail of equal columns underneath. |
 | Use Cases `#use-cases` | `sections/UseCases` + `UseCaseWheel` | "USE CASES" eyebrow, heading "One-click skills for every creative task". A centred vertical list of six use cases advancing every 3s, the active one in a pill with an arrow into the template gallery, four of its clips scattered either side. |
 | Models | `sections/Models` | Eight model cards, four by two: provider sample full-bleed fading into a per-card tone. |
 | Security `#security` | `sections/Security` | The Enterprise page's own Security section, ported and re-toned for dark: eyebrow, two-tone heading, lede, then a seven-tile bento — six half-width, the zero-retention tile full width with its three-node flow diagram. |
@@ -277,11 +277,16 @@ lightest tone). Worst case anywhere in the section is now 5.2:1.
 **The Agents section was rebuilt to carry more weight** (Hamza, 21 Sep). It
 was a split panel — three numbered rows beside a clip — which read as a
 feature tile rather than as one of the page's claims. It now leads with an
-eyebrow and a two-clause heading, puts the recording full width in a band with
-the claim over its foot, and lays the steps out as a rail with the numbers as
-quiet marks. The actions are real buttons; the ghost one takes fixed white,
-since the variant's own ink is the page's and it sits on footage. Measured per
-pixel against the real frame, the claim is 7.2:1.
+eyebrow and a two-clause heading, puts the recording under it, and lays the
+steps out as a rail with the numbers as quiet marks.
+
+**Nothing sits on that recording** and it keeps its own aspect ratio (Hamza,
+21 Sep). It briefly carried a claim and two buttons over a scrim, and was
+cropped to 21:9; the element is now in flow at `width: 100%; height: auto`, so
+the band is whatever shape the file is. **The band is capped at 880 and
+centred** because the file is only 636x416: across the full 1176 grid it is
+upscaled 1.85x, which a screen recording shows immediately. At 880 it is
+1.38x. Raise the cap when a larger recording lands.
 
 **The studio banners and the Agents band all carry a 1px white hairline at
 12%** (Hamza, 21 Sep), so each reads as a panel on the page rather than a hole
@@ -570,8 +575,7 @@ replacing one changes every card that shows it.
    Confirm the Agent section's steps, and whether an agent URL exists to
    point its link at instead of the app home.
 4. Confirm the Film banner's new line, "Script to scenes to a finished cut",
-   the Agents band's claim, "One brief, a whole campaign back", and the
-   rewritten bento descriptions (§7).
+   and the rewritten bento descriptions (§7).
 5. Re-encode the Fashion banner clip and delete the unused media (§7).
 6. **Deployment.** `next.config.ts` reads `BASE_PATH` at build time; there is
    no deploy workflow yet. Reuse the B2B repo's R2 + BunnyCDN workflow once the
