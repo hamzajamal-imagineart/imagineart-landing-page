@@ -360,10 +360,12 @@ project the corners through the element's `DOMMatrix` and the stage's
 perspective instead.
 
 **The Use Cases wheel takes stills as well as clips.** `WheelCard` has
-`image` beside `video` and `image` wins; the Concept & Architecture group is
-four architectural photographs (Hamza, 23 Sep), the only stills on the wheel.
-They are downscaled to 640 for a card 240 wide, the same rule the hero mosaic
-follows.
+`image` beside `video` and `image` wins. Two groups are stills (Hamza,
+23 Sep): **Interior Design** (renamed from Concept & Architecture, id
+`interiors`) and **Photography**, four photographs each. They are downscaled
+to 640 for a card 240 wide, the same rule the hero mosaic follows — the
+sources were 1493 across. The four Interior Design pictures include two
+exteriors, which is what Hamza supplied.
 
 **The Ad reel card holds three clips.** An ad is a vertical, and three fill a
 16:9 card where one sits in a letterbox. They stream from the Ad Studio
@@ -533,8 +535,8 @@ point at, returns 500.
   agent URL is confirmed) are drafts.
 - **Written from names alone, treat as draft:** Workflows tile bodies, the four
   second-row bento cards (Inpaint, Image Upscaler, Video Extend, Outfit
-  Try-on), the Film banner's line, the four Architecture card names, and — in
-  the pulled studio reel — its heading, lede and tags. MCP copy and commands are the MCP repo's own. Fashion
+  Try-on), the Film banner's line, the eight Interior Design and Photography
+  card names, and — in the pulled studio reel — its heading, lede and tags. MCP copy and commands are the MCP repo's own. Fashion
   and Ad banner copy is the product's own, shortened.
 - **Model names** are copied from the B2B repo's Workflows page. Flagged there
   as unverified: Alibaba and Lightricks inferred, Kling used as the brand, Flux
@@ -568,7 +570,8 @@ point at, returns 500.
 | `tools/motion-sync.mp4` | 908KB | the Motion Sync card; in use |
 | `tools/ai-voiceover.mp4` | 256KB | the AI Voiceover card; in use |
 | `security/*.jpg` | 329KB | the two Security tile backdrops, from the B2B repo; in use |
-| `use-cases/architecture/*.jpg` | 241KB | the Concept & Architecture cards, 640px; in use |
+| `use-cases/architecture/*.jpg` | 241KB | the Interior Design cards, 640px; in use |
+| `use-cases/photography/*.jpg` | 186KB | the Photography cards, 640px; in use |
 | `music/art/*.jpg` | 1.1MB | the Music chip's 16 covers, 440px; in use |
 | `music/avatar/*.jpg` | 64KB | the Music chip's 16 avatars, 48px; in use |
 | `hero/creative-suite-image.webm` | 1.4MB | **unused** since the Image chip became a playlist; delete |

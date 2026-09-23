@@ -15,6 +15,9 @@ import { SectionGlow, sectionGlowCss } from "@/components/primitives/SectionGlow
  * Several clips serve more than one use case (ugc, upscale, sketch-to-render,
  * the studio films). Deliberate: a card is an example of the use case, and
  * the same piece of work is a fair example of two of them.
+ *
+ * **Photography and Interior Design are stills**, not clips (Hamza, 23 Sep),
+ * which is what `WheelCard.image` is for.
  */
 const t = (category?: string) => templateHref(category);
 
@@ -57,22 +60,23 @@ const USE_CASES: WheelGroup[] = [
   },
   {
     id: "photography", href: t(), title: "Photography",
+    /* Stills, like Interior Design below (Hamza, 23 Sep). */
     cards: [
-      { name: "Editorial Stills", video: "/media/use-cases/photography.mp4", href: t() },
-      { name: "Retouch and Inpaint", video: "/media/capabilities/inpaint.mp4", href: t() },
-      { name: "Variations", video: "/media/capabilities/variate.mp4", href: t() },
-      { name: "Upscale to Print", video: "/media/capabilities/upscale.mp4", href: t() },
+      { name: "Product Still Life", image: "/media/use-cases/photography/1.jpg", href: t() },
+      { name: "Fashion Editorial", image: "/media/use-cases/photography/2.jpg", href: t() },
+      { name: "Studio Portrait", image: "/media/use-cases/photography/3.jpg", href: t() },
+      { name: "Packshot", image: "/media/use-cases/photography/4.jpg", href: t() },
     ],
   },
   {
-    id: "concept", href: t(), title: "Concept & Architecture",
-    /* The only group of stills on the wheel (Hamza, 23 Sep): four
-       architectural photographs, downscaled to 640 for a card 240 wide. */
+    id: "interiors", href: t(), title: "Interior Design",
+    /* Renamed from Concept & Architecture (Hamza, 23 Sep). Two of the four
+       are exteriors, which is what the pictures are. */
     cards: [
       { name: "Interior Concept", image: "/media/use-cases/architecture/1.jpg", href: t() },
       { name: "Desert Residence", image: "/media/use-cases/architecture/2.jpg", href: t() },
-      { name: "Concrete Massing", image: "/media/use-cases/architecture/3.jpg", href: t() },
-      { name: "Interior Render", image: "/media/use-cases/architecture/4.jpg", href: t() },
+      { name: "Concrete Facade", image: "/media/use-cases/architecture/3.jpg", href: t() },
+      { name: "Living Room Render", image: "/media/use-cases/architecture/4.jpg", href: t() },
     ],
   },
 ];
