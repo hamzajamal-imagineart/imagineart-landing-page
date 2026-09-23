@@ -12,32 +12,60 @@ import { SectionGlow, sectionGlowCss } from "@/components/primitives/SectionGlow
  * fashion, branding) and unfiltered otherwise, rather than on a category
  * that misdescribes it.
  *
- * Several clips serve more than one use case (ugc, upscale, sketch-to-render,
- * the studio films). Deliberate: a card is an example of the use case, and
- * the same piece of work is a fair example of two of them.
+ * **Six groups, in this order** (Hamza, 23 Sep): Photography, Branding,
+ * Interior Design, Try On, Product, Style Transfer. Explainer Videos and
+ * Avatars came out; Concept & Architecture became Interior Design; Try On and
+ * Style Transfer are new and built from footage already on the page.
  *
- * **Photography and Interior Design are stills**, not clips (Hamza, 23 Sep),
- * which is what `WheelCard.image` is for.
+ * **The first three are stills**, not clips, which is what `WheelCard.image`
+ * is for. The Branding four are one brand across packaging, kitchen, merch
+ * and signage, rather than four unrelated pieces.
+ *
+ * Several clips serve more than one group (upscale, sketch-to-render, the
+ * studio films). Deliberate: a card is an example of the use case, and the
+ * same piece of work is a fair example of two of them.
  */
 const t = (category?: string) => templateHref(category);
 
 const USE_CASES: WheelGroup[] = [
   {
-    id: "explainers", href: t(), title: "Explainer Videos",
+    id: "photography", href: t(), title: "Photography",
     cards: [
-      { name: "Motion Graphics", video: "/media/use-cases/motion.mp4", href: t() },
-      { name: "Presenter Explainer", video: "/media/studios/avatar-studio.mp4", href: t() },
-      { name: "Concept Walkthrough", video: "/media/use-cases/concepting.mp4", href: t() },
-      { name: "Product Explainer", video: "/media/use-cases/product.mp4", href: t() },
+      { name: "Product Still Life", image: "/media/use-cases/photography/1.jpg", href: t() },
+      { name: "Fashion Editorial", image: "/media/use-cases/photography/2.jpg", href: t() },
+      { name: "Studio Portrait", image: "/media/use-cases/photography/3.jpg", href: t() },
+      { name: "Packshot", image: "/media/use-cases/photography/4.jpg", href: t() },
     ],
   },
   {
-    id: "avatars", href: t(), title: "Avatars",
+    id: "branding", href: t("branding"), title: "Branding",
+    /* One brand across four surfaces — packaging, kitchen, merch, signage —
+       rather than four unrelated pieces, which is the claim the group is
+       making. */
     cards: [
-      { name: "Consistent Character", video: "/media/use-cases/avatars.mp4", href: t() },
-      { name: "UGC Creator", video: "/media/capabilities/ugc.mp4", href: t() },
-      { name: "Presenter", video: "/media/studios/avatar-studio.mp4", href: t() },
-      { name: "Character Turnaround", video: "/media/use-cases/character.mp4", href: t() },
+      { name: "Packaging", image: "/media/use-cases/branding/1.jpg", href: t("branding") },
+      { name: "Brand Photography", image: "/media/use-cases/branding/2.jpg", href: t("branding") },
+      { name: "Merch", image: "/media/use-cases/branding/3.jpg", href: t("branding") },
+      { name: "Signage", image: "/media/use-cases/branding/4.jpg", href: t("branding") },
+    ],
+  },
+  {
+    id: "interiors", href: t(), title: "Interior Design",
+    /* Two of the four are exteriors, which is what the pictures are. */
+    cards: [
+      { name: "Interior Concept", image: "/media/use-cases/architecture/1.jpg", href: t() },
+      { name: "Desert Residence", image: "/media/use-cases/architecture/2.jpg", href: t() },
+      { name: "Concrete Facade", image: "/media/use-cases/architecture/3.jpg", href: t() },
+      { name: "Living Room Render", image: "/media/use-cases/architecture/4.jpg", href: t() },
+    ],
+  },
+  {
+    id: "try-on", href: t("fashion"), title: "Try On",
+    cards: [
+      { name: "Outfit Try-on", video: "/media/capabilities/outfit-tryon.mp4", href: t("fashion") },
+      { name: "Catalog Look", video: "/media/templates/fashion-tryon.mp4", href: t("fashion") },
+      { name: "Model Swap", video: "/media/use-cases/fashion.mp4", href: t("fashion") },
+      { name: "Campaign Shot", video: "/media/studios/fashion-studio.mp4", href: t("fashion") },
     ],
   },
   {
@@ -50,33 +78,12 @@ const USE_CASES: WheelGroup[] = [
     ],
   },
   {
-    id: "branding", href: t("branding"), title: "Branding",
+    id: "style-transfer", href: t(), title: "Style Transfer",
     cards: [
-      { name: "Brand Kit", video: "/media/templates/brand-kit.mp4", href: t("branding") },
-      { name: "Identity Explorations", video: "/media/use-cases/branding.mp4", href: t("branding") },
-      { name: "Brand Kit Sync", video: "/media/capabilities/brand-kits.mp4", href: t("branding") },
-      { name: "Brand Campaign", video: "/media/templates/ad-campaign.mp4", href: t("branding") },
-    ],
-  },
-  {
-    id: "photography", href: t(), title: "Photography",
-    /* Stills, like Interior Design below (Hamza, 23 Sep). */
-    cards: [
-      { name: "Product Still Life", image: "/media/use-cases/photography/1.jpg", href: t() },
-      { name: "Fashion Editorial", image: "/media/use-cases/photography/2.jpg", href: t() },
-      { name: "Studio Portrait", image: "/media/use-cases/photography/3.jpg", href: t() },
-      { name: "Packshot", image: "/media/use-cases/photography/4.jpg", href: t() },
-    ],
-  },
-  {
-    id: "interiors", href: t(), title: "Interior Design",
-    /* Renamed from Concept & Architecture (Hamza, 23 Sep). Two of the four
-       are exteriors, which is what the pictures are. */
-    cards: [
-      { name: "Interior Concept", image: "/media/use-cases/architecture/1.jpg", href: t() },
-      { name: "Desert Residence", image: "/media/use-cases/architecture/2.jpg", href: t() },
-      { name: "Concrete Facade", image: "/media/use-cases/architecture/3.jpg", href: t() },
-      { name: "Living Room Render", image: "/media/use-cases/architecture/4.jpg", href: t() },
+      { name: "Variations", video: "/media/capabilities/variate.mp4", href: t() },
+      { name: "Effects", video: "/media/capabilities/vfx.mp4", href: t() },
+      { name: "Brand Kit Styling", video: "/media/capabilities/brand-kits.mp4", href: t("branding") },
+      { name: "Concept Restyle", video: "/media/use-cases/concepting.mp4", href: t() },
     ],
   },
 ];

@@ -47,7 +47,7 @@ Verify with `npx next build` plus grep or DOM measurement. Keep replies short.
 | Film Studio `#film-studio` | `sections/FilmStudio` | Banner: CSS marquee of 24 film thumbnails, with a left-hand block (presents line, logo, one line, pill) on a scrim raked in from the left. The whole band links to the studio. |
 | Workflows `#workflows` | `sections/Workflows` | Bento, spans [2,1] / [1,1,1]: Node canvas (wide, clip), Brand Guidelines (clip), Creative Analyser (clip), Connectors as a `MarkCluster`, Plugins as a linked list. Every tile carries a gradient ground. No borders, 460px rows. |
 | Agents `#agents` | `sections/Agent` | Eyebrow, two-clause heading, then the agent recording full width with its height following the file's own ratio and nothing over it, and the three steps as a rail of equal columns underneath. |
-| Use Cases `#use-cases` | `sections/UseCases` + `UseCaseWheel` | "USE CASES" eyebrow, heading "One-click skills for every creative task". A centred vertical list of six use cases advancing every 3s, the active one in a pill with an arrow into the template gallery, four of its clips scattered either side. |
+| Use Cases `#use-cases` | `sections/UseCases` + `UseCaseWheel` | "USE CASES" eyebrow, heading "One-click skills for every creative task". A centred vertical list of six use cases advancing every 3s, the active one in a pill with an arrow into the template gallery, four of its cards scattered either side. The six are Photography · Branding · Interior Design · Try On · Product · Style Transfer. |
 | Models | `sections/Models` | Eight model cards, four by two: provider sample full-bleed fading into a per-card tone. |
 | Security `#security` | `sections/Security` | The Enterprise page's own Security section, ported and re-toned for dark: eyebrow, two-tone heading, lede, then a seven-tile bento — six half-width, the zero-retention tile full width with its three-node flow diagram. |
 | Reviews `#reviews` | `ReviewsSection` | Sticky summary + auto-scrolling column of real Trustpilot five-star reviews. |
@@ -359,13 +359,18 @@ out and looks almost right. `getBoxQuads` is unavailable in this browser —
 project the corners through the element's `DOMMatrix` and the stage's
 perspective instead.
 
-**The Use Cases wheel takes stills as well as clips.** `WheelCard` has
-`image` beside `video` and `image` wins. Two groups are stills (Hamza,
-23 Sep): **Interior Design** (renamed from Concept & Architecture, id
-`interiors`) and **Photography**, four photographs each. They are downscaled
-to 640 for a card 240 wide, the same rule the hero mosaic follows — the
-sources were 1493 across. The four Interior Design pictures include two
-exteriors, which is what Hamza supplied.
+**The Use Cases groups were rebuilt** (Hamza, 23 Sep): Photography, Branding,
+Interior Design, Try On, Product, Style Transfer, in that order. Explainer
+Videos and Avatars came out, Concept & Architecture became Interior Design
+(id `interiors`), and **Try On and Style Transfer are new**, built from
+footage already on the page rather than from anything new.
+
+**The wheel takes stills as well as clips.** `WheelCard` has `image` beside
+`video` and `image` wins. The first three groups are photographs, four each,
+downscaled to 640 for a card 240 wide — the rule the hero mosaic follows,
+since the sources were about 1493 across. The Branding four are one brand
+(Wing Theory) across packaging, kitchen, merch and signage; the Interior
+Design four include two exteriors. Both sets are what Hamza supplied.
 
 **The Ad reel card holds three clips.** An ad is a vertical, and three fill a
 16:9 card where one sits in a letterbox. They stream from the Ad Studio
@@ -535,8 +540,9 @@ point at, returns 500.
   agent URL is confirmed) are drafts.
 - **Written from names alone, treat as draft:** Workflows tile bodies, the four
   second-row bento cards (Inpaint, Image Upscaler, Video Extend, Outfit
-  Try-on), the Film banner's line, the eight Interior Design and Photography
-  card names, and — in the pulled studio reel — its heading, lede and tags. MCP copy and commands are the MCP repo's own. Fashion
+  Try-on), the Film banner's line, the twelve card names across Photography,
+  Branding and Interior Design, and — in the pulled studio reel — its heading,
+  lede and tags. MCP copy and commands are the MCP repo's own. Fashion
   and Ad banner copy is the product's own, shortened.
 - **Model names** are copied from the B2B repo's Workflows page. Flagged there
   as unverified: Alibaba and Lightricks inferred, Kling used as the brand, Flux
@@ -572,6 +578,7 @@ point at, returns 500.
 | `security/*.jpg` | 329KB | the two Security tile backdrops, from the B2B repo; in use |
 | `use-cases/architecture/*.jpg` | 241KB | the Interior Design cards, 640px; in use |
 | `use-cases/photography/*.jpg` | 186KB | the Photography cards, 640px; in use |
+| `use-cases/branding/*.jpg` | 348KB | the Branding cards, 640px; in use |
 | `music/art/*.jpg` | 1.1MB | the Music chip's 16 covers, 440px; in use |
 | `music/avatar/*.jpg` | 64KB | the Music chip's 16 avatars, 48px; in use |
 | `hero/creative-suite-image.webm` | 1.4MB | **unused** since the Image chip became a playlist; delete |
@@ -584,7 +591,14 @@ point at, returns 500.
 
 Also unused: `models/*.png` icons beyond the eight on the model cards,
 `pillars/chat.mp4`, `pillars/creative.mp4`, and the six `models/providers/*`
-backdrops not on cards. Also unused now: `tools/lipsync.jpg`, `tools/motion-sync.jpg`,
+backdrops not on cards. Rebuilding the wheel left nine clips referenced nowhere on the page:
+`use-cases/avatars.mp4`, `motion.mp4`, `film.mp4`, `advertising.mp4`,
+`architecture.mp4`, `photography.mp4`, `branding.mp4`,
+`templates/ad-campaign.mp4`, `templates/brand-kit.mp4` and
+`studios/avatar-studio.mp4`. Grepped, not assumed — `character.mp4` and
+`ugc.mp4` look dropped too but are still on Tools cards.
+
+Also unused now: `tools/lipsync.jpg`, `tools/motion-sync.jpg`,
 `tools/ai-voiceover.jpg`, `tools/vfx.jpg` and `tools/create-characters.jpg`,
 whose cards took footage.
 **Clips are reused across sections on purpose**, so
