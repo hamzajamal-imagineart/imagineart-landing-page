@@ -66,11 +66,13 @@ const USE_CASES: WheelGroup[] = [
   },
   {
     id: "concept", href: t(), title: "Concept & Architecture",
+    /* The only group of stills on the wheel (Hamza, 23 Sep): four
+       architectural photographs, downscaled to 640 for a card 240 wide. */
     cards: [
-      { name: "Concept Art", video: "/media/use-cases/concepting.mp4", href: t() },
-      { name: "Architecture", video: "/media/use-cases/architecture.mp4", href: t() },
-      { name: "Sketch to Render", video: "/media/capabilities/sketch-to-render.mp4", href: t() },
-      { name: "World Building", video: "/media/use-cases/film.mp4", href: t() },
+      { name: "Interior Concept", image: "/media/use-cases/architecture/1.jpg", href: t() },
+      { name: "Desert Residence", image: "/media/use-cases/architecture/2.jpg", href: t() },
+      { name: "Concrete Massing", image: "/media/use-cases/architecture/3.jpg", href: t() },
+      { name: "Interior Render", image: "/media/use-cases/architecture/4.jpg", href: t() },
     ],
   },
 ];

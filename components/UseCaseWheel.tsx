@@ -22,7 +22,11 @@ import { useAutoAdvance } from "@/components/primitives/useAutoAdvance";
  * The rail is a WAI-ARIA tab list with a roving tabindex and arrow keys, as
  * the rail it replaces was.
  */
-export type WheelCard = { name: string; video: string; href: string };
+/**
+ * A card is a clip or a still. `image` wins where both are given; the
+ * Architecture group is stills (Hamza, 23 Sep), everything else is footage.
+ */
+export type WheelCard = { name: string; video?: string; image?: string; href: string };
 export type WheelGroup = { id: string; title: string; href: string; cards: WheelCard[] };
 
 const ROTATE_MS = 3000;
@@ -49,8 +53,13 @@ export function UseCaseWheel({ groups, label }: { groups: WheelGroup[]; label: s
       <div className="uw-cards" key={group.id} aria-hidden>
         {group.cards.slice(0, 4).map((c, i) => (
           <figure key={c.name} className={`uw-card uw-s${i}`} style={{ animationDelay: `${i * 70}ms` }}>
-            {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-            <video src={withBasePath(c.video)} autoPlay muted loop playsInline preload="auto" />
+            {c.image ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={withBasePath(c.image)} alt="" aria-hidden loading="lazy" />
+            ) : (
+              /* eslint-disable-next-line jsx-a11y/media-has-caption */
+              <video src={withBasePath(c.video ?? "")} autoPlay muted loop playsInline preload="auto" />
+            )}
             <figcaption>{c.name}</figcaption>
           </figure>
         ))}
@@ -206,7 +215,7 @@ export function UseCaseWheel({ groups, label }: { groups: WheelGroup[]; label: s
           box-shadow: 0 10px 30px rgba(16, 20, 30, 0.1);
           animation: uw-in 620ms cubic-bezier(0.22, 1, 0.36, 1) both;
         }
-        .uw-card video { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .uw-card video, .uw-card img { width: 100%; height: 100%; object-fit: cover; display: block; }
         .uw-card figcaption {
           position: absolute;
           left: 0; right: 0; bottom: 0;
