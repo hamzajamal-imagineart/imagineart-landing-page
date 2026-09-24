@@ -15,8 +15,9 @@ import { SectionGuides } from "@/components/primitives/SectionGuides";
  * **Rebuilt to carry more weight** (Hamza, 21 Sep). It was a split panel with
  * three numbered rows beside a clip, which read as a feature tile rather than
  * as one of the page's claims. The section now leads with an eyebrow and a
- * two-clause heading, puts the recording full width, and lays the three steps
- * out as a rail underneath with the numbers as quiet marks.
+ * two-clause heading, and puts the recording full width. The three steps
+ * that sat under it as a rail (Brief it once, It plans the run, It
+ * delivers) came out on 24 Sep (Hamza): the recording says it.
  *
  * **Nothing sits on the recording** (Hamza, 21 Sep): it carried a claim and
  * two buttons over a scrim, and both are gone. It also keeps its own aspect
@@ -33,24 +34,6 @@ import { SectionGuides } from "@/components/primitives/SectionGuides";
  * `hero/modes/agent.mp4` (11MB). The hero's only loads when its chip is
  * picked; a section clip autoplays for everyone who scrolls past.
  */
-const STEPS = [
-  {
-    n: "01",
-    title: "Brief it once",
-    body: "Say what you need in plain language. No node graph, no prompt engineering.",
-  },
-  {
-    n: "02",
-    title: "It plans the run",
-    body: "The agent breaks the brief into steps, then picks the models and tools each one needs.",
-  },
-  {
-    n: "03",
-    title: "It delivers, then iterates",
-    body: "Work comes back finished and on brand. Ask for a change and it reruns only what moved.",
-  },
-];
-
 export function Agent() {
   const [armed, setArmed] = useState(false);
   const [ready, setReady] = useState(false);
@@ -100,15 +83,6 @@ export function Agent() {
           {armed && <span className={`skel ${ready ? "skel-off" : ""}`} aria-hidden />}
         </div>
 
-        <ol className="ag-rail">
-          {STEPS.map((s) => (
-            <li key={s.n} className="ag-step">
-              <span className="ag-n" aria-hidden>{s.n}</span>
-              <h3 className="ag-title">{s.title}</h3>
-              <p className="ag-body">{s.body}</p>
-            </li>
-          ))}
-        </ol>
       </div>
 
       <style>{`
@@ -139,48 +113,6 @@ export function Agent() {
              sitting in it, which makes the jump the first thing you see.
              Matches capabilities/agents.mp4 (636x416); update both together. */
           aspect-ratio: 636 / 416;
-        }
-
-        /* Three steps as a rail, not a list: equal columns with a hairline
-           between them, and the number as a large quiet mark rather than a
-           bullet. */
-        .ag-rail {
-          list-style: none;
-          margin-top: clamp(28px, 3.5vw, 48px);
-          display: grid;
-          grid-template-columns: repeat(3, minmax(0, 1fr));
-          gap: clamp(20px, 3vw, 48px);
-        }
-        .ag-step { position: relative; padding-top: 22px; border-top: 1px solid var(--line-strong); }
-        .ag-n {
-          display: block;
-          font-size: 13px;
-          font-weight: 600;
-          letter-spacing: 0.14em;
-          color: var(--ink-3);
-          font-variant-numeric: tabular-nums;
-        }
-        .ag-title {
-          margin-top: 14px;
-          font-size: clamp(18px, 1.5vw, 22px);
-          line-height: 1.25;
-          font-weight: 500;
-          letter-spacing: -0.015em;
-          color: var(--ink-heading);
-        }
-        .ag-body {
-          margin-top: 8px;
-          font-size: 15px;
-          line-height: 1.6;
-          color: var(--ink-2);
-          max-width: 34ch;
-        }
-
-        @media (max-width: 900px) {
-          .ag-rail { grid-template-columns: minmax(0, 1fr); gap: 0; }
-          .ag-step { padding: 20px 0; }
-          .ag-step + .ag-step { border-top: 1px solid var(--line); }
-          .ag-body { max-width: none; }
         }
       `}</style>
     </section>
