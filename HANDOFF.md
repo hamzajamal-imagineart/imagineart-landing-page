@@ -233,7 +233,8 @@ The most heavily iterated part of the page. Worth reading before touching it.
 **Ground.** A mosaic of eighteen pieces of work, edge to edge behind the copy,
 downscaled to 440px wide in `hero/mosaic/` — **568KB for the set**, against
 several MB for the originals, which would have rendered at a fraction of their
-size. Rebuild with `sips -Z 440` and update `MOSAIC`'s length if the set
+size. `m5.jpg` is the *Aisle Nine* film still (Hamza, 24 Sep), replacing the
+illustrated portrait; at 440 × 245 it is the set's widest tile. Rebuild with `sips -Z 440` and update `MOSAIC`'s length if the set
 changes. Laid out in CSS **columns**, not a grid: the tiles mix 1:1, 3:4 and
 9:16, and columns let each keep its ratio and pack against its neighbours,
 which is what keeps the edges ragged. It runs 130% of the section's height so
