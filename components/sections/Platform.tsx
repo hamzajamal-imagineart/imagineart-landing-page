@@ -456,7 +456,7 @@ export function PlatformStrip() {
            read as one stack. */
         .pf-tabs {
           position: relative;
-          margin: clamp(64px, 8vh, 96px) auto 0;
+          margin: clamp(88px, 11vh, 128px) auto 0;
           width: max-content;
           max-width: 100%;
           display: flex;
@@ -528,7 +528,7 @@ export function PlatformStrip() {
 
         /* The panel frames the stage and holds nothing else. */
         .pf-panel {
-          margin-top: clamp(20px, 2.4vw, 32px);
+          margin-top: 12px;
           padding: clamp(8px, 0.9vw, 12px);
           border-radius: var(--radius-6);
           border: 1px solid var(--line);

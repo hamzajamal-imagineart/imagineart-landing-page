@@ -100,7 +100,7 @@ title, no paragraph, no link, on any tab.
 Why the old centred pill had failed and this one does not: the panel under it
 used to carry copy on the left, so the centred pill sat over an off-centre
 panel with 345px of dead space each side. With the panel all stage, both are
-centred on the same axis. The pill sits **72px clear of the hero's buttons**.
+centred on the same axis. The pill sits **88–128px clear of the hero's buttons** (11vh), and **12px above the panel**.
 
 Carried across unchanged: the reel, the music wall, the control bar and the
 skeleton are the old panel's code, moved rather than rewritten; the strip
