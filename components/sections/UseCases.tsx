@@ -17,12 +17,12 @@ import { SectionGlow, sectionGlowCss } from "@/components/primitives/SectionGlow
  * Avatars came out; Concept & Architecture became Interior Design; Try On and
  * Style Transfer are new and built from footage already on the page.
  *
- * **Only Product is clips now** (Hamza, 24 Sep): the other five groups are
- * photographs, which is what `WheelCard.image` is for. The Branding four are
+ * **Every group is photographs now** (Hamza, 24 Sep), which is what
+ * `WheelCard.image` is for; `video` is still supported and unused here. The Branding four are
  * one brand across packaging, kitchen, merch and signage, rather than four
  * unrelated pieces; Try On is four fitting-room shots and Style Transfer four
  * motion-blur pieces, replacing the stand-in clips those two tabs carried
- * when they were built.
+ * when they were built; Product is one product in four scenes.
  *
  * Several clips serve more than one group (upscale, sketch-to-render, the
  * studio films). Deliberate: a card is an example of the use case, and the
@@ -73,11 +73,13 @@ const USE_CASES: WheelGroup[] = [
   },
   {
     id: "product", href: t(), title: "Product",
+    /* One product in four scenes, which is the claim: the shot is the set,
+       not the bottle. */
     cards: [
-      { name: "Product Studio", video: "/media/templates/product-studio.mp4", href: t() },
-      { name: "Product Shots", video: "/media/use-cases/product.mp4", href: t() },
-      { name: "Sketch to Render", video: "/media/capabilities/sketch-to-render.mp4", href: t() },
-      { name: "Packshot Upscale", video: "/media/capabilities/upscale.mp4", href: t() },
+      { name: "Desert Scene", image: "/media/use-cases/product/1.jpg", href: t() },
+      { name: "Poolside Scene", image: "/media/use-cases/product/2.jpg", href: t() },
+      { name: "Dark Studio", image: "/media/use-cases/product/3.jpg", href: t() },
+      { name: "Warm Studio", image: "/media/use-cases/product/4.jpg", href: t() },
     ],
   },
   {
