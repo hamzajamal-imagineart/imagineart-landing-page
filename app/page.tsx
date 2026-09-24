@@ -58,12 +58,12 @@ export default function Page() {
         <Partners />
         <Suite />
         <Industries />
+        <UseCases />
         <AdStudio />
         <FashionStudio />
         <FilmStudio />
         <Workflows />
         <Agent />
-        <UseCases />
         <Models />
         <Security />
         <ReviewsSection />
