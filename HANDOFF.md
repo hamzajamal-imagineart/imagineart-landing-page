@@ -39,7 +39,8 @@ Verify with `npx next build` plus grep or DOM measurement. Keep replies short.
 
 | Section | Component | What it is |
 |---|---|---|
-| Hero | `sections/Hero` | A centred column over a mosaic of work: headline "Imagine, design, animate. / edit. One platform.", the copy, one CTA. Below it a 16:9 panel holding a single clip edge to edge, with the **mode chips** on the page above it, between the CTA and the panel: Image · Video · Audio · Workflows · Agents · MCP. Image is a coverflow of its four clips, Video plays its three in turn, Audio is a wall of track cards, and the rest loop one clip. MCP is the connect panel that used to be its own section. The two modes that carry sound get a control bar at the panel's foot. |
+| Hero | `sections/Hero` | A centred column over a mosaic of work: the headline, the copy, and **two actions** — "Start creating for free" and "Contact sales". Nothing else: the mode strip moved out (§2a). |
+| Platform `#mcp` | `sections/Platform` | The second fold. Heading and lede, then **four large tabs** — Creative Suite · Agents · MCP · Plugins — over a panel with copy on the left and the stage on the right. Creative Suite carries its own rail (Image · Video · Audio); Image is a coverflow of four clips, Video plays three in turn, Audio is the wall of track cards. Agents is one clip with the control bar; MCP is the connect panel, full width; Plugins is the six marks as links. |
 | Partners | `sections/Partners` | Six partner marks (ByteDance, Kling AI, MINIMAX, Wan, fal, Grok) with two captions. |
 | Creative Tools `#tools` | `sections/CreativeTools` | A 13-card bento from Figma: four 308px columns, 16px gutter, split 410/190/190 or 144/144/296/190 so every column ends level at 822. Eight cards carry a photograph, five carry that tool's own clip. No icons. Title always showing, description on hover. "View all tools" at the foot. |
 | Studios `#studios` | `sections/AdStudio` | Heading "Studios" + lede, then the **Ad Studio banner**: five vertical marquee columns of 9:16 ad clips (30 clips, CDN, posters, `preload="none"`) and a frosted left panel. |
@@ -68,6 +69,27 @@ panel, now hosted by the hero's MCP chip, and `Mcp` is only the section
 wrapper around it. The reel came out at Hamza's request (21 Sep).
 
 ---
+
+### 2a. Why the hero is now only a hero
+
+The COO read the page as an image generator (24 Sep), and the hero was why: a
+headline over a panel showing one tool working. Everything below the copy
+moved one fold down into `sections/Platform`, and the tabs were rebuilt at
+**lettered size rather than chip size** — at chip size the strip read as a
+filter on a gallery rather than as the platform's own parts. The four tabs
+name what the platform is (Creative Suite, Agents, MCP, Plugins), not what it
+makes; Image, Video and Audio are a rail *inside* Creative Suite, so the three
+generators are one thing with three parts rather than three of six peers.
+
+Two things carried across unchanged and are worth not re-deriving: the reel,
+the music wall, the control bar and the skeleton are the hero's own code,
+moved; and the section keeps `id="mcp"` with the hash-sync effect, so the nav
+link still lands on the right tab.
+
+Dropped in the move: the Workflows chip (the page has a Workflows section) and
+the panel's scroll-grow, which belonged to a hero-sized frame. `Contact sales`
+points at the same cal.com booking the footer and closing band use, since the
+page still has no contact form.
 
 ## 3. Design system
 
@@ -513,15 +535,9 @@ point at, returns 500.
   handlers (`grep -c soun` on the moov will do it); **re-check when a clip is
   swapped**, or a silent mode gets a dead bar. Note the Music chip's clip is
   itself silent.
-- **The chips sit outside the panel** (Hamza, 21 Sep), between the CTA and
-  the frame, so the panel is the clip and nothing else. They kept the dark bar
-  and the fixed white labels: they now sit on the hero's mosaic, which is
-  still a picture rather than the page wash, so theme tokens would be as wrong
-  there as they were over the footage. The control bar stays on the panel, at
-  its foot, off `--hc-float`. Nothing inside the panel pads for the chips any
-  more.
-- **`ModeStrip` owns the frame**, since the chips have to render above it and
-  the panel below it. `<Hero>` passes the ref that the scroll-grow writes to.
+- **The strip is `sections/Platform` now** (§2a), not the hero. Its tabs take
+  the page's own tokens rather than the fixed white the chips used, because
+  they sit on the page wash rather than on footage.
 - **The MCP mode is the connect panel** (Hamza, 21 Sep), which replaced the
   Computer chip. **Every mode gives the frame the same height** — the panel
   fills it absolutely and centres, so picking a chip never resizes the
