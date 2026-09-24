@@ -564,33 +564,25 @@ export function PlatformStrip() {
     <div id="mcp" className="pf">
       {/* No heading of its own: it sits under the hero's, and two in one fold
           is one too many. */}
+      <div className="pf-shell">
+      <div className="pf-tabs" role="tablist" aria-label="Platform" ref={tabs.containerRef as React.Ref<HTMLDivElement>}>
+        <SlidingIndicator box={tabs.box} ready={tabs.ready} className="pf-tab-fill" />
+        {TABS.map((x, i) => (
+          <button
+            key={x.id}
+            ref={(el) => { tabs.itemRefs.current[i] = el; }}
+            type="button"
+            role="tab"
+            aria-selected={i === tab}
+            className={`pf-tab ${i === tab ? "pf-tab-on" : ""}`}
+            onClick={() => pick(i)}
+          >
+            {x.label}
+          </button>
+        ))}
+      </div>
+
         <div className="pf-panel">
-        <div className="pf-head">
-        <div className="pf-tabs" role="tablist" aria-label="Platform" ref={tabs.containerRef as React.Ref<HTMLDivElement>}>
-          <SlidingIndicator box={tabs.box} ready={tabs.ready} className="pf-tab-fill" />
-          {TABS.map((x, i) => (
-            <button
-              key={x.id}
-              ref={(el) => { tabs.itemRefs.current[i] = el; }}
-              type="button"
-              role="tab"
-              aria-selected={i === tab}
-              className={`pf-tab ${i === tab ? "pf-tab-on" : ""}`}
-              onClick={() => pick(i)}
-            >
-              {x.label}
-            </button>
-          ))}
-        </div>
-
-          <a className="pf-go" href={t.href} target="_blank" rel="noopener noreferrer">
-            {t.cta}
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden>
-              <path d="M6 12h12M13 6l6 6-6 6" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </a>
-        </div>
-
         <div className={`pf-grid ${t.kind === "mcp" ? "pf-grid-wide" : ""}`}>
           {t.kind === "mcp" ? (
             <div className="pf-mcp"><McpPanel /></div>
@@ -599,6 +591,12 @@ export function PlatformStrip() {
               <div className="pf-copy">
                 <h3 className="pf-title">{t.title}</h3>
                 <p className="pf-body">{t.body}</p>
+                <a className="pf-go" href={t.href} target="_blank" rel="noopener noreferrer">
+                  {t.cta}
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden>
+                    <path d="M6 12h12M13 6l6 6-6 6" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </a>
 
                 {rail && (
                   <ul className="pf-rail">
@@ -624,6 +622,7 @@ export function PlatformStrip() {
           )}
         </div>
         </div>
+      </div>
 
       <style>{`
         .pf { isolation: isolate; }
@@ -631,46 +630,42 @@ export function PlatformStrip() {
 
         /* Lettered tabs, not chips. At chip size this read as a filter on a
            gallery rather than as the platform's own parts. */
-        /* The header row: tabs at the left, the tab's own action at the
-           right, a hairline under both. Centring the pill left 345px of dead
-           space each side of it inside an 1176 panel, which is what made the
-           block read as unfinished rather than as a card with a header. */
-        .pf-head {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          gap: 20px;
-          padding-bottom: clamp(14px, 1.6vw, 20px);
-          margin-bottom: clamp(18px, 2.2vw, 28px);
-          border-bottom: 1px solid var(--line);
+        /* A rail of its own beside the panel (Hamza, 24 Sep), not a row
+           inside it: four names stacked in a small card, the panel alongside.
+           Vertical costs SlidingIndicator nothing — it measures offsetTop as
+           well as offsetLeft — so the fill travels down the rail exactly as
+           it travelled across the row. */
+        .pf-shell {
+          display: grid;
+          grid-template-columns: clamp(168px, 14vw, 208px) minmax(0, 1fr);
+          gap: clamp(12px, 1.2vw, 18px);
+          align-items: start;
+          /* Clear of the hero's actions: at 40px the buttons and the panel
+             read as one crowded stack. */
+          margin-top: clamp(64px, 8vh, 96px);
         }
         .pf-tabs {
           position: relative;
-          margin: 0;
-          width: max-content;
-          max-width: 100%;
           display: flex;
+          flex-direction: column;
           gap: 4px;
-          padding: 6px;
-          border-radius: 999px;
-          background: var(--track);
+          padding: 10px;
+          border-radius: var(--radius-6);
           border: 1px solid var(--line);
-          overflow-x: auto;
-          scrollbar-width: none;
+          background: var(--tile);
         }
-        .pf-tabs::-webkit-scrollbar { display: none; }
-        .pf-tab-fill { border-radius: 999px; background: var(--panel); box-shadow: 0 1px 2px rgba(0, 0, 0, 0.18); }
+        .pf-tab-fill { border-radius: var(--radius-5); background: var(--panel); box-shadow: 0 1px 2px rgba(0, 0, 0, 0.18); }
         .pf-tab {
           position: relative;
           z-index: 1;
-          flex: 0 0 auto;
+          width: 100%;
           border: 0;
-          border-radius: 999px;
-          padding: 0 clamp(16px, 1.8vw, 26px);
-          height: clamp(44px, 3.4vw, 52px);
+          border-radius: var(--radius-5);
+          padding: 0 16px;
+          height: clamp(48px, 3.6vw, 58px);
           background: transparent;
           font-family: inherit;
-          font-size: clamp(14.5px, 1.15vw, 16.5px);
+          font-size: clamp(14.5px, 1.1vw, 16px);
           font-weight: 500;
           letter-spacing: -0.01em;
           color: var(--ink-3);
@@ -688,10 +683,7 @@ export function PlatformStrip() {
           position: relative;
           display: flex;
           flex-direction: column;
-          padding: clamp(16px, 1.8vw, 24px) clamp(20px, 2.4vw, 34px) clamp(20px, 2.4vw, 34px);
-          /* Clear of the hero's actions: at 40px the buttons and the panel
-             read as one crowded stack. */
-          margin-top: clamp(64px, 8vh, 96px);
+          padding: clamp(20px, 2.4vw, 34px);
           border-radius: var(--radius-6);
           border: 1px solid var(--line);
           background: var(--tile);
@@ -706,10 +698,7 @@ export function PlatformStrip() {
           min-height: 0;
         }
         .pf-grid-wide { grid-template-columns: minmax(0, 1fr); }
-        /* A step darker than the panel it sits in, so the groove still reads
-           as a groove now that the ground behind it is --tile and not the
-           page. */
-        .pf-tabs { background: var(--track); }
+
         .pf-copy { display: flex; flex-direction: column; min-width: 0; }
         .pf-title {
           font-size: clamp(21px, 1.9vw, 27px);
@@ -720,7 +709,8 @@ export function PlatformStrip() {
         }
         .pf-body { margin-top: 12px; font-size: 15px; line-height: 1.6; color: var(--ink-2); max-width: 44ch; }
         .pf-go {
-          flex: 0 0 auto;
+          margin-top: 18px;
+          align-self: flex-start;
           display: inline-flex;
           align-items: center;
           gap: 8px;
@@ -1048,8 +1038,19 @@ export function PlatformStrip() {
 
 
         @media (max-width: 1000px) {
-          .pf-head { flex-direction: column; align-items: flex-start; gap: 14px; }
-          .pf-tabs { max-width: 100%; }
+          /* The rail lies down above the panel: a 168px column beside a
+             stacked panel is most of a phone. */
+          .pf-shell { grid-template-columns: minmax(0, 1fr); }
+          .pf-tabs {
+            flex-direction: row;
+            overflow-x: auto;
+            scrollbar-width: none;
+            padding: 6px;
+            border-radius: 999px;
+          }
+          .pf-tabs::-webkit-scrollbar { display: none; }
+          .pf-tab { width: auto; flex: 0 0 auto; border-radius: 999px; height: 44px; }
+          .pf-tab-fill { border-radius: 999px; }
           .pf-panel { min-height: 0; }
           .pf-grid { grid-template-columns: minmax(0, 1fr); }
           .pf-media { aspect-ratio: 16 / 9; min-height: 0; }
