@@ -64,15 +64,15 @@ export function Hero() {
           <BlurHeading
             as="h1"
             className="display hero-h1"
-            lead="Imagine, design, animate,"
-            muted="edit. One platform."
+            lead="The AI creative suite"
+            muted="built for enterprise."
             mutedClassName=""
             lineBreak
           />
           <p className="hero-copy">
-            ImagineArt is the best AI creative suite that generates images, videos,
-            shorts, and voice from text prompt. Built for creators, teams and the
-            developers shipping alongside them.
+            Every leading model for image, video and audio in one workspace, with
+            your brand held across every output and the security and admin
+            controls your organisation needs.
           </p>
           {/* Two actions now (Hamza, 24 Sep): the app for anyone who wants to
               try it, and sales for the buyer the page is aimed at. The second
