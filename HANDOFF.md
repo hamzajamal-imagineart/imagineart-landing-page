@@ -666,7 +666,7 @@ replacing one changes every card that shows it.
 2. Re-encode `hero/modes/agent.mp4` (11MB), `workflows.mp4` (4.7MB) and
    `tools/lipsync.mp4` (2.5MB).
 3. Confirm the inferred Avatar URL (§7) and the flagged model names (§7).
-   Confirm the Agent section's steps, and whether an agent URL exists to
+   Confirm whether an agent URL exists to
    point its link at instead of the app home.
 4. Confirm the Film banner's new line, "Script to scenes to a finished cut",
    and the rewritten bento descriptions (§7).
