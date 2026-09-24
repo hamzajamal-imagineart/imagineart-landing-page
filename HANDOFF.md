@@ -20,9 +20,9 @@ Verify with `npx next build` plus grep or DOM measurement. Keep replies short.
 
 1. **One overview page**, not a hub plus category pages.
 2. **Product framing.** The primary action always goes to imagine.art; "Book a
-   demo" (cal.com) is secondary. No contact form. The **hero carries the
-   primary action alone**, worded "Start creating for free"; the closing band
-   and footer still offer both.
+   demo" (cal.com) is secondary. No contact form. The **hero carries two
+   actions**: "Start creating for free" and "Contact sales" (the cal.com
+   booking); the closing band and footer offer "Book a demo".
 3. **The page ships dark.** The light palette still exists and still works —
    one attribute flips it back (§3).
 4. **Separate project** from the Guidelines kit, deployed on its own path
