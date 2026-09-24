@@ -430,6 +430,7 @@ the same.
 
 ## 6. Traps already paid for
 
+- **A one-line `.h2` wider than its centred wrapper sits off to the right.** From 880px `.h2` is `nowrap`, and `text-align: center` cannot centre a line wider than its box, so it starts at the box's left edge and overflows right (Agents' heading, ~990px in 760px). `globals.css` now sizes `.text-center > .h2` to `max-content` and centres it with `margin-left: 50%; translateX(-50%)`. Keep headings as direct children of the centred wrapper or the rule misses them.
 Each failed **silently**. Re-read before touching the same ground.
 
 - **A token paired with a fixed partner.** `background: var(--ink); color:
