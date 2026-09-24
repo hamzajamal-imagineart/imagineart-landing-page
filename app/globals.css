@@ -276,18 +276,19 @@
 }
 @media (min-width: 880px) {
   .h2 { text-wrap: nowrap; white-space: nowrap; }
-  /* A one-line heading wider than its centred wrapper (the wrappers are
-     680–820px) overflows to the right only: text-align cannot centre a line
-     that is wider than its box, so it starts at the box's left edge. Sizing
-     the heading to its own line and centring the box on the wrapper's
-     midpoint makes it overflow evenly both ways. Agents' "Describe the
-     outcome. The agent runs the job." is ~990px in a 760px wrapper. */
-  .text-center > .h2 {
-    width: max-content;
-    max-width: none;
-    margin-left: 50%;
-    transform: translateX(-50%);
-  }
+}
+/* A one-line heading wider than its centred wrapper (680–820px) overflows
+   to the right only: text-align cannot centre a line wider than its box, so
+   it starts at the box's left edge (Agents' heading, ~990px in 760px). A
+   column flexbox centres its items and lets an oversized one spill evenly
+   both ways, without touching the heading's own margins or width — the
+   first fix did (margin-left: 50% + translateX), and it threw Use Cases'
+   two-line heading, which sets its own max-width and auto margins, 200px
+   to the left. */
+.text-center:has(> .h2) {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .h3 {

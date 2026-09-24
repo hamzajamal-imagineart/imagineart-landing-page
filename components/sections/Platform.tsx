@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { withBasePath } from "@/lib/assets";
-import { CDN, CLIENTS, MONO_MARKS } from "@/components/sections/Mcp";
+import { McpPanel } from "@/components/sections/Mcp";
 import { SlidingIndicator, slidingIndicatorCss, useSlidingIndicator } from "@/components/primitives/SlidingIndicator";
 import { pluginHref } from "@/lib/links";
 
@@ -331,74 +331,13 @@ function PluginGrid() {
   );
 }
 
-/** The clients that have a connect recording; ChatGPT has none. */
-const MCP_CLIENTS = CLIENTS.filter((c) => c.video);
-
-/**
- * MCP: one client's connect recording, with the client marks as a frosted
- * row over it. The full three-step walkthrough was the whole of this stage
- * before (a second and third row of tabs inside the tab); it is still what
- * <Mcp> renders, on disk, and the docs link carries the steps from here.
- */
-function McpStage() {
-  const [i, setI] = useState(0);
-  const [armed, setArmed] = useState(false);
-  const [ready, setReady] = useState(false);
-  const c = MCP_CLIENTS[i];
-
-  useEffect(() => { setArmed(true); }, []);
-
-  return (
-    <>
-      {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-      <video
-        key={c.video}
-        className="pf-clip"
-        src={`${CDN}/${c.video}.mp4`}
-        poster={`${CDN}/${c.video}.jpg`}
-        autoPlay
-        muted
-        loop
-        playsInline
-        preload="auto"
-        disablePictureInPicture
-        onLoadedData={() => setReady(true)}
-        onCanPlay={() => setReady(true)}
-      />
-      {armed && <span className={`skel ${ready ? "skel-off" : ""}`} aria-hidden />}
-
-      <div className="pf-clients" role="group" aria-label="Client">
-        {MCP_CLIENTS.map((cl, k) => (
-          <button
-            key={cl.id}
-            type="button"
-            className={`pf-client ${k === i ? "pf-client-on" : ""}`}
-            aria-pressed={k === i}
-            aria-label={cl.label}
-            title={cl.label}
-            onClick={() => { if (k !== i) { setReady(false); setI(k); } }}
-          >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              className={MONO_MARKS.has(cl.icon) ? "pf-mono" : undefined}
-              src={withBasePath(`/media/mcp/clients/${cl.icon}.svg`)}
-              alt=""
-              aria-hidden
-            />
-          </button>
-        ))}
-      </div>
-    </>
-  );
-}
-
 export function PlatformStrip() {
   const [tab, setTab] = useState(0);
   const tabs = useSlidingIndicator<HTMLButtonElement>(tab);
   const t = TABS[tab];
 
   /**
-   * The nav still links to #mcp, which is a tab here rather than a section.
+   * A deep link to #mcp lands on a tab here rather than a section.
    * The strip carries that id so the browser scrolls to it on its own; this
    * is what selects the matching tab, on load and on every later hash change.
    */
@@ -413,7 +352,7 @@ export function PlatformStrip() {
   }, []);
 
   const stage =
-    t.kind === "mcp" ? <McpStage />
+    t.kind === "mcp" ? <div className="pf-mcp"><McpPanel /></div>
     : t.kind === "plugins" ? <PluginGrid />
     : t.kind === "reel" ? <ImageReel key={t.id} videos={t.videos ?? []} />
     : <ClipPlayer videos={t.videos ?? []} audio={t.audio} />;
@@ -576,37 +515,13 @@ export function PlatformStrip() {
         .pf-plugins a:hover { background: var(--hover-wash); color: var(--ink-heading); }
         .pf-plugins img { width: 36px; height: 36px; object-fit: contain; display: block; }
 
-        /* Fixed white on a frosted dark bar: it sits on footage. */
-        .pf-clients {
-          position: absolute;
-          left: 50%;
-          bottom: var(--hc-float);
-          transform: translateX(-50%);
-          z-index: 3;
-          display: flex;
-          gap: 4px;
-          padding: 5px;
-          border-radius: 999px;
-          border: 1px solid rgba(255, 255, 255, 0.12);
-          background: rgba(10, 10, 11, 0.62);
-          backdrop-filter: blur(12px);
-          -webkit-backdrop-filter: blur(12px);
-        }
-        .pf-client {
-          width: 40px; height: 40px;
-          display: grid; place-items: center;
-          border: 0;
-          border-radius: 999px;
-          background: transparent;
-          cursor: pointer;
-          opacity: 0.5;
-          transition: background 160ms ease, opacity 160ms ease;
-        }
-        .pf-client:hover { opacity: 0.85; }
-        .pf-client-on { opacity: 1; background: rgba(255, 255, 255, 0.14); }
-        .pf-client:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
-        .pf-client img { width: 20px; height: 20px; object-fit: contain; display: block; }
-        .pf-mono { filter: brightness(0) invert(1); }
+        /* MCP is the connect panel itself (Hamza, 24 Sep, "bring back the
+           previous UI that had tabs"): client tabs, the MCP / CLI toggle, the
+           three steps and the recording. It is taller than a 2:1 stage, so
+           this tab alone lets the stage take its content's height. */
+        .pf-stage:has(.pf-mcp) { aspect-ratio: auto; overflow: visible; border: 0; background: transparent; }
+        .pf-mcp { min-width: 0; }
+        .pf-mcp .mcp-panel { border: 0; background: transparent; padding: 0; }
 
         /* Image: the four clips on a ring, the centre one playing and its
            neighbours turned down either side. Sits on the panel's ground, so
@@ -782,7 +697,6 @@ export function PlatformStrip() {
           .pf-stage:has(.hc-reel) { aspect-ratio: 1 / 1; }
           .pf-stage:has(.pf-plugins) { aspect-ratio: 3 / 4; }
           .pf-plugins { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: repeat(3, minmax(0, 1fr)); gap: 8px; padding: 14px; }
-          .pf-client { width: 34px; height: 34px; }
         }
         @media (prefers-reduced-motion: reduce) {
           .hc-slide { transition: none; }

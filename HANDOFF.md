@@ -39,7 +39,7 @@ Verify with `npx next build` plus grep or DOM measurement. Keep replies short.
 
 | Section | Component | What it is |
 |---|---|---|
-| Hero | `sections/Hero` | A centred column over a mosaic of work: the headline — **"The AI creative suite / built for enterprise."** (24 Sep, B2B; was "Imagine, design, animate, / edit. One platform.") — a B2B line of copy (models in one workspace, brand held, security and admin controls), and **two actions** — "Start creating for free" and "Contact sales". Under them the **platform strip** (`sections/Platform`, `PlatformStrip`, `#mcp`): a segmented control of four tabs (MCP carries a NEW tag) centred over a panel that is one stage and nothing else — no copy on any tab. Creative Suite is one coverflow of the image and video clips; Agents is one clip with the control bar; MCP is a client's connect recording with the client marks over it; Plugins is six tiles. See §2a. |
+| Hero | `sections/Hero` | A centred column over a mosaic of work: the headline — **"The AI creative suite / built for enterprise."** (24 Sep, B2B; was "Imagine, design, animate, / edit. One platform.") — a B2B line of copy (models in one workspace, brand held, security and admin controls), and **two actions** — "Start creating for free" and "Contact sales". Under them the **platform strip** (`sections/Platform`, `PlatformStrip`, `#mcp`): a segmented control of four tabs (MCP carries a NEW tag) centred over a panel that is one stage and nothing else — no copy on any tab. Creative Suite is one coverflow of the image and video clips; Agents is one clip with the control bar; MCP is the connect panel with its client tabs; Plugins is six tiles. See §2a. |
 | Partners | `sections/Partners` | Six partner marks (ByteDance, Kling AI, MINIMAX, Wan, fal, Grok) with two captions. |
 | Suite `#suite` | `sections/Suite` | Ported from the Enterprise page (`platform/Suite` + `SuiteRail`, 24 Sep): eyebrow "The suite", heading "Everything your team / needs to create", lede, then a rail of nine tool cards (dark tones, copy on top, glass arrow, 16:9 clip at the foot) with pagers. Copy and links are `BUSINESS_TOOLS` verbatim. Seven clips were already here (`capabilities/`, `studios/`); Workflows and Canvas came across as `suite/workflows.mp4`, `suite/canvas.mp4` (1MB). One client component, not the source's server/client split. Overlaps Creative Tools, which follows it. |
 | Industries `#industries` | `sections/Industries` | Ported from the Enterprise page's `IndustriesSection` (24 Sep), **replacing Creative Tools** in that slot (`CreativeTools` is pulled, on disk). Eyebrow "Industries", heading "Built for / your industry", lede, then ten `MediaCard`s at 3:4 in a 2/3/4-column grid, each with its own clip (`media/industries/`, 8.1MB, copied across) and a link into the enterprise template gallery filtered by category. Copy verbatim from the source. Nav "Tools" became "Industries". |
@@ -58,7 +58,7 @@ Verify with `npx next build` plus grep or DOM measurement. Keep replies short.
 The three studio banners share one height, `--studio-band-h` in
 `globals.css`, and follow each other with no rules between them.
 
-Nav is **Industries · Use Cases · Studios · Workflows · Agents · MCP · Pricing**, where MCP now points at the hero frame (`id="mcp"`) and the strip selects that chip from the hash, CTA Get
+Nav is **Suite · Industries · Use Cases · Studios · Workflows · Agents · Pricing** (24 Sep: page order, MCP dropped — it is a hero tab; `#mcp` still selects it from a deep link), CTA Get
 Started. **Keep the nav in the same order as the page** so no link scrolls
 backwards.
 
@@ -92,10 +92,9 @@ title, no paragraph, no link, on any tab.
   four image clips and three video clips together. The Audio mode (music
   wall, 16 tracks) went with the rail; it is in git at `1bf2c34`.
 - **Agents** is the clip with its control bar.
-- **MCP** is one client's connect recording with a frosted row of client
-  marks over it (the five with recordings; ChatGPT has none). The three-step
-  walkthrough is not in the hero; `<Mcp>` still renders it on disk, and
-  `CDN`, `CLIENTS`, `MONO_MARKS` are exported from `Mcp.tsx`.
+- **MCP** is the full connect panel again (`McpPanel`: client tabs, MCP /
+  CLI toggle, three steps, recording), restored 24 Sep. It is taller than
+  2:1, so `.pf-stage:has(.pf-mcp)` drops the ratio for that tab only.
 - **Plugins** is a 3 × 2 grid of tiles filling the stage.
 
 Why the old centred pill had failed and this one does not: the panel under it
@@ -432,7 +431,7 @@ the same.
 
 Each failed **silently**. Re-read before touching the same ground.
 
-- **A one-line `.h2` wider than its centred wrapper sits off to the right.** From 880px `.h2` is `nowrap`, and `text-align: center` cannot centre a line wider than its box, so it starts at the box's left edge and overflows right (Agents' heading, ~990px in 760px). `globals.css` now sizes `.text-center > .h2` to `max-content` and centres it with `margin-left: 50%; translateX(-50%)`. Keep headings as direct children of the centred wrapper or the rule misses them.
+- **A one-line `.h2` wider than its centred wrapper sits off to the right.** From 880px `.h2` is `nowrap`, and `text-align: center` cannot centre a line wider than its box (Agents' heading, ~990px in 760px). Fixed with `.text-center:has(> .h2) { display: flex; flex-direction: column; align-items: center }`, which spills an oversized item evenly both ways. **Not** with `margin-left: 50%; translateX(-50%)` on the heading: that was the first fix, and it threw Use Cases' heading (own `max-width: 15ch` + `margin-inline: auto`) 200px left. Measured after: every child of every `.text-center` wrapper within 2px of centre at 960, 1340 and 1440, no horizontal overflow.
 - **A token paired with a fixed partner.** `background: var(--ink); color:
   #fff` is white on white once `--ink` is near-white. Every such pair now takes
   `var(--page-bg)` for the label. It caught the hero and MCP buttons, the nav
