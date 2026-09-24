@@ -4,23 +4,20 @@ import { useEffect, useRef, useState } from "react";
 import { withBasePath } from "@/lib/assets";
 import { CDN, CLIENTS, MONO_MARKS } from "@/components/sections/Mcp";
 import { SlidingIndicator, slidingIndicatorCss, useSlidingIndicator } from "@/components/primitives/SlidingIndicator";
-import { pluginHref, CREATIVE_HREF, WORKFLOWS_HREF, START_HREF } from "@/lib/links";
+import { pluginHref } from "@/lib/links";
 
 /**
- * The platform strip: the tabs and the panel under the hero's copy.
+ * The platform strip: a pill of tabs over one stage, under the hero's copy.
  *
- * It briefly became a section of its own one fold down, then came back up
- * into the hero at Hamza's request (24 Sep) — the redesign was the point, not
- * the move. What changed and stayed changed is the shape: four tabs that name
- * what the platform is rather than what it makes — **Creative Suite, Agents,
- * MCP, Plugins** — at lettered size, over a panel with the copy beside the
- * stage. It carries no heading, since the hero's is directly above it.
+ * Four tabs that name what the platform is rather than what it makes —
+ * **Creative Suite, Agents, MCP, Plugins** — at lettered size, centred above
+ * the panel. It carries no heading, since the hero's is directly above it.
  *
- * Creative Suite holds Image, Video and Audio on a rail of its own, so the
- * three generators are one thing with three parts rather than three of six
- * peers. That is the same reason the tabs are large and lettered rather than
- * the small chips they were: at chip size the strip read as a filter on a
- * gallery.
+ * The panel is the stage and nothing else (Hamza, 24 Sep): no title, no
+ * paragraph, and no Image · Video · Audio rail inside Creative Suite, whose
+ * stage is now one coverflow of the image and video clips together. Copy
+ * beside the stage made the tabs uneven and the strip read as a brochure;
+ * the footage says it.
  */
 const IMAGE_SET = [
   "/media/hero/modes/image/1-text-to-image.mp4",
@@ -48,43 +45,6 @@ const PLUGINS = [
   { icon: "shopify", name: "Shopify", anchor: "shopify" },
 ];
 
-/**
- * The Audio mode is not a clip: it is four cards of real tracks, paged. The
- * chip reads Audio (Hamza, 21 Sep) but the cards are music, which is all the
- * gallery it is drawn from has.
- *
- * A recording of the music tool shows a waveform moving, which says nothing
- * about what it produced. Cards let you hear four different pieces, which is
- * the whole claim. Each card owns its play button; one <audio> element serves
- * all of them, so starting one stops whatever was playing.
- *
- * Artwork and avatars are the product's own, pulled local and downscaled
- * (`sips -s format jpeg -Z 440` / `-Z 48`) — the originals are 1024px and
- * 146KB each against a card 260px wide. **The songs still stream from
- * `imagine.animagic.art`**, at about 960KB each, which is why they are not
- * local: sixteen of them is 15MB.
- */
-const TRACKS = [
-  { n: 1, title: "Starry Night", by: "Anya Sharma" },
-  { n: 2, title: "Urban Echoes", by: "Kenji Tanaka" },
-  { n: 3, title: "Crimson Tide", by: "Ingrid Dubois" },
-  { n: 4, title: "Silent Whispers", by: "Zara Petrova" },
-  { n: 5, title: "Lost in Translation", by: "Javier Ramirez" },
-  { n: 6, title: "Emerald Green", by: "Chloe Dubois" },
-  { n: 7, title: "Neon Lights", by: "Rohan Patel" },
-  { n: 8, title: "Galactic Symphony", by: "Lars Olsen" },
-  { n: 9, title: "Desert Wind", by: "Amara Osei" },
-  { n: 10, title: "Midnight Drive", by: "Maya Chen" },
-  { n: 11, title: "Electric Dreams", by: "Diego Vega" },
-  { n: 12, title: "Ocean Breeze", by: "Sofia Andersen" },
-  { n: 13, title: "City Never Sleeps", by: "Marcus Williams" },
-  { n: 14, title: "Northern Lights", by: "Elena Vasquez" },
-  { n: 15, title: "Vapor Trail", by: "Nadia Kowalski" },
-  { n: 16, title: "Broken Glass", by: "Ryan O'Brien" },
-];
-
-const SONG = (n: number) => `https://imagine.animagic.art/imagine-one/audio/music/songs/${n}.mp3`;
-
 const Chevron = ({ back }: { back?: boolean }) => (
   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden
     style={back ? { transform: "scaleX(-1)" } : undefined}>
@@ -92,96 +52,6 @@ const Chevron = ({ back }: { back?: boolean }) => (
   </svg>
 );
 
-/**
- * Four track cards and a chevron each side.
- *
- * Pages by a whole row rather than one card, so the set you are looking at is
- * always a clean four and nothing slides half out of the frame. The chevrons
- * stop at the ends instead of wrapping: with sixteen tracks a wrap reads as a
- * glitch, where a disabled chevron reads as the end of the list.
- */
-function MusicWall() {
-  const PER = 4;
-  const [page, setPage] = useState(0);
-  const [playing, setPlaying] = useState<number | null>(null);
-  const audio = useRef<HTMLAudioElement | null>(null);
-  const pages = Math.ceil(TRACKS.length / PER);
-  const shown = TRACKS.slice(page * PER, page * PER + PER);
-
-  // One element for every card, so starting a track stops the last one with
-  // no bookkeeping, and only one file is ever in flight.
-  useEffect(() => {
-    const a = audio.current;
-    if (!a) return;
-    if (playing === null) { a.pause(); return; }
-    a.load();
-    void a.play().catch(() => setPlaying(null));
-  }, [playing]);
-
-  return (
-    <div className="hc-music">
-      <button
-        type="button"
-        className="hc-nav"
-        aria-label="Previous tracks"
-        disabled={page === 0}
-        onClick={() => setPage((p) => Math.max(0, p - 1))}
-      >
-        <Chevron back />
-      </button>
-
-      <ul className="hc-cards">
-        {shown.map((t) => (
-          <li key={t.n} className="hc-card">
-            <div className="hc-art">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={withBasePath(`/media/music/art/${t.n}.jpg`)} alt="" aria-hidden />
-              <button
-                type="button"
-                className="hc-play"
-                aria-label={playing === t.n ? `Pause ${t.title}` : `Play ${t.title}`}
-                aria-pressed={playing === t.n}
-                onClick={() => setPlaying((cur) => (cur === t.n ? null : t.n))}
-              >
-                {playing === t.n ? (
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
-                    <rect x="6" y="5" width="4" height="14" rx="1" />
-                    <rect x="14" y="5" width="4" height="14" rx="1" />
-                  </svg>
-                ) : (
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
-                    <path d="M8 5.5v13l11-6.5z" />
-                  </svg>
-                )}
-              </button>
-            </div>
-            <p className="hc-track">{t.title}</p>
-            <p className="hc-by">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={withBasePath(`/media/music/avatar/${t.n}.jpg`)} alt="" aria-hidden />
-              by {t.by}
-            </p>
-          </li>
-        ))}
-      </ul>
-
-      <button
-        type="button"
-        className="hc-nav"
-        aria-label="More tracks"
-        disabled={page >= pages - 1}
-        onClick={() => setPage((p) => Math.min(pages - 1, p + 1))}
-      >
-        <Chevron />
-      </button>
-
-      {playing !== null && (
-        // eslint-disable-next-line jsx-a11y/media-has-caption
-        <audio ref={audio} src={SONG(playing)} onEnded={() => setPlaying(null)} preload="none" />
-      )}
-    </div>
-  );
-}
 
 const fmtTime = (t: number) => {
   if (!Number.isFinite(t)) return "0:00";
@@ -277,73 +147,20 @@ function ImageReel({ videos }: { videos: string[] }) {
   );
 }
 
-type Mode = {
-  id: string;
-  label: string;
-  /** `reel` is the coverflow, `music` the track wall. */
-  kind: "reel" | "music";
-  videos?: string[];
-};
-
 type Tab = {
   id: string;
   label: string;
-  body: string;
-  href: string;
-  cta: string;
-  /** Creative Suite is the only tab with modes of its own. */
-  modes?: Mode[];
-  kind?: "clip" | "mcp" | "plugins";
+  kind: "reel" | "clip" | "mcp" | "plugins";
   videos?: string[];
   /** Whether the clip carries sound, so it gets the control bar. */
   audio?: boolean;
 };
 
-/**
- * One line each, and no title above it (Hamza, 24 Sep): the label is the
- * heading. The panel had a title, a body, a link and — in Creative Suite — a
- * second rail with a paragraph per mode, which made that tab twice the weight
- * of the other three and the strip read as uneven.
- */
 const TABS: Tab[] = [
-  {
-    id: "creative",
-    label: "Creative Suite",
-    body: "Every image, video and audio model, and every editing tool, in one place, with your brand and characters held across all of it.",
-    href: CREATIVE_HREF,
-    cta: "Open the suite",
-    modes: [
-      { id: "image", label: "Image", kind: "reel", videos: IMAGE_SET },
-      { id: "video", label: "Video", kind: "reel", videos: VIDEO_SET },
-      { id: "audio", label: "Audio", kind: "music" },
-    ],
-  },
-  {
-    id: "agents",
-    label: "Agents",
-    body: "Describe the outcome. The agent plans the run, picks the models each step needs and brings the work back finished and on brand.",
-    href: START_HREF,
-    cta: "Put an agent to work",
-    kind: "clip",
-    videos: [AGENT_CLIP],
-    audio: true,
-  },
-  {
-    id: "mcp",
-    label: "MCP",
-    body: "Connect ImagineArt to Claude, Cursor or your own agent once, and generate from wherever your team already works.",
-    href: "https://mcp.imagine.art",
-    cta: "Read the docs",
-    kind: "mcp",
-  },
-  {
-    id: "plugins",
-    label: "Plugins",
-    body: "The same models and the same brand kit inside Photoshop, Premiere, After Effects, Figma, Framer and Shopify.",
-    href: WORKFLOWS_HREF,
-    cta: "See the plugins",
-    kind: "plugins",
-  },
+  { id: "creative", label: "Creative Suite", kind: "reel", videos: [...IMAGE_SET, ...VIDEO_SET] },
+  { id: "agents", label: "Agents", kind: "clip", videos: [AGENT_CLIP], audio: true },
+  { id: "mcp", label: "MCP", kind: "mcp" },
+  { id: "plugins", label: "Plugins", kind: "plugins" },
 ];
 
 /**
@@ -573,61 +390,20 @@ function McpStage() {
   );
 }
 
-/**
- * Image · Video · Audio, as a small segmented control under Creative Suite's
- * line. Its own component so the indicator hook mounts with it: the control
- * only exists while that tab is open.
- */
-function ModeSwitch({ modes, active, onPick }: { modes: Mode[]; active: number; onPick: (i: number) => void }) {
-  const seg = useSlidingIndicator<HTMLButtonElement>(active);
-  return (
-    <div className="pf-seg" role="group" aria-label="Mode" ref={seg.containerRef as React.Ref<HTMLDivElement>}>
-      <SlidingIndicator box={seg.box} ready={seg.ready} className="pf-seg-fill" />
-      {modes.map((m, i) => (
-        <button
-          key={m.id}
-          ref={(el) => { seg.itemRefs.current[i] = el; }}
-          type="button"
-          className={`pf-seg-btn ${i === active ? "pf-seg-on" : ""}`}
-          aria-pressed={i === active}
-          onClick={() => onPick(i)}
-        >
-          {m.label}
-        </button>
-      ))}
-    </div>
-  );
-}
-
-/**
- * The platform strip, rebuilt as one object (Hamza, 24 Sep, "not coherent,
- * too much in Creative Suite"). The shape is the feature-list pattern Linear,
- * Stripe and Figma use: a list on the left where the open item carries its
- * one line and its link, and a single stage on the right at a fixed ratio.
- *
- * What it fixes: the tabs, the panel title and Creative Suite's own rail were
- * three levels of heading in two boxes, and MCP swapped the stage for a panel
- * with two more rows of tabs. Now every tab has the same parts — label, line,
- * link, stage — and the stage is the same size whichever is open, so nothing
- * jumps when you switch.
- */
 export function PlatformStrip() {
   const [tab, setTab] = useState(0);
-  const [mode, setMode] = useState(0);
+  const tabs = useSlidingIndicator<HTMLButtonElement>(tab);
   const t = TABS[tab];
-  const m = t.modes?.[mode];
-
-  const pick = (i: number) => { setTab(i); setMode(0); };
 
   /**
    * The nav still links to #mcp, which is a tab here rather than a section.
    * The strip carries that id so the browser scrolls to it on its own; this
-   * is what opens the matching tab, on load and on every later hash change.
+   * is what selects the matching tab, on load and on every later hash change.
    */
   useEffect(() => {
     const sync = () => {
       const i = TABS.findIndex((x) => x.id === window.location.hash.slice(1));
-      if (i >= 0) pick(i);
+      if (i >= 0) setTab(i);
     };
     sync();
     window.addEventListener("hashchange", sync);
@@ -637,162 +413,93 @@ export function PlatformStrip() {
   const stage =
     t.kind === "mcp" ? <McpStage />
     : t.kind === "plugins" ? <PluginGrid />
-    : m?.kind === "music" ? <MusicWall />
-    : m?.kind === "reel" ? <ImageReel key={m.id} videos={m.videos ?? []} />
+    : t.kind === "reel" ? <ImageReel key={t.id} videos={t.videos ?? []} />
     : <ClipPlayer videos={t.videos ?? []} audio={t.audio} />;
 
   return (
     <div id="mcp" className="pf">
       {/* No heading of its own: it sits under the hero's, and two in one fold
           is one too many. */}
-      <div className="pf-card">
-        <ul className="pf-list">
-          {TABS.map((x, i) => {
-            const open = i === tab;
-            return (
-              <li key={x.id} className={`pf-item ${open ? "pf-item-on" : ""}`}>
-                <button
-                  type="button"
-                  className="pf-head"
-                  aria-expanded={open}
-                  aria-controls="pf-stage"
-                  onClick={() => pick(i)}
-                >
-                  <span className="pf-n">{String(i + 1).padStart(2, "0")}</span>
-                  {x.label}
-                </button>
-                {/* Every body renders, so the copy is in the HTML with no JS;
-                    the closed ones fold to nothing. */}
-                <div className="pf-more" aria-hidden={!open}>
-                  <div className="pf-more-in">
-                    <p className="pf-body">{x.body}</p>
-                    {x.modes && open && <ModeSwitch modes={x.modes} active={mode} onPick={setMode} />}
-                    <a className="pf-go" href={x.href} target="_blank" rel="noopener noreferrer" tabIndex={open ? 0 : -1}>
-                      {x.cta}
-                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden>
-                        <path d="M6 12h12M13 6l6 6-6 6" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
-                      </svg>
-                    </a>
-                  </div>
-                </div>
-              </li>
-            );
-          })}
-        </ul>
+      <div className="pf-tabs" role="tablist" aria-label="Platform" ref={tabs.containerRef as React.Ref<HTMLDivElement>}>
+        <SlidingIndicator box={tabs.box} ready={tabs.ready} className="pf-tab-fill" />
+        {TABS.map((x, i) => (
+          <button
+            key={x.id}
+            ref={(el) => { tabs.itemRefs.current[i] = el; }}
+            type="button"
+            role="tab"
+            aria-selected={i === tab}
+            aria-controls="pf-stage"
+            className={`pf-tab ${i === tab ? "pf-tab-on" : ""}`}
+            onClick={() => setTab(i)}
+          >
+            {x.label}
+          </button>
+        ))}
+      </div>
 
-        <div id="pf-stage" className="pf-stage">{stage}</div>
+      <div className="pf-panel">
+        <div id="pf-stage" className="pf-stage" role="tabpanel" aria-label={t.label}>{stage}</div>
       </div>
 
       <style>{`
         .pf { isolation: isolate; }
         ${slidingIndicatorCss}
 
-        /* One card: the list and the stage side by side. Clear of the hero's
-           actions: at 40px the buttons and the card read as one stack. */
-        .pf-card {
-          display: grid;
-          grid-template-columns: minmax(280px, 0.72fr) minmax(0, 1.28fr);
-          gap: clamp(20px, 2.6vw, 40px);
-          padding: clamp(14px, 1.4vw, 20px);
-          padding-left: clamp(22px, 2.4vw, 36px);
-          margin-top: clamp(64px, 8vh, 96px);
+        /* Lettered tabs, not chips, centred above the panel. At chip size
+           this read as a filter on a gallery rather than as the platform's
+           own parts. Clear of the hero's actions: at 40px the buttons and
+           the strip read as one stack. */
+        .pf-tabs {
+          position: relative;
+          margin: clamp(64px, 8vh, 96px) auto 0;
+          width: max-content;
+          max-width: 100%;
+          display: flex;
+          gap: 4px;
+          padding: 6px;
+          border-radius: 999px;
+          background: var(--track);
+          border: 1px solid var(--line);
+          overflow-x: auto;
+          scrollbar-width: none;
+        }
+        .pf-tabs::-webkit-scrollbar { display: none; }
+        .pf-tab-fill { border-radius: 999px; background: var(--panel); box-shadow: 0 1px 2px rgba(0, 0, 0, 0.18); }
+        .pf-tab {
+          position: relative;
+          z-index: 1;
+          flex: 0 0 auto;
+          border: 0;
+          border-radius: 999px;
+          padding: 0 clamp(16px, 1.8vw, 26px);
+          height: clamp(44px, 3.4vw, 52px);
+          background: transparent;
+          font-family: inherit;
+          font-size: clamp(14.5px, 1.15vw, 16.5px);
+          font-weight: 500;
+          letter-spacing: -0.01em;
+          color: var(--ink-3);
+          cursor: pointer;
+          white-space: nowrap;
+          transition: color 260ms ease;
+        }
+        .pf-tab:hover, .pf-tab-on, .pf-tab-on:hover { color: var(--ink); }
+
+        /* The panel frames the stage and holds nothing else. */
+        .pf-panel {
+          margin-top: clamp(20px, 2.4vw, 32px);
+          padding: clamp(8px, 0.9vw, 12px);
           border-radius: var(--radius-6);
           border: 1px solid var(--line);
           background: var(--tile);
         }
 
-        /* The list, centred on the stage's height so the four names sit in
-           the middle of the card rather than bunched at its top. */
-        .pf-list { list-style: none; display: flex; flex-direction: column; justify-content: center; min-width: 0; }
-        .pf-item { position: relative; }
-        .pf-item + .pf-item { box-shadow: inset 0 1px 0 var(--line); }
-
-        .pf-head {
-          width: 100%;
-          display: flex;
-          align-items: baseline;
-          gap: 14px;
-          padding: 20px 0;
-          border: 0;
-          background: transparent;
-          font-family: inherit;
-          font-size: clamp(18px, 1.45vw, 21px);
-          font-weight: 500;
-          letter-spacing: -0.02em;
-          color: var(--ink-3);
-          text-align: left;
-          cursor: pointer;
-          transition: color 240ms ease;
-        }
-        .pf-head:hover, .pf-item-on .pf-head { color: var(--ink-heading); }
-        .pf-n {
-          font-size: 12px;
-          font-weight: 500;
-          letter-spacing: 0.02em;
-          font-variant-numeric: tabular-nums;
-          color: var(--ink-3);
-        }
-
-        /* Fold by grid rows, so the open height is the content's own and the
-           motion needs no measuring. */
-        .pf-more {
-          display: grid;
-          grid-template-rows: 0fr;
-          opacity: 0;
-          transition: grid-template-rows 420ms cubic-bezier(0.22, 1, 0.36, 1), opacity 300ms ease;
-        }
-        .pf-item-on .pf-more { grid-template-rows: 1fr; opacity: 1; }
-        .pf-more-in { overflow: hidden; min-height: 0; padding-left: 30px; }
-        .pf-item-on .pf-more-in { padding-bottom: 22px; }
-        .pf-body { font-size: 15px; line-height: 1.6; color: var(--ink-2); max-width: 40ch; margin-top: -6px; }
-
-        .pf-seg {
-          position: relative;
-          display: inline-flex;
-          gap: 2px;
-          margin-top: 16px;
-          padding: 3px;
-          border-radius: 999px;
-          background: var(--tile-2);
-          border: 1px solid var(--line);
-        }
-        .pf-seg-fill { border-radius: 999px; background: var(--panel); box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2); }
-        .pf-seg-btn {
-          position: relative;
-          z-index: 1;
-          height: 32px;
-          padding: 0 16px;
-          border: 0;
-          border-radius: 999px;
-          background: transparent;
-          font-family: inherit;
-          font-size: 13.5px;
-          font-weight: 500;
-          color: var(--ink-3);
-          cursor: pointer;
-          transition: color 200ms ease;
-        }
-        .pf-seg-btn:hover, .pf-seg-on { color: var(--ink-heading); }
-
-        .pf-go {
-          margin-top: 18px;
-          display: flex;
-          width: max-content;
-          align-items: center;
-          gap: 8px;
-          font-size: 14.5px;
-          font-weight: 500;
-          color: var(--ink-heading);
-          transition: opacity 200ms ease;
-        }
-        .pf-go:hover { opacity: 0.72; }
-
-        /* The stage: one frame at one ratio for every tab, so switching never
-           moves the card's height. */
+        /* One ratio for every tab, so switching never moves the height. */
         .pf-stage {
           position: relative;
           overflow: hidden;
-          aspect-ratio: 16 / 10;
+          aspect-ratio: 16 / 8;
           border-radius: var(--radius-5);
           border: 1px solid var(--line);
           background: var(--tile-2);
@@ -807,9 +514,9 @@ export function PlatformStrip() {
           inset: 0;
           display: grid;
           grid-template-columns: repeat(3, minmax(0, 1fr));
+          grid-template-rows: repeat(2, minmax(0, 1fr));
           gap: 12px;
-          padding: clamp(20px, 6%, 56px);
-          align-content: center;
+          padding: clamp(20px, 6%, 56px) clamp(20px, 14%, 180px);
         }
         .pf-plugins a {
           display: flex;
@@ -817,7 +524,7 @@ export function PlatformStrip() {
           align-items: center;
           justify-content: center;
           gap: 14px;
-          aspect-ratio: 4 / 3;
+          height: 100%;
           border-radius: var(--radius-4);
           border: 1px solid var(--line);
           background: var(--tile);
@@ -943,91 +650,6 @@ export function PlatformStrip() {
         .hc-round:hover { background: rgba(10, 10, 11, 0.9); }
         .hc-round:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
 
-        /* Music: four track cards, a chevron each side, sitting on the
-           panel's own ground rather than on footage. Padded clear of the
-           chip row at the foot. */
-        .hc-music {
-          position: absolute;
-          inset: 0;
-          display: flex;
-          align-items: center;
-          gap: clamp(8px, 1vw, 16px);
-          padding: clamp(16px, 2.2%, 28px);
-          background: var(--tile);
-        }
-        .hc-cards {
-          list-style: none;
-          flex: 1 1 auto;
-          min-width: 0;
-          display: grid;
-          grid-template-columns: repeat(4, minmax(0, 1fr));
-          gap: clamp(8px, 1.1vw, 16px);
-          align-content: center;
-        }
-        .hc-card { min-width: 0; display: flex; flex-direction: column; }
-        /* Portrait, not square. Four squares across a 16:9 panel leave a
-           third of its height empty; 3:4 fills it and is the shape a
-           playlist tile takes anyway. */
-        .hc-art {
-          position: relative;
-          aspect-ratio: 3 / 4;
-          border-radius: var(--radius-3);
-          overflow: hidden;
-          background: var(--tile-2);
-        }
-        .hc-art img { width: 100%; height: 100%; object-fit: cover; display: block; }
-        /* Always on, not hover-revealed: the button is the point of the card,
-           and on a phone there is no hover to reveal it with. */
-        .hc-play {
-          position: absolute;
-          left: 50%; top: 50%;
-          transform: translate(-50%, -50%);
-          width: 44px; height: 44px;
-          display: grid; place-items: center;
-          border: 0;
-          border-radius: 999px;
-          color: #fff;
-          background: rgba(10, 10, 11, 0.44);
-          backdrop-filter: blur(12px);
-          -webkit-backdrop-filter: blur(12px);
-          cursor: pointer;
-          transition: background 160ms ease;
-        }
-        .hc-play:hover { background: rgba(10, 10, 11, 0.62); }
-        .hc-play:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
-        .hc-track {
-          margin-top: 10px;
-          font-size: 13.5px;
-          font-weight: 500;
-          letter-spacing: -0.01em;
-          color: var(--ink);
-          white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-        }
-        .hc-by {
-          margin-top: 4px;
-          display: flex; align-items: center; gap: 6px;
-          font-size: 12px;
-          color: var(--ink-3);
-          white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-        }
-        .hc-by img { width: 18px; height: 18px; border-radius: 999px; flex: 0 0 auto; object-fit: cover; }
-        /* The chevrons take the page's ink on the panel ground, not the fixed
-           white the chips use: these sit on --tile, not on footage. */
-        .hc-nav {
-          flex: 0 0 auto;
-          width: 34px; height: 34px;
-          display: grid; place-items: center;
-          border: 1px solid var(--line);
-          border-radius: 999px;
-          background: var(--tile-2);
-          color: var(--ink);
-          cursor: pointer;
-          transition: background 160ms ease, opacity 160ms ease;
-        }
-        .hc-nav:hover:not(:disabled) { background: var(--hover-wash); }
-        .hc-nav:disabled { opacity: 0.32; cursor: default; }
-        .hc-nav:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
-
         /* The control bar, on the modes that carry sound. Ported from the
            B2B Workflows page's VideoCard. It sat above the chip row rather
            than to the foot of the panel, where it would have landed on the
@@ -1107,33 +729,23 @@ export function PlatformStrip() {
         .hc-seek:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
 
 
-        @media (max-width: 1000px) {
-          /* The stage drops under the list: a 280px column beside a stage
-             is most of a tablet. */
-          .pf-card { grid-template-columns: minmax(0, 1fr); padding: clamp(14px, 3vw, 20px); gap: 8px; }
-          .pf-list { padding: 0 6px; }
-          .pf-head { padding: 16px 0; }
-        }
+
         @media (max-width: 880px) {
           .hc-slide { width: 72%; }
           .hc-slide:not(.hc-slide-on) { filter: blur(3px); }
           .hc-round { width: 28px; height: 28px; }
-          .hc-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); align-content: center; }
-          .hc-art { aspect-ratio: 1 / 1; }
-          .hc-play { width: 38px; height: 38px; }
-          .hc-nav { width: 28px; height: 28px; }
-          .hc-track { font-size: 12.5px; }
           .hc-controls { padding: 6px 10px; gap: 8px; }
           .hc-time { display: none; }
-          /* The reel and the music wall both outgrow 16:10 here: at 375 the
-             stage is about 200px tall, which is shorter than one card. */
+          /* At 375 a 2:1 stage is about 170px tall, too short for the reel
+             or the plugin tiles. */
+          .pf-stage { aspect-ratio: 16 / 10; }
           .pf-stage:has(.hc-reel) { aspect-ratio: 1 / 1; }
-          .pf-stage:has(.hc-music), .pf-stage:has(.pf-plugins) { aspect-ratio: 3 / 4; }
-          .pf-plugins { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; padding: 14px; }
+          .pf-stage:has(.pf-plugins) { aspect-ratio: 3 / 4; }
+          .pf-plugins { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: repeat(3, minmax(0, 1fr)); gap: 8px; padding: 14px; }
           .pf-client { width: 34px; height: 34px; }
         }
         @media (prefers-reduced-motion: reduce) {
-          .hc-slide, .pf-more { transition: none; }
+          .hc-slide { transition: none; }
           .hc-controls { transition: none; transform: none; }
         }
       `}</style>

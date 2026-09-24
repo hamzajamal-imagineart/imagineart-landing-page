@@ -77,35 +77,27 @@ fold down; **it came straight back into the hero** — the redesign was what was
 wanted, not the move. `PlatformStrip` is therefore a plain block with no
 heading of its own, since the hero's sits directly above it.
 
-**Current shape (24 Sep, third pass): one card, a list and a stage.** Hamza
-found the rail-plus-panel version incoherent, with too much in Creative Suite:
-the tabs, a panel title and Creative Suite's own rail (a paragraph per mode)
-were three levels of heading in two boxes, and MCP swapped the stage for the
-full connect panel with two more rows of tabs. The rebuild follows the
-feature-list pattern (Linear, Stripe, Figma):
+**Current shape (24 Sep, fourth pass): a pill of tabs over a stage, and no
+copy.** Hamza tried the tabs as a header row, a vertical rail and a numbered
+list beside the stage, and settled on the first shape: **tabs only look right
+on top, outside the container**. The pill is centred above a panel that frames
+one stage (2:1 on desktop, 16:10 under 880px) and holds nothing else — no
+title, no paragraph, no link, on any tab.
 
-- **Left, a numbered list** (01–04: Creative Suite · Agents · MCP · Plugins).
-  The open item unfolds to one line and its link; the label is the heading, so
-  there is no title. Folding is `grid-template-rows: 0fr → 1fr`, with no
-  measuring. Every body renders into the HTML.
-- **Creative Suite's modes** (Image · Video · Audio) are a small segmented
-  control under its line, not a second rail. `ModeSwitch` is its own
-  component so the indicator hook mounts with it.
-- **Right, one stage at 16:10 for every tab**, so switching never changes the
-  card's height. Image and Video are the coverflow, Audio the music wall,
-  Agents the clip with its control bar, Plugins a 3 × 2 grid of tiles.
-- **MCP's stage** is one client's connect recording with a frosted row of
-  client marks over it (the five with recordings; ChatGPT has none). The
-  three-step walkthrough is no longer in the hero; `<Mcp>` still renders it
-  on disk, and `CDN`, `CLIENTS`, `MONO_MARKS` are exported from `Mcp.tsx`.
-- Under 1000px the stage drops under the list; under 880px the reel goes 1:1,
-  the music wall and plugins 3:4.
+- **Creative Suite** has no inner tabs. Its stage is one coverflow of the
+  four image clips and three video clips together. The Audio mode (music
+  wall, 16 tracks) went with the rail; it is in git at `1bf2c34`.
+- **Agents** is the clip with its control bar.
+- **MCP** is one client's connect recording with a frosted row of client
+  marks over it (the five with recordings; ChatGPT has none). The three-step
+  walkthrough is not in the hero; `<Mcp>` still renders it on disk, and
+  `CDN`, `CLIENTS`, `MONO_MARKS` are exported from `Mcp.tsx`.
+- **Plugins** is a 3 × 2 grid of tiles filling the stage.
 
-Shapes tried before, and why they went: tabs centred above the panel (345px
-of dead space each side); tabs as the panel's header row (the panel carried
-both the tabs and the action); tabs as a vertical rail in a card of their own
-beside the panel (two objects, and the uneven weight above). The card sits
-**72px clear of the hero's buttons**; at 40 they read as one stack.
+Why the old centred pill had failed and this one does not: the panel under it
+used to carry copy on the left, so the centred pill sat over an off-centre
+panel with 345px of dead space each side. With the panel all stage, both are
+centred on the same axis. The pill sits **72px clear of the hero's buttons**.
 
 Carried across unchanged: the reel, the music wall, the control bar and the
 skeleton are the old panel's code, moved rather than rewritten; the strip
