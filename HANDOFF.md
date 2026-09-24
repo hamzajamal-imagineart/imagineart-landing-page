@@ -39,8 +39,9 @@ Verify with `npx next build` plus grep or DOM measurement. Keep replies short.
 
 | Section | Component | What it is |
 |---|---|---|
-| Hero | `sections/Hero` | A centred column over a mosaic of work: the headline, the copy, and **two actions** — "Start creating for free" and "Contact sales". Under them the **platform strip** (`sections/Platform`, `PlatformStrip`, `#mcp`): a rail of four tabs stacked in a small card, with the panel beside it — copy on the left of that panel, the stage on the right. Creative Suite carries its own rail (Image · Video · Audio); Image is a coverflow of four clips, Video plays three in turn, Audio is the wall of track cards. Agents is one clip with the control bar; MCP is the connect panel, full width; Plugins is the six marks as links. |
+| Hero | `sections/Hero` | A centred column over a mosaic of work: the headline, the copy, and **two actions** — "Start creating for free" and "Contact sales". Under them the **platform strip** (`sections/Platform`, `PlatformStrip`, `#mcp`): a segmented control of four tabs (MCP carries a NEW tag) centred over a panel that is one stage and nothing else — no copy on any tab. Creative Suite is one coverflow of the image and video clips; Agents is one clip with the control bar; MCP is a client's connect recording with the client marks over it; Plugins is six tiles. See §2a. |
 | Partners | `sections/Partners` | Six partner marks (ByteDance, Kling AI, MINIMAX, Wan, fal, Grok) with two captions. |
+| Suite `#suite` | `sections/Suite` | Ported from the Enterprise page (`platform/Suite` + `SuiteRail`, 24 Sep): eyebrow "The suite", heading "Everything your team / needs to create", lede, then a rail of nine tool cards (dark tones, copy on top, glass arrow, 16:9 clip at the foot) with pagers. Copy and links are `BUSINESS_TOOLS` verbatim. Seven clips were already here (`capabilities/`, `studios/`); Workflows and Canvas came across as `suite/workflows.mp4`, `suite/canvas.mp4` (1MB). One client component, not the source's server/client split. Overlaps Creative Tools, which follows it. |
 | Creative Tools `#tools` | `sections/CreativeTools` | A 13-card bento from Figma: four 308px columns, 16px gutter, split 410/190/190 or 144/144/296/190 so every column ends level at 822. Eight cards carry a photograph, five carry that tool's own clip. No icons. Title always showing, description on hover. "View all tools" at the foot. |
 | Studios `#studios` | `sections/AdStudio` | Heading "Studios" + lede, then the **Ad Studio banner**: five vertical marquee columns of 9:16 ad clips (30 clips, CDN, posters, `preload="none"`) and a frosted left panel. |
 | Fashion Studio `#fashion-studio` | `sections/FashionStudio` | Banner: campaign clip full-bleed, rising scrim, white wordmark, glass "Try Now". |
@@ -547,8 +548,8 @@ point at, returns 500.
     960KB each, so sixteen local would be 15MB. That path is not in the
     gallery's markup, which plays them from JS; it was found by probing.
   - The cards clear the chip row with `padding-top` on `.hc-music`.
-  - `capabilities/music.mp4`, the mode's old clip, is still in `Apps` (pulled
-    from the page) and is otherwise unused.
+  - `capabilities/music.mp4`, the mode's old clip, is on the Suite rail's
+    Music card.
 - **Only Workflows, Agent and Computer carry an audio track**, and only those
   two get the control bar — play/pause, seek, elapsed, mute. `audio` is set
   per entry in `MODES` rather than sniffed: there is no portable way to ask a
@@ -638,7 +639,7 @@ clips with stills, left fifteen clips referenced nowhere on the page. Grepped,
 not assumed — `capabilities/outfit-tryon.mp4` and `studios/fashion-studio.mp4`
 look dropped but are still used elsewhere. The orphans:
 `templates/fashion-tryon.mp4`, `use-cases/fashion.mp4`,
-`capabilities/variate.mp4`, `capabilities/brand-kits.mp4`,
+`capabilities/variate.mp4`,
 `use-cases/concepting.mp4`, `templates/product-studio.mp4`,
 `use-cases/product.mp4`, plus
 `use-cases/avatars.mp4`, `motion.mp4`, `film.mp4`, `advertising.mp4`,
