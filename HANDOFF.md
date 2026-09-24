@@ -77,29 +77,35 @@ fold down; **it came straight back into the hero** — the redesign was what was
 wanted, not the move. `PlatformStrip` is therefore a plain block with no
 heading of its own, since the hero's sits directly above it.
 
-What changed and stayed changed: the tabs are **lettered rather than chips**
-(49px at 16.5px, against 34px at 13.5px) — at chip size the strip read as a
-filter on a gallery rather than as the platform's own parts. The four name
-what the platform is (Creative Suite, Agents, MCP, Plugins), not what it
-makes, and Image, Video and Audio are a rail *inside* Creative Suite, so the
-three generators are one thing with three parts rather than three of six
-peers. The panel puts a title, a line and a link beside the stage, so every
-tab says something in words as well as in footage, and **the tabs are a vertical rail
-beside the panel** (Hamza, 24 Sep, to a reference), in a small card of their
-own: four names stacked, the fill travelling down them.
+**Current shape (24 Sep, third pass): one card, a list and a stage.** Hamza
+found the rail-plus-panel version incoherent, with too much in Creative Suite:
+the tabs, a panel title and Creative Suite's own rail (a paragraph per mode)
+were three levels of heading in two boxes, and MCP swapped the stage for the
+full connect panel with two more rows of tabs. The rebuild follows the
+feature-list pattern (Linear, Stripe, Figma):
 
-That shape came after two others, and the reasons are worth keeping. Centred
-above the panel the pill left 345px of dead space each side of it, which read
-as unfinished. As a header row inside the panel it balanced, but the panel
-then had to carry both the tabs and the tab's action. The rail gives each
-thing its own object and leaves the panel to its content.
+- **Left, a numbered list** (01–04: Creative Suite · Agents · MCP · Plugins).
+  The open item unfolds to one line and its link; the label is the heading, so
+  there is no title. Folding is `grid-template-rows: 0fr → 1fr`, with no
+  measuring. Every body renders into the HTML.
+- **Creative Suite's modes** (Image · Video · Audio) are a small segmented
+  control under its line, not a second rail. `ModeSwitch` is its own
+  component so the indicator hook mounts with it.
+- **Right, one stage at 16:10 for every tab**, so switching never changes the
+  card's height. Image and Video are the coverflow, Audio the music wall,
+  Agents the clip with its control bar, Plugins a 3 × 2 grid of tiles.
+- **MCP's stage** is one client's connect recording with a frosted row of
+  client marks over it (the five with recordings; ChatGPT has none). The
+  three-step walkthrough is no longer in the hero; `<Mcp>` still renders it
+  on disk, and `CDN`, `CLIENTS`, `MONO_MARKS` are exported from `Mcp.tsx`.
+- Under 1000px the stage drops under the list; under 880px the reel goes 1:1,
+  the music wall and plugins 3:4.
 
-Vertical costs `SlidingIndicator` nothing: it measures `offsetTop` as well as
-`offsetLeft`, so the fill travels down the rail exactly as it travelled
-across the row. Under 1000px the rail lies down into a scrolling pill bar
-above the panel, since a 168px column beside a stacked panel is most of a
-phone. The strip sits **72px clear of the hero's buttons** rather than the 40
-it had at first — at 40 the actions and the panel read as one crowded stack.
+Shapes tried before, and why they went: tabs centred above the panel (345px
+of dead space each side); tabs as the panel's header row (the panel carried
+both the tabs and the action); tabs as a vertical rail in a card of their own
+beside the panel (two objects, and the uneven weight above). The card sits
+**72px clear of the hero's buttons**; at 40 they read as one stack.
 
 Carried across unchanged: the reel, the music wall, the control bar and the
 skeleton are the old panel's code, moved rather than rewritten; the strip

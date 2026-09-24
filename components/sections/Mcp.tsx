@@ -22,7 +22,7 @@ import { SectionGuides } from "@/components/primitives/SectionGuides";
  */
 const MCP_URL = "https://mcp.imagine.art";
 const PKG = "@imagineartofficial/mcp";
-const CDN = "https://cdn-imagine.vyro.ai/imagine-one/imagine-mcp/connect";
+export const CDN = "https://cdn-imagine.vyro.ai/imagine-one/imagine-mcp/connect";
 const FIRST_PROMPT =
   "Use Imagine MCP to generate a cinematic product shot of a matte black water bottle on wet slate, soft morning light, 16:9.";
 const enc = encodeURIComponent;
@@ -65,9 +65,9 @@ const agentSteps = (id: string, label: string, finish: React.ReactNode): Step[] 
  * inside a <mask>, which is a masking helper and not visual, so swapping
  * fills blindly corrupts it. Claude, OpenClaw and npm keep their colour.
  */
-const MONO_MARKS = new Set(["chatgpt", "grok", "hermes", "cursor", "codex", "terminal", "grokbot"]);
+export const MONO_MARKS = new Set(["chatgpt", "grok", "hermes", "cursor", "codex", "terminal", "grokbot"]);
 
-const CLIENTS: Client[] = [
+export const CLIENTS: Client[] = [
   {
     id: "claude", label: "Claude", icon: "claude", video: "claude",
     steps: [

@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { withBasePath } from "@/lib/assets";
-import { McpPanel } from "@/components/sections/Mcp";
+import { CDN, CLIENTS, MONO_MARKS } from "@/components/sections/Mcp";
 import { SlidingIndicator, slidingIndicatorCss, useSlidingIndicator } from "@/components/primitives/SlidingIndicator";
 import { pluginHref, CREATIVE_HREF, WORKFLOWS_HREF, START_HREF } from "@/lib/links";
 
@@ -277,11 +277,9 @@ function ImageReel({ videos }: { videos: string[] }) {
   );
 }
 
-
-type Item = {
+type Mode = {
   id: string;
   label: string;
-  body: string;
   /** `reel` is the coverflow, `music` the track wall. */
   kind: "reel" | "music";
   videos?: string[];
@@ -290,54 +288,40 @@ type Item = {
 type Tab = {
   id: string;
   label: string;
-  title: string;
   body: string;
   href: string;
   cta: string;
-  /** Creative Suite is the only tab with a rail of its own. */
-  items?: Item[];
+  /** Creative Suite is the only tab with modes of its own. */
+  modes?: Mode[];
   kind?: "clip" | "mcp" | "plugins";
   videos?: string[];
   /** Whether the clip carries sound, so it gets the control bar. */
   audio?: boolean;
 };
 
+/**
+ * One line each, and no title above it (Hamza, 24 Sep): the label is the
+ * heading. The panel had a title, a body, a link and — in Creative Suite — a
+ * second rail with a paragraph per mode, which made that tab twice the weight
+ * of the other three and the strip read as uneven.
+ */
 const TABS: Tab[] = [
   {
     id: "creative",
     label: "Creative Suite",
-    title: "Pro-level production, end to end",
-    body: "Start with an idea, direct the shots, add the sound. Every model and every editing tool in one place, with your brand and your characters held across all of it.",
+    body: "Every image, video and audio model, and every editing tool, in one place, with your brand and characters held across all of it.",
     href: CREATIVE_HREF,
     cta: "Open the suite",
-    items: [
-      {
-        id: "image",
-        label: "Image",
-        body: "Generate, edit, resize, upscale. Keep characters and brand consistent across every shot.",
-        kind: "reel",
-        videos: IMAGE_SET,
-      },
-      {
-        id: "video",
-        label: "Video",
-        body: "Direct a shot from a prompt or a still, then extend, reframe and grade it without leaving the timeline.",
-        kind: "reel",
-        videos: VIDEO_SET,
-      },
-      {
-        id: "audio",
-        label: "Audio",
-        body: "Score the cut and voice it. Tracks and voiceover in any style, cleared for commercial use.",
-        kind: "music",
-      },
+    modes: [
+      { id: "image", label: "Image", kind: "reel", videos: IMAGE_SET },
+      { id: "video", label: "Video", kind: "reel", videos: VIDEO_SET },
+      { id: "audio", label: "Audio", kind: "music" },
     ],
   },
   {
     id: "agents",
     label: "Agents",
-    title: "Hand the work over",
-    body: "Describe the outcome and the agent plans the run, picks the models and tools each step needs, and brings the work back finished and on brand.",
+    body: "Describe the outcome. The agent plans the run, picks the models each step needs and brings the work back finished and on brand.",
     href: START_HREF,
     cta: "Put an agent to work",
     kind: "clip",
@@ -347,8 +331,7 @@ const TABS: Tab[] = [
   {
     id: "mcp",
     label: "MCP",
-    title: "Every tool inside your own agent",
-    body: "Connect ImagineArt to Claude, ChatGPT, Cursor or your own stack once, and generate from wherever your team already works.",
+    body: "Connect ImagineArt to Claude, Cursor or your own agent once, and generate from wherever your team already works.",
     href: "https://mcp.imagine.art",
     cta: "Read the docs",
     kind: "mcp",
@@ -356,14 +339,12 @@ const TABS: Tab[] = [
   {
     id: "plugins",
     label: "Plugins",
-    title: "Inside the apps you already use",
-    body: "Photoshop, Premiere, After Effects, Figma, Framer and Shopify, with the same models and the same brand kit behind them.",
+    body: "The same models and the same brand kit inside Photoshop, Premiere, After Effects, Figma, Framer and Shopify.",
     href: WORKFLOWS_HREF,
     cta: "See the plugins",
     kind: "plugins",
   },
 ];
-
 
 /**
  * One clip, with the skeleton and — where the file carries sound — the
@@ -511,7 +492,10 @@ function ClipPlayer({ videos, audio }: { videos: string[]; audio?: boolean }) {
   );
 }
 
-/** The six plugin marks, as a grid of links rather than a clip. */
+/**
+ * Plugins: the six marks as a 3 × 2 grid of tiles, centred on the stage. There
+ * is no recording of a plugin that is not just the host application.
+ */
 function PluginGrid() {
   return (
     <ul className="pf-plugins">
@@ -528,20 +512,117 @@ function PluginGrid() {
   );
 }
 
+/** The clients that have a connect recording; ChatGPT has none. */
+const MCP_CLIENTS = CLIENTS.filter((c) => c.video);
+
+/**
+ * MCP: one client's connect recording, with the client marks as a frosted
+ * row over it. The full three-step walkthrough was the whole of this stage
+ * before (a second and third row of tabs inside the tab); it is still what
+ * <Mcp> renders, on disk, and the docs link carries the steps from here.
+ */
+function McpStage() {
+  const [i, setI] = useState(0);
+  const [armed, setArmed] = useState(false);
+  const [ready, setReady] = useState(false);
+  const c = MCP_CLIENTS[i];
+
+  useEffect(() => { setArmed(true); }, []);
+
+  return (
+    <>
+      {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+      <video
+        key={c.video}
+        className="pf-clip"
+        src={`${CDN}/${c.video}.mp4`}
+        poster={`${CDN}/${c.video}.jpg`}
+        autoPlay
+        muted
+        loop
+        playsInline
+        preload="auto"
+        disablePictureInPicture
+        onLoadedData={() => setReady(true)}
+        onCanPlay={() => setReady(true)}
+      />
+      {armed && <span className={`skel ${ready ? "skel-off" : ""}`} aria-hidden />}
+
+      <div className="pf-clients" role="group" aria-label="Client">
+        {MCP_CLIENTS.map((cl, k) => (
+          <button
+            key={cl.id}
+            type="button"
+            className={`pf-client ${k === i ? "pf-client-on" : ""}`}
+            aria-pressed={k === i}
+            aria-label={cl.label}
+            title={cl.label}
+            onClick={() => { if (k !== i) { setReady(false); setI(k); } }}
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              className={MONO_MARKS.has(cl.icon) ? "pf-mono" : undefined}
+              src={withBasePath(`/media/mcp/clients/${cl.icon}.svg`)}
+              alt=""
+              aria-hidden
+            />
+          </button>
+        ))}
+      </div>
+    </>
+  );
+}
+
+/**
+ * Image · Video · Audio, as a small segmented control under Creative Suite's
+ * line. Its own component so the indicator hook mounts with it: the control
+ * only exists while that tab is open.
+ */
+function ModeSwitch({ modes, active, onPick }: { modes: Mode[]; active: number; onPick: (i: number) => void }) {
+  const seg = useSlidingIndicator<HTMLButtonElement>(active);
+  return (
+    <div className="pf-seg" role="group" aria-label="Mode" ref={seg.containerRef as React.Ref<HTMLDivElement>}>
+      <SlidingIndicator box={seg.box} ready={seg.ready} className="pf-seg-fill" />
+      {modes.map((m, i) => (
+        <button
+          key={m.id}
+          ref={(el) => { seg.itemRefs.current[i] = el; }}
+          type="button"
+          className={`pf-seg-btn ${i === active ? "pf-seg-on" : ""}`}
+          aria-pressed={i === active}
+          onClick={() => onPick(i)}
+        >
+          {m.label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+/**
+ * The platform strip, rebuilt as one object (Hamza, 24 Sep, "not coherent,
+ * too much in Creative Suite"). The shape is the feature-list pattern Linear,
+ * Stripe and Figma use: a list on the left where the open item carries its
+ * one line and its link, and a single stage on the right at a fixed ratio.
+ *
+ * What it fixes: the tabs, the panel title and Creative Suite's own rail were
+ * three levels of heading in two boxes, and MCP swapped the stage for a panel
+ * with two more rows of tabs. Now every tab has the same parts — label, line,
+ * link, stage — and the stage is the same size whichever is open, so nothing
+ * jumps when you switch.
+ */
 export function PlatformStrip() {
   const [tab, setTab] = useState(0);
-  const [item, setItem] = useState(0);
-  const tabs = useSlidingIndicator<HTMLButtonElement>(tab);
+  const [mode, setMode] = useState(0);
   const t = TABS[tab];
-  const rail = t.items;
-  const current = rail?.[item];
+  const m = t.modes?.[mode];
 
-  const pick = (i: number) => { setTab(i); setItem(0); };
+  const pick = (i: number) => { setTab(i); setMode(0); };
 
   /**
    * The nav still links to #mcp, which is a tab here rather than a section.
-   * The section carries that id so the browser scrolls to it on its own; this
-   * is what selects the matching tab, on load and on every later hash change.
+   * The strip carries that id so the browser scrolls to it on its own; this
+   * is what opens the matching tab, on load and on every later hash change.
    */
   useEffect(() => {
     const sync = () => {
@@ -553,168 +634,152 @@ export function PlatformStrip() {
     return () => window.removeEventListener("hashchange", sync);
   }, []);
 
-  const media =
-    t.kind === "mcp" ? null
+  const stage =
+    t.kind === "mcp" ? <McpStage />
     : t.kind === "plugins" ? <PluginGrid />
-    : current?.kind === "music" ? <MusicWall />
-    : current?.kind === "reel" ? <ImageReel key={current.id} videos={current.videos ?? []} />
+    : m?.kind === "music" ? <MusicWall />
+    : m?.kind === "reel" ? <ImageReel key={m.id} videos={m.videos ?? []} />
     : <ClipPlayer videos={t.videos ?? []} audio={t.audio} />;
 
   return (
     <div id="mcp" className="pf">
       {/* No heading of its own: it sits under the hero's, and two in one fold
           is one too many. */}
-      <div className="pf-shell">
-      <div className="pf-tabs" role="tablist" aria-label="Platform" ref={tabs.containerRef as React.Ref<HTMLDivElement>}>
-        <SlidingIndicator box={tabs.box} ready={tabs.ready} className="pf-tab-fill" />
-        {TABS.map((x, i) => (
-          <button
-            key={x.id}
-            ref={(el) => { tabs.itemRefs.current[i] = el; }}
-            type="button"
-            role="tab"
-            aria-selected={i === tab}
-            className={`pf-tab ${i === tab ? "pf-tab-on" : ""}`}
-            onClick={() => pick(i)}
-          >
-            {x.label}
-          </button>
-        ))}
-      </div>
+      <div className="pf-card">
+        <ul className="pf-list">
+          {TABS.map((x, i) => {
+            const open = i === tab;
+            return (
+              <li key={x.id} className={`pf-item ${open ? "pf-item-on" : ""}`}>
+                <button
+                  type="button"
+                  className="pf-head"
+                  aria-expanded={open}
+                  aria-controls="pf-stage"
+                  onClick={() => pick(i)}
+                >
+                  <span className="pf-n">{String(i + 1).padStart(2, "0")}</span>
+                  {x.label}
+                </button>
+                {/* Every body renders, so the copy is in the HTML with no JS;
+                    the closed ones fold to nothing. */}
+                <div className="pf-more" aria-hidden={!open}>
+                  <div className="pf-more-in">
+                    <p className="pf-body">{x.body}</p>
+                    {x.modes && open && <ModeSwitch modes={x.modes} active={mode} onPick={setMode} />}
+                    <a className="pf-go" href={x.href} target="_blank" rel="noopener noreferrer" tabIndex={open ? 0 : -1}>
+                      {x.cta}
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden>
+                        <path d="M6 12h12M13 6l6 6-6 6" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    </a>
+                  </div>
+                </div>
+              </li>
+            );
+          })}
+        </ul>
 
-        <div className="pf-panel">
-        <div className={`pf-grid ${t.kind === "mcp" ? "pf-grid-wide" : ""}`}>
-          {t.kind === "mcp" ? (
-            <div className="pf-mcp"><McpPanel /></div>
-          ) : (
-            <>
-              <div className="pf-copy">
-                <h3 className="pf-title">{t.title}</h3>
-                <p className="pf-body">{t.body}</p>
-                <a className="pf-go" href={t.href} target="_blank" rel="noopener noreferrer">
-                  {t.cta}
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden>
-                    <path d="M6 12h12M13 6l6 6-6 6" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                </a>
-
-                {rail && (
-                  <ul className="pf-rail">
-                    {rail.map((it, i) => (
-                      <li key={it.id}>
-                        <button
-                          type="button"
-                          className={`pf-rail-btn ${i === item ? "pf-rail-on" : ""}`}
-                          aria-expanded={i === item}
-                          onClick={() => setItem(i)}
-                        >
-                          <span className="pf-rail-label">{it.label}</span>
-                        </button>
-                        {i === item && <p className="pf-rail-body">{it.body}</p>}
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-
-              <div className="pf-media">{media}</div>
-            </>
-          )}
-        </div>
-        </div>
+        <div id="pf-stage" className="pf-stage">{stage}</div>
       </div>
 
       <style>{`
         .pf { isolation: isolate; }
         ${slidingIndicatorCss}
 
-        /* Lettered tabs, not chips. At chip size this read as a filter on a
-           gallery rather than as the platform's own parts. */
-        /* A rail of its own beside the panel (Hamza, 24 Sep), not a row
-           inside it: four names stacked in a small card, the panel alongside.
-           Vertical costs SlidingIndicator nothing — it measures offsetTop as
-           well as offsetLeft — so the fill travels down the rail exactly as
-           it travelled across the row. */
-        .pf-shell {
+        /* One card: the list and the stage side by side. Clear of the hero's
+           actions: at 40px the buttons and the card read as one stack. */
+        .pf-card {
           display: grid;
-          grid-template-columns: clamp(168px, 14vw, 208px) minmax(0, 1fr);
-          gap: clamp(12px, 1.2vw, 18px);
-          align-items: start;
-          /* Clear of the hero's actions: at 40px the buttons and the panel
-             read as one crowded stack. */
+          grid-template-columns: minmax(280px, 0.72fr) minmax(0, 1.28fr);
+          gap: clamp(20px, 2.6vw, 40px);
+          padding: clamp(14px, 1.4vw, 20px);
+          padding-left: clamp(22px, 2.4vw, 36px);
           margin-top: clamp(64px, 8vh, 96px);
-        }
-        .pf-tabs {
-          position: relative;
-          display: flex;
-          flex-direction: column;
-          gap: 4px;
-          padding: 10px;
           border-radius: var(--radius-6);
           border: 1px solid var(--line);
           background: var(--tile);
         }
-        .pf-tab-fill { border-radius: var(--radius-5); background: var(--panel); box-shadow: 0 1px 2px rgba(0, 0, 0, 0.18); }
-        .pf-tab {
-          position: relative;
-          z-index: 1;
+
+        /* The list, centred on the stage's height so the four names sit in
+           the middle of the card rather than bunched at its top. */
+        .pf-list { list-style: none; display: flex; flex-direction: column; justify-content: center; min-width: 0; }
+        .pf-item { position: relative; }
+        .pf-item + .pf-item { box-shadow: inset 0 1px 0 var(--line); }
+
+        .pf-head {
           width: 100%;
+          display: flex;
+          align-items: baseline;
+          gap: 14px;
+          padding: 20px 0;
           border: 0;
-          border-radius: var(--radius-5);
-          padding: 0 16px;
-          height: clamp(48px, 3.6vw, 58px);
           background: transparent;
           font-family: inherit;
-          font-size: clamp(14.5px, 1.1vw, 16px);
-          font-weight: 500;
-          letter-spacing: -0.01em;
-          color: var(--ink-3);
-          cursor: pointer;
-          white-space: nowrap;
-          transition: color 260ms ease;
-        }
-        .pf-tab:hover { color: var(--ink); }
-        .pf-tab-on, .pf-tab-on:hover { color: var(--ink); }
-
-        /* The tabs live inside the panel (Hamza, 24 Sep), as its header row
-           rather than as a control floating above it: one object on the page
-           instead of two. */
-        .pf-panel {
-          position: relative;
-          display: flex;
-          flex-direction: column;
-          padding: clamp(20px, 2.4vw, 34px);
-          border-radius: var(--radius-6);
-          border: 1px solid var(--line);
-          background: var(--tile);
-          min-height: 560px;
-        }
-        .pf-grid {
-          flex: 1;
-          display: grid;
-          grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
-          gap: clamp(20px, 2.4vw, 36px);
-          align-items: stretch;
-          min-height: 0;
-        }
-        .pf-grid-wide { grid-template-columns: minmax(0, 1fr); }
-
-        .pf-copy { display: flex; flex-direction: column; min-width: 0; }
-        .pf-title {
-          font-size: clamp(21px, 1.9vw, 27px);
-          line-height: 1.22;
+          font-size: clamp(18px, 1.45vw, 21px);
           font-weight: 500;
           letter-spacing: -0.02em;
-          color: var(--ink-heading);
+          color: var(--ink-3);
+          text-align: left;
+          cursor: pointer;
+          transition: color 240ms ease;
         }
-        .pf-body { margin-top: 12px; font-size: 15px; line-height: 1.6; color: var(--ink-2); max-width: 44ch; }
+        .pf-head:hover, .pf-item-on .pf-head { color: var(--ink-heading); }
+        .pf-n {
+          font-size: 12px;
+          font-weight: 500;
+          letter-spacing: 0.02em;
+          font-variant-numeric: tabular-nums;
+          color: var(--ink-3);
+        }
+
+        /* Fold by grid rows, so the open height is the content's own and the
+           motion needs no measuring. */
+        .pf-more {
+          display: grid;
+          grid-template-rows: 0fr;
+          opacity: 0;
+          transition: grid-template-rows 420ms cubic-bezier(0.22, 1, 0.36, 1), opacity 300ms ease;
+        }
+        .pf-item-on .pf-more { grid-template-rows: 1fr; opacity: 1; }
+        .pf-more-in { overflow: hidden; min-height: 0; padding-left: 30px; }
+        .pf-item-on .pf-more-in { padding-bottom: 22px; }
+        .pf-body { font-size: 15px; line-height: 1.6; color: var(--ink-2); max-width: 40ch; margin-top: -6px; }
+
+        .pf-seg {
+          position: relative;
+          display: inline-flex;
+          gap: 2px;
+          margin-top: 16px;
+          padding: 3px;
+          border-radius: 999px;
+          background: var(--tile-2);
+          border: 1px solid var(--line);
+        }
+        .pf-seg-fill { border-radius: 999px; background: var(--panel); box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2); }
+        .pf-seg-btn {
+          position: relative;
+          z-index: 1;
+          height: 32px;
+          padding: 0 16px;
+          border: 0;
+          border-radius: 999px;
+          background: transparent;
+          font-family: inherit;
+          font-size: 13.5px;
+          font-weight: 500;
+          color: var(--ink-3);
+          cursor: pointer;
+          transition: color 200ms ease;
+        }
+        .pf-seg-btn:hover, .pf-seg-on { color: var(--ink-heading); }
+
         .pf-go {
           margin-top: 18px;
-          align-self: flex-start;
-          display: inline-flex;
+          display: flex;
+          width: max-content;
           align-items: center;
           gap: 8px;
-          white-space: nowrap;
           font-size: 14.5px;
           font-weight: 500;
           color: var(--ink-heading);
@@ -722,73 +787,79 @@ export function PlatformStrip() {
         }
         .pf-go:hover { opacity: 0.72; }
 
-        /* The rail sits at the foot of the copy column, so the three parts of
-           the suite read as a sub-level of the tab rather than as more tabs. */
-        .pf-rail { list-style: none; margin-top: auto; padding-top: 24px; display: flex; flex-direction: column; }
-        .pf-rail li + li { margin-top: 2px; }
-        .pf-rail-btn {
-          width: 100%;
-          display: flex;
-          align-items: center;
-          gap: 10px;
-          padding: 12px 0;
-          border: 0;
-          background: transparent;
-          font-family: inherit;
-          font-size: clamp(16px, 1.3vw, 19px);
-          font-weight: 500;
-          letter-spacing: -0.015em;
-          color: var(--ink-3);
-          cursor: pointer;
-          text-align: left;
-          transition: color 200ms ease;
-        }
-        .pf-rail-btn:hover { color: var(--ink); }
-        .pf-rail-on { color: var(--ink-heading); }
-        .pf-rail-body { font-size: 14px; line-height: 1.55; color: var(--ink-2); padding-bottom: 14px; max-width: 42ch; }
-        .pf-rail li + li { box-shadow: inset 0 1px 0 var(--line); }
-
-        /* The media half: a framed 16:9 stage, which every mode fills. */
-        .pf-media {
+        /* The stage: one frame at one ratio for every tab, so switching never
+           moves the card's height. */
+        .pf-stage {
           position: relative;
           overflow: hidden;
+          aspect-ratio: 16 / 10;
           border-radius: var(--radius-5);
           border: 1px solid var(--line);
           background: var(--tile-2);
-          min-height: 320px;
           --hc-float: clamp(12px, 2.2%, 22px);
         }
         .pf-clip { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+        .pf-stage:hover .hc-controls { opacity: 1; transform: translateY(0); }
 
-        /* Plugins: marks and names rather than footage, since there is no
-           recording of a plugin that is not just the host application. */
         .pf-plugins {
           list-style: none;
           position: absolute;
           inset: 0;
           display: grid;
-          grid-template-columns: repeat(2, minmax(0, 1fr));
-          gap: 10px;
-          padding: clamp(14px, 1.6vw, 22px);
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          gap: 12px;
+          padding: clamp(20px, 6%, 56px);
           align-content: center;
         }
         .pf-plugins a {
           display: flex;
+          flex-direction: column;
           align-items: center;
-          gap: 12px;
-          padding: 14px;
+          justify-content: center;
+          gap: 14px;
+          aspect-ratio: 4 / 3;
           border-radius: var(--radius-4);
+          border: 1px solid var(--line);
           background: var(--tile);
-          color: var(--ink);
-          font-size: 14.5px;
+          color: var(--ink-2);
+          font-size: 13.5px;
           font-weight: 500;
-          transition: background 200ms ease;
+          transition: background 200ms ease, color 200ms ease;
         }
-        .pf-plugins a:hover { background: var(--hover-wash); }
-        .pf-plugins img { width: 22px; height: 22px; object-fit: contain; display: block; flex: 0 0 auto; }
+        .pf-plugins a:hover { background: var(--hover-wash); color: var(--ink-heading); }
+        .pf-plugins img { width: 36px; height: 36px; object-fit: contain; display: block; }
 
-        .pf-mcp { min-width: 0; }
-        .pf-mcp .mcp-panel { border: 0; background: transparent; padding: 0; }
+        /* Fixed white on a frosted dark bar: it sits on footage. */
+        .pf-clients {
+          position: absolute;
+          left: 50%;
+          bottom: var(--hc-float);
+          transform: translateX(-50%);
+          z-index: 3;
+          display: flex;
+          gap: 4px;
+          padding: 5px;
+          border-radius: 999px;
+          border: 1px solid rgba(255, 255, 255, 0.12);
+          background: rgba(10, 10, 11, 0.62);
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+        }
+        .pf-client {
+          width: 40px; height: 40px;
+          display: grid; place-items: center;
+          border: 0;
+          border-radius: 999px;
+          background: transparent;
+          cursor: pointer;
+          opacity: 0.5;
+          transition: background 160ms ease, opacity 160ms ease;
+        }
+        .pf-client:hover { opacity: 0.85; }
+        .pf-client-on { opacity: 1; background: rgba(255, 255, 255, 0.14); }
+        .pf-client:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+        .pf-client img { width: 20px; height: 20px; object-fit: contain; display: block; }
+        .pf-mono { filter: brightness(0) invert(1); }
 
         /* Image: the four clips on a ring, the centre one playing and its
            neighbours turned down either side. Sits on the panel's ground, so
@@ -982,7 +1053,6 @@ export function PlatformStrip() {
           transform: translateY(6px);
           transition: opacity 220ms ease, transform 220ms ease;
         }
-        .hc:hover .hc-controls,
         .hc-controls:focus-within { opacity: 1; transform: translateY(0); }
         /* No hover reveal on touch, where there is no hover to speak of. */
         @media (hover: none) { .hc-controls { opacity: 1; transform: none; } }
@@ -1038,23 +1108,11 @@ export function PlatformStrip() {
 
 
         @media (max-width: 1000px) {
-          /* The rail lies down above the panel: a 168px column beside a
-             stacked panel is most of a phone. */
-          .pf-shell { grid-template-columns: minmax(0, 1fr); }
-          .pf-tabs {
-            flex-direction: row;
-            overflow-x: auto;
-            scrollbar-width: none;
-            padding: 6px;
-            border-radius: 999px;
-          }
-          .pf-tabs::-webkit-scrollbar { display: none; }
-          .pf-tab { width: auto; flex: 0 0 auto; border-radius: 999px; height: 44px; }
-          .pf-tab-fill { border-radius: 999px; }
-          .pf-panel { min-height: 0; }
-          .pf-grid { grid-template-columns: minmax(0, 1fr); }
-          .pf-media { aspect-ratio: 16 / 9; min-height: 0; }
-          .pf-rail { margin-top: 20px; padding-top: 8px; }
+          /* The stage drops under the list: a 280px column beside a stage
+             is most of a tablet. */
+          .pf-card { grid-template-columns: minmax(0, 1fr); padding: clamp(14px, 3vw, 20px); gap: 8px; }
+          .pf-list { padding: 0 6px; }
+          .pf-head { padding: 16px 0; }
         }
         @media (max-width: 880px) {
           .hc-slide { width: 72%; }
@@ -1067,14 +1125,15 @@ export function PlatformStrip() {
           .hc-track { font-size: 12.5px; }
           .hc-controls { padding: 6px 10px; gap: 8px; }
           .hc-time { display: none; }
-          /* The reel and the music wall both outgrow 16:9 here: at 375 a
-             16:9 stage is about 165px tall, which is shorter than one card. */
-          .pf-media:has(.hc-reel) { aspect-ratio: 1 / 1; }
-          .pf-media:has(.hc-music) { aspect-ratio: 3 / 4; }
-          .pf-plugins { grid-template-columns: minmax(0, 1fr); }
+          /* The reel and the music wall both outgrow 16:10 here: at 375 the
+             stage is about 200px tall, which is shorter than one card. */
+          .pf-stage:has(.hc-reel) { aspect-ratio: 1 / 1; }
+          .pf-stage:has(.hc-music), .pf-stage:has(.pf-plugins) { aspect-ratio: 3 / 4; }
+          .pf-plugins { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; padding: 14px; }
+          .pf-client { width: 34px; height: 34px; }
         }
         @media (prefers-reduced-motion: reduce) {
-          .hc-slide { transition: none; }
+          .hc-slide, .pf-more { transition: none; }
           .hc-controls { transition: none; transform: none; }
         }
       `}</style>
