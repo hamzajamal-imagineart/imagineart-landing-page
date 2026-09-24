@@ -42,7 +42,7 @@ Verify with `npx next build` plus grep or DOM measurement. Keep replies short.
 | Hero | `sections/Hero` | A centred column over a mosaic of work: the headline, the copy, and **two actions** — "Start creating for free" and "Contact sales". Under them the **platform strip** (`sections/Platform`, `PlatformStrip`, `#mcp`): a segmented control of four tabs (MCP carries a NEW tag) centred over a panel that is one stage and nothing else — no copy on any tab. Creative Suite is one coverflow of the image and video clips; Agents is one clip with the control bar; MCP is a client's connect recording with the client marks over it; Plugins is six tiles. See §2a. |
 | Partners | `sections/Partners` | Six partner marks (ByteDance, Kling AI, MINIMAX, Wan, fal, Grok) with two captions. |
 | Suite `#suite` | `sections/Suite` | Ported from the Enterprise page (`platform/Suite` + `SuiteRail`, 24 Sep): eyebrow "The suite", heading "Everything your team / needs to create", lede, then a rail of nine tool cards (dark tones, copy on top, glass arrow, 16:9 clip at the foot) with pagers. Copy and links are `BUSINESS_TOOLS` verbatim. Seven clips were already here (`capabilities/`, `studios/`); Workflows and Canvas came across as `suite/workflows.mp4`, `suite/canvas.mp4` (1MB). One client component, not the source's server/client split. Overlaps Creative Tools, which follows it. |
-| Creative Tools `#tools` | `sections/CreativeTools` | A 13-card bento from Figma: four 308px columns, 16px gutter, split 410/190/190 or 144/144/296/190 so every column ends level at 822. Eight cards carry a photograph, five carry that tool's own clip. No icons. Title always showing, description on hover. "View all tools" at the foot. |
+| Industries `#industries` | `sections/Industries` | Ported from the Enterprise page's `IndustriesSection` (24 Sep), **replacing Creative Tools** in that slot (`CreativeTools` is pulled, on disk). Eyebrow "Industries", heading "Built for / your industry", lede, then ten `MediaCard`s at 3:4 in a 2/3/4-column grid, each with its own clip (`media/industries/`, 8.1MB, copied across) and a link into the enterprise template gallery filtered by category. Copy verbatim from the source. Nav "Tools" became "Industries". |
 | Studios `#studios` | `sections/AdStudio` | Heading "Studios" + lede, then the **Ad Studio banner**: five vertical marquee columns of 9:16 ad clips (30 clips, CDN, posters, `preload="none"`) and a frosted left panel. |
 | Fashion Studio `#fashion-studio` | `sections/FashionStudio` | Banner: campaign clip full-bleed, rising scrim, white wordmark, glass "Try Now". |
 | Film Studio `#film-studio` | `sections/FilmStudio` | Banner: CSS marquee of 24 film thumbnails, with a left-hand block (presents line, logo, one line, pill) on a scrim raked in from the left. The whole band links to the studio. |
@@ -58,7 +58,7 @@ Verify with `npx next build` plus grep or DOM measurement. Keep replies short.
 The three studio banners share one height, `--studio-band-h` in
 `globals.css`, and follow each other with no rules between them.
 
-Nav is **Tools · Studios · Workflows · Agents · Use Cases · MCP · Pricing**, where MCP now points at the hero frame (`id="mcp"`) and the strip selects that chip from the hash, CTA Get
+Nav is **Industries · Studios · Workflows · Agents · Use Cases · MCP · Pricing**, where MCP now points at the hero frame (`id="mcp"`) and the strip selects that chip from the hash, CTA Get
 Started. **Keep the nav in the same order as the page** so no link scrolls
 backwards.
 
@@ -647,6 +647,8 @@ look dropped but are still used elsewhere. The orphans:
 `templates/ad-campaign.mp4`, `templates/brand-kit.mp4` and
 `studios/avatar-studio.mp4`. Grepped, not assumed — `character.mp4` and
 `ugc.mp4` look dropped too but are still on Tools cards.
+
+Also unused since Creative Tools came off the page (24 Sep): `capabilities/outfit-tryon.mp4`, `upscale.mp4`, `vfx.mp4`, `video-reframe.mp4`, `tools/ai-voiceover.mp4`, `lipsync.mp4`, `motion-sync.mp4`, `dub-video.jpg`, `relight-video.jpg`, `remove-background.jpg`, `use-cases/character.mp4` — plus the bento's photographs; keep them while `CreativeTools` might come back. `public/media` is 108MB.
 
 Also unused now: `tools/lipsync.jpg`, `tools/motion-sync.jpg`,
 `tools/ai-voiceover.jpg`, `tools/vfx.jpg` and `tools/create-characters.jpg`,

@@ -13,7 +13,7 @@ type NavLink = { label: string; href: string };
 
 /** Keep ids in sync with the section anchors on the page. */
 const NAV_LINKS: NavLink[] = [
-  { label: "Tools", href: "#tools" },
+  { label: "Industries", href: "#industries" },
   { label: "Studios", href: "#studios" },
   { label: "Workflows", href: "#workflows" },
   { label: "Agents", href: "#agents" },

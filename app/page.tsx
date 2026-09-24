@@ -7,7 +7,7 @@ import { ReviewsSection } from "@/components/ReviewsSection";
 import { Hero } from "@/components/sections/Hero";
 import { Partners } from "@/components/sections/Partners";
 import { Suite } from "@/components/sections/Suite";
-import { CreativeTools } from "@/components/sections/CreativeTools";
+import { Industries } from "@/components/sections/Industries";
 import { Workflows } from "@/components/sections/Workflows";
 import { AdStudio } from "@/components/sections/AdStudio";
 import { FashionStudio } from "@/components/sections/FashionStudio";
@@ -34,14 +34,14 @@ const softwareSchema = {
  *
  * Order follows the funnel: what it is (hero, which carries the platform
  * strip and with it the MCP panel), what is in it (the suite rail, from the
- * Enterprise page), what it can do (creative tools), where to do the work (the three
+ * Enterprise page), who it is for (industries, also from the Enterprise page), where to do the work (the three
  * studio banners), how to put it on rails (workflows, with its connectors and
  * plugins), what to do instead of building one (the agent), what to start
  * from (use cases), what powers it (models), whether it is safe to put work
  * into (security), who vouches for it (reviews), what people ask (FAQ), then
  * the closing action.
  *
- * <Apps>, <StudioReel> and <Mcp> are pulled, not deleted: all three are still
+ * <Apps>, <StudioReel>, <Mcp> and <CreativeTools> are pulled, not deleted: all four are still
  * on disk, so recovering any is one import and one line here. MCP is not
  * gone from the page — the hero's MCP chip carries the same panel, which is
  * why the section came out.
@@ -57,7 +57,7 @@ export default function Page() {
         <Hero />
         <Partners />
         <Suite />
-        <CreativeTools />
+        <Industries />
         <AdStudio />
         <FashionStudio />
         <FilmStudio />
