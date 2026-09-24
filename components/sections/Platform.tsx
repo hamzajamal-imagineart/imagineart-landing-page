@@ -150,6 +150,8 @@ function ImageReel({ videos }: { videos: string[] }) {
 type Tab = {
   id: string;
   label: string;
+  /** Carries the NEW tag. */
+  isNew?: boolean;
   kind: "reel" | "clip" | "mcp" | "plugins";
   videos?: string[];
   /** Whether the clip carries sound, so it gets the control bar. */
@@ -159,7 +161,7 @@ type Tab = {
 const TABS: Tab[] = [
   { id: "creative", label: "Creative Suite", kind: "reel", videos: [...IMAGE_SET, ...VIDEO_SET] },
   { id: "agents", label: "Agents", kind: "clip", videos: [AGENT_CLIP], audio: true },
-  { id: "mcp", label: "MCP", kind: "mcp" },
+  { id: "mcp", label: "MCP", isNew: true, kind: "mcp" },
   { id: "plugins", label: "Plugins", kind: "plugins" },
 ];
 
@@ -434,6 +436,7 @@ export function PlatformStrip() {
             onClick={() => setTab(i)}
           >
             {x.label}
+            {x.isNew && <span className="pf-new">New</span>}
           </button>
         ))}
       </div>
@@ -446,45 +449,78 @@ export function PlatformStrip() {
         .pf { isolation: isolate; }
         ${slidingIndicatorCss}
 
-        /* Lettered tabs, not chips, centred above the panel. At chip size
-           this read as a filter on a gallery rather than as the platform's
-           own parts. Clear of the hero's actions: at 40px the buttons and
-           the strip read as one stack. */
+        /* A segmented control (Hamza, 24 Sep, to a reference): squared
+           segments on a recessed track, hairline dividers between the
+           unselected ones, the selected one lifted. Centred above the panel,
+           and clear of the hero's actions: at 40px the buttons and the strip
+           read as one stack. */
         .pf-tabs {
           position: relative;
           margin: clamp(64px, 8vh, 96px) auto 0;
           width: max-content;
           max-width: 100%;
           display: flex;
-          gap: 4px;
-          padding: 6px;
-          border-radius: 999px;
+          padding: 4px;
+          border-radius: 14px;
           background: var(--track);
           border: 1px solid var(--line);
           overflow-x: auto;
           scrollbar-width: none;
         }
         .pf-tabs::-webkit-scrollbar { display: none; }
-        .pf-tab-fill { border-radius: 999px; background: var(--panel); box-shadow: 0 1px 2px rgba(0, 0, 0, 0.18); }
+        .pf-tab-fill {
+          border-radius: 10px;
+          background: var(--panel);
+          box-shadow: 0 1px 2px rgba(0, 0, 0, 0.22), inset 0 0 0 1px var(--line);
+        }
         .pf-tab {
           position: relative;
           z-index: 1;
           flex: 0 0 auto;
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
           border: 0;
-          border-radius: 999px;
-          padding: 0 clamp(16px, 1.8vw, 26px);
-          height: clamp(44px, 3.4vw, 52px);
+          border-radius: 10px;
+          padding: 0 clamp(18px, 1.7vw, 24px);
+          height: 42px;
           background: transparent;
           font-family: inherit;
-          font-size: clamp(14.5px, 1.15vw, 16.5px);
+          font-size: 14.5px;
           font-weight: 500;
           letter-spacing: -0.01em;
           color: var(--ink-3);
           cursor: pointer;
           white-space: nowrap;
-          transition: color 260ms ease;
+          transition: color 220ms ease;
         }
         .pf-tab:hover, .pf-tab-on, .pf-tab-on:hover { color: var(--ink); }
+        /* Dividers between segments, dropped either side of the selected one
+           so the lifted segment never has a line against it. */
+        .pf-tab + .pf-tab::before {
+          content: "";
+          position: absolute;
+          left: 0;
+          top: 12px;
+          bottom: 12px;
+          width: 1px;
+          background: var(--line);
+          transition: opacity 220ms ease;
+        }
+        .pf-tab-on::before, .pf-tab-on + .pf-tab::before { opacity: 0; }
+        .pf-new {
+          display: inline-flex;
+          align-items: center;
+          height: 18px;
+          padding: 0 6px;
+          border-radius: 5px;
+          background: var(--ink-heading);
+          color: var(--page-bg);
+          font-size: 10px;
+          font-weight: 600;
+          letter-spacing: 0.06em;
+          text-transform: uppercase;
+        }
 
         /* The panel frames the stage and holds nothing else. */
         .pf-panel {

@@ -81,7 +81,10 @@ heading of its own, since the hero's sits directly above it.
 copy.** Hamza tried the tabs as a header row, a vertical rail and a numbered
 list beside the stage, and settled on the first shape: **tabs only look right
 on top, outside the container**. The pill is centred above a panel that frames
-one stage (2:1 on desktop, 16:10 under 880px) and holds nothing else — no
+one stage (2:1 on desktop, 16:10 under 880px) and holds nothing else. The
+pill is a **segmented control** (to a reference): 10px segments on a 14px
+track, hairline dividers between unselected segments (dropped beside the
+selected one), no icons, and a **NEW** tag on MCP (`isNew` on the tab) — no
 title, no paragraph, no link, on any tab.
 
 - **Creative Suite** has no inner tabs. Its stage is one coverflow of the
