@@ -4,14 +4,16 @@ import { useEffect, useState } from "react";
 import { withBasePath } from "@/lib/assets";
 import { START_HREF, DEMO_HREF } from "@/lib/links";
 import { BlurHeading } from "@/components/BlurHeading";
+import { PlatformStrip } from "@/components/sections/Platform";
 
 /**
  * Hero: the claim and the two actions, over a mosaic of work.
  *
- * **The mode strip moved out** (Hamza, 24 Sep) to `sections/Platform`, one
- * fold down. The COO read the page as an image generator, and this was why:
- * a headline over a panel showing one tool working. What is left is what the
- * company is and what to do about it.
+ * Under the copy, the platform strip: four tabs over a panel, from
+ * `sections/Platform`. It moved out to a section of its own for one round and
+ * came straight back (Hamza, 24 Sep) — the redesign was what was wanted, not
+ * the move. The strip carries no heading of its own, since the hero's is
+ * directly above it.
  */
 const MOSAIC = Array.from({ length: 18 }, (_, i) => `/media/hero/mosaic/m${i + 1}.jpg`);
 
@@ -88,6 +90,8 @@ export function Hero() {
             </a>
           </div>
         </div>
+
+        <PlatformStrip />
 
       </div>
 

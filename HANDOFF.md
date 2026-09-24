@@ -39,8 +39,7 @@ Verify with `npx next build` plus grep or DOM measurement. Keep replies short.
 
 | Section | Component | What it is |
 |---|---|---|
-| Hero | `sections/Hero` | A centred column over a mosaic of work: the headline, the copy, and **two actions** — "Start creating for free" and "Contact sales". Nothing else: the mode strip moved out (§2a). |
-| Platform `#mcp` | `sections/Platform` | The second fold. Heading and lede, then **four large tabs** — Creative Suite · Agents · MCP · Plugins — over a panel with copy on the left and the stage on the right. Creative Suite carries its own rail (Image · Video · Audio); Image is a coverflow of four clips, Video plays three in turn, Audio is the wall of track cards. Agents is one clip with the control bar; MCP is the connect panel, full width; Plugins is the six marks as links. |
+| Hero | `sections/Hero` | A centred column over a mosaic of work: the headline, the copy, and **two actions** — "Start creating for free" and "Contact sales". Under them the **platform strip** (`sections/Platform`, `PlatformStrip`, `#mcp`): four large tabs — Creative Suite · Agents · MCP · Plugins — over a panel with copy on the left and the stage on the right. Creative Suite carries its own rail (Image · Video · Audio); Image is a coverflow of four clips, Video plays three in turn, Audio is the wall of track cards. Agents is one clip with the control bar; MCP is the connect panel, full width; Plugins is the six marks as links. |
 | Partners | `sections/Partners` | Six partner marks (ByteDance, Kling AI, MINIMAX, Wan, fal, Grok) with two captions. |
 | Creative Tools `#tools` | `sections/CreativeTools` | A 13-card bento from Figma: four 308px columns, 16px gutter, split 410/190/190 or 144/144/296/190 so every column ends level at 822. Eight cards carry a photograph, five carry that tool's own clip. No icons. Title always showing, description on hover. "View all tools" at the foot. |
 | Studios `#studios` | `sections/AdStudio` | Heading "Studios" + lede, then the **Ad Studio banner**: five vertical marquee columns of 9:16 ad clips (30 clips, CDN, posters, `preload="none"`) and a frosted left panel. |
@@ -70,26 +69,32 @@ wrapper around it. The reel came out at Hamza's request (21 Sep).
 
 ---
 
-### 2a. Why the hero is now only a hero
+### 2a. The platform strip
 
-The COO read the page as an image generator (24 Sep), and the hero was why: a
-headline over a panel showing one tool working. Everything below the copy
-moved one fold down into `sections/Platform`, and the tabs were rebuilt at
-**lettered size rather than chip size** — at chip size the strip read as a
-filter on a gallery rather than as the platform's own parts. The four tabs
-name what the platform is (Creative Suite, Agents, MCP, Plugins), not what it
-makes; Image, Video and Audio are a rail *inside* Creative Suite, so the three
-generators are one thing with three parts rather than three of six peers.
+The COO read the page as an image generator (24 Sep). The strip below the
+hero's copy was rebuilt for it, and briefly moved to a section of its own one
+fold down; **it came straight back into the hero** — the redesign was what was
+wanted, not the move. `PlatformStrip` is therefore a plain block with no
+heading of its own, since the hero's sits directly above it.
 
-Two things carried across unchanged and are worth not re-deriving: the reel,
-the music wall, the control bar and the skeleton are the hero's own code,
-moved; and the section keeps `id="mcp"` with the hash-sync effect, so the nav
-link still lands on the right tab.
+What changed and stayed changed: the tabs are **lettered rather than chips**
+(49px at 16.5px, against 34px at 13.5px) — at chip size the strip read as a
+filter on a gallery rather than as the platform's own parts. The four name
+what the platform is (Creative Suite, Agents, MCP, Plugins), not what it
+makes, and Image, Video and Audio are a rail *inside* Creative Suite, so the
+three generators are one thing with three parts rather than three of six
+peers. The panel puts a title, a line and a link beside the stage, so every
+tab says something in words as well as in footage.
 
-Dropped in the move: the Workflows chip (the page has a Workflows section) and
-the panel's scroll-grow, which belonged to a hero-sized frame. `Contact sales`
-points at the same cal.com booking the footer and closing band use, since the
-page still has no contact form.
+Carried across unchanged: the reel, the music wall, the control bar and the
+skeleton are the old panel's code, moved rather than rewritten; the strip
+keeps `id="mcp"` and the hash-sync effect, so the nav link still lands on the
+right tab.
+
+Dropped: the Workflows chip (the page has a Workflows section) and the
+panel's scroll-grow, which belonged to a hero-sized frame. **`Contact sales`**
+(Hamza, 24 Sep) points at the same cal.com booking the footer and closing band
+use, since the page still has no contact form.
 
 ## 3. Design system
 

@@ -2,21 +2,19 @@
 
 import { useEffect, useRef, useState } from "react";
 import { withBasePath } from "@/lib/assets";
-import { BlurHeading } from "@/components/BlurHeading";
 import { McpPanel } from "@/components/sections/Mcp";
 import { SlidingIndicator, slidingIndicatorCss, useSlidingIndicator } from "@/components/primitives/SlidingIndicator";
-import { SectionGuides } from "@/components/primitives/SectionGuides";
 import { pluginHref, CREATIVE_HREF, WORKFLOWS_HREF, START_HREF } from "@/lib/links";
 
 /**
- * The platform strip: what used to live inside the hero panel, moved down to
- * the second fold and given a tab bar of its own (Hamza, 24 Sep).
+ * The platform strip: the tabs and the panel under the hero's copy.
  *
- * The COO's note was that the page read as an image generator, and the hero
- * was why: a headline over a clip of one tool. The hero is now the claim and
- * the actions alone, and the proof is here, one fold down, under four tabs
- * that name what the platform is rather than what it makes — **Creative
- * Suite, Agents, MCP, Plugins**.
+ * It briefly became a section of its own one fold down, then came back up
+ * into the hero at Hamza's request (24 Sep) — the redesign was the point, not
+ * the move. What changed and stayed changed is the shape: four tabs that name
+ * what the platform is rather than what it makes — **Creative Suite, Agents,
+ * MCP, Plugins** — at lettered size, over a panel with the copy beside the
+ * stage. It carries no heading, since the hero's is directly above it.
  *
  * Creative Suite holds Image, Video and Audio on a rail of its own, so the
  * three generators are one thing with three parts rather than three of six
@@ -530,7 +528,7 @@ function PluginGrid() {
   );
 }
 
-export function Platform() {
+export function PlatformStrip() {
   const [tab, setTab] = useState(0);
   const [item, setItem] = useState(0);
   const tabs = useSlidingIndicator<HTMLButtonElement>(tab);
@@ -563,16 +561,9 @@ export function Platform() {
     : <ClipPlayer videos={t.videos ?? []} audio={t.audio} />;
 
   return (
-    <section id="mcp" className="relative border-t border-[color:var(--line)] py-24 md:py-32 lg:border-t-0 pf">
-      <SectionGuides edge="top" />
-      <div className="container-page">
-        <div className="mx-auto max-w-[760px] text-center">
-          <BlurHeading className="h2" lead="One platform," muted="every way of working" />
-          <p className="lede mx-auto mt-5">
-            Pick your starting point. Every tool, every model, every format.
-          </p>
-        </div>
-
+    <div id="mcp" className="pf">
+      {/* No heading of its own: it sits under the hero's, and two in one fold
+          is one too many. */}
         <div className="pf-tabs" role="tablist" aria-label="Platform" ref={tabs.containerRef as React.Ref<HTMLDivElement>}>
           <SlidingIndicator box={tabs.box} ready={tabs.ready} className="pf-tab-fill" />
           {TABS.map((x, i) => (
@@ -628,7 +619,6 @@ export function Platform() {
             </>
           )}
         </div>
-      </div>
 
       <style>{`
         .pf { isolation: isolate; }
@@ -1051,6 +1041,6 @@ export function Platform() {
           .hc-controls { transition: none; transform: none; }
         }
       `}</style>
-    </section>
+    </div>
   );
 }

@@ -5,7 +5,6 @@ import { FAQSection } from "@/components/FAQSection";
 import { ReviewsSection } from "@/components/ReviewsSection";
 
 import { Hero } from "@/components/sections/Hero";
-import { Platform } from "@/components/sections/Platform";
 import { Partners } from "@/components/sections/Partners";
 import { CreativeTools } from "@/components/sections/CreativeTools";
 import { Workflows } from "@/components/sections/Workflows";
@@ -32,9 +31,8 @@ const softwareSchema = {
 /**
  * The ImagineArt product overview.
  *
- * Order follows the funnel: what it is (hero), what the platform is made of
- * (the platform strip, which carries the MCP panel), what it can do (creative
- * tools), where to do the work (the three
+ * Order follows the funnel: what it is (hero, which carries the platform
+ * strip and with it the MCP panel), what it can do (creative tools), where to do the work (the three
  * studio banners), how to put it on rails (workflows, with its connectors and
  * plugins), what to do instead of building one (the agent), what to start
  * from (use cases), what powers it (models), whether it is safe to put work
@@ -56,7 +54,6 @@ export default function Page() {
       <main>
         <Hero />
         <Partners />
-        <Platform />
         <CreativeTools />
         <AdStudio />
         <FashionStudio />
