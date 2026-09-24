@@ -366,11 +366,14 @@ Videos and Avatars came out, Concept & Architecture became Interior Design
 footage already on the page rather than from anything new.
 
 **The wheel takes stills as well as clips.** `WheelCard` has `image` beside
-`video` and `image` wins. The first three groups are photographs, four each,
-downscaled to 640 for a card 240 wide — the rule the hero mosaic follows,
-since the sources were about 1493 across. The Branding four are one brand
-(Wing Theory) across packaging, kitchen, merch and signage; the Interior
-Design four include two exteriors. Both sets are what Hamza supplied.
+`video` and `image` wins. **Five of the six groups are photographs now**
+(Hamza, 24 Sep) — only Product is still clips — four each, downscaled to 640
+for a card 240 wide, the rule the hero mosaic follows, since the sources were
+about 1493 across. The Branding four are one brand (Wing Theory) across
+packaging, kitchen, merch and signage; the Interior Design four include two
+exteriors; Try On is fitting-room shots and Style Transfer motion-blur pieces,
+which replaced the stand-in clips those two tabs were built with. All of it is
+what Hamza supplied.
 
 **The Ad reel card holds three clips.** An ad is a vertical, and three fill a
 16:9 card where one sits in a letterbox. They stream from the Ad Studio
@@ -540,9 +543,9 @@ point at, returns 500.
   agent URL is confirmed) are drafts.
 - **Written from names alone, treat as draft:** Workflows tile bodies, the four
   second-row bento cards (Inpaint, Image Upscaler, Video Extend, Outfit
-  Try-on), the Film banner's line, the twelve card names across Photography,
-  Branding and Interior Design, and — in the pulled studio reel — its heading,
-  lede and tags. MCP copy and commands are the MCP repo's own. Fashion
+  Try-on), the Film banner's line, the twenty card names across the five
+  photograph groups, and — in the pulled studio reel — its heading, lede and
+  tags. MCP copy and commands are the MCP repo's own. Fashion
   and Ad banner copy is the product's own, shortened.
 - **Model names** are copied from the B2B repo's Workflows page. Flagged there
   as unverified: Alibaba and Lightricks inferred, Kling used as the brand, Flux
@@ -579,6 +582,8 @@ point at, returns 500.
 | `use-cases/architecture/*.jpg` | 241KB | the Interior Design cards, 640px; in use |
 | `use-cases/photography/*.jpg` | 186KB | the Photography cards, 640px; in use |
 | `use-cases/branding/*.jpg` | 348KB | the Branding cards, 640px; in use |
+| `use-cases/try-on/*.jpg` | 228KB | the Try On cards, 640px; in use |
+| `use-cases/style-transfer/*.jpg` | 195KB | the Style Transfer cards, 640px; in use |
 | `music/art/*.jpg` | 1.1MB | the Music chip's 16 covers, 440px; in use |
 | `music/avatar/*.jpg` | 64KB | the Music chip's 16 avatars, 48px; in use |
 | `hero/creative-suite-image.webm` | 1.4MB | **unused** since the Image chip became a playlist; delete |
@@ -591,7 +596,13 @@ point at, returns 500.
 
 Also unused: `models/*.png` icons beyond the eight on the model cards,
 `pillars/chat.mp4`, `pillars/creative.mp4`, and the six `models/providers/*`
-backdrops not on cards. Rebuilding the wheel left nine clips referenced nowhere on the page:
+backdrops not on cards. Rebuilding the wheel, then replacing Try On's and Style Transfer's stand-in
+clips with stills, left fifteen clips referenced nowhere on the page. Grepped,
+not assumed — `capabilities/outfit-tryon.mp4` and `studios/fashion-studio.mp4`
+look dropped but are still used elsewhere. The orphans:
+`templates/fashion-tryon.mp4`, `use-cases/fashion.mp4`,
+`capabilities/variate.mp4`, `capabilities/brand-kits.mp4`,
+`use-cases/concepting.mp4`, plus
 `use-cases/avatars.mp4`, `motion.mp4`, `film.mp4`, `advertising.mp4`,
 `architecture.mp4`, `photography.mp4`, `branding.mp4`,
 `templates/ad-campaign.mp4`, `templates/brand-kit.mp4` and

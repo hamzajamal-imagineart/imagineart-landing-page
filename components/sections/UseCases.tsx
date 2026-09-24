@@ -17,9 +17,12 @@ import { SectionGlow, sectionGlowCss } from "@/components/primitives/SectionGlow
  * Avatars came out; Concept & Architecture became Interior Design; Try On and
  * Style Transfer are new and built from footage already on the page.
  *
- * **The first three are stills**, not clips, which is what `WheelCard.image`
- * is for. The Branding four are one brand across packaging, kitchen, merch
- * and signage, rather than four unrelated pieces.
+ * **Only Product is clips now** (Hamza, 24 Sep): the other five groups are
+ * photographs, which is what `WheelCard.image` is for. The Branding four are
+ * one brand across packaging, kitchen, merch and signage, rather than four
+ * unrelated pieces; Try On is four fitting-room shots and Style Transfer four
+ * motion-blur pieces, replacing the stand-in clips those two tabs carried
+ * when they were built.
  *
  * Several clips serve more than one group (upscale, sketch-to-render, the
  * studio films). Deliberate: a card is an example of the use case, and the
@@ -62,10 +65,10 @@ const USE_CASES: WheelGroup[] = [
   {
     id: "try-on", href: t("fashion"), title: "Try On",
     cards: [
-      { name: "Outfit Try-on", video: "/media/capabilities/outfit-tryon.mp4", href: t("fashion") },
-      { name: "Catalog Look", video: "/media/templates/fashion-tryon.mp4", href: t("fashion") },
-      { name: "Model Swap", video: "/media/use-cases/fashion.mp4", href: t("fashion") },
-      { name: "Campaign Shot", video: "/media/studios/fashion-studio.mp4", href: t("fashion") },
+      { name: "Full Look", image: "/media/use-cases/try-on/1.jpg", href: t("fashion") },
+      { name: "Denim Layering", image: "/media/use-cases/try-on/2.jpg", href: t("fashion") },
+      { name: "Menswear Fit", image: "/media/use-cases/try-on/3.jpg", href: t("fashion") },
+      { name: "Studio Fitting", image: "/media/use-cases/try-on/4.jpg", href: t("fashion") },
     ],
   },
   {
@@ -80,10 +83,10 @@ const USE_CASES: WheelGroup[] = [
   {
     id: "style-transfer", href: t(), title: "Style Transfer",
     cards: [
-      { name: "Variations", video: "/media/capabilities/variate.mp4", href: t() },
-      { name: "Effects", video: "/media/capabilities/vfx.mp4", href: t() },
-      { name: "Brand Kit Styling", video: "/media/capabilities/brand-kits.mp4", href: t("branding") },
-      { name: "Concept Restyle", video: "/media/use-cases/concepting.mp4", href: t() },
+      { name: "Motion Portrait", image: "/media/use-cases/style-transfer/1.jpg", href: t() },
+      { name: "Long Exposure", image: "/media/use-cases/style-transfer/2.jpg", href: t() },
+      { name: "Fragrance Still", image: "/media/use-cases/style-transfer/3.jpg", href: t() },
+      { name: "Floral Study", image: "/media/use-cases/style-transfer/4.jpg", href: t() },
     ],
   },
 ];
