@@ -508,19 +508,23 @@ export function PlatformStrip() {
           transition: opacity 220ms ease;
         }
         .pf-tab-on::before, .pf-tab-on + .pf-tab::before { opacity: 0; }
+        /* Violet tint, not ink (Hamza, 24 Sep, to a reference): the one
+           colour in the strip, so it reads as a flag rather than a label.
+           #a78bfa on the tinted track is 5.8:1; the light theme darkens it. */
         .pf-new {
           display: inline-flex;
           align-items: center;
-          height: 18px;
-          padding: 0 6px;
-          border-radius: 5px;
-          background: var(--ink-heading);
-          color: var(--page-bg);
-          font-size: 10px;
+          height: 20px;
+          padding: 0 7px;
+          border-radius: 6px;
+          background: rgba(139, 92, 246, 0.2);
+          color: #a78bfa;
+          font-size: 10.5px;
           font-weight: 600;
-          letter-spacing: 0.06em;
+          letter-spacing: 0.04em;
           text-transform: uppercase;
         }
+        :root:not([data-theme="dark"]) .pf-new { background: #ede9fe; color: #6d28d9; }
 
         /* The panel frames the stage and holds nothing else. */
         .pf-panel {
