@@ -564,6 +564,7 @@ export function PlatformStrip() {
     <div id="mcp" className="pf">
       {/* No heading of its own: it sits under the hero's, and two in one fold
           is one too many. */}
+        <div className="pf-panel">
         <div className="pf-tabs" role="tablist" aria-label="Platform" ref={tabs.containerRef as React.Ref<HTMLDivElement>}>
           <SlidingIndicator box={tabs.box} ready={tabs.ready} className="pf-tab-fill" />
           {TABS.map((x, i) => (
@@ -581,7 +582,7 @@ export function PlatformStrip() {
           ))}
         </div>
 
-        <div className={`pf-panel ${t.kind === "mcp" ? "pf-panel-wide" : ""}`}>
+        <div className={`pf-grid ${t.kind === "mcp" ? "pf-grid-wide" : ""}`}>
           {t.kind === "mcp" ? (
             <div className="pf-mcp"><McpPanel /></div>
           ) : (
@@ -619,6 +620,7 @@ export function PlatformStrip() {
             </>
           )}
         </div>
+        </div>
 
       <style>{`
         .pf { isolation: isolate; }
@@ -628,7 +630,7 @@ export function PlatformStrip() {
            gallery rather than as the platform's own parts. */
         .pf-tabs {
           position: relative;
-          margin: clamp(28px, 4vw, 44px) auto 0;
+          margin: 0 auto clamp(18px, 2vw, 26px);
           width: max-content;
           max-width: 100%;
           display: flex;
@@ -663,20 +665,33 @@ export function PlatformStrip() {
         .pf-tab:hover { color: var(--ink); }
         .pf-tab-on, .pf-tab-on:hover { color: var(--ink); }
 
+        /* The tabs live inside the panel (Hamza, 24 Sep), as its header row
+           rather than as a control floating above it: one object on the page
+           instead of two. */
         .pf-panel {
           position: relative;
           margin-top: clamp(24px, 3vw, 40px);
+          display: flex;
+          flex-direction: column;
+          padding: clamp(16px, 1.8vw, 24px) clamp(20px, 2.4vw, 34px) clamp(20px, 2.4vw, 34px);
+          border-radius: var(--radius-6);
+          border: 1px solid var(--line);
+          background: var(--tile);
+          min-height: 560px;
+        }
+        .pf-grid {
+          flex: 1;
           display: grid;
           grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
           gap: clamp(20px, 2.4vw, 36px);
           align-items: stretch;
-          padding: clamp(20px, 2.4vw, 34px);
-          border-radius: var(--radius-6);
-          border: 1px solid var(--line);
-          background: var(--tile);
-          min-height: 520px;
+          min-height: 0;
         }
-        .pf-panel-wide { grid-template-columns: minmax(0, 1fr); }
+        .pf-grid-wide { grid-template-columns: minmax(0, 1fr); }
+        /* A step darker than the panel it sits in, so the groove still reads
+           as a groove now that the ground behind it is --tile and not the
+           page. */
+        .pf-tabs { background: var(--track); }
         .pf-copy { display: flex; flex-direction: column; min-width: 0; }
         .pf-title {
           font-size: clamp(21px, 1.9vw, 27px);
@@ -1015,7 +1030,8 @@ export function PlatformStrip() {
 
 
         @media (max-width: 1000px) {
-          .pf-panel { grid-template-columns: minmax(0, 1fr); min-height: 0; }
+          .pf-panel { min-height: 0; }
+          .pf-grid { grid-template-columns: minmax(0, 1fr); }
           .pf-media { aspect-ratio: 16 / 9; min-height: 0; }
           .pf-rail { margin-top: 20px; padding-top: 8px; }
         }
