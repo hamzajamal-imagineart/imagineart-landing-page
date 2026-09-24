@@ -39,7 +39,7 @@ Verify with `npx next build` plus grep or DOM measurement. Keep replies short.
 
 | Section | Component | What it is |
 |---|---|---|
-| Hero | `sections/Hero` | A centred column over a mosaic of work: the headline, the copy, and **two actions** — "Start creating for free" and "Contact sales". Under them the **platform strip** (`sections/Platform`, `PlatformStrip`, `#mcp`): one panel whose header row is four large tabs — Creative Suite · Agents · MCP · Plugins — over copy on the left and the stage on the right. Creative Suite carries its own rail (Image · Video · Audio); Image is a coverflow of four clips, Video plays three in turn, Audio is the wall of track cards. Agents is one clip with the control bar; MCP is the connect panel, full width; Plugins is the six marks as links. |
+| Hero | `sections/Hero` | A centred column over a mosaic of work: the headline, the copy, and **two actions** — "Start creating for free" and "Contact sales". Under them the **platform strip** (`sections/Platform`, `PlatformStrip`, `#mcp`): one panel whose header row carries four large tabs at the left and that tab's own action at the right, over copy on the left and the stage on the right. Creative Suite carries its own rail (Image · Video · Audio); Image is a coverflow of four clips, Video plays three in turn, Audio is the wall of track cards. Agents is one clip with the control bar; MCP is the connect panel, full width; Plugins is the six marks as links. |
 | Partners | `sections/Partners` | Six partner marks (ByteDance, Kling AI, MINIMAX, Wan, fal, Grok) with two captions. |
 | Creative Tools `#tools` | `sections/CreativeTools` | A 13-card bento from Figma: four 308px columns, 16px gutter, split 410/190/190 or 144/144/296/190 so every column ends level at 822. Eight cards carry a photograph, five carry that tool's own clip. No icons. Title always showing, description on hover. "View all tools" at the foot. |
 | Studios `#studios` | `sections/AdStudio` | Heading "Studios" + lede, then the **Ad Studio banner**: five vertical marquee columns of 9:16 ad clips (30 clips, CDN, posters, `preload="none"`) and a frosted left panel. |
@@ -88,6 +88,14 @@ tab says something in words as well as in footage, and **the tabs sit inside
 that panel as its header row** (Hamza, 24 Sep) rather than floating above it,
 so the strip is one object on the page instead of two. The groove keeps
 `--track`, which is a step darker than the `--tile` it now sits on.
+
+**The header row is tabs left, action right, hairline under.** Centred, the
+pill left 345px of dead space each side inside an 1176 panel, which is what
+made the block read as unfinished; pairing it with the tab's own link fills
+the row and gives it a job, and moves the action out of the copy column where
+it was competing with the rail. The panel also sits **72px clear of the hero's
+buttons** rather than 40 — at 40 the actions and the panel read as one
+crowded stack, which is the other half of the same complaint.
 
 Carried across unchanged: the reel, the music wall, the control bar and the
 skeleton are the old panel's code, moved rather than rewritten; the strip

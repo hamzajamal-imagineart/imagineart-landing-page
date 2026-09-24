@@ -565,6 +565,7 @@ export function PlatformStrip() {
       {/* No heading of its own: it sits under the hero's, and two in one fold
           is one too many. */}
         <div className="pf-panel">
+        <div className="pf-head">
         <div className="pf-tabs" role="tablist" aria-label="Platform" ref={tabs.containerRef as React.Ref<HTMLDivElement>}>
           <SlidingIndicator box={tabs.box} ready={tabs.ready} className="pf-tab-fill" />
           {TABS.map((x, i) => (
@@ -582,6 +583,14 @@ export function PlatformStrip() {
           ))}
         </div>
 
+          <a className="pf-go" href={t.href} target="_blank" rel="noopener noreferrer">
+            {t.cta}
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden>
+              <path d="M6 12h12M13 6l6 6-6 6" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </a>
+        </div>
+
         <div className={`pf-grid ${t.kind === "mcp" ? "pf-grid-wide" : ""}`}>
           {t.kind === "mcp" ? (
             <div className="pf-mcp"><McpPanel /></div>
@@ -590,12 +599,6 @@ export function PlatformStrip() {
               <div className="pf-copy">
                 <h3 className="pf-title">{t.title}</h3>
                 <p className="pf-body">{t.body}</p>
-                <a className="pf-go" href={t.href} target="_blank" rel="noopener noreferrer">
-                  {t.cta}
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden>
-                    <path d="M6 12h12M13 6l6 6-6 6" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                </a>
 
                 {rail && (
                   <ul className="pf-rail">
@@ -628,9 +631,22 @@ export function PlatformStrip() {
 
         /* Lettered tabs, not chips. At chip size this read as a filter on a
            gallery rather than as the platform's own parts. */
+        /* The header row: tabs at the left, the tab's own action at the
+           right, a hairline under both. Centring the pill left 345px of dead
+           space each side of it inside an 1176 panel, which is what made the
+           block read as unfinished rather than as a card with a header. */
+        .pf-head {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 20px;
+          padding-bottom: clamp(14px, 1.6vw, 20px);
+          margin-bottom: clamp(18px, 2.2vw, 28px);
+          border-bottom: 1px solid var(--line);
+        }
         .pf-tabs {
           position: relative;
-          margin: 0 auto clamp(18px, 2vw, 26px);
+          margin: 0;
           width: max-content;
           max-width: 100%;
           display: flex;
@@ -670,10 +686,12 @@ export function PlatformStrip() {
            instead of two. */
         .pf-panel {
           position: relative;
-          margin-top: clamp(24px, 3vw, 40px);
           display: flex;
           flex-direction: column;
           padding: clamp(16px, 1.8vw, 24px) clamp(20px, 2.4vw, 34px) clamp(20px, 2.4vw, 34px);
+          /* Clear of the hero's actions: at 40px the buttons and the panel
+             read as one crowded stack. */
+          margin-top: clamp(64px, 8vh, 96px);
           border-radius: var(--radius-6);
           border: 1px solid var(--line);
           background: var(--tile);
@@ -702,11 +720,11 @@ export function PlatformStrip() {
         }
         .pf-body { margin-top: 12px; font-size: 15px; line-height: 1.6; color: var(--ink-2); max-width: 44ch; }
         .pf-go {
-          margin-top: 18px;
+          flex: 0 0 auto;
           display: inline-flex;
           align-items: center;
           gap: 8px;
-          align-self: flex-start;
+          white-space: nowrap;
           font-size: 14.5px;
           font-weight: 500;
           color: var(--ink-heading);
@@ -716,7 +734,7 @@ export function PlatformStrip() {
 
         /* The rail sits at the foot of the copy column, so the three parts of
            the suite read as a sub-level of the tab rather than as more tabs. */
-        .pf-rail { list-style: none; margin-top: auto; padding-top: 28px; display: flex; flex-direction: column; }
+        .pf-rail { list-style: none; margin-top: auto; padding-top: 24px; display: flex; flex-direction: column; }
         .pf-rail li + li { margin-top: 2px; }
         .pf-rail-btn {
           width: 100%;
@@ -1030,6 +1048,8 @@ export function PlatformStrip() {
 
 
         @media (max-width: 1000px) {
+          .pf-head { flex-direction: column; align-items: flex-start; gap: 14px; }
+          .pf-tabs { max-width: 100%; }
           .pf-panel { min-height: 0; }
           .pf-grid { grid-template-columns: minmax(0, 1fr); }
           .pf-media { aspect-ratio: 16 / 9; min-height: 0; }
