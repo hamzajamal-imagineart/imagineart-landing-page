@@ -1,131 +1,264 @@
 import { BlurHeading } from "@/components/BlurHeading";
-
+import { withBasePath } from "@/lib/assets";
 
 /**
- * Reviews: a summary column on the left that sticks while a stacked column of
- * reviews scrolls past it on the right.
+ * Reviews, as a bento of five (Hamza, 24 Sep, to a reference): three columns,
+ * a tall featured card in the middle with footage fading into its copy, and a
+ * short and a tall card either side, dark and light alternating so the two
+ * outer columns mirror each other.
  *
  * Reviews are real, pulled from the public Trustpilot profile for
  * www.imagine.art on 28 Aug 2026, filtered to five stars. Attributed to the
  * reviewer's own display name and Trustpilot, because that is all the source
- * gives. Obvious typos corrected, nothing else changed.
+ * gives — so the avatar is a monogram, not a photograph, and the line under
+ * the name is the source, not a job title. Obvious typos corrected, nothing
+ * else changed.
+ *
+ * The reference's featured card carries two stats ("32% lead generation").
+ * There are no real figures to put there, so that row is left out rather
+ * than invented; `stats` on a review renders it when there are.
  *
  * The profile's overall score is 3.9, not 5. Showing only five-star reviews is
  * a selected view, so this section makes no aggregate rating claim.
  */
-type Review = { stars: number; quote: string; source: string };
+type Review = {
+  stars: number;
+  quote: string;
+  name: string;
+  stats?: { value: string; label: string }[];
+};
 
-const REVIEWS: Review[] = [
-  { stars: 5, quote: "I tried multiple tools to create videos but only ImagineArt was able to give me crisp videos as per the prompt.", source: "Uzair Khan, via Trustpilot" },
-  { stars: 5, quote: "I love this platform. Very easy to navigate through whatever you need to create, and the pricing is very reasonable.", source: "Robyn Delay, via Trustpilot" },
-  { stars: 5, quote: "ImagineArt was very helpful to me. Their support was extremely responsive to what I needed.", source: "Heidi Anderson, via Trustpilot" },
-  { stars: 5, quote: "It's the perfect portal for everything I need in AI. Easy to add credits. Quick and responsive.", source: "Aubrey Kurlansky, via Trustpilot" },
-  { stars: 5, quote: "Easy to generate. Everything you need is here, and one clip and the task is completed.", source: "Event House, via Trustpilot" },
-  { stars: 5, quote: "I'm really impressed with the quality. It works very well and completely met my expectations.", source: "Ali Haider, via Trustpilot" },
-  { stars: 5, quote: "Love it. It's my go-to re-imaging tool.", source: "Karen Golding, via Trustpilot" },
-  { stars: 5, quote: "Excellent results every time. Just loved it.", source: "Verified reviewer, via Trustpilot" },
-  { stars: 5, quote: "Very nice work on this project, and the art is amazing.", source: "Giwrgos Avdiu, via Trustpilot" },
-  { stars: 5, quote: "A great and comprehensive application.", source: "Bud Brure, via Trustpilot" },
+const src = "via Trustpilot";
+
+/** Five, in the order the grid places them: column one top and bottom, the
+    featured card, column three top and bottom. */
+const [A, B, FEATURED, C, D]: Review[] = [
+  { stars: 5, quote: "It's the perfect portal for everything I need in AI. Easy to add credits. Quick and responsive.", name: "Aubrey Kurlansky" },
+  { stars: 5, quote: "I love this platform. Very easy to navigate through whatever you need to create, and the pricing is very reasonable.", name: "Robyn Delay" },
+  { stars: 5, quote: "I tried multiple tools to create videos but only ImagineArt was able to give me crisp videos as per the prompt.", name: "Uzair Khan" },
+  { stars: 5, quote: "ImagineArt was very helpful to me. Their support was extremely responsive to what I needed.", name: "Heidi Anderson" },
+  { stars: 5, quote: "I'm really impressed with the quality. It works very well and completely met my expectations.", name: "Ali Haider" },
 ];
+
+/** A clip the product made, behind the review that is about its video. */
+const FEATURED_CLIP = "/media/hero/modes/video/2-fashion.mp4";
+
+const initials = (name: string) =>
+  name.split(/\s+/).map((w) => w[0]).slice(0, 2).join("").toUpperCase();
+
+function Stars({ n }: { n: number }) {
+  return (
+    <span className="rv-stars" role="img" aria-label={`${n} out of 5 stars`}>
+      {Array.from({ length: 5 }).map((_, s) => (
+        <svg key={s} viewBox="0 0 24 24" className={s < n ? "rv-star-on" : "rv-star-off"} aria-hidden>
+          <path d="M12 2.6l2.9 6.1 6.6.9-4.8 4.6 1.2 6.6L12 17.7 6.1 20.8l1.2-6.6L2.5 9.6l6.6-.9L12 2.6z" />
+        </svg>
+      ))}
+    </span>
+  );
+}
+
+function Person({ name }: { name: string }) {
+  return (
+    <div className="rv-person">
+      <span className="rv-avatar" aria-hidden>{initials(name)}</span>
+      <span>
+        <span className="rv-name">{name}</span>
+        <span className="rv-src">{src}</span>
+      </span>
+    </div>
+  );
+}
+
+function Card({ r, tone }: { r: Review; tone: "dark" | "light" }) {
+  return (
+    <figure className={`rv-card rv-${tone}`}>
+      <Stars n={r.stars} />
+      <blockquote className="rv-quote">&ldquo;{r.quote}&rdquo;</blockquote>
+      <figcaption><Person name={r.name} /></figcaption>
+    </figure>
+  );
+}
 
 export function ReviewsSection() {
   return (
     <section id="reviews" className="relative border-t border-[color:var(--line)] py-24 md:py-32">
       <div className="container-page relative z-10">
-        <div className="rv-split">
-          <div className="rv-summary">
-            <BlurHeading className="h2" lead="Reviews" />
-            <p className="lede mt-5" style={{ maxWidth: "36ch" }}>
-              From solo creators to studios, in their own words.
-            </p>
+        <div className="max-w-[640px]">
+          <BlurHeading className="h2" lead="Reviews" />
+          <p className="lede mt-5">From solo creators to studios, in their own words.</p>
+        </div>
+
+        <div className="rv-grid mt-12">
+          <div className="rv-col rv-col-a">
+            <Card r={A} tone="dark" />
+            <Card r={B} tone="light" />
           </div>
 
-          <div className="rv-viewport">
-            <ul className="rv-track">
-              {[...REVIEWS, ...REVIEWS].map((r, i) => (
-                <li key={i} className="rv-card" aria-hidden={i >= REVIEWS.length}>
-                  <span className="rv-stars" aria-label={`${r.stars} out of 5`}>
-                    {Array.from({ length: 5 }).map((_, s) => (
-                      <IconStar key={s} on={s < r.stars} />
-                    ))}
-                  </span>
-                  <p className="rv-quote">{r.quote}</p>
-                  <p className="rv-source">{r.source}</p>
-                </li>
-              ))}
-            </ul>
+          <figure className="rv-card rv-featured">
+            {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+            <video
+              className="rv-media"
+              src={withBasePath(FEATURED_CLIP)}
+              autoPlay
+              muted
+              loop
+              playsInline
+              preload="metadata"
+              aria-hidden
+            />
+            <span className="rv-scrim" aria-hidden />
+            <div className="rv-featured-copy">
+              <Stars n={FEATURED.stars} />
+              <blockquote className="rv-quote">&ldquo;{FEATURED.quote}&rdquo;</blockquote>
+              {FEATURED.stats && (
+                <dl className="rv-stats">
+                  {FEATURED.stats.map((s) => (
+                    <div key={s.label}>
+                      <dt>{s.value}</dt>
+                      <dd>{s.label}</dd>
+                    </div>
+                  ))}
+                </dl>
+              )}
+              <figcaption><Person name={FEATURED.name} /></figcaption>
+            </div>
+          </figure>
+
+          <div className="rv-col rv-col-c">
+            <Card r={C} tone="light" />
+            <Card r={D} tone="dark" />
           </div>
         </div>
       </div>
 
       <style>{`
-        .rv-split {
+        /* Three columns; the outer two split short over tall and tall over
+           short, so the seams sit at different heights either side of the
+           featured card, as in the reference. */
+        .rv-grid {
           display: grid;
-          grid-template-columns: 1fr 1.15fr;
-          gap: clamp(32px, 6vw, 88px);
-          align-items: start;
+          grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr) minmax(0, 1fr);
+          gap: 14px;
+          min-height: clamp(520px, 44vw, 620px);
         }
-        .rv-summary { position: sticky; top: 120px; }
+        .rv-col { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+        .rv-col-a > :first-child, .rv-col-c > :last-child { flex: 1 1 0; }
+        .rv-col-a > :last-child, .rv-col-c > :first-child { flex: 1.3 1 0; }
 
-        .rv-viewport {
+        .rv-card {
           position: relative;
-          height: clamp(420px, 62vh, 620px);
-          overflow: hidden;
-          -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 12%, #000 88%, transparent 100%);
-          mask-image: linear-gradient(to bottom, transparent 0, #000 12%, #000 88%, transparent 100%);
-        }
-        .rv-track {
-          list-style: none;
-          margin: 0;
-          padding: 0;
           display: flex;
           flex-direction: column;
-          gap: 14px;
-          animation: rv-scroll 38s linear infinite;
-          will-change: transform;
-        }
-        .rv-viewport:hover .rv-track { animation-play-state: paused; }
-
-        @keyframes rv-scroll {
-          from { transform: translateY(0); }
-          to   { transform: translateY(calc(-50% - 7px)); }
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-          .rv-track { animation: none; }
-          .rv-viewport { height: auto; overflow: visible; -webkit-mask-image: none; mask-image: none; }
-        }
-        .rv-card {
-          background: var(--panel);
-          border: 1px solid var(--line);
+          margin: 0;
+          padding: clamp(20px, 1.9vw, 28px);
           border-radius: var(--radius-4);
-          padding: 22px 24px;
+          min-width: 0;
         }
-        .rv-stars { display: inline-flex; gap: 3px; }
-        .rv-stars svg { width: 14px; height: 14px; }
-        .rv-quote { margin-top: 14px; font-size: 15.5px; line-height: 1.6; color: var(--ink-2); }
-        .rv-source {
-          margin-top: 16px;
-          padding-top: 14px;
-          border-top: 1px solid var(--line);
-          font-size: 13.5px;
-          color: var(--ink-3);
+        /* Fixed tones rather than the page's tokens: the section is the
+           alternation of the two, and it has to hold in either theme. */
+        .rv-dark {
+          background: #19191b;
+          color: #fff;
+          box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+          --rv-2: rgba(255, 255, 255, 0.78);
+          --rv-3: rgba(255, 255, 255, 0.55);
+          --rv-avatar: rgba(255, 255, 255, 0.1);
+          --rv-star-off: rgba(255, 255, 255, 0.2);
+        }
+        .rv-light {
+          background: #f4f4f2;
+          color: #141414;
+          box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.06);
+          --rv-2: #3a3a3c;
+          --rv-3: #6b6b70;
+          --rv-avatar: #e2e2de;
+          --rv-star-off: rgba(0, 0, 0, 0.16);
         }
 
-        @media (max-width: 900px) {
-          .rv-split { grid-template-columns: 1fr; gap: 32px; }
-          .rv-summary { position: static; }
+        .rv-stars { display: inline-flex; gap: 3px; }
+        .rv-stars svg { width: 15px; height: 15px; display: block; }
+        .rv-star-on { fill: #f06a3c; }
+        .rv-star-off { fill: var(--rv-star-off); }
+
+        .rv-quote {
+          margin: 16px 0 0;
+          font-size: 15px;
+          line-height: 1.6;
+          color: var(--rv-2);
+          max-width: 42ch;
+        }
+
+        /* The person sits at the card's foot, whatever the quote's length. */
+        .rv-card figcaption { margin-top: auto; padding-top: 24px; }
+        .rv-person { display: flex; align-items: center; gap: 12px; }
+        .rv-avatar {
+          width: 38px; height: 38px;
+          flex: 0 0 auto;
+          display: grid; place-items: center;
+          border-radius: 8px;
+          background: var(--rv-avatar);
+          font-size: 12.5px;
+          font-weight: 600;
+          letter-spacing: 0.02em;
+        }
+        .rv-name { display: block; font-size: 14.5px; font-weight: 500; letter-spacing: -0.01em; }
+        .rv-src { display: block; margin-top: 2px; font-size: 12.5px; color: var(--rv-3); }
+
+        /* Featured: footage over the top, fading down into the copy. */
+        .rv-featured {
+          overflow: hidden;
+          justify-content: flex-end;
+          padding: 0;
+          background: #0e0e10;
+          color: #fff;
+          box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+          --rv-2: rgba(255, 255, 255, 0.84);
+          --rv-3: rgba(255, 255, 255, 0.58);
+          --rv-avatar: rgba(255, 255, 255, 0.14);
+          --rv-star-off: rgba(255, 255, 255, 0.24);
+        }
+        .rv-media { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+        .rv-scrim {
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(
+            to bottom,
+            rgba(14, 14, 16, 0) 0%,
+            rgba(14, 14, 16, 0.2) 30%,
+            rgba(14, 14, 16, 0.86) 58%,
+            #0e0e10 78%
+          );
+        }
+        .rv-featured-copy {
+          position: relative;
+          display: flex;
+          flex-direction: column;
+          padding: clamp(20px, 1.9vw, 28px);
+        }
+        .rv-featured figcaption { margin-top: 0; padding-top: 24px; }
+        .rv-stats {
+          display: grid;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 16px;
+          margin: 22px 0 0;
+        }
+        .rv-stats > div { padding-bottom: 14px; border-bottom: 1px solid rgba(255, 255, 255, 0.14); }
+        .rv-stats dt { font-size: 28px; font-weight: 500; letter-spacing: -0.02em; }
+        .rv-stats dd { margin: 4px 0 0; font-size: 13px; color: var(--rv-3); }
+
+        @media (max-width: 1000px) {
+          /* Two columns: the featured card across the top, the four under it. */
+          .rv-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); min-height: 0; }
+          .rv-featured { grid-column: 1 / -1; grid-row: 1; min-height: 460px; }
+          .rv-col > * { flex: 0 0 auto !important; min-height: 220px; }
+        }
+        @media (max-width: 640px) {
+          .rv-grid { grid-template-columns: minmax(0, 1fr); }
+          .rv-featured { min-height: 440px; }
+          .rv-col > * { min-height: 0; }
         }
       `}</style>
     </section>
-  );
-}
-
-/* Trustpilot's star is the one third-party mark here, so it keeps its colour. */
-function IconStar({ on }: { on: boolean }) {
-  return (
-    <svg viewBox="0 0 24 24" fill={on ? "#F5A524" : "rgba(0,0,0,0.14)"} aria-hidden>
-      <path d="M12 2.6l2.9 6.1 6.6.9-4.8 4.6 1.2 6.6L12 17.7 6.1 20.8l1.2-6.6L2.5 9.6l6.6-.9L12 2.6z" />
-    </svg>
   );
 }
