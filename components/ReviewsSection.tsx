@@ -155,25 +155,26 @@ export function ReviewsSection() {
           border-radius: var(--radius-4);
           min-width: 0;
         }
-        /* Fixed tones rather than the page's tokens: the section is the
-           alternation of the two, and it has to hold in either theme. */
+        /* Two shades of dark, not dark and white (Hamza, 24 Sep): the page
+           ships dark and a white card read as a hole in it. The alternation
+           stays, as a lift of one step rather than a flip. */
         .rv-dark {
-          background: #19191b;
+          background: #141416;
           color: #fff;
-          box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+          box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
           --rv-2: rgba(255, 255, 255, 0.78);
           --rv-3: rgba(255, 255, 255, 0.55);
-          --rv-avatar: rgba(255, 255, 255, 0.1);
-          --rv-star-off: rgba(255, 255, 255, 0.2);
+          --rv-avatar: rgba(255, 255, 255, 0.08);
+          --rv-star-off: rgba(255, 255, 255, 0.18);
         }
         .rv-light {
-          background: #f4f4f2;
-          color: #141414;
-          box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.06);
-          --rv-2: #3a3a3c;
-          --rv-3: #6b6b70;
-          --rv-avatar: #e2e2de;
-          --rv-star-off: rgba(0, 0, 0, 0.16);
+          background: #232327;
+          color: #fff;
+          box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+          --rv-2: rgba(255, 255, 255, 0.82);
+          --rv-3: rgba(255, 255, 255, 0.58);
+          --rv-avatar: rgba(255, 255, 255, 0.1);
+          --rv-star-off: rgba(255, 255, 255, 0.2);
         }
 
         .rv-stars { display: inline-flex; gap: 3px; }
