@@ -39,7 +39,7 @@ Verify with `npx next build` plus grep or DOM measurement. Keep replies short.
 
 | Section | Component | What it is |
 |---|---|---|
-| Hero | `sections/Hero` | A centred column over a mosaic of work: the headline — **"The AI creative suite / built for enterprise."** (24 Sep, B2B; was "Imagine, design, animate, / edit. One platform.") — a B2B line of copy (models in one workspace, brand held, security and admin controls), and **two actions** — "Start creating for free" and "Contact sales". Under them the **platform strip** (`sections/Platform`, `PlatformStrip`, `#mcp`): a segmented control of four tabs (MCP carries a NEW tag) centred over a panel that is one stage and nothing else — no copy on any tab. Creative Suite is one coverflow of the image and video clips; Agents is one clip with the control bar; MCP is the connect panel with its client tabs; Plugins is six tiles. See §2a. |
+| Hero | `sections/Hero` | A centred column over a mosaic of work: the headline — **"The AI creative suite / built for enterprise."** (24 Sep, B2B; was "Imagine, design, animate, / edit. One platform.") — a B2B line of copy (models in one workspace, brand held, security and admin controls), and **two actions** — "Start creating for free" and "Contact sales". Under them the **platform strip** (`sections/Platform`, `PlatformStrip`, `#mcp`): a segmented control of four tabs (MCP carries a NEW tag) centred over a panel that is one stage and nothing else — no copy on any tab. Creative Suite is one coverflow of the image and video clips; Agents is one clip with the control bar; MCP is the connect panel with its client tabs; Plugins is a hub of the six apps wired to the ImagineArt mark, with copy on the left. See §2a. |
 | Partners | `sections/Partners` | Six partner marks (ByteDance, Kling AI, MINIMAX, Wan, fal, Grok) with two captions. |
 | Suite `#suite` | `sections/Suite` | Ported from the Enterprise page (`platform/Suite` + `SuiteRail`, 24 Sep): eyebrow "The suite", heading "Everything your team / needs to create", lede, then a rail of nine tool cards (dark tones, copy on top, glass arrow, 16:9 clip at the foot) with pagers. Copy and links are `BUSINESS_TOOLS` verbatim. Seven clips were already here (`capabilities/`, `studios/`); Workflows and Canvas came across as `suite/workflows.mp4`, `suite/canvas.mp4` (1MB). One client component, not the source's server/client split. Overlaps Creative Tools, which follows it. |
 | Industries `#industries` | `sections/Industries` | Ported from the Enterprise page's `IndustriesSection` (24 Sep), **replacing Creative Tools** in that slot (`CreativeTools` is pulled, on disk). Eyebrow "Industries", heading "Built for / your industry", lede, then ten `MediaCard`s at 3:4 in a 2/3/4-column grid, each with its own clip (`media/industries/`, 8.1MB, copied across) and a link into the enterprise template gallery filtered by category. Copy verbatim from the source. Nav "Tools" became "Industries". |
@@ -95,7 +95,14 @@ title, no paragraph, no link, on any tab.
 - **MCP** is the full connect panel again (`McpPanel`: client tabs, MCP /
   CLI toggle, three steps, recording), restored 24 Sep. It is taller than
   2:1, so `.pf-stage:has(.pf-mcp)` drops the ratio for that tab only.
-- **Plugins** is a 3 × 2 grid of tiles filling the stage.
+- **Plugins** is a hub (25 Sep, "too basic"): copy on the left — the one
+  tab that keeps text, by request — and on the right the ImagineArt mark wired
+  to the six apps, three a side, a violet pulse running down each cable,
+  staggered. Hover or focus an app and its cable lights and the caption under
+  the hub names it; each app links to its plugin page. SVG viewBox 560 × 440
+  and the figure holds that ratio, so the HTML tiles sit on the cable ends —
+  measured 0px off at 390, 1000 and 1340. Stacks under 880px; pulses off under
+  reduced motion. `PLUGINS_HREF` is exported from `lib/links.ts` now.
 
 Why the old centred pill had failed and this one does not: the panel under it
 used to carry copy on the left, so the centred pill sat over an off-centre

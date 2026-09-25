@@ -29,7 +29,7 @@ export const STUDIO_HREFS = {
 } as const;
 
 /** Plugin pages, one anchor per host application. Confirmed. */
-const PLUGINS_HREF = `${HOME}/plugins`;
+export const PLUGINS_HREF = `${HOME}/plugins`;
 export const pluginHref = (anchor: string) => `${PLUGINS_HREF}#${anchor}`;
 
 /** App gallery, by category. Confirmed. */

@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { withBasePath } from "@/lib/assets";
 import { McpPanel } from "@/components/sections/Mcp";
 import { SlidingIndicator, slidingIndicatorCss, useSlidingIndicator } from "@/components/primitives/SlidingIndicator";
-import { pluginHref } from "@/lib/links";
+import { pluginHref, PLUGINS_HREF } from "@/lib/links";
 
 /**
  * The platform strip: a pill of tabs over one stage, under the hero's copy.
@@ -312,22 +312,87 @@ function ClipPlayer({ videos, audio }: { videos: string[]; audio?: boolean }) {
 }
 
 /**
- * Plugins: the six marks as a 3 × 2 grid of tiles, centred on the stage. There
- * is no recording of a plugin that is not just the host application.
+ * Plugins, as a hub (Hamza, 25 Sep: "too basic, try something intriguing,
+ * text on the left"). Copy on the left; on the right the ImagineArt mark in
+ * the middle with the six host apps wired to it, three a side, and a pulse
+ * running down each cable into the hub, staggered so something is always
+ * arriving. Hover or focus an app and its cable lights and the caption under
+ * the hub names it. Every app is still a link to its plugin page.
+ *
+ * The drawing is one coordinate space: the SVG's viewBox is 560 × 440 and the
+ * figure holds that ratio, so the tiles (HTML, for links and focus) sit at
+ * the same points as a percentage of the box.
  */
-function PluginGrid() {
+const HUB = { x: 280, y: 220 };
+const NODES = [
+  { x: 84, y: 76 }, { x: 60, y: 220 }, { x: 84, y: 364 },
+  { x: 476, y: 76 }, { x: 500, y: 220 }, { x: 476, y: 364 },
+];
+const cable = (n: { x: number; y: number }) => {
+  const mx = (n.x + HUB.x) / 2;
+  return `M ${n.x} ${n.y} C ${mx} ${n.y}, ${mx} ${HUB.y}, ${HUB.x} ${HUB.y}`;
+};
+
+function PluginHub() {
+  const [on, setOn] = useState<number | null>(null);
   return (
-    <ul className="pf-plugins">
-      {PLUGINS.map((p) => (
-        <li key={p.icon}>
-          <a href={pluginHref(p.anchor)} target="_blank" rel="noopener noreferrer">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={withBasePath(`/media/plugins/${p.icon}.svg`)} alt="" aria-hidden />
-            <span>{p.name}</span>
-          </a>
-        </li>
-      ))}
-    </ul>
+    <div className="pf-plug">
+      <div className="pf-plug-copy">
+        <p className="pf-plug-eyebrow">Plugins</p>
+        <h3 className="pf-plug-title">Your models, inside the apps you already use</h3>
+        <p className="pf-plug-body">
+          Photoshop, Premiere, After Effects, Figma, Framer and Shopify, with the
+          same models and the same brand kit behind every one.
+        </p>
+        <a className="pf-plug-go" href={PLUGINS_HREF} target="_blank" rel="noopener noreferrer">
+          See all plugins
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden>
+            <path d="M6 12h12M13 6l6 6-6 6" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </a>
+      </div>
+
+      <div className="pf-plug-fig">
+        <svg className="pf-plug-wires" viewBox="0 0 560 440" aria-hidden>
+          {NODES.map((n, i) => (
+            <g key={i} className={on === i ? "pf-wire-on" : undefined}>
+              <path className="pf-wire" d={cable(n)} pathLength={1} />
+              <path className="pf-pulse" d={cable(n)} pathLength={1} style={{ animationDelay: `${i * 0.55}s` }} />
+            </g>
+          ))}
+        </svg>
+
+        <div className="pf-hub" aria-hidden>
+          <span className="pf-hub-ring" />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={withBasePath("/media/favicon/icon1.png")} alt="" />
+        </div>
+        <p className="pf-hub-cap" aria-live="polite">
+          {on === null ? "One brand kit, six apps" : `ImagineArt in ${PLUGINS[on].name}`}
+        </p>
+
+        <ul className="pf-nodes">
+          {PLUGINS.map((p, i) => (
+            <li key={p.icon} style={{ left: `${(NODES[i].x / 560) * 100}%`, top: `${(NODES[i].y / 440) * 100}%` }}>
+              <a
+                href={pluginHref(p.anchor)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`pf-node ${on === i ? "pf-node-on" : ""}`}
+                onMouseEnter={() => setOn(i)}
+                onMouseLeave={() => setOn(null)}
+                onFocus={() => setOn(i)}
+                onBlur={() => setOn(null)}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={withBasePath(`/media/plugins/${p.icon}.svg`)} alt="" aria-hidden />
+                <span className="pf-node-name">{p.name}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
   );
 }
 
@@ -353,7 +418,7 @@ export function PlatformStrip() {
 
   const stage =
     t.kind === "mcp" ? <div className="pf-mcp"><McpPanel /></div>
-    : t.kind === "plugins" ? <PluginGrid />
+    : t.kind === "plugins" ? <PluginHub />
     : t.kind === "reel" ? <ImageReel key={t.id} videos={t.videos ?? []} />
     : <ClipPlayer videos={t.videos ?? []} audio={t.audio} />;
 
@@ -489,33 +554,135 @@ export function PlatformStrip() {
         .pf-clip { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
         .pf-stage:hover .hc-controls { opacity: 1; transform: translateY(0); }
 
-        .pf-plugins {
-          list-style: none;
+        /* Plugins: copy left, the hub right, on the stage's own ground with
+           a faint dot grid so the wiring reads as a diagram. */
+        .pf-plug {
           position: absolute;
           inset: 0;
           display: grid;
-          grid-template-columns: repeat(3, minmax(0, 1fr));
-          grid-template-rows: repeat(2, minmax(0, 1fr));
-          gap: 12px;
-          padding: clamp(20px, 6%, 56px) clamp(20px, 14%, 180px);
-        }
-        .pf-plugins a {
-          display: flex;
-          flex-direction: column;
+          grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
           align-items: center;
-          justify-content: center;
-          gap: 14px;
-          height: 100%;
-          border-radius: var(--radius-4);
-          border: 1px solid var(--line);
-          background: var(--tile);
-          color: var(--ink-2);
-          font-size: 13.5px;
-          font-weight: 500;
-          transition: background 200ms ease, color 200ms ease;
+          gap: clamp(16px, 3vw, 48px);
+          padding: clamp(24px, 4vw, 56px);
+          background:
+            radial-gradient(circle at 70% 50%, rgba(138, 63, 252, 0.10), transparent 55%),
+            radial-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1.2px) 0 0 / 22px 22px,
+            var(--tile-2);
         }
-        .pf-plugins a:hover { background: var(--hover-wash); color: var(--ink-heading); }
-        .pf-plugins img { width: 36px; height: 36px; object-fit: contain; display: block; }
+        .pf-plug-eyebrow {
+          font-size: 12px;
+          font-weight: 600;
+          letter-spacing: 0.12em;
+          text-transform: uppercase;
+          color: var(--ink-3);
+        }
+        .pf-plug-title {
+          margin-top: 12px;
+          font-size: clamp(22px, 2.1vw, 30px);
+          line-height: 1.18;
+          font-weight: 500;
+          letter-spacing: -0.02em;
+          color: var(--ink-heading);
+          text-wrap: balance;
+        }
+        .pf-plug-body { margin-top: 14px; font-size: 15px; line-height: 1.6; color: var(--ink-2); max-width: 38ch; }
+        .pf-plug-go {
+          margin-top: 22px;
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          font-size: 14.5px;
+          font-weight: 500;
+          color: var(--ink-heading);
+          transition: opacity 200ms ease;
+        }
+        .pf-plug-go:hover { opacity: 0.72; }
+
+        .pf-plug-fig { position: relative; width: 100%; aspect-ratio: 560 / 440; max-height: 100%; justify-self: center; }
+        .pf-plug-wires { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+        .pf-wire { fill: none; stroke: var(--line-strong); stroke-width: 1.2; transition: stroke 240ms ease; }
+        .pf-wire-on .pf-wire { stroke: rgba(167, 139, 250, 0.9); }
+        /* A short dash that runs the length of the cable into the hub. */
+        .pf-pulse {
+          fill: none;
+          stroke: #a78bfa;
+          stroke-width: 2;
+          stroke-linecap: round;
+          stroke-dasharray: 0.08 1;
+          stroke-dashoffset: 1.08;
+          opacity: 0.9;
+          animation: pf-pulse 3.3s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+        }
+        @keyframes pf-pulse {
+          0%   { stroke-dashoffset: 1.08; opacity: 0; }
+          10%  { opacity: 0.9; }
+          85%  { opacity: 0.9; }
+          100% { stroke-dashoffset: 0; opacity: 0; }
+        }
+
+        .pf-hub {
+          position: absolute;
+          left: 50%; top: 50%;
+          width: 18%; aspect-ratio: 1;
+          transform: translate(-50%, -50%);
+          display: grid; place-items: center;
+          border-radius: 26%;
+          background: #111114;
+          box-shadow:
+            inset 0 0 0 1px rgba(255, 255, 255, 0.12),
+            0 0 0 8px rgba(138, 63, 252, 0.06),
+            0 18px 60px rgba(138, 63, 252, 0.28);
+        }
+        .pf-hub img { width: 58%; height: 58%; object-fit: contain; border-radius: 22%; display: block; }
+        /* A ring breathing out from the hub, in time with the pulses. */
+        .pf-hub-ring {
+          position: absolute;
+          inset: 0;
+          border-radius: inherit;
+          box-shadow: 0 0 0 1px rgba(167, 139, 250, 0.5);
+          animation: pf-ring 2.2s ease-out infinite;
+        }
+        @keyframes pf-ring {
+          from { transform: scale(1); opacity: 0.8; }
+          to   { transform: scale(1.6); opacity: 0; }
+        }
+        .pf-hub-cap {
+          position: absolute;
+          left: 50%;
+          top: calc(50% + 12.5%);
+          transform: translateX(-50%);
+          white-space: nowrap;
+          font-size: 12.5px;
+          font-weight: 500;
+          color: var(--ink-2);
+        }
+
+        .pf-nodes { list-style: none; position: absolute; inset: 0; margin: 0; padding: 0; }
+        .pf-nodes li { position: absolute; transform: translate(-50%, -50%); }
+        .pf-node {
+          width: clamp(52px, 5vw, 64px); aspect-ratio: 1;
+          display: grid; place-items: center;
+          border-radius: 16px;
+          background: var(--tile);
+          border: 1px solid var(--line);
+          box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+          transition: transform 240ms cubic-bezier(0.22, 1, 0.36, 1), border-color 240ms ease, background 240ms ease;
+          position: relative;
+        }
+        .pf-node img { width: 50%; height: 50%; object-fit: contain; display: block; }
+        .pf-node:hover, .pf-node-on { transform: scale(1.08); border-color: rgba(167, 139, 250, 0.6); background: var(--panel); }
+        .pf-node:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+        .pf-node-name {
+          position: absolute;
+          top: calc(100% + 8px);
+          left: 50%;
+          transform: translateX(-50%);
+          white-space: nowrap;
+          font-size: 12px;
+          color: var(--ink-3);
+          transition: color 200ms ease;
+        }
+        .pf-node:hover .pf-node-name, .pf-node-on .pf-node-name { color: var(--ink-heading); }
 
         /* MCP is the connect panel itself (Hamza, 24 Sep, "bring back the
            previous UI that had tabs"): client tabs, the MCP / CLI toggle, the
@@ -697,10 +864,14 @@ export function PlatformStrip() {
              or the plugin tiles. */
           .pf-stage { aspect-ratio: 16 / 10; }
           .pf-stage:has(.hc-reel) { aspect-ratio: 1 / 1; }
-          .pf-stage:has(.pf-plugins) { aspect-ratio: 3 / 4; }
-          .pf-plugins { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: repeat(3, minmax(0, 1fr)); gap: 8px; padding: 14px; }
+          /* The hub stacks under its copy, and the stage takes their
+             height rather than a ratio. */
+          .pf-stage:has(.pf-plug) { aspect-ratio: auto; }
+          .pf-plug { position: relative; grid-template-columns: minmax(0, 1fr); padding: 24px 20px 40px; gap: 28px; }
+          .pf-plug-fig { width: 100%; }
         }
         @media (prefers-reduced-motion: reduce) {
+          .pf-pulse, .pf-hub-ring { animation: none; opacity: 0; }
           .hc-slide { transition: none; }
           .hc-controls { transition: none; transform: none; }
         }
