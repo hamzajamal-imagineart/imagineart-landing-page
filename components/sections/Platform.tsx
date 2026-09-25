@@ -395,7 +395,9 @@ export function PlatformStrip() {
            read as one stack. */
         .pf-tabs {
           position: relative;
-          margin: clamp(88px, 11vh, 128px) auto 0;
+          /* The gap above is the hero head's padding, where the mosaic
+             fades out. */
+          margin: 0 auto;
           width: max-content;
           max-width: 100%;
           display: flex;

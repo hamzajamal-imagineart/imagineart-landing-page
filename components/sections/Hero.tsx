@@ -48,6 +48,10 @@ export function Hero() {
           light into the middle of the section, which is exactly where the
           headline is: it was working against the scrim. The mosaic gives the
           section its interest now. */}
+      {/* The ground and the copy share one box, so the mosaic ends where the
+          tabs start (Hamza, 25 Sep): the platform strip sits on the page,
+          not on the work. */}
+      <div className="hero-head">
       {/* The ground, and the scrim that makes the copy legible over it. */}
       <div className="hero-bg" aria-hidden>
         <div className={`hero-mosaic ${moved ? "hero-mosaic-soft" : ""}`}>
@@ -90,7 +94,10 @@ export function Hero() {
             </a>
           </div>
         </div>
+      </div>
+      </div>
 
+      <div className="container-page">
         <PlatformStrip />
 
       </div>
@@ -100,8 +107,16 @@ export function Hero() {
         .hero-section {
           position: relative;
           isolation: isolate;
-          padding-top: clamp(168px, 20vh, 232px);
           padding-bottom: clamp(40px, 6vh, 72px);
+        }
+        /* The copy and the mosaic behind it. Its foot is the gap above the
+           tabs (88-128px, 11vh), which is where the mosaic fades out, so the
+           tabs start on plain page. */
+        .hero-head {
+          position: relative;
+          isolation: isolate;
+          padding-top: clamp(168px, 20vh, 232px);
+          padding-bottom: clamp(88px, 11vh, 128px);
         }
         .hero-bg {
           position: absolute;
@@ -158,7 +173,7 @@ export function Hero() {
                blurring 9px to 24px moved the worst case by 0.3. The pool has
                to be wider than the copy, not tighter. */
             radial-gradient(80% 62% at 50% 32%, rgba(9, 9, 11, 0.86) 0%, rgba(9, 9, 11, 0.52) 62%, rgba(9, 9, 11, 0.12) 100%),
-            linear-gradient(to bottom, rgba(9, 9, 11, 0.46) 0%, rgba(9, 9, 11, 0.18) 28%, rgba(9, 9, 11, 0.55) 72%, var(--page-bg) 98%);
+            linear-gradient(to bottom, rgba(9, 9, 11, 0.46) 0%, rgba(9, 9, 11, 0.18) 28%, rgba(9, 9, 11, 0.6) 66%, var(--page-bg) 100%);
         }
         .hero-section .container-page { position: relative; z-index: 1; }
         .hero-top {

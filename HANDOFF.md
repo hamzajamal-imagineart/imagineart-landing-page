@@ -100,7 +100,7 @@ title, no paragraph, no link, on any tab.
 Why the old centred pill had failed and this one does not: the panel under it
 used to carry copy on the left, so the centred pill sat over an off-centre
 panel with 345px of dead space each side. With the panel all stage, both are
-centred on the same axis. The pill sits **88–128px clear of the hero's buttons** (11vh), and **12px above the panel**.
+centred on the same axis. The pill sits **88–128px clear of the hero's buttons** (11vh), and **12px above the panel**. **The mosaic ends where the tabs start** (25 Sep): `.hero-head` wraps the mosaic and the copy, that gap is its `padding-bottom`, and the scrim's last layer reaches `--page-bg` at 100%, so the strip sits on plain page. The tabs have no top margin of their own now. Measured: mosaic bottom = tabs top (608px at 1340).
 
 Carried across unchanged: the reel, the music wall, the control bar and the
 skeleton are the old panel's code, moved rather than rewritten; the strip
