@@ -364,8 +364,17 @@ function PluginHub() {
 
         <div className="pf-hub" aria-hidden>
           <span className="pf-hub-ring" />
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={withBasePath("/media/favicon/icon1.png")} alt="" />
+          {/* The mark from the wordmark (a rounded square with the spark cut
+              out), not the favicon, which is a disc (Hamza, 25 Sep). */}
+          <svg className="pf-hub-mark" viewBox="0 0 21.67 20.95" aria-hidden>
+            <defs>
+              <linearGradient id="pf-mark-fill" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stopColor="#c4b5fd" />
+                <stop offset="1" stopColor="#8a3ffc" />
+              </linearGradient>
+            </defs>
+            <path fill="url(#pf-mark-fill)" d="M19.7083 8.50305C17.4331 7.9892 14.86 7.82555 15.483 3.80968L20.0842 5.05666L21.6585 5.4265C21.5807 2.41541 19.0346 0 15.9028 0H5.73204C2.563 0 0 2.48415 0 5.54105V10.1984C0 11.7661 0.870133 12.1982 1.96034 12.4436H1.95357C4.22878 12.9608 6.80193 13.1277 6.17896 17.1403L1.57775 15.8933L0.00338573 15.5267C0.0677146 18.528 2.60363 20.9467 5.73204 20.9467H15.9366C19.0989 20.9467 21.6687 18.4625 21.6687 15.4056V10.745C21.6687 9.18709 20.7952 8.74524 19.7083 8.50305ZM10.831 16.813C9.82201 13.8805 7.42152 11.4847 4.27618 10.4733C7.42152 9.46201 9.82201 7.07278 10.831 4.14024C11.8433 7.07278 14.2404 9.46528 17.3891 10.4766C14.2404 11.4912 11.8433 13.8805 10.831 16.813Z" />
+          </svg>
         </div>
         <p className="pf-hub-cap" aria-live="polite">
           {on === null ? "One brand kit, six apps" : `ImagineArt in ${PLUGINS[on].name}`}
@@ -633,7 +642,7 @@ export function PlatformStrip() {
             0 0 0 8px rgba(138, 63, 252, 0.06),
             0 18px 60px rgba(138, 63, 252, 0.28);
         }
-        .pf-hub img { width: 58%; height: 58%; object-fit: contain; border-radius: 22%; display: block; }
+        .pf-hub-mark { width: 52%; height: auto; display: block; }
         /* A ring breathing out from the hub, in time with the pulses. */
         .pf-hub-ring {
           position: absolute;

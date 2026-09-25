@@ -68,8 +68,8 @@ export function Hero() {
           <BlurHeading
             as="h1"
             className="display hero-h1"
-            lead="The AI creative suite"
-            muted="built for enterprise."
+            lead="Creative suite"
+            muted="built for your business"
             mutedClassName=""
             lineBreak
           />
@@ -183,7 +183,7 @@ export function Hero() {
           text-align: center;
         }
         .hero-h1 {
-          font-size: clamp(36px, 5.2vw, 72px);
+          font-size: clamp(40px, 5.9vw, 84px);
           line-height: 1.04;
           letter-spacing: -0.025em;
           text-align: center;
@@ -203,7 +203,8 @@ export function Hero() {
         .hero-copy {
           font-size: clamp(16px, 1.25vw, 18px);
           line-height: 1.6;
-          color: var(--ink-2);
+          /* White, like the headline (Hamza, 25 Sep). */
+          color: var(--ink-heading);
           max-width: 56ch;
           margin-top: 20px;
         }
