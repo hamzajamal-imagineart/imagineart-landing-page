@@ -328,10 +328,15 @@ const NODES = [
   { x: 84, y: 76 }, { x: 60, y: 220 }, { x: 84, y: 364 },
   { x: 476, y: 76 }, { x: 500, y: 220 }, { x: 476, y: 364 },
 ];
+/** Drawn from the hub out to the app, so the pulse runs outward and lands on
+    the thing you can click rather than on the mark in the middle. */
 const cable = (n: { x: number; y: number }) => {
   const mx = (n.x + HUB.x) / 2;
-  return `M ${n.x} ${n.y} C ${mx} ${n.y}, ${mx} ${HUB.y}, ${HUB.x} ${HUB.y}`;
+  return `M ${HUB.x} ${HUB.y} C ${mx} ${HUB.y}, ${mx} ${n.y}, ${n.x} ${n.y}`;
 };
+/** One pulse cycle, shared by the cable and the app it lands on. */
+const PULSE_S = 3.3;
+const PULSE_GAP_S = 0.55;
 
 function PluginHub() {
   const [on, setOn] = useState<number | null>(null);
@@ -357,28 +362,19 @@ function PluginHub() {
           {NODES.map((n, i) => (
             <g key={i} className={on === i ? "pf-wire-on" : undefined}>
               <path className="pf-wire" d={cable(n)} pathLength={1} />
-              <path className="pf-pulse" d={cable(n)} pathLength={1} style={{ animationDelay: `${i * 0.55}s` }} />
+              <path className="pf-pulse" d={cable(n)} pathLength={1} style={{ animationDelay: `${i * PULSE_GAP_S}s` }} />
             </g>
           ))}
         </svg>
 
         <div className="pf-hub" aria-hidden>
-          <span className="pf-hub-ring" />
           {/* The mark from the wordmark (a rounded square with the spark cut
-              out), not the favicon, which is a disc (Hamza, 25 Sep). */}
+              out) in the wordmark's own colour — not the favicon, which is a
+              disc, and not recoloured (Hamza, 25 Sep). */}
           <svg className="pf-hub-mark" viewBox="0 0 21.67 20.95" aria-hidden>
-            <defs>
-              <linearGradient id="pf-mark-fill" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0" stopColor="#c4b5fd" />
-                <stop offset="1" stopColor="#8a3ffc" />
-              </linearGradient>
-            </defs>
-            <path fill="url(#pf-mark-fill)" d="M19.7083 8.50305C17.4331 7.9892 14.86 7.82555 15.483 3.80968L20.0842 5.05666L21.6585 5.4265C21.5807 2.41541 19.0346 0 15.9028 0H5.73204C2.563 0 0 2.48415 0 5.54105V10.1984C0 11.7661 0.870133 12.1982 1.96034 12.4436H1.95357C4.22878 12.9608 6.80193 13.1277 6.17896 17.1403L1.57775 15.8933L0.00338573 15.5267C0.0677146 18.528 2.60363 20.9467 5.73204 20.9467H15.9366C19.0989 20.9467 21.6687 18.4625 21.6687 15.4056V10.745C21.6687 9.18709 20.7952 8.74524 19.7083 8.50305ZM10.831 16.813C9.82201 13.8805 7.42152 11.4847 4.27618 10.4733C7.42152 9.46201 9.82201 7.07278 10.831 4.14024C11.8433 7.07278 14.2404 9.46528 17.3891 10.4766C14.2404 11.4912 11.8433 13.8805 10.831 16.813Z" />
+            <path fill="#F2F2F3" d="M19.7083 8.50305C17.4331 7.9892 14.86 7.82555 15.483 3.80968L20.0842 5.05666L21.6585 5.4265C21.5807 2.41541 19.0346 0 15.9028 0H5.73204C2.563 0 0 2.48415 0 5.54105V10.1984C0 11.7661 0.870133 12.1982 1.96034 12.4436H1.95357C4.22878 12.9608 6.80193 13.1277 6.17896 17.1403L1.57775 15.8933L0.00338573 15.5267C0.0677146 18.528 2.60363 20.9467 5.73204 20.9467H15.9366C19.0989 20.9467 21.6687 18.4625 21.6687 15.4056V10.745C21.6687 9.18709 20.7952 8.74524 19.7083 8.50305ZM10.831 16.813C9.82201 13.8805 7.42152 11.4847 4.27618 10.4733C7.42152 9.46201 9.82201 7.07278 10.831 4.14024C11.8433 7.07278 14.2404 9.46528 17.3891 10.4766C14.2404 11.4912 11.8433 13.8805 10.831 16.813Z" />
           </svg>
         </div>
-        <p className="pf-hub-cap" aria-live="polite">
-          {on === null ? "One brand kit, six apps" : `ImagineArt in ${PLUGINS[on].name}`}
-        </p>
 
         <ul className="pf-nodes">
           {PLUGINS.map((p, i) => (
@@ -388,6 +384,8 @@ function PluginHub() {
                 target="_blank"
                 rel="noopener noreferrer"
                 className={`pf-node ${on === i ? "pf-node-on" : ""}`}
+                style={{ ["--arrive" as string]: `${i * PULSE_GAP_S}s` }}
+                aria-label={`${p.name} plugin`}
                 onMouseEnter={() => setOn(i)}
                 onMouseLeave={() => setOn(null)}
                 onFocus={() => setOn(i)}
@@ -395,6 +393,11 @@ function PluginHub() {
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={withBasePath(`/media/plugins/${p.icon}.svg`)} alt="" aria-hidden />
+                {/* The open badge says "this goes somewhere" at rest, not only
+                    on hover: the apps are the links here, the hub is not. */}
+                <span className="pf-node-go" aria-hidden>
+                  <svg width="9" height="9" viewBox="0 0 24 24" fill="none"><path d="M7 17L17 7M9 7h8v8" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                </span>
                 <span className="pf-node-name">{p.name}</span>
               </a>
             </li>
@@ -620,7 +623,7 @@ export function PlatformStrip() {
           stroke-dasharray: 0.08 1;
           stroke-dashoffset: 1.08;
           opacity: 0.9;
-          animation: pf-pulse 3.3s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+          animation: pf-pulse ${PULSE_S}s cubic-bezier(0.45, 0, 0.55, 1) infinite;
         }
         @keyframes pf-pulse {
           0%   { stroke-dashoffset: 1.08; opacity: 0; }
@@ -629,42 +632,21 @@ export function PlatformStrip() {
           100% { stroke-dashoffset: 0; opacity: 0; }
         }
 
+        /* The hub is quiet on purpose: no glow, no ring, nothing that reads
+           as a button. It is where the cables come from; the apps are what
+           you click. */
         .pf-hub {
           position: absolute;
           left: 50%; top: 50%;
-          width: 18%; aspect-ratio: 1;
+          width: 16%; aspect-ratio: 1;
           transform: translate(-50%, -50%);
           display: grid; place-items: center;
           border-radius: 26%;
           background: #111114;
-          box-shadow:
-            inset 0 0 0 1px rgba(255, 255, 255, 0.12),
-            0 0 0 8px rgba(138, 63, 252, 0.06),
-            0 18px 60px rgba(138, 63, 252, 0.28);
+          box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+          pointer-events: none;
         }
-        .pf-hub-mark { width: 52%; height: auto; display: block; }
-        /* A ring breathing out from the hub, in time with the pulses. */
-        .pf-hub-ring {
-          position: absolute;
-          inset: 0;
-          border-radius: inherit;
-          box-shadow: 0 0 0 1px rgba(167, 139, 250, 0.5);
-          animation: pf-ring 2.2s ease-out infinite;
-        }
-        @keyframes pf-ring {
-          from { transform: scale(1); opacity: 0.8; }
-          to   { transform: scale(1.6); opacity: 0; }
-        }
-        .pf-hub-cap {
-          position: absolute;
-          left: 50%;
-          top: calc(50% + 12.5%);
-          transform: translateX(-50%);
-          white-space: nowrap;
-          font-size: 12.5px;
-          font-weight: 500;
-          color: var(--ink-2);
-        }
+        .pf-hub-mark { width: 50%; height: auto; display: block; }
 
         .pf-nodes { list-style: none; position: absolute; inset: 0; margin: 0; padding: 0; }
         .pf-nodes li { position: absolute; transform: translate(-50%, -50%); }
@@ -673,24 +655,57 @@ export function PlatformStrip() {
           display: grid; place-items: center;
           border-radius: 16px;
           background: var(--tile);
-          border: 1px solid var(--line);
+          border: 1px solid var(--line-strong);
           box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
-          transition: transform 240ms cubic-bezier(0.22, 1, 0.36, 1), border-color 240ms ease, background 240ms ease;
+          cursor: pointer;
+          transition: transform 240ms cubic-bezier(0.22, 1, 0.36, 1), border-color 240ms ease, background 240ms ease, box-shadow 240ms ease;
           position: relative;
+          /* Lights as its pulse arrives, so the eye travels out to the apps. */
+          animation: pf-arrive ${PULSE_S}s ease-out infinite;
+          animation-delay: var(--arrive, 0s);
+        }
+        @keyframes pf-arrive {
+          0%, 78%  { box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35), 0 0 0 0 rgba(167, 139, 250, 0); }
+          90%      { box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35), 0 0 0 5px rgba(167, 139, 250, 0.28); }
+          100%     { box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35), 0 0 0 10px rgba(167, 139, 250, 0); }
         }
         .pf-node img { width: 50%; height: 50%; object-fit: contain; display: block; }
-        .pf-node:hover, .pf-node-on { transform: scale(1.08); border-color: rgba(167, 139, 250, 0.6); background: var(--panel); }
+        .pf-node:hover, .pf-node-on {
+          transform: translateY(-3px) scale(1.08);
+          border-color: rgba(167, 139, 250, 0.75);
+          background: var(--panel);
+          animation: none;
+          box-shadow: 0 14px 30px rgba(0, 0, 0, 0.45), 0 0 0 4px rgba(167, 139, 250, 0.18);
+        }
         .pf-node:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+        /* Open badge, top-right, always showing. */
+        .pf-node-go {
+          position: absolute;
+          top: -6px; right: -6px;
+          width: 20px; height: 20px;
+          display: grid; place-items: center;
+          border-radius: 999px;
+          background: var(--ink-heading);
+          color: var(--page-bg);
+          box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+          transition: transform 240ms cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .pf-node:hover .pf-node-go, .pf-node-on .pf-node-go { transform: scale(1.12) rotate(0deg); }
         .pf-node-name {
           position: absolute;
           top: calc(100% + 8px);
           left: 50%;
           transform: translateX(-50%);
           white-space: nowrap;
-          font-size: 12px;
-          color: var(--ink-3);
-          transition: color 200ms ease;
+          font-size: 12.5px;
+          font-weight: 500;
+          color: var(--ink-2);
+          text-decoration: underline;
+          text-decoration-color: transparent;
+          text-underline-offset: 3px;
+          transition: color 200ms ease, text-decoration-color 200ms ease;
         }
+        .pf-node:hover .pf-node-name, .pf-node-on .pf-node-name { text-decoration-color: currentColor; }
         .pf-node:hover .pf-node-name, .pf-node-on .pf-node-name { color: var(--ink-heading); }
 
         /* MCP is the connect panel itself (Hamza, 24 Sep, "bring back the
@@ -880,7 +895,8 @@ export function PlatformStrip() {
           .pf-plug-fig { width: 100%; }
         }
         @media (prefers-reduced-motion: reduce) {
-          .pf-pulse, .pf-hub-ring { animation: none; opacity: 0; }
+          .pf-pulse { animation: none; opacity: 0; }
+          .pf-node { animation: none; }
           .hc-slide { transition: none; }
           .hc-controls { transition: none; transform: none; }
         }

@@ -96,13 +96,18 @@ title, no paragraph, no link, on any tab.
   CLI toggle, three steps, recording), restored 24 Sep. It is taller than
   2:1, so `.pf-stage:has(.pf-mcp)` drops the ratio for that tab only.
 - **Plugins** is a hub (25 Sep, "too basic"): copy on the left — the one
-  tab that keeps text, by request — and on the right the ImagineArt mark wired
-  to the six apps, three a side (the hub shows the wordmark's own mark — rounded square, spark cut out — in a violet gradient, not the favicon, which is a disc), a violet pulse running down each cable,
-  staggered. Hover or focus an app and its cable lights and the caption under
-  the hub names it; each app links to its plugin page. SVG viewBox 560 × 440
-  and the figure holds that ratio, so the HTML tiles sit on the cable ends —
-  measured 0px off at 390, 1000 and 1340. Stacks under 880px; pulses off under
-  reduced motion. `PLUGINS_HREF` is exported from `lib/links.ts` now.
+  tab that keeps text, by request — and on the right the ImagineArt mark
+  wired to the six apps, three a side. **The apps are the links, not the
+  hub** (Hamza, 25 Sep): the hub is flat (no glow, no ring,
+  `pointer-events: none`) and shows the wordmark's own mark in its own
+  `#F2F2F3`; the pulses run *out* from the hub and each app lights as its
+  pulse lands (`pf-arrive`, same 3.3s cycle and 0.55s stagger); every app
+  carries an open badge (↗) at rest, a pointer, a lift and an underlined
+  name on hover, and an `aria-label` "<App> plugin". No caption under the
+  hub. SVG viewBox 560 × 440 and the figure holds that ratio, so the HTML
+  tiles sit on the cable ends — measured 0px off at 390, 1000 and 1340, and
+  all six hit-test as links. Stacks under 880px; motion off under reduced
+  motion. `PLUGINS_HREF` is exported from `lib/links.ts` now.
 
 Why the old centred pill had failed and this one does not: the panel under it
 used to carry copy on the left, so the centred pill sat over an off-centre
