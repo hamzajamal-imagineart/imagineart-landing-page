@@ -40,8 +40,10 @@ const [A, B, FEATURED, C, D]: Review[] = [
   { stars: 5, quote: "I'm really impressed with the quality. It works very well and completely met my expectations.", name: "Ali Haider" },
 ];
 
-/** A clip the product made, behind the review that is about its video. */
-const FEATURED_CLIP = "/media/hero/modes/video/2-fashion.mp4";
+/** An image the product made, over the featured review (Hamza, 25 Sep; it
+    was a clip). An illustration on purpose, not a photograph: a face over a
+    named review would read as the reviewer, and Trustpilot gives no photo. */
+const FEATURED_IMAGE = "/media/hero/showcase/illustration.jpg";
 
 const initials = (name: string) =>
   name.split(/\s+/).map((w) => w[0]).slice(0, 2).join("").toUpperCase();
@@ -96,17 +98,8 @@ export function ReviewsSection() {
           </div>
 
           <figure className="rv-card rv-featured">
-            {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-            <video
-              className="rv-media"
-              src={withBasePath(FEATURED_CLIP)}
-              autoPlay
-              muted
-              loop
-              playsInline
-              preload="metadata"
-              aria-hidden
-            />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img className="rv-media" src={withBasePath(FEATURED_IMAGE)} alt="" aria-hidden loading="lazy" />
             <span className="rv-scrim" aria-hidden />
             <div className="rv-featured-copy">
               <Stars n={FEATURED.stars} />
@@ -219,7 +212,7 @@ export function ReviewsSection() {
           --rv-avatar: rgba(255, 255, 255, 0.14);
           --rv-star-off: rgba(255, 255, 255, 0.24);
         }
-        .rv-media { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+        .rv-media { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 20%; display: block; }
         .rv-scrim {
           position: absolute;
           inset: 0;
