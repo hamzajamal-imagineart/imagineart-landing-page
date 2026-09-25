@@ -98,9 +98,13 @@ title, no paragraph, no link, on any tab.
 - **Plugins** is a hub (25 Sep, "too basic"): copy on the left — the one
   tab that keeps text, by request — and on the right the ImagineArt mark
   wired to the six apps, three a side. **The apps are the links, not the
-  hub** (Hamza, 25 Sep): the hub is flat (no glow, no ring,
-  `pointer-events: none`) and shows the wordmark's own mark in its own
-  `#F2F2F3`; the pulses run *out* from the hub and each app lights as its
+  hub** (Hamza, 25 Sep): the hub is the wordmark's own mark in its own
+  `#F2F2F3` with **no tile behind it** (no glow, no ring,
+  `pointer-events: none`), and the cables start 11px clear of its sides so
+  none shows through the spark cut-out; each app tile takes **the app's own
+  dark ground** (`bg` on `PLUGINS`), and the three Adobe files, which carry
+  that ground as a rounded rect, are stretched to the tile (`full`) so the
+  icon is the container rather than a box in a box; the pulses run *out* from the hub and each app lights as its
   pulse lands (`pf-arrive`, same 3.3s cycle and 0.55s stagger); every app
   carries an open badge (↗) at rest, a pointer, a lift and an underlined
   name on hover, and an `aria-label` "<App> plugin". No caption under the

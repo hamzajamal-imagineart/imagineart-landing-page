@@ -35,14 +35,22 @@ const VIDEO_SET = [
 
 const AGENT_CLIP = "/media/hero/modes/agent.mp4";
 
-/** The plugin marks and anchors the Workflows tile already carries. */
+/**
+ * The plugin marks and anchors the Workflows tile already carries.
+ *
+ * `bg` is each app's own dark ground, which the hub tile takes (Hamza,
+ * 25 Sep: "icons inside the container, dark-mode colours"). The three Adobe
+ * files carry that ground as a rounded rect, so `full` stretches them to the
+ * tile and the tile clips the corners: one container, not an icon boxed in a
+ * box. Figma, Framer and Shopify are bare glyphs and sit centred on theirs.
+ */
 const PLUGINS = [
-  { icon: "photoshop", name: "Photoshop", anchor: "photoshop" },
-  { icon: "premiere", name: "Premiere Pro", anchor: "premiere" },
-  { icon: "aftereffects", name: "After Effects", anchor: "aftereffects" },
-  { icon: "figma", name: "Figma", anchor: "figma" },
-  { icon: "framer", name: "Framer", anchor: "framer" },
-  { icon: "shopify", name: "Shopify", anchor: "shopify" },
+  { icon: "photoshop", name: "Photoshop", anchor: "photoshop", bg: "#001e36", full: true },
+  { icon: "premiere", name: "Premiere Pro", anchor: "premiere", bg: "#00005b", full: true },
+  { icon: "aftereffects", name: "After Effects", anchor: "aftereffects", bg: "#00005b", full: true },
+  { icon: "figma", name: "Figma", anchor: "figma", bg: "#1e1e1e", full: false },
+  { icon: "framer", name: "Framer", anchor: "framer", bg: "#0b0b0d", full: false },
+  { icon: "shopify", name: "Shopify", anchor: "shopify", bg: "#0e2a1f", full: false },
 ];
 
 const Chevron = ({ back }: { back?: boolean }) => (
@@ -331,8 +339,11 @@ const NODES = [
 /** Drawn from the hub out to the app, so the pulse runs outward and lands on
     the thing you can click rather than on the mark in the middle. */
 const cable = (n: { x: number; y: number }) => {
-  const mx = (n.x + HUB.x) / 2;
-  return `M ${HUB.x} ${HUB.y} C ${mx} ${HUB.y}, ${mx} ${n.y}, ${n.x} ${n.y}`;
+  // Out from the side of the mark, not its centre: with no tile behind the
+  // mark, a cable drawn to the centre would show through the spark cut-out.
+  const x0 = HUB.x + Math.sign(n.x - HUB.x) * 44;
+  const mx = (n.x + x0) / 2;
+  return `M ${x0} ${HUB.y} C ${mx} ${HUB.y}, ${mx} ${n.y}, ${n.x} ${n.y}`;
 };
 /** One pulse cycle, shared by the cable and the app it lands on. */
 const PULSE_S = 3.3;
@@ -384,7 +395,7 @@ function PluginHub() {
                 target="_blank"
                 rel="noopener noreferrer"
                 className={`pf-node ${on === i ? "pf-node-on" : ""}`}
-                style={{ ["--arrive" as string]: `${i * PULSE_GAP_S}s` }}
+                style={{ ["--arrive" as string]: `${i * PULSE_GAP_S}s`, background: p.bg }}
                 aria-label={`${p.name} plugin`}
                 onMouseEnter={() => setOn(i)}
                 onMouseLeave={() => setOn(null)}
@@ -392,7 +403,7 @@ function PluginHub() {
                 onBlur={() => setOn(null)}
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={withBasePath(`/media/plugins/${p.icon}.svg`)} alt="" aria-hidden />
+                <img className={p.full ? "pf-node-full" : undefined} src={withBasePath(`/media/plugins/${p.icon}.svg`)} alt="" aria-hidden />
                 {/* The open badge says "this goes somewhere" at rest, not only
                     on hover: the apps are the links here, the hub is not. */}
                 <span className="pf-node-go" aria-hidden>
@@ -632,21 +643,18 @@ export function PlatformStrip() {
           100% { stroke-dashoffset: 0; opacity: 0; }
         }
 
-        /* The hub is quiet on purpose: no glow, no ring, nothing that reads
-           as a button. It is where the cables come from; the apps are what
-           you click. */
+        /* The hub is the mark alone, no tile behind it (Hamza, 25 Sep), and
+           quiet on purpose: nothing that reads as a button. It is where the
+           cables come from; the apps are what you click. */
         .pf-hub {
           position: absolute;
           left: 50%; top: 50%;
-          width: 16%; aspect-ratio: 1;
+          width: 12%; aspect-ratio: 1;
           transform: translate(-50%, -50%);
           display: grid; place-items: center;
-          border-radius: 26%;
-          background: #111114;
-          box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
           pointer-events: none;
         }
-        .pf-hub-mark { width: 50%; height: auto; display: block; }
+        .pf-hub-mark { width: 100%; height: auto; display: block; }
 
         .pf-nodes { list-style: none; position: absolute; inset: 0; margin: 0; padding: 0; }
         .pf-nodes li { position: absolute; transform: translate(-50%, -50%); }
@@ -655,7 +663,7 @@ export function PlatformStrip() {
           display: grid; place-items: center;
           border-radius: 16px;
           background: var(--tile);
-          border: 1px solid var(--line-strong);
+          border: 1px solid rgba(255, 255, 255, 0.14);
           box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
           cursor: pointer;
           transition: transform 240ms cubic-bezier(0.22, 1, 0.36, 1), border-color 240ms ease, background 240ms ease, box-shadow 240ms ease;
@@ -670,10 +678,19 @@ export function PlatformStrip() {
           100%     { box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35), 0 0 0 10px rgba(167, 139, 250, 0); }
         }
         .pf-node img { width: 50%; height: 50%; object-fit: contain; display: block; }
+        /* Stretched to the tile and clipped to its radius, so the file's own
+           ground is the container. */
+        .pf-node img.pf-node-full {
+          position: absolute;
+          inset: -1px;
+          width: calc(100% + 2px);
+          height: calc(100% + 2px);
+          object-fit: fill;
+          border-radius: inherit;
+        }
         .pf-node:hover, .pf-node-on {
           transform: translateY(-3px) scale(1.08);
           border-color: rgba(167, 139, 250, 0.75);
-          background: var(--panel);
           animation: none;
           box-shadow: 0 14px 30px rgba(0, 0, 0, 0.45), 0 0 0 4px rgba(167, 139, 250, 0.18);
         }
