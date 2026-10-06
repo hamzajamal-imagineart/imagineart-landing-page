@@ -2,15 +2,16 @@
 
 import { useEffect, useRef } from "react";
 import { withBasePath } from "@/lib/assets";
-import { START_HREF, DEMO_HREF } from "@/lib/links";
+import { START_HREF } from "@/lib/links";
 import { PlatformStrip } from "@/components/sections/Platform";
 
 /**
  * Hero, rebuilt to a reference (Hamza, 6 Oct): a dark stage with the claim
  * set as two huge words in opposite corners — CONTENT top left, AT SCALE
  * bottom right — and a cluster of the product's own work stacked between
- * them as cards at different depths. Small mono notes sit in the other two
- * corners, and the sales action is a chat card rather than a button pair.
+ * them as cards at different depths, and a list with the primary action in
+ * the bottom-left corner. The top-right notes and the chat-card sales action
+ * came out on 6 Oct (Hamza).
  *
  * The stage is dark on a light page on purpose: it is a band, like the studio
  * banners, so its colours are fixed rather than themed. The nav sits over it
@@ -94,12 +95,6 @@ export function Hero() {
           <span className="hx-word hx-word-b">At Scale</span>
         </h1>
 
-        <p className="hx-meta">
-          <span>ImagineArt for business</span>
-          <span>Image · Video · Audio</span>
-          <span>50+ models, one workspace</span>
-        </p>
-
         <div className="hx-cluster" ref={cluster} aria-hidden>
           {CARDS.map((c) => (
             <span
@@ -116,16 +111,6 @@ export function Hero() {
             </span>
           ))}
         </div>
-
-        <a className="hx-chat" href={DEMO_HREF} target="_blank" rel="noopener noreferrer">
-          <span className="hx-chat-tag">Hey — got a brief?</span>
-          <span className="hx-chat-card">
-            <span className="hx-chat-av" aria-hidden>
-              <svg viewBox="0 0 21.67 20.95"><path fill="#fff" d="M19.7083 8.50305C17.4331 7.9892 14.86 7.82555 15.483 3.80968L20.0842 5.05666L21.6585 5.4265C21.5807 2.41541 19.0346 0 15.9028 0H5.73204C2.563 0 0 2.48415 0 5.54105V10.1984C0 11.7661 0.870133 12.1982 1.96034 12.4436H1.95357C4.22878 12.9608 6.80193 13.1277 6.17896 17.1403L1.57775 15.8933L0.00338573 15.5267C0.0677146 18.528 2.60363 20.9467 5.73204 20.9467H15.9366C19.0989 20.9467 21.6687 18.4625 21.6687 15.4056V10.745C21.6687 9.18709 20.7952 8.74524 19.7083 8.50305ZM10.831 16.813C9.82201 13.8805 7.42152 11.4847 4.27618 10.4733C7.42152 9.46201 9.82201 7.07278 10.831 4.14024C11.8433 7.07278 14.2404 9.46528 17.3891 10.4766C14.2404 11.4912 11.8433 13.8805 10.831 16.813Z" /></svg>
-            </span>
-            <span className="hx-chat-text">Talk to our team,<br />not a contact form</span>
-          </span>
-        </a>
 
         <div className="hx-foot">
           <ul className="hx-list">
@@ -209,20 +194,7 @@ export function Hero() {
         .hx-word-a { left: calc(var(--hx-pad) - 0.04em); top: 104px; }
         .hx-word-b { right: calc(var(--hx-pad) - 0.02em); bottom: calc(var(--hx-pad) + 6px); }
 
-        .hx-meta, .hx-list, .hx-chat, .hx-go { font-family: var(--hx-mono); }
-        .hx-meta {
-          position: absolute;
-          top: 112px;
-          right: var(--hx-pad);
-          z-index: 21;
-          display: flex;
-          flex-direction: column;
-          align-items: flex-end;
-          gap: 8px;
-          font-size: 13.5px;
-          letter-spacing: 0.02em;
-          color: rgba(255, 255, 255, 0.62);
-        }
+        .hx-list, .hx-go { font-family: var(--hx-mono); }
 
         /* The cluster: a box in the middle of the stage, cards placed in it
            by percentage, so it scales as one. */
@@ -255,56 +227,6 @@ export function Hero() {
         }
         .hx-card img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
-        /* Sales, as a chat card: a tag above, the card itself the link. */
-        .hx-chat {
-          position: absolute;
-          right: calc(var(--hx-pad) + 2%);
-          top: 57%;
-          z-index: 22;
-          display: flex;
-          flex-direction: column;
-          align-items: flex-start;
-          gap: 0;
-          color: var(--hx-ink);
-          text-decoration: none;
-        }
-        .hx-chat-tag {
-          position: relative;
-          margin-left: -28px;
-          margin-bottom: -8px;
-          z-index: 1;
-          padding: 7px 11px;
-          border-radius: 8px 8px 8px 2px;
-          background: #d92d2d; /* white on it is 4.8:1; #ef3b3b was 3.9 */
-          color: #fff;
-          font-size: 12.5px;
-          letter-spacing: 0.01em;
-          box-shadow: 0 6px 16px rgba(217, 45, 45, 0.3);
-        }
-        .hx-chat-card {
-          display: flex;
-          align-items: center;
-          gap: 14px;
-          padding: 12px 22px 12px 12px;
-          border-radius: 14px;
-          background: rgba(20, 20, 22, 0.86);
-          border: 1px solid rgba(255, 255, 255, 0.08);
-          box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
-          backdrop-filter: blur(10px);
-          -webkit-backdrop-filter: blur(10px);
-          transition: border-color 220ms ease, transform 220ms ease;
-        }
-        .hx-chat:hover .hx-chat-card { border-color: rgba(255, 255, 255, 0.24); transform: translateY(-2px); }
-        .hx-chat:focus-visible { outline: 2px solid #fff; outline-offset: 4px; border-radius: 14px; }
-        .hx-chat-av {
-          width: 44px; height: 44px;
-          display: grid; place-items: center;
-          border-radius: 10px;
-          background: #8a3ffc;
-          flex: 0 0 auto;
-        }
-        .hx-chat-av svg { width: 22px; height: 22px; display: block; }
-        .hx-chat-text { font-size: 14px; line-height: 1.5; letter-spacing: 0.01em; }
 
         .hx-foot {
           position: absolute;
@@ -346,22 +268,19 @@ export function Hero() {
             padding: 112px var(--hx-pad) 32px;
           }
           .hx-corner { top: 84px; }
-          .hx-word, .hx-meta, .hx-cluster, .hx-chat, .hx-foot { position: relative; inset: auto; transform: none; }
+          .hx-word, .hx-cluster, .hx-foot { position: relative; inset: auto; transform: none; }
           /* The words become items of the column, so the cluster can sit
              between them. */
           .hx-title { display: contents; }
           .hx-word { font-size: clamp(54px, 17vw, 120px); }
           .hx-word-b { align-self: flex-end; order: 3; }
           .hx-word-a { order: 1; }
-          .hx-meta { order: 0; align-items: flex-start; margin-bottom: 20px; font-size: 12px; }
           .hx-cluster { order: 2; width: 100%; height: auto; margin: 28px 0 -40px; }
-          .hx-chat { order: 4; margin-top: 32px; align-self: flex-end; }
-          .hx-chat-tag { margin-left: 0; }
           .hx-foot { order: 5; margin-top: 32px; }
         }
         @media (prefers-reduced-motion: reduce) {
           .hx-dust span { animation: none; }
-          .hx-card, .hx-chat-card { transition: none; }
+          .hx-card { transition: none; }
         }
       `}</style>
     </>
