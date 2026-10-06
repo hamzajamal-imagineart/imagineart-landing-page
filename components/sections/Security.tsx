@@ -5,8 +5,10 @@ import { SectionGuides } from "@/components/primitives/SectionGuides";
  * Security, ported from the Enterprise page and re-toned for a dark page
  * (Hamza, 20 Sep), between Models and Reviews.
  *
- * **Minimal since 6 Oct** (Hamza): no lede, and each tile is a title and a
- * few words. Flat tiles on the page tokens rather than dark grain tones, so
+ * **Layout since 6 Oct, to a reference:** a two-line heading, then six
+ * tiles three across — a bare line icon, a title, one short line. Full audit
+ * trail folded into Admin controls to make six. Before that: minimal (no
+ * lede, a few words per tile). Flat tiles on the page tokens rather than dark grain tones, so
  * they read on the white page. Before that, compact (Hamza: "the cards take
  * too much space"). It was a
  * bento of six 320px tiles plus a wide zero-retention tile with photographs
@@ -37,7 +39,7 @@ const TILES = [
   {
     n: "04",
     title: "Admin controls",
-    body: "Roles and usage, across every team.",
+    body: "Roles, usage and a full audit trail, across every team.",
     icon: <IconLayers />,
   },
   {
@@ -48,16 +50,9 @@ const TILES = [
   },
   {
     n: "06",
-    title: "Full audit trail",
-    body: "Every action logged.",
-    icon: <IconTrail />,
-  },
-  {
-    n: "07",
     title: "Zero data retention",
     body: "Never stored, never used to train models.",
     icon: <IconShield />,
-    wide: true,
   },
 ];
 
@@ -67,21 +62,19 @@ export function Security() {
       <SectionGuides edge="top" />
       <div className="container-page">
         <div className="max-w-[640px]">
-          <p className="eyebrow">Security</p>
           <BlurHeading
-            className="h2 mt-4"
+            className="h2"
             lead="Safe, secure,"
             muted="and built for the enterprise"
+            lineBreak
           />
         </div>
 
         <div className="sec-grid mt-12">
           {TILES.map((t) => (
-            <div key={t.n} className={`sec-tile ${t.wide ? "sec-wide" : ""}`}>
-              <div className="sec-head">
-                <span className="sec-chip">{t.icon}</span>
-                <h3 className="sec-title">{t.title}</h3>
-              </div>
+            <div key={t.n} className="sec-tile">
+              <span className="sec-icon">{t.icon}</span>
+              <h3 className="sec-title">{t.title}</h3>
               <p className="sec-body">{t.body}</p>
             </div>
           ))}
@@ -89,52 +82,44 @@ export function Security() {
       </div>
 
       <style>{`
-        /* Four across, zero retention spanning two: seven tiles in two short
-           rows. */
+        /* To a reference (Hamza, 6 Oct): three across, two rows; a bare
+           line icon over the title and one short line. Flat tiles on the
+           page tokens, so they hold on white and on dark. */
         .sec-grid {
           display: grid;
-          grid-template-columns: repeat(4, minmax(0, 1fr));
-          gap: 12px;
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          gap: 16px;
         }
-        /* Minimal (6 Oct): flat tiles on the page's own tokens, so they hold
-           on white and on the dark theme alike. No grain, no fixed tones. */
         .sec-tile {
-          position: relative;
-          color: var(--ink-heading);
-          background: var(--tile);
+          display: flex;
+          flex-direction: column;
+          padding: 28px;
           border-radius: var(--radius-4);
-          padding: 20px;
-          overflow: hidden;
-        }
-        .sec-wide { grid-column: span 2; }
-        .sec-head { display: flex; align-items: center; gap: 12px; }
-        .sec-chip {
-          width: 36px; height: 36px; border-radius: 10px;
-          display: grid; place-items: center; flex: 0 0 auto;
-          background: var(--panel);
-          box-shadow: inset 0 0 0 1px var(--line);
+          background: var(--tile);
           color: var(--ink-heading);
         }
-        .sec-chip svg { width: 18px; height: 18px; }
+        .sec-icon { display: block; width: 24px; height: 24px; color: var(--ink-heading); }
+        .sec-icon svg { width: 24px; height: 24px; display: block; }
         .sec-title {
-          font-size: 17px;
+          margin-top: 28px;
+          font-size: 18px;
           font-weight: 500;
-          line-height: 1.25;
+          line-height: 1.3;
           letter-spacing: -0.01em;
         }
         .sec-body {
-          margin-top: 12px;
-          font-size: 14px;
-          line-height: 1.5;
+          margin-top: 8px;
+          font-size: 15px;
+          line-height: 1.55;
           color: var(--ink-2);
+          max-width: 34ch;
         }
-
-        @media (max-width: 1000px) {
+        @media (max-width: 900px) {
           .sec-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
         }
         @media (max-width: 560px) {
           .sec-grid { grid-template-columns: minmax(0, 1fr); }
-          .sec-wide { grid-column: span 1; }
+          .sec-tile { padding: 24px; }
         }
       `}</style>
     </section>
@@ -147,15 +132,6 @@ function IconLock() {
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden>
       <rect x="4" y="10.5" width="16" height="9.5" rx="2.2" stroke="currentColor" strokeWidth="1.6" />
       <path d="M8 10.5V7.5a4 4 0 0 1 8 0v3" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-    </svg>
-  );
-}
-
-function IconTrail() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden>
-      <path d="M5 6.5h14M5 12h14M5 17.5h9" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-      <circle cx="19" cy="17.5" r="2.2" stroke="currentColor" strokeWidth="1.6" />
     </svg>
   );
 }
@@ -202,8 +178,8 @@ function IconLayers() {
 function IconShield() {
   return (
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden>
-      <path d="M12 2.5l7.5 3.2v5.6c0 4.8-3.2 8-7.5 9.7-4.3-1.7-7.5-4.9-7.5-9.7V5.7L12 2.5z" fill="rgba(255,255,255,0.16)" stroke="#fff" strokeWidth="1.4" strokeLinejoin="round" />
-      <path d="M8.4 12l2.6 2.6 4.6-5" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M12 2.5l7.5 3.2v5.6c0 4.8-3.2 8-7.5 9.7-4.3-1.7-7.5-4.9-7.5-9.7V5.7L12 2.5z" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+      <path d="M8.4 12l2.6 2.6 4.6-5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }

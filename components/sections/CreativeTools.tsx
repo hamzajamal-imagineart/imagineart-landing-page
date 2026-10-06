@@ -264,7 +264,7 @@ export function CreativeTools() {
           position: absolute;
           top: 10px; right: 10px;
           padding: 3px 9px;
-          border-radius: 999px;
+          border-radius: var(--radius-pill);
           background: #aa7eeb;
           color: #17111f;
           font-size: 11px;

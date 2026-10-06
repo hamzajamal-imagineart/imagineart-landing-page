@@ -306,7 +306,7 @@ export function McpPanel() {
       display: inline-flex;
       gap: 4px;
       padding: 5px;
-      border-radius: 16px;
+      border-radius: var(--radius-4);
       background: var(--track);
     }
     .mcp-tabs { flex-wrap: wrap; position: relative; }
@@ -317,7 +317,7 @@ export function McpPanel() {
       height: 40px;
       padding: 0 14px;
       border: 0;
-      border-radius: 16px;
+      border-radius: var(--radius-4);
       background: transparent;
       font-family: inherit;
       font-size: 14.5px;
@@ -332,19 +332,19 @@ export function McpPanel() {
     /* No border: the fill alone marks the selected tab, and an outline
        here read as a button. */
     .mcp-tab-fill {
-      border-radius: 16px;
+      border-radius: var(--radius-4);
       background: var(--panel);
       box-shadow: 0 1px 2px rgba(16, 20, 30, 0.05);
     }
-    .mcp-route-fill { border-radius: 13px; }
+    .mcp-route-fill { border-radius: calc(13px * var(--corner)); }
     .mcp-tab:hover { color: var(--ink); }
     .mcp-tab-on { color: var(--ink); }
     ${slidingIndicatorCss}
     .mcp-tab img, .mcp-tab svg { width: 18px; height: 18px; display: block; }
     :root[data-theme="dark"] .mcp-mono { filter: brightness(0) invert(1); }
     .mcp-tabs-off .mcp-tab { color: var(--ink-3); }
-    .mcp-route { padding: 4px; border-radius: 12px; align-self: center; position: relative; }
-    .mcp-route .mcp-tab { height: 32px; padding: 0 10px; font-size: 13px; gap: 6px; border-radius: 13px; }
+    .mcp-route { padding: 4px; border-radius: var(--radius-3); align-self: center; position: relative; }
+    .mcp-route .mcp-tab { height: 32px; padding: 0 10px; font-size: 13px; gap: 6px; border-radius: calc(13px * var(--corner)); }
     .mcp-route .mcp-tab svg { width: 14px; height: 14px; }
     .mcp-title { display: flex; justify-content: center; }
     .mcp-title img { display: block; height: clamp(30px, 3.2vw, 44px); width: auto; }
@@ -364,7 +364,7 @@ export function McpPanel() {
     .mcp-step { display: flex; gap: 14px; align-items: flex-start; }
     .mcp-n {
       width: 26px; height: 26px;
-      border-radius: 999px;
+      border-radius: var(--radius-pill);
       display: grid; place-items: center;
       /* Was a flat 60% white disc with --ink-2 on it, which in dark put
          light grey on a bright circle. Both ends are tokens now. */
@@ -378,7 +378,7 @@ export function McpPanel() {
     .mcp-step-body { min-width: 0; flex: 1; }
     .mcp-step-title { font-size: 16.5px; font-weight: 500; letter-spacing: -0.01em; color: var(--ink); line-height: 1.3; }
     .mcp-step-text { margin-top: 5px; font-size: 14.5px; line-height: 1.55; color: var(--ink-2); }
-    .mcp-step-text code, .mcp-empty code { font-family: var(--font-mono); font-size: 0.92em; padding: 1px 6px; border-radius: 6px; background: var(--panel); border: 1px solid var(--line); }
+    .mcp-step-text code, .mcp-empty code { font-family: var(--font-mono); font-size: 0.92em; padding: 1px 6px; border-radius: calc(6px * var(--corner)); background: var(--panel); border: 1px solid var(--line); }
     .mcp-step-action { margin-top: 10px; }
 
     .mcp-field {
@@ -389,7 +389,7 @@ export function McpPanel() {
       height: 38px;
       padding-left: 12px;
       padding-right: 5px;
-      border-radius: 10px;
+      border-radius: calc(10px * var(--corner));
       background: var(--panel);
       border: 1px solid var(--line);
     }
@@ -402,7 +402,7 @@ export function McpPanel() {
       height: 28px;
       padding: 0;
       border: 1px solid var(--line);
-      border-radius: 7px;
+      border-radius: calc(7px * var(--corner));
       /* Was a solid --ink block with #fff on it: in dark that is a white
          square with a white glyph inside it, and even solved it would sit
          as a hard slab on the field it lives in. It is a quiet control on
@@ -418,7 +418,7 @@ export function McpPanel() {
     .mcp-copy:hover { background: var(--tile); color: var(--ink); }
     .mcp-block {
       position: relative;
-      border-radius: 12px;
+      border-radius: var(--radius-3);
       background: var(--panel);
       border: 1px solid var(--line);
       padding: 12px 14px;
@@ -432,7 +432,7 @@ export function McpPanel() {
       gap: 7px;
       height: 38px;
       padding: 0 14px;
-      border-radius: 10px;
+      border-radius: calc(10px * var(--corner));
       background: var(--panel);
       border: 1px solid var(--line-strong);
       font-size: 13.5px;
@@ -447,7 +447,7 @@ export function McpPanel() {
     .mcp-visual {
       position: relative;
       aspect-ratio: 16 / 9.4;
-      border-radius: 16px;
+      border-radius: var(--radius-4);
       overflow: hidden;
       background: var(--track);
       border: 1px solid var(--line);
@@ -463,7 +463,7 @@ export function McpPanel() {
 
     .mcp-term { padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 12px; }
     .mcp-term-bar { display: flex; gap: 6px; }
-    .mcp-term-bar span { width: 9px; height: 9px; border-radius: 999px; background: rgba(0,0,0,0.14); }
+    .mcp-term-bar span { width: 9px; height: 9px; border-radius: var(--radius-pill); background: rgba(0,0,0,0.14); }
     .mcp-term pre { font-family: var(--font-mono); font-size: 12.5px; line-height: 1.7; color: var(--ink-3); display: flex; flex-direction: column; }
     .mcp-l-cmd { color: var(--ink); }
     .mcp-l-ok { color: var(--ink-2); }

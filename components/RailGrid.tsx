@@ -225,7 +225,7 @@ export function RailGrid({
           flex-direction: column;
           gap: 4px;
           padding: 8px;
-          border-radius: 20px;
+          border-radius: var(--radius-5);
           background: var(--tile);
           border: 1px solid var(--line);
           position: sticky;
@@ -235,7 +235,7 @@ export function RailGrid({
           position: absolute;
           top: 0;
           left: 0;
-          border-radius: 14px;
+          border-radius: calc(14px * var(--corner));
           background: var(--tile-2);
           border: 1px solid var(--line);
           box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05), 0 4px 14px rgba(16, 20, 30, 0.05);
@@ -257,7 +257,7 @@ export function RailGrid({
           width: 100%;
           padding: 10px 12px;
           border: 1px solid transparent;
-          border-radius: 14px;
+          border-radius: calc(14px * var(--corner));
           background: transparent;
           text-align: left;
           cursor: pointer;
@@ -290,7 +290,7 @@ export function RailGrid({
            monochrome and inside the palette. */
         .rg-tab-icon {
           width: 36px; height: 36px;
-          border-radius: 11px;
+          border-radius: calc(11px * var(--corner));
           display: grid; place-items: center;
           background: var(--shade-2);
           color: var(--ink-heading);
@@ -356,7 +356,7 @@ export function RailGrid({
         .rg-media {
           position: relative;
           aspect-ratio: 16 / 9;
-          border-radius: 16px;
+          border-radius: var(--radius-4);
           padding: clamp(18px, 2vw, 28px);
           display: flex;
           align-items: flex-end;
@@ -398,7 +398,7 @@ export function RailGrid({
         }
         .rg-cap-icon {
           width: 28px; height: 28px;
-          border-radius: 8px;
+          border-radius: var(--radius-2);
           display: grid; place-items: center;
           background: var(--panel-2);
           color: var(--ink);
@@ -424,7 +424,7 @@ export function RailGrid({
             position: static;
             flex-direction: row;
             overflow-x: auto;
-            border-radius: 16px;
+            border-radius: var(--radius-4);
             scrollbar-width: none;
           }
           .rg-rail::-webkit-scrollbar { display: none; }

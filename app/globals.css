@@ -27,14 +27,26 @@
   --font-sans: var(--font-google-sans), "Google Sans", "Helvetica Neue", Arial, sans-serif;
   --font-mono: ui-monospace, "SF Mono", Menlo, Monaco, Consolas, monospace;
 
-  --radius-2: 8px;
-  --radius-3: 12px;
-  --radius-4: 16px;
-  --radius-5: 20px;
-  --radius-6: 24px;
+  /* Every radius on the page is its rounded value times --corner (set in
+     :root below), so one number switches the whole page between sharp and
+     rounded. */
+  --radius-2: calc(8px * var(--corner));
+  --radius-3: calc(12px * var(--corner));
+  --radius-4: calc(16px * var(--corner));
+  --radius-5: calc(20px * var(--corner));
+  --radius-6: calc(24px * var(--corner));
+  --radius-pill: calc(999px * var(--corner));
+  --radius-round: calc(50% * var(--corner));
 }
 
 :root {
+  /* ── CORNERS ── the one switch (Hamza, 6 Oct: "make all the rounded
+     corners pointy", revertible). 0 = sharp, 1 = the rounded design as it
+     was. Every border-radius on the page reads --radius-* or multiplies its
+     own value by this, so changing this number is the whole revert. The
+     shared kit's nav and footer are not tied to it. */
+  --corner: 1;
+
   --ink: #141414;
   /* Headings sit a step off pure black: at display sizes #141414 reads
      heavy, and the lighter value keeps plenty of contrast on white.
@@ -86,7 +98,7 @@
        --radius-5 20  panels and bento tiles
        --radius-4 16  cards and tabs
        --radius-3 12  media frames and marks inside a card           */
-  --radius-lg: 20px;
+  --radius-lg: calc(20px * var(--corner));
   --maxw: 1240px;
 
   --font-fallback: "Google Sans", "Helvetica Neue", Arial, sans-serif;
@@ -223,7 +235,7 @@
 *:focus-visible {
   outline: 2px solid var(--ink);
   outline-offset: 3px;
-  border-radius: 6px;
+  border-radius: calc(6px * var(--corner));
 }
 
 @layer utilities {
@@ -278,7 +290,11 @@
   text-wrap: balance;
 }
 @media (min-width: 880px) {
-  .h2 { text-wrap: nowrap; white-space: nowrap; }
+  /* width: max-content so the box is as wide as the one line. The heading's
+     gradient is clipped to its text but painted on its box, so a line
+     overflowing a narrower wrapper (Outcomes in 680px) lost its fill and
+     vanished past the edge. Headings that wrap set their own max-width. */
+  .h2 { text-wrap: nowrap; white-space: nowrap; width: max-content; }
 }
 /* A one-line heading wider than its centred wrapper (680–820px) overflows
    to the right only: text-align cannot centre a line wider than its box, so
@@ -392,7 +408,7 @@
   height: 36px;
   display: grid;
   place-items: center;
-  border-radius: 10px;
+  border-radius: calc(10px * var(--corner));
   background: var(--panel-2);
   color: var(--ink);
   flex: 0 0 auto;
@@ -449,7 +465,7 @@
    ═════════════════════════════════════════════════════════════ */
 .grain {
   position: relative;
-  border-radius: 26px;
+  border-radius: calc(26px * var(--corner));
   padding: clamp(18px, 2.6vw, 38px);
   overflow: hidden;
   isolation: isolate;

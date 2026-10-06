@@ -102,7 +102,7 @@ export function MediaCardStyles() {
         position: relative;
         isolation: isolate;
         overflow: hidden;
-        border-radius: 20px;
+        border-radius: var(--radius-5);
         padding: clamp(18px, 1.8vw, 26px);
         display: flex;
         flex-direction: column;
@@ -149,7 +149,7 @@ export function MediaCardStyles() {
         right: 22px;
         z-index: 1;
         width: 34px; height: 34px;
-        border-radius: 999px;
+        border-radius: var(--radius-pill);
         display: grid; place-items: center;
         color: currentColor;
         flex: 0 0 auto;

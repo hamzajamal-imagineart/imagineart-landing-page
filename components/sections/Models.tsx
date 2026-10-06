@@ -139,7 +139,7 @@ export function Models() {
         }
         .mdl-mark {
           width: 26px; height: 26px;
-          border-radius: 7px;
+          border-radius: calc(7px * var(--corner));
           display: block;
           flex: 0 0 auto;
         }
@@ -147,7 +147,7 @@ export function Models() {
         @media (max-width: 1000px) { .mdl-grid { gap: 12px; } }
         @media (max-width: 760px) {
           .mdl-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
-          .mdl-card { border-radius: 16px; }
+          .mdl-card { border-radius: var(--radius-4); }
           .mdl-cap { padding-bottom: 18px; }
         }
       `}</style>

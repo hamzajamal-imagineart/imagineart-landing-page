@@ -126,7 +126,7 @@ export function Apps() {
           position: absolute;
           top: 22px; right: 22px;
           width: 34px; height: 34px;
-          border-radius: 999px;
+          border-radius: var(--radius-pill);
           display: grid; place-items: center;
           color: #fff;
           flex: 0 0 auto;
@@ -136,14 +136,14 @@ export function Apps() {
         .app-embed {
           position: absolute;
           inset: 0 0 22px 0;
-          border-radius: 12px;
+          border-radius: var(--radius-3);
           overflow: hidden;
           background: rgba(255,255,255,0.06);
         }
         .app-embed video { width: 100%; height: 100%; object-fit: cover; display: block; }
         .app-pager {
           width: 38px; height: 38px;
-          border-radius: 999px;
+          border-radius: var(--radius-pill);
           border: 1px solid var(--line);
           background: var(--panel);
           color: var(--ink);

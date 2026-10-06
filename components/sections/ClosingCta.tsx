@@ -99,7 +99,7 @@ export function ClosingCta() {
           justify-content: center;
           height: 46px;
           padding: 0 22px;
-          border-radius: 999px;
+          border-radius: var(--radius-pill);
           font-size: 15px;
           font-weight: 500;
           letter-spacing: -0.005em;

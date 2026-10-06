@@ -96,7 +96,7 @@ export function FilmStudio() {
           width: clamp(240px, 24vw, 340px);
           aspect-ratio: 16 / 9;
           object-fit: cover;
-          border-radius: 10px;
+          border-radius: calc(10px * var(--corner));
           display: block;
           opacity: 0.85;
         }
@@ -170,7 +170,7 @@ export function FilmStudio() {
           display: inline-flex;
           align-items: center;
           padding: 7px 14px;
-          border-radius: 999px;
+          border-radius: var(--radius-pill);
           border: 1px solid rgba(255, 255, 255, 0.3);
           font-size: 10.5px;
           letter-spacing: 3px;

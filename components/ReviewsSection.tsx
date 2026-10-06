@@ -202,7 +202,7 @@ export function ReviewsSection() {
           width: 38px; height: 38px;
           flex: 0 0 auto;
           display: grid; place-items: center;
-          border-radius: 8px;
+          border-radius: var(--radius-2);
           background: var(--rv-avatar);
           font-size: 12.5px;
           font-weight: 600;

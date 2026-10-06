@@ -1,287 +1,369 @@
-"use client";
-
-import { useEffect, useRef } from "react";
 import { withBasePath } from "@/lib/assets";
 import { START_HREF } from "@/lib/links";
 import { PlatformStrip } from "@/components/sections/Platform";
+import { CorridorDrift } from "@/components/sections/CorridorDrift";
 
 /**
- * Hero, rebuilt to a reference (Hamza, 6 Oct): a dark stage with the claim
- * set as two huge words in opposite corners — CONTENT top left, AT SCALE
- * bottom right — and a cluster of the product's own work stacked between
- * them as cards at different depths, and a list with the primary action in
- * the bottom-left corner. The top-right notes and the chat-card sales action
- * came out on 6 Oct (Hamza).
+ * Hero (Hamza, 6 Oct): the wordmark, a two-line claim, one line and the
+ * purple "Start creating for free" centred between two walls of the
+ * product's work receding toward the middle, like standing in a corridor of
+ * screens.
  *
- * The stage takes the page's tokens (white on the light page since 6 Oct),
- * and the nav sits over it as `onLight`.
+ * Real 3D: the stage has one perspective, and each column is a panel turned
+ * 90° to stand on a wall plane at x = ±44vw, set at its own depth, so nearer
+ * columns land tall at the screen edge and deeper ones shorter toward the
+ * middle. Lengths are in vw, so it holds its proportions at any width.
  *
- * The cluster moves with the pointer: each card carries a depth (`--z`) and
- * shifts by that much of the pointer's offset from the centre, so the front
- * cards travel further than the back ones. Off under reduced motion and on
- * touch, where there is no pointer to follow.
+ * Deliberately irregular ("random mix and match"): each wall is built from its
+ * own seeded sequence (identical on every build, no hydration mismatch), so
+ * spacing, length, height, vertical offset, frame count and image order vary
+ * and the walls do not mirror. It runs about 230vw deep.
  *
- * Under the stage, the platform strip (`sections/Platform`), on the page.
+ * Made smoother after the TwelveLabs comparison: rounded frames, depth of
+ * field (deeper columns soften as well as fade), a soft shadow under the near
+ * frames, and a slight drift of the vanishing point with the pointer
+ * (<CorridorDrift>).
+ *
+ * It keeps moving (Hamza, 6 Oct): every column walks slowly toward the
+ * viewer and loops back to the far end, a quarter of them faster on a lane
+ * just inside the wall; fog and blur are keyframed along the trip.
+ * The copy sits on a soft pool of the page colour so it reads whatever
+ * passes behind it.
  */
+/** Ten industry images generated in ImagineArt for the corridor (Nano Banana
+    Pro, 2K, 6 Oct), one per Industries category, interleaved with the
+    eighteen mosaic tiles. */
+const INDUSTRY = ["fashion", "cpg", "fast-food", "food-beverage", "home-decor", "electronics", "beauty", "automotive", "telecom", "ecommerce"].map((n) => `/media/hero/corridor/${n}.jpg`);
+// m8 and m10 are abstract gradients, not work; left out of the corridor.
+const MOSAIC = [3, 9, 12, 1, 13, 5, 15, 6, 11, 2, 17, 14, 4, 18, 7, 16].map((n) => `/media/hero/mosaic/m${n}.jpg`);
+const IMAGES = MOSAIC.flatMap((m, i) => (i < INDUSTRY.length ? [INDUSTRY[i], m] : [m]));
+/**
+ * The corridor, deliberately irregular (Hamza, 6 Oct: "shouldn't feel like
+ * perfect order, random mix and match"). Each wall is built from its own
+ * seeded random sequence, so the two sides do not mirror and every build is
+ * the same (no hydration mismatch): column spacing, length, height, vertical
+ * offset, frame count and frame proportions all vary, and images are dealt
+ * in a shuffled order.
+ *
+ * Depths run from just in front of the screen (cut by the viewport edge) to
+ * about 230vw back toward the vanishing point; past ~36vw the columns fade
+ * into the dark (fog), and the copy sits on a soft pool of the page colour
+ * so it reads whatever passes behind it.
+ */
+type Col = { z: number; len: number; h: number; dy: number; rows: number[]; fast: boolean };
 
-type Card = { src: string; x: number; y: number; w: number; h: number; z: number };
+function rng(seed: number) {
+  let t = seed >>> 0;
+  return () => {
+    t = (t + 0x6d2b79f5) >>> 0;
+    let r = Math.imul(t ^ (t >>> 15), 1 | t);
+    r ^= r + Math.imul(r ^ (r >>> 7), 61 | r);
+    return ((r ^ (r >>> 14)) >>> 0) / 4294967296;
+  };
+}
 
-/** Positions in % of the cluster box (560 × 600 design units); z is depth,
-    0 at the back to 1 at the front. Back cards are smaller and dimmer. */
-const CARDS: Card[] = [
-  { src: "m3", x: 4, y: 15, w: 22, h: 35, z: 0.15 },
-  { src: "m17", x: 22, y: 6, w: 27, h: 39, z: 0.5 },
-  { src: "m12", x: 42, y: 3, w: 27, h: 41, z: 0.75 },
-  { src: "m18", x: 63, y: 9, w: 23, h: 40, z: 0.35 },
-  { src: "m1", x: 80, y: 28, w: 14, h: 34, z: 0.1 },
-  { src: "m14", x: 0, y: 49, w: 20, h: 36, z: 0.3 },
-  { src: "m13", x: 16, y: 45, w: 28, h: 42, z: 0.95 },
-  { src: "m9", x: 42, y: 42, w: 27, h: 44, z: 0.85 },
-  { src: "m11", x: 65, y: 46, w: 21, h: 37, z: 0.45 },
-  { src: "m4", x: 28, y: 84, w: 26, h: 14, z: 0.05 },
-  { src: "m6", x: 52, y: 84, w: 22, h: 13, z: 0.05 },
-];
+function buildWall(seed: number): Col[] {
+  const r = rng(seed);
+  const out: Col[] = [];
+  let z = -6 - r() * 3;
+  while (z < 230) {
+    const deep = Math.max(0, z) / 230;
+    const len = (7 + r() * 8) * (1 + deep * 2.2);
+    const h = 24 + r() * 16;                 // 24–40vw tall
+    const dy = (r() - 0.5) * 9;              // ±4.5vw off centre
+    const n = 2 + Math.floor(r() * 3);       // 2–4 frames
+    const rows = Array.from({ length: n }, () => 0.6 + r() * 0.9);
+    out.push({ z: z + len / 2, len, h, dy, rows, fast: r() < 0.25 });
+    z += len + (4 + r() * 8) * (1 + deep * 2.5); // never tight: 4vw minimum
+  }
+  return out;
+}
+const WALLS = { l: buildWall(7), r: buildWall(19) };
 
-/** Drifting dust, positions in % of the stage. */
-const DUST = [
-  [6, 18], [14, 62], [22, 38], [31, 74], [9, 86], [47, 12], [58, 88],
-  [71, 22], [83, 44], [91, 70], [66, 64], [38, 92], [96, 14], [3, 48],
-];
+function shuffled<T>(arr: T[], seed: number) {
+  const r = rng(seed), a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+  return a;
+}
+const DECK = { l: shuffled(IMAGES, 3), r: shuffled(IMAGES, 11) };
+
+/** Fog: full strength to 36vw deep, down to 0.3 by 80vw, then to 0.1. */
+const fog = (z: number) =>
+  z <= 36 ? 1 : z <= 80 ? 1 - ((z - 36) / 44) * 0.7 : Math.max(0.1, 0.3 - ((z - 80) / 150) * 0.2);
+/** The walk: every column travels from FAR (deep) to NEAR (past the screen
+    edge) and loops. SLOW is the trip in seconds; a quarter of the columns
+    are FAST, and ride a lane 3vw inside the wall so they overtake without
+    passing through the slower panels. A column's negative delay is its
+    current depth as a share of the trip, so on load each sits where the
+    static layout put it. */
+const FAR = 230, NEAR = -30, SLOW = 90, FAST = 58;
+const phase = (z: number) => (FAR - z) / (FAR - NEAR);
+
+/** Depth of field: sharp to 30vw, softening to 3px by 120vw. */
+const dof = (z: number) => (z <= 30 ? 0 : Math.min(3, ((z - 30) / 90) * 3));
 
 export function Hero() {
-  const cluster = useRef<HTMLDivElement | null>(null);
-
-  /**
-   * Pointer parallax. One listener on the stage writes the pointer's offset
-   * from the centre (-1 to 1) to two custom properties on the cluster; each
-   * card's transform reads them times its own depth, so the browser does the
-   * per-card work and React never re-renders.
-   */
-  useEffect(() => {
-    const el = cluster.current;
-    const stage = el?.closest(".hx") as HTMLElement | null;
-    if (!el || !stage) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce), (hover: none)").matches) return;
-    const onMove = (e: PointerEvent) => {
-      const r = stage.getBoundingClientRect();
-      el.style.setProperty("--mx", (((e.clientX - r.left) / r.width) * 2 - 1).toFixed(3));
-      el.style.setProperty("--my", (((e.clientY - r.top) / r.height) * 2 - 1).toFixed(3));
-    };
-    const onLeave = () => { el.style.setProperty("--mx", "0"); el.style.setProperty("--my", "0"); };
-    stage.addEventListener("pointermove", onMove, { passive: true });
-    stage.addEventListener("pointerleave", onLeave);
-    return () => {
-      stage.removeEventListener("pointermove", onMove);
-      stage.removeEventListener("pointerleave", onLeave);
-    };
-  }, []);
+  const wall = (side: "l" | "r") => {
+    let img = 0;
+    return WALLS[side].map((c, i) => {
+      const blur = dof(c.z);
+      return (
+        <span
+          key={`${side}${i}`}
+          className={`hc-col hc-${side}`}
+          style={{
+            ["--sx" as string]: `${(side === "l" ? -1 : 1) * (c.fast ? 41 : 44)}vw`,
+            ["--ry" as string]: side === "l" ? "90deg" : "-90deg",
+            animationDuration: `${c.fast ? FAST : SLOW}s`,
+            animationDelay: `${(-phase(c.z) * (c.fast ? FAST : SLOW)).toFixed(2)}s`,
+            ["--z" as string]: `${c.z.toFixed(2)}vw`,
+            ["--len" as string]: `${c.len.toFixed(2)}vw`,
+            ["--h" as string]: `${c.h.toFixed(2)}vw`,
+            ["--dy" as string]: `${c.dy.toFixed(2)}vw`,
+            opacity: Number(fog(c.z).toFixed(3)),
+            filter: blur > 0.05 ? `blur(${blur.toFixed(2)}px)` : undefined,
+          }}
+        >
+          {c.rows.map((g, k) => (
+            <span key={k} className="hc-frame" style={{ flexGrow: Number(g.toFixed(3)) }}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={withBasePath(DECK[side][img++ % DECK[side].length])} alt="" />
+            </span>
+          ))}
+        </span>
+      );
+    });
+  };
 
   return (
     <>
-      <section id="top" className="hx">
-        <span className="hx-corner hx-corner-l" aria-hidden />
-        <span className="hx-corner hx-corner-r" aria-hidden />
-        <div className="hx-dust" aria-hidden>
-          {DUST.map(([x, y], i) => (
-            <span key={i} style={{ left: `${x}%`, top: `${y}%`, animationDelay: `${(i % 7) * -1.3}s` }} />
-          ))}
+      <section id="top" className="hc">
+        <span className="hs-dots hs-dots-l" aria-hidden />
+        <span className="hs-dots hs-dots-r" aria-hidden />
+
+        <CorridorDrift />
+        <div className="hc-stage" aria-hidden>
+          {wall("l")}
+          {wall("r")}
         </div>
 
-        {/* One heading, two corners. Each word is placed on its own, but they
-            are one h1 so the claim reads as "Content at scale". */}
-        <h1 className="hx-title">
-          <span className="hx-word hx-word-a">Content</span>{" "}
-          <span className="hx-word hx-word-b">At Scale</span>
-        </h1>
-
-        <div className="hx-cluster" ref={cluster} aria-hidden>
-          {CARDS.map((c) => (
-            <span
-              key={c.src}
-              className="hx-card"
-              style={{
-                left: `${c.x}%`, top: `${c.y}%`, width: `${c.w}%`, height: `${c.h}%`,
-                ["--z" as string]: c.z,
-                zIndex: Math.round(c.z * 10),
-              }}
-            >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={withBasePath(`/media/hero/mosaic/${c.src}.jpg`)} alt="" />
-            </span>
-          ))}
-        </div>
-
-        <div className="hx-foot">
-          <ul className="hx-list">
-            <li>Campaign creative</li>
-            <li>Product imagery</li>
-            <li>Brand films</li>
-          </ul>
-          <a className="hx-go" href={START_HREF}>
+        <div className="hc-copy">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img className="hc-logo hc-logo-on-dark" src={withBasePath("/media/imagine-art-wordmark-dark.svg")} alt="ImagineArt" />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img className="hc-logo hc-logo-on-light" src={withBasePath("/media/imagine-art-wordmark.svg")} alt="" aria-hidden />
+          <h1 className="hc-title"><span className="hc-line">Generate, animate, and edit</span><span className="hc-line hc-muted">at scale. One Canvas</span></h1>
+          <p className="hc-lede">
+            Every leading model for image, video and audio in one workspace, with your brand held
+            across every output and the security and admin controls your organisation needs.
+          </p>
+          <a href={START_HREF} className="hs-cta">
             Start creating for free
-            <svg width="12" height="11" viewBox="0 0 12 11" fill="none" aria-hidden>
+            <svg width="13" height="12" viewBox="0 0 12 11" fill="none" aria-hidden>
               <path d="M11.17 5.5H1M7.75 10l3.585-3.97c.53-.53.54-.52 0-1.06L7.75 1" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
             </svg>
           </a>
         </div>
       </section>
 
-      <div className="hx-strip">
+      <div className="hs-strip">
         <div className="container-page">
           <PlatformStrip />
         </div>
       </div>
 
       <style>{`
-        /* The stage. On the page's own tokens since 6 Oct (Hamza: "make the
-           hero light too"), so it is white on the light page and still dark
-           if the theme flips back. */
-        .hx {
-          --hx-ink: var(--ink-heading);
-          --hx-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-          --hx-pad: clamp(16px, 2.2vw, 36px);
+        .hc {
           position: relative;
           isolation: isolate;
           overflow: hidden;
           height: max(100svh, 720px);
-          max-height: 1080px;
+          max-height: 1000px;
+          display: grid;
+          place-items: center;
+          padding-top: 64px;
           background: var(--page-bg);
-          color: var(--hx-ink);
+        }
+        /* Halftone at the edges: a dot grid on each side, fading out toward
+           the middle and patchy along its length. */
+        .hs-dots {
+          position: absolute;
+          top: 0; bottom: 0;
+          width: clamp(64px, 12vw, 200px);
+          z-index: 0;
+          pointer-events: none;
+          background: radial-gradient(circle, var(--ink-heading) 1.1px, transparent 1.5px) 0 0 / 12px 12px;
+          opacity: 0.32;
+        }
+        .hs-dots-l {
+          left: 0;
+          -webkit-mask-image: linear-gradient(to right, #000 0%, rgba(0, 0, 0, 0.5) 45%, transparent 100%), linear-gradient(to bottom, transparent 0%, #000 12%, rgba(0, 0, 0, 0.35) 40%, #000 62%, transparent 100%);
+          -webkit-mask-composite: source-in;
+          mask-image: linear-gradient(to right, #000 0%, rgba(0, 0, 0, 0.5) 45%, transparent 100%), linear-gradient(to bottom, transparent 0%, #000 12%, rgba(0, 0, 0, 0.35) 40%, #000 62%, transparent 100%);
+          mask-composite: intersect;
+        }
+        .hs-dots-r {
+          right: 0;
+          -webkit-mask-image: linear-gradient(to left, #000 0%, rgba(0, 0, 0, 0.5) 45%, transparent 100%), linear-gradient(to bottom, #000 0%, rgba(0, 0, 0, 0.35) 30%, #000 55%, rgba(0, 0, 0, 0.2) 80%, #000 100%);
+          -webkit-mask-composite: source-in;
+          mask-image: linear-gradient(to left, #000 0%, rgba(0, 0, 0, 0.5) 45%, transparent 100%), linear-gradient(to bottom, #000 0%, rgba(0, 0, 0, 0.35) 30%, #000 55%, rgba(0, 0, 0, 0.2) 80%, #000 100%);
+          mask-composite: intersect;
         }
 
-        /* Corner brackets, top left and top right, under the nav. */
-        .hx-corner {
+        /* One perspective for the whole corridor. The vanishing point drifts
+           a little with the pointer (--px, --py from <CorridorDrift>). */
+        .hc-stage {
+          --px: 0; --py: 0;
           position: absolute;
-          top: 92px;
-          width: 18px; height: 18px;
-          border-top: 1px solid var(--line-strong);
+          inset: 64px 0 0;
+          z-index: 1;
+          perspective: 48vw;
+          perspective-origin: calc(50% + var(--px) * 3vw) calc(50% + var(--py) * 2vw);
+          transition: perspective-origin 900ms cubic-bezier(0.22, 1, 0.36, 1);
           pointer-events: none;
         }
-        .hx-corner-l { left: var(--hx-pad); border-left: 1px solid var(--line-strong); }
-        .hx-corner-r { right: var(--hx-pad); border-right: 1px solid var(--line-strong); }
-
-        .hx-dust { position: absolute; inset: 0; pointer-events: none; }
-        .hx-dust span {
-          position: absolute;
-          width: 4px; height: 4px;
-          border-radius: 999px;
-          background: var(--ink-heading);
-          opacity: 0.16;
-          animation: hx-drift 9s ease-in-out infinite;
-        }
-        .hx-dust span:nth-child(3n) { width: 6px; height: 6px; opacity: 0.1; }
-        @keyframes hx-drift {
-          0%, 100% { transform: translate(0, 0); }
-          50%      { transform: translate(6px, -10px); }
-        }
-
-        /* The two words. Heavy, tight, and placed in opposite corners; the
-           bottom one sits in front of the cluster, as in the reference. */
-        .hx-title { margin: 0; font-weight: 400; }
-        .hx-word {
-          position: absolute;
-          z-index: 20;
-          font-size: clamp(64px, 11.2vw, 210px);
-          line-height: 0.8;
-          font-weight: 800;
-          letter-spacing: -0.045em;
-          text-transform: uppercase;
-          color: var(--hx-ink);
-          white-space: nowrap;
-          pointer-events: none;
-        }
-        .hx-word-a { left: calc(var(--hx-pad) - 0.04em); top: 104px; }
-        .hx-word-b { right: calc(var(--hx-pad) - 0.02em); bottom: calc(var(--hx-pad) + 6px); }
-
-        .hx-list, .hx-go { font-family: var(--hx-mono); }
-
-        /* The cluster: a box in the middle of the stage, cards placed in it
-           by percentage, so it scales as one. */
-        .hx-cluster {
-          --mx: 0; --my: 0;
+        /* A column: a panel --len long (along the wall) and --h tall, turned
+           to stand on the wall plane and pushed to its depth. */
+        .hc-col {
           position: absolute;
           left: 50%;
-          /* Low enough that the top cards clear CONTENT's baseline; the
-             bottom ones run under AT SCALE, as ATELIER does in the reference. */
-          top: 55%;
-          height: min(62%, 660px);
-          aspect-ratio: 560 / 600;
-          transform: translate(-50%, -50%);
-          z-index: 10;
+          top: 50%;
+          width: var(--len);
+          height: var(--h);
+          margin-left: calc(var(--len) / -2);
+          margin-top: calc(var(--h) / -2 + var(--dy));
+          display: flex;
+          flex-direction: column;
+          gap: 1.6vw;
         }
-        .hx-card {
-          position: absolute;
-          border-radius: 14px;
-          overflow: hidden;
-          background: var(--tile);
-          box-shadow:
-            0 18px 40px rgba(0, 0, 0, 0.16),
-            0 4px 10px rgba(0, 0, 0, 0.08);
-          /* Depth by fading the back cards toward the page, not darkening
-             them: on white a dimmed card reads as dirty grey. */
-          opacity: calc(0.55 + var(--z) * 0.45);
-          filter: saturate(calc(0.8 + var(--z) * 0.2));
-          transform:
-            translate3d(calc(var(--mx) * var(--z) * 22px), calc(var(--my) * var(--z) * 16px), 0)
-            scale(calc(0.94 + var(--z) * 0.06));
-          transition: transform 600ms cubic-bezier(0.22, 1, 0.36, 1);
+        /* Static placement (and the reduced-motion state): each column at its
+           own depth on its wall. */
+        .hc-col { transform: translateX(var(--sx)) translateZ(calc(var(--z) * -1)) rotateY(var(--ry)); }
+        /* The walk, FAR → NEAR. Opacity and blur follow depth: z = 230 − 260p,
+           so fog lifts past ~62% and the blur clears by ~77%. The first 4%
+           fades in so the loop's jump back to the far end is never seen. */
+        .hc-col {
+          animation-name: hc-walk;
+          animation-timing-function: linear;
+          animation-iteration-count: infinite;
+          will-change: transform, opacity;
         }
-        .hx-card img { width: 100%; height: 100%; object-fit: cover; display: block; }
-
-
-        .hx-foot {
-          position: absolute;
-          left: var(--hx-pad);
-          bottom: calc(var(--hx-pad) + 6px);
-          z-index: 21;
-        }
-        .hx-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
-        .hx-list li { font-size: 15px; letter-spacing: 0.02em; color: var(--ink-2); }
-        .hx-go {
-          margin-top: 22px;
-          display: inline-flex;
-          align-items: center;
-          gap: 10px;
-          height: 40px;
-          padding: 0 16px;
-          border-radius: 10px;
-          background: var(--ink-heading);
-          color: var(--page-bg);
-          font-size: 13.5px;
-          font-weight: 500;
-          letter-spacing: 0.01em;
-          text-decoration: none;
-          transition: opacity 200ms ease;
-        }
-        .hx-go:hover { opacity: 0.86; }
-        .hx-go:focus-visible { outline: 2px solid var(--ink-heading); outline-offset: 3px; }
-
-        .hx-strip { padding-top: clamp(48px, 6vw, 80px); padding-bottom: clamp(40px, 6vh, 72px); }
-
-        /* Narrow: the stage stops being a poster and becomes a column —
-           word, cluster, word, then the notes and actions in flow. */
-        @media (max-width: 880px) {
-          .hx {
-            height: auto;
-            max-height: none;
-            display: flex;
-            flex-direction: column;
-            padding: 112px var(--hx-pad) 32px;
-          }
-          .hx-corner { top: 84px; }
-          .hx-word, .hx-cluster, .hx-foot { position: relative; inset: auto; transform: none; }
-          /* The words become items of the column, so the cluster can sit
-             between them. */
-          .hx-title { display: contents; }
-          .hx-word { font-size: clamp(54px, 17vw, 120px); }
-          .hx-word-b { align-self: flex-end; order: 3; }
-          .hx-word-a { order: 1; }
-          .hx-cluster { order: 2; width: 100%; height: auto; margin: 28px 0 -40px; }
-          .hx-foot { order: 5; margin-top: 32px; }
+        @keyframes hc-walk {
+          0%   { transform: translateX(var(--sx)) translateZ(-230vw) rotateY(var(--ry)); opacity: 0;    filter: blur(3px); }
+          4%   {                                                                          opacity: 0.1; }
+          42%  {                                                                          opacity: 0.16; filter: blur(3px); }
+          62%  {                                                                          opacity: 0.3; }
+          77%  {                                                                          filter: blur(0); }
+          81%  {                                                                          opacity: 1; }
+          100% { transform: translateX(var(--sx)) translateZ(30vw) rotateY(var(--ry));   opacity: 1;    filter: blur(0); }
         }
         @media (prefers-reduced-motion: reduce) {
-          .hx-dust span { animation: none; }
-          .hx-card { transition: none; }
+          .hc-col { animation: none; }
+        }
+        .hc-frame {
+          position: relative;
+          flex-basis: 0;
+          min-height: 0;
+          overflow: hidden;
+          border-radius: calc(0.9vw * var(--corner));
+          background: var(--tile);
+          box-shadow: 0 0.8vw 2.4vw rgba(0, 0, 0, 0.35);
+        }
+        .hc-frame img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+        @media (prefers-reduced-motion: reduce) {
+          .hc-stage { transition: none; }
+        }
+
+
+
+        /* A soft pool of the page colour behind the copy: the corridor runs
+           back behind it, and this keeps the type on near-solid ground. */
+        .hc-copy::before {
+          content: "";
+          position: absolute;
+          inset: -40% -34%;
+          z-index: -1;
+          background: radial-gradient(closest-side, var(--page-bg) 72%, color-mix(in srgb, var(--page-bg) 70%, transparent) 86%, transparent 100%);
+          pointer-events: none;
+        }
+        .hc-copy {
+          position: relative;
+          isolation: isolate;
+          z-index: 2;
+          max-width: min(720px, 46vw);
+          padding: 0 16px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          text-align: center;
+        }
+        /* The wordmark, in the theme's own file (light letters on dark). */
+        .hc-logo { display: block; height: clamp(22px, 2vw, 30px); width: auto; margin-bottom: 28px; }
+        .hc-logo-on-light { display: none; }
+        :root:not([data-theme="dark"]) .hc-logo-on-dark { display: none; }
+        :root:not([data-theme="dark"]) .hc-logo-on-light { display: block; }
+        .hc-muted { color: var(--heading-muted); }
+        /* Two lines, always (Hamza, 6 Oct): each line is held whole and the
+           size scales with the viewport so the longer one fits the column. */
+        .hc-line { display: block; white-space: nowrap; }
+        .hc-title {
+          /* The first line is 12.3em wide; 3.25vw keeps it inside the
+             46vw column (less padding) at every width. */
+          font-size: clamp(24px, 3.25vw, 52px);
+          line-height: 1.08;
+          font-weight: 600;
+          letter-spacing: -0.03em;
+          color: var(--ink-heading);
+          text-wrap: balance;
+        }
+        .hc-lede {
+          margin-top: 20px;
+          max-width: 54ch;
+          font-size: clamp(15px, 1.1vw, 17px);
+          line-height: 1.6;
+          color: var(--ink-2);
+        }
+
+        /* The purple action the hero carried before (from 8e207f9): the
+           brand radial, a 4px lip along the foot, and a violet glow. */
+        .hs-cta {
+          margin-top: 32px;
+          display: inline-flex;
+          align-items: center;
+          gap: 11px;
+          height: 52px;
+          padding: 0 28px 4px;
+          border-radius: calc(21px * var(--corner));
+          font-size: 16px;
+          font-weight: 500;
+          letter-spacing: -0.005em;
+          white-space: nowrap;
+          color: #fff;
+          background: radial-gradient(63% 261% at 50% 50%, #8A3FFC 30.29%, #8A3FFC 63.46%, #491D8B 100%);
+          box-shadow:
+            0 6px 12px rgba(138, 63, 252, 0.15),
+            0 12px 24px rgba(138, 63, 252, 0.15),
+            inset 0 -4px 0 #491D8B;
+          transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .hs-cta:hover {
+          box-shadow:
+            0 8px 16px rgba(138, 63, 252, 0.26),
+            0 16px 32px rgba(138, 63, 252, 0.22),
+            inset 0 -4px 0 #491D8B;
+        }
+        .hs-cta:active { transform: translateY(1px); }
+        .hs-cta:focus-visible { outline: 2px solid #8a3ffc; outline-offset: 3px; }
+
+        .hs-strip { padding-top: clamp(40px, 5vw, 72px); padding-bottom: clamp(48px, 7vh, 88px); }
+
+        /* Narrow: the copy needs the full width, so the walls step back
+           behind it as a dim frame. */
+        @media (max-width: 760px) {
+          .hc-copy { max-width: none; }
+          .hc-stage { opacity: 0.35; }
+          .hs-dots { width: 48px; }
+          .hs-cta { height: 48px; padding: 0 20px 4px; font-size: 15px; }
         }
       `}</style>
     </>

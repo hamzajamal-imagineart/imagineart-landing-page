@@ -176,7 +176,7 @@ export function Workflows() {
           align-items: center;
           gap: 12px;
           padding: 9px 10px;
-          border-radius: 12px;
+          border-radius: var(--radius-3);
           color: inherit;
           text-decoration: none;
           transition: background 240ms ease;
@@ -185,7 +185,7 @@ export function Workflows() {
         .wf-pg:hover, .wf-pg:focus-visible { background: var(--hover-wash); box-shadow: none; }
         .wf-pg-mark {
           width: 32px; height: 32px;
-          border-radius: 9px;
+          border-radius: calc(9px * var(--corner));
           flex: 0 0 auto;
           display: grid; place-items: center;
           background: var(--tile-2);
@@ -204,7 +204,7 @@ export function Workflows() {
         .wf-pg-go {
           margin-left: auto;
           width: 28px; height: 28px;
-          border-radius: 999px;
+          border-radius: var(--radius-pill);
           flex: 0 0 auto;
           display: grid; place-items: center;
           background: var(--ink-heading);

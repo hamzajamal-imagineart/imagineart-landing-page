@@ -78,10 +78,10 @@ export function SectionGuides({ edge = "top" }: { edge?: "top" | "bottom" }) {
 
         {/* One dot per intersection — this edge only */}
         <span
-          className={`absolute left-0 ${dotY} -translate-x-1/2 w-[4px] h-[4px] rounded-full bg-[color:var(--guide-dot)]`}
+          className={`absolute left-0 ${dotY} -translate-x-1/2 w-[4px] h-[4px] rounded-[var(--radius-pill)] bg-[color:var(--guide-dot)]`}
         />
         <span
-          className={`absolute right-0 ${dotY} translate-x-1/2 w-[4px] h-[4px] rounded-full bg-[color:var(--guide-dot)]`}
+          className={`absolute right-0 ${dotY} translate-x-1/2 w-[4px] h-[4px] rounded-[var(--radius-pill)] bg-[color:var(--guide-dot)]`}
         />
       </div>
     </div>

@@ -117,7 +117,7 @@ export function CollaborationDemo({ tone = "light" }: { tone?: "light" | "dark" 
           width: 100%;
           height: 100%;
           min-height: 220px;
-          border-radius: 16px;
+          border-radius: var(--radius-4);
           overflow: hidden;
           background: var(--cl-bg);
           border: 1px solid var(--cl-line);
@@ -172,7 +172,7 @@ export function CollaborationDemo({ tone = "light" }: { tone?: "light" | "dark" 
           min-width: 0;
           background: var(--cl-card);
           border: 1px solid var(--cl-card-line);
-          border-radius: 12px;
+          border-radius: var(--radius-3);
           box-shadow: var(--cl-shadow);
           padding: 12px 13px 13px;
           color: var(--cl-ink);
@@ -186,14 +186,14 @@ export function CollaborationDemo({ tone = "light" }: { tone?: "light" | "dark" 
         .collab-card-title { font-size: 12.5px; font-weight: 600; letter-spacing: -0.01em; }
         .collab-card-actions { display: flex; align-items: center; gap: 5px; color: var(--cl-ink-soft); }
         .collab-dot-menu { font-size: 12px; line-height: 1; letter-spacing: 0.5px; }
-        .collab-icon { width: 17px; height: 17px; border-radius: 999px; display: grid; place-items: center; }
+        .collab-icon { width: 17px; height: 17px; border-radius: var(--radius-pill); display: grid; place-items: center; }
         .collab-icon-solid { background: var(--cl-field); color: var(--cl-ink); }
 
         .collab-avatar {
           display: block;
           margin-top: 9px;
           width: 20px; height: 20px;
-          border-radius: 999px;
+          border-radius: var(--radius-pill);
           background: linear-gradient(140deg, #8a6a52, #43342a);
         }
         .collab-byline { margin-top: 5px; font-size: 11px; letter-spacing: 0.004em; }
@@ -217,14 +217,14 @@ export function CollaborationDemo({ tone = "light" }: { tone?: "light" | "dark" 
           gap: 8px;
           background: var(--cl-field);
           border: 1px solid var(--cl-card-line);
-          border-radius: 9px;
+          border-radius: calc(9px * var(--corner));
           padding: 6px 6px 6px 9px;
           font-size: 10.5px;
           color: var(--cl-ink-soft);
         }
         .collab-send {
           width: 16px; height: 16px;
-          border-radius: 999px;
+          border-radius: var(--radius-pill);
           display: grid; place-items: center;
           background: var(--cl-card);
           border: 1px solid var(--cl-card-line);
@@ -235,7 +235,7 @@ export function CollaborationDemo({ tone = "light" }: { tone?: "light" | "dark" 
         .collab-badge {
           flex: 0 0 auto;
           width: 22px; height: 22px;
-          border-radius: 999px;
+          border-radius: var(--radius-pill);
           display: grid; place-items: center;
           font-size: 9px;
           font-weight: 600;
@@ -261,7 +261,7 @@ export function CollaborationDemo({ tone = "light" }: { tone?: "light" | "dark" 
           font-weight: 600;
           letter-spacing: -0.01em;
           padding: 4px 10px;
-          border-radius: 8px;
+          border-radius: var(--radius-2);
           white-space: nowrap;
         }
 
@@ -274,7 +274,7 @@ export function CollaborationDemo({ tone = "light" }: { tone?: "light" | "dark" 
           font-weight: 600;
           letter-spacing: -0.01em;
           padding: 4px 10px;
-          border-radius: 8px;
+          border-radius: var(--radius-2);
           white-space: nowrap;
           box-shadow: var(--cl-shadow);
         }

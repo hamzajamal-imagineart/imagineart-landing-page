@@ -166,7 +166,7 @@ export function Suite() {
         .suite-pagers { display: flex; gap: 12px; flex: 0 0 auto; }
         .suite-pager {
           width: 48px; height: 48px;
-          border-radius: 999px;
+          border-radius: var(--radius-pill);
           border: 0;
           background: var(--hover-wash);
           box-shadow: inset 0 0 0 1px var(--line);
@@ -212,7 +212,7 @@ export function Suite() {
           position: relative;
           display: block;
           height: 433px;
-          border-radius: 12px;
+          border-radius: var(--radius-3);
           overflow: hidden;
           background: var(--tile);
         }
@@ -224,7 +224,7 @@ export function Suite() {
           transition: transform 600ms cubic-bezier(0.22, 1, 0.36, 1);
         }
         .suite-card:hover .suite-media img { transform: scale(1.03); }
-        .suite-card:focus-visible { outline: 2px solid var(--ink); outline-offset: 6px; border-radius: 12px; }
+        .suite-card:focus-visible { outline: 2px solid var(--ink); outline-offset: 6px; border-radius: var(--radius-3); }
         .suite-text { display: flex; flex-direction: column; gap: 8px; padding: 0 8px; }
         .suite-card-title {
           font-size: 20px;

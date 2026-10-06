@@ -34,7 +34,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     // The page ships dark. The light palette is still defined in globals.css
     // and still correct, so this attribute is the only thing to change back.
-    <html lang="en" data-theme="light" className={googleSans.variable}>
+    <html lang="en" data-theme="dark" className={googleSans.variable}>
       <body>{children}</body>
     </html>
   );

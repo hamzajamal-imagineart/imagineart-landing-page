@@ -9,11 +9,11 @@ import { START_HREF } from "@/lib/links";
  *
  * Layout and copy are the frame's: heading, one line, a white "Start
  * creating" action, three tall cards in a row and one wide card under them,
- * each with a title and a line over the image's foot. **The images are the
- * frame's own** (Hamza, 6 Oct, "use the images that Figma had"), downloaded
- * to media/outcomes/ and saved as JPEG (62–78KB each). The frame is a
- * Magnific reference page, and the Brand campaigns image is a magazine cover
- * reading "MAGNIFIC" — flagged in HANDOFF as one to replace before launch.
+ * each with a title and a line over the image's foot. **Images generated in
+ * ImagineArt for this section** (Hamza, 6 Oct; Nano Banana Pro at 2K, the
+ * ImagineArt (Official) workspace), one per card from its own line, saved to
+ * media/outcomes/ as JPEG: three 3:4 at 1100px wide, the Filmmaking card 21:9
+ * at 2400px. They replaced the frame's own images, which were Magnific's.
  *
  * The scrim is heavier than the frame's 25%: white type over a photograph
  * needs a floor under it, not a tint.
@@ -75,7 +75,7 @@ export function Outcomes() {
           gap: 8px;
           height: 50px;
           padding: 0 24px;
-          border-radius: 8px;
+          border-radius: var(--radius-2);
           background: var(--ink-heading);
           color: var(--page-bg);
           font-size: 16px;
@@ -94,7 +94,7 @@ export function Outcomes() {
         .oc-card {
           position: relative;
           overflow: hidden;
-          border-radius: 12px;
+          border-radius: var(--radius-3);
           height: clamp(420px, 37vw, 526px);
           background: #141416;
           isolation: isolate;

@@ -85,7 +85,7 @@ export function FashionStudio() {
           gap: 10px;
           width: 254px;
           height: 52px;
-          border-radius: 999px;
+          border-radius: var(--radius-pill);
           font-size: 16px;
           font-weight: 500;
           color: #fff;

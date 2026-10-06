@@ -263,7 +263,7 @@ export function StudioReel() {
           align-items: center;
           height: 32px;
           padding: 0 14px;
-          border-radius: 999px;
+          border-radius: var(--radius-pill);
           font-size: 12.5px;
           font-weight: 500;
           letter-spacing: 0.02em;
@@ -282,14 +282,14 @@ export function StudioReel() {
           padding: 5px;
           width: max-content;
           margin-inline: auto;
-          border-radius: 999px;
+          border-radius: var(--radius-pill);
           background: var(--track);
         }
         .sr-arrow {
           width: 36px;
           height: 36px;
           border: 0;
-          border-radius: 999px;
+          border-radius: var(--radius-pill);
           display: grid;
           place-items: center;
           background: transparent;
@@ -304,7 +304,7 @@ export function StudioReel() {
           height: 7px;
           padding: 0;
           border: 0;
-          border-radius: 999px;
+          border-radius: var(--radius-pill);
           background: var(--ink-3);
           opacity: 0.5;
           cursor: pointer;

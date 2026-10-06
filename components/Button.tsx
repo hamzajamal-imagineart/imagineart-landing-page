@@ -30,7 +30,7 @@ interface CommonProps {
 // Pills, like the hero and closing-band buttons. The kit's 10px rectangle
 // left the page with two button shapes and no rule saying which was which.
 const base =
-  "inline-flex items-center justify-center gap-2 rounded-full font-sans font-medium tracking-[-0.005em] " +
+  "inline-flex items-center justify-center gap-2 rounded-[var(--radius-pill)] font-sans font-medium tracking-[-0.005em] " +
   "transition-opacity duration-200 ease-out cursor-pointer border-0 active:translate-y-px";
 
 const sizes: Record<Size, string> = {

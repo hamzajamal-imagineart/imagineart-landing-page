@@ -112,7 +112,7 @@ export function AdStudio() {
           width: 100%;
           aspect-ratio: 9 / 16;
           object-fit: cover;
-          border-radius: 8px;
+          border-radius: var(--radius-2);
           background: #1a1a1c;
         }
 
@@ -145,7 +145,7 @@ export function AdStudio() {
           gap: 8px;
           width: 240px;
           height: 48px;
-          border-radius: 12px;
+          border-radius: var(--radius-3);
           font-size: 15px;
           font-weight: 500;
           color: #fff;
@@ -156,7 +156,7 @@ export function AdStudio() {
         @media (max-width: 1200px) { .ad-col-xl { display: none; } }
         @media (max-width: 768px) {
           .ad-band { height: 640px; }
-          .ad-panel { right: 0; bottom: auto; width: auto; height: 380px; border-radius: 0 0 24px 24px; }
+          .ad-panel { right: 0; bottom: auto; width: auto; height: 380px; border-radius: 0 0 var(--radius-6) var(--radius-6); }
         }
         @media (prefers-reduced-motion: reduce) { .ad-track { animation: none; } }
       `}</style>

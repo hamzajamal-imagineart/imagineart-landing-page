@@ -148,7 +148,7 @@ export function FAQSection() {
         .faq-toggle {
           flex: 0 0 auto;
           width: 32px; height: 32px;
-          border-radius: 50%;
+          border-radius: var(--radius-round);
           display: grid; place-items: center;
           background: rgba(0, 0, 0, 0.05);
           color: var(--ink);

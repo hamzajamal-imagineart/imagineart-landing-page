@@ -154,7 +154,7 @@ export function UseCaseWheel({ groups, label }: { groups: WheelGroup[]; label: s
           color: var(--heading-muted);
           background: transparent;
           border: 0;
-          border-radius: 16px;
+          border-radius: var(--radius-4);
           padding: 9px 18px;
           min-height: 42px;
           cursor: pointer;
@@ -175,7 +175,7 @@ export function UseCaseWheel({ groups, label }: { groups: WheelGroup[]; label: s
         /* Squarer than a button, and unbordered, to match the other tab
            lists on the page. */
         .uw-pill {
-          border-radius: 16px;
+          border-radius: var(--radius-4);
           background: var(--tile-2);
           box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05), 0 6px 18px rgba(16, 20, 30, 0.07);
         }
@@ -183,7 +183,7 @@ export function UseCaseWheel({ groups, label }: { groups: WheelGroup[]; label: s
            beside it as its own button. */
         .uw-arrow {
           width: 28px; height: 28px;
-          border-radius: 999px;
+          border-radius: var(--radius-pill);
           display: grid; place-items: center;
           background: var(--ink-heading);
           color: var(--page-bg);
@@ -212,7 +212,7 @@ export function UseCaseWheel({ groups, label }: { groups: WheelGroup[]; label: s
         .uw-card {
           position: absolute;
           margin: 0;
-          border-radius: 16px;
+          border-radius: var(--radius-4);
           overflow: hidden;
           border: 1px solid var(--line);
           background-color: var(--tile);

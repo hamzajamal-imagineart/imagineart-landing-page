@@ -419,6 +419,21 @@ function PluginHub() {
   );
 }
 
+/** A small dot glyph per tab, four arrangements, as in the reference. */
+const DOT_SETS: [number, number][][] = [
+  [[3, 3], [9, 3], [15, 3], [6, 9], [12, 9], [3, 15], [9, 15], [15, 15]],
+  [[3, 4], [15, 4], [9, 9], [4, 14], [14, 14]],
+  [[15, 3], [10, 8], [5, 13], [3, 15], [13, 6]],
+  [[15, 3], [11, 7], [7, 11], [3, 15]],
+];
+function TabDots({ v }: { v: number }) {
+  return (
+    <svg className="pf-tab-dots" width="18" height="18" viewBox="0 0 18 18" aria-hidden>
+      {DOT_SETS[v % DOT_SETS.length].map(([cx, cy], k) => <circle key={k} cx={cx} cy={cy} r="1.5" fill="currentColor" />)}
+    </svg>
+  );
+}
+
 export function PlatformStrip() {
   const [tab, setTab] = useState(0);
   const tabs = useSlidingIndicator<HTMLButtonElement>(tab);
@@ -462,84 +477,63 @@ export function PlatformStrip() {
             className={`pf-tab ${i === tab ? "pf-tab-on" : ""}`}
             onClick={() => setTab(i)}
           >
+            <TabDots v={i} />
             {x.label}
             {x.isNew && <span className="pf-new">New</span>}
           </button>
         ))}
       </div>
 
-      <div className="pf-panel">
-        <div id="pf-stage" className="pf-stage" role="tabpanel" aria-label={t.label}>{stage}</div>
+      {/* The product, in a quiet bordered container on a faint dot grid. */}
+      <div className="pf-frame">
+        <div className="pf-panel">
+          <div id="pf-stage" className="pf-stage" role="tabpanel" aria-label={t.label}>{stage}</div>
+        </div>
       </div>
+
 
       <style>{`
         .pf { isolation: isolate; }
         ${slidingIndicatorCss}
 
-        /* A segmented control (Hamza, 24 Sep, to a reference): squared
-           segments on a recessed track, hairline dividers between the
-           unselected ones, the selected one lifted. Centred above the panel,
-           and clear of the hero's actions: at 40px the buttons and the strip
-           read as one stack. */
+        /* Minimal tabs (Hamza, 6 Oct, to a reference): no track and no
+           dividers, a small dot glyph before each label, and only the
+           selected tab on a soft fill. Above the container. */
         .pf-tabs {
           position: relative;
-          /* The gap above is the hero head's padding, where the mosaic
-             fades out. */
           margin: 0 auto;
           width: max-content;
           max-width: 100%;
           display: flex;
-          padding: 4px;
-          border-radius: 14px;
-          background: var(--track);
-          border: 1px solid var(--line);
+          gap: clamp(8px, 1.6vw, 24px);
           overflow-x: auto;
           scrollbar-width: none;
         }
         .pf-tabs::-webkit-scrollbar { display: none; }
-        .pf-tab-fill {
-          border-radius: 10px;
-          background: var(--panel);
-          box-shadow: 0 1px 2px rgba(0, 0, 0, 0.22), inset 0 0 0 1px var(--line);
-        }
+        .pf-tab-fill { border-radius: calc(10px * var(--corner)); background: var(--tile); }
         .pf-tab {
           position: relative;
           z-index: 1;
           flex: 0 0 auto;
           display: inline-flex;
           align-items: center;
-          gap: 8px;
+          gap: 12px;
           border: 0;
-          border-radius: 10px;
-          padding: 0 clamp(18px, 1.7vw, 24px);
-          height: 42px;
+          border-radius: calc(10px * var(--corner));
+          padding: 0 20px;
+          height: 48px;
           background: transparent;
           font-family: inherit;
-          font-size: 14.5px;
+          font-size: 17px;
           font-weight: 500;
           letter-spacing: -0.01em;
-          color: var(--ink-3);
+          color: var(--ink-2);
           cursor: pointer;
           white-space: nowrap;
           transition: color 220ms ease;
         }
-        .pf-tab:hover, .pf-tab-on, .pf-tab-on:hover { color: var(--ink); }
-        /* --ink-3 on the light track is 3:1; one step darker clears 4.5. */
-        :root:not([data-theme="dark"]) .pf-tab { color: var(--ink-2); }
-        :root:not([data-theme="dark"]) .pf-tab:hover, :root:not([data-theme="dark"]) .pf-tab-on { color: var(--ink); }
-        /* Dividers between segments, dropped either side of the selected one
-           so the lifted segment never has a line against it. */
-        .pf-tab + .pf-tab::before {
-          content: "";
-          position: absolute;
-          left: 0;
-          top: 12px;
-          bottom: 12px;
-          width: 1px;
-          background: var(--line);
-          transition: opacity 220ms ease;
-        }
-        .pf-tab-on::before, .pf-tab-on + .pf-tab::before { opacity: 0; }
+        .pf-tab:hover, .pf-tab-on, .pf-tab-on:hover { color: var(--ink-heading); }
+        .pf-tab-dots { flex: 0 0 auto; display: block; }
         /* Violet tint, not ink (Hamza, 24 Sep, to a reference): the one
            colour in the strip, so it reads as a flag rather than a label.
            #a78bfa on the tinted track is 5.8:1; the light theme darkens it. */
@@ -548,7 +542,7 @@ export function PlatformStrip() {
           align-items: center;
           height: 20px;
           padding: 0 7px;
-          border-radius: 6px;
+          border-radius: calc(6px * var(--corner));
           background: rgba(139, 92, 246, 0.2);
           color: #a78bfa;
           font-size: 10.5px;
@@ -558,21 +552,26 @@ export function PlatformStrip() {
         }
         :root:not([data-theme="dark"]) .pf-new { background: #ede9fe; color: #6d28d9; }
 
-        /* The panel frames the stage and holds nothing else. */
-        .pf-panel {
-          margin-top: 12px;
-          padding: clamp(8px, 0.9vw, 12px);
-          border-radius: var(--radius-6);
+        /* The container: a hairline, a ground one step off the page, and a
+           faint dot grid (Hamza, 6 Oct: no gradient). */
+        .pf-frame {
+          position: relative;
+          margin-top: 20px;
+          padding: clamp(10px, 1vw, 14px);
+          border-radius: var(--radius-5);
           border: 1px solid var(--line);
-          background: var(--tile);
+          background:
+            radial-gradient(circle, var(--line) 1px, transparent 1.3px) 0 0 / 16px 16px,
+            var(--tile);
         }
+        .pf-panel { padding: 0; }
 
         /* One ratio for every tab, so switching never moves the height. */
         .pf-stage {
           position: relative;
           overflow: hidden;
-          aspect-ratio: 16 / 8;
-          border-radius: var(--radius-5);
+          aspect-ratio: 16 / 9;
+          border-radius: var(--radius-3);
           border: 1px solid var(--line);
           background: var(--tile-2);
           --hc-float: clamp(12px, 2.2%, 22px);
@@ -667,7 +666,7 @@ export function PlatformStrip() {
         .pf-node {
           width: clamp(52px, 5vw, 64px); aspect-ratio: 1;
           display: grid; place-items: center;
-          border-radius: 16px;
+          border-radius: var(--radius-4);
           background: var(--tile);
           border: 1px solid rgba(255, 255, 255, 0.14);
           box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
@@ -707,7 +706,7 @@ export function PlatformStrip() {
           top: -6px; right: -6px;
           width: 20px; height: 20px;
           display: grid; place-items: center;
-          border-radius: 999px;
+          border-radius: var(--radius-pill);
           background: var(--ink-heading);
           color: var(--page-bg);
           box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
@@ -810,7 +809,7 @@ export function PlatformStrip() {
           width: 34px; height: 34px;
           display: grid; place-items: center;
           border: 1px solid rgba(255, 255, 255, 0.14);
-          border-radius: 999px;
+          border-radius: var(--radius-pill);
           background: rgba(10, 10, 11, 0.72);
           backdrop-filter: blur(10px);
           -webkit-backdrop-filter: blur(10px);
@@ -838,7 +837,7 @@ export function PlatformStrip() {
           align-items: center;
           gap: 10px;
           padding: 8px 12px;
-          border-radius: 12px;
+          border-radius: var(--radius-3);
           background: rgba(10, 10, 11, 0.62);
           backdrop-filter: blur(10px);
           -webkit-backdrop-filter: blur(10px);
@@ -858,7 +857,7 @@ export function PlatformStrip() {
           display: grid;
           place-items: center;
           border: 0;
-          border-radius: 7px;
+          border-radius: calc(7px * var(--corner));
           background: rgba(255, 255, 255, 0.12);
           color: #fff;
           cursor: pointer;
@@ -886,17 +885,17 @@ export function PlatformStrip() {
           background: transparent;
           cursor: pointer;
         }
-        .hc-seek::-webkit-slider-runnable-track { height: 3px; border-radius: 2px; background: rgba(255, 255, 255, 0.28); }
-        .hc-seek::-moz-range-track { height: 3px; border-radius: 2px; background: rgba(255, 255, 255, 0.28); }
+        .hc-seek::-webkit-slider-runnable-track { height: 3px; border-radius: calc(2px * var(--corner)); background: rgba(255, 255, 255, 0.28); }
+        .hc-seek::-moz-range-track { height: 3px; border-radius: calc(2px * var(--corner)); background: rgba(255, 255, 255, 0.28); }
         .hc-seek::-webkit-slider-thumb {
           appearance: none;
           -webkit-appearance: none;
           width: 11px; height: 11px;
           margin-top: -4px;
-          border: 0; border-radius: 50%;
+          border: 0; border-radius: var(--radius-round);
           background: #fff;
         }
-        .hc-seek::-moz-range-thumb { width: 11px; height: 11px; border: 0; border-radius: 50%; background: #fff; }
+        .hc-seek::-moz-range-thumb { width: 11px; height: 11px; border: 0; border-radius: var(--radius-round); background: #fff; }
         .hc-seek:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
 
 
