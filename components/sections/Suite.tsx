@@ -24,62 +24,67 @@ import { HOME } from "@/lib/links";
  * the title (20px) and one line under it rather than over it. The rail starts
  * on the heading's edge and bleeds off the right; the pagers dim at either
  * end. The eyebrow and lede went, as the frame has neither. The frame's
- * images are Lovart's own UI, so the cards keep our clips.
+ * images are Lovart's own UI, so the cards carry our own.
+ *
+ * **Stills, not clips, since 6 Oct** (Hamza): nine images generated in
+ * ImagineArt (Nano Banana Pro, 3:4, the ImagineArt (Official) workspace), one
+ * finished-looking output per tool, saved to media/suite/*.jpg at 637 × 854
+ * (70–190KB). The old clips stay on disk.
  */
-type Tool = { title: string; body: string; video: string; href: string };
+type Tool = { title: string; body: string; image: string; href: string };
 
 const TOOLS: Tool[] = [
   {
     title: "Workflows",
-    video: "/media/suite/workflows.mp4",
+    image: "/media/suite/workflows.jpg",
     href: `${HOME}/workflow`,
     body: "Node-based, multi-step flows that turn a brief into finished assets. The repeatable backbone behind every campaign your team ships.",
   },
   {
     title: "Image / Video Canvas",
-    video: "/media/suite/canvas.mp4",
+    image: "/media/suite/canvas.jpg",
     href: `${HOME}/image`,
     body: "Full editing surfaces for both. Create and refine in the same place, no exports, no handoffs, no drift.",
   },
   {
     title: "Brand Guidelines",
-    video: "/media/capabilities/brand-kits.mp4",
+    image: "/media/suite/brand-guidelines.jpg",
     href: `${HOME}/enterprise/brand-kits`,
     body: "Lock in your colors, fonts, and visual identity so every generation stays on-brand.",
   },
   {
     title: "Video Extend",
-    video: "/media/capabilities/video-extend.mp4",
+    image: "/media/suite/video-extend.jpg",
     href: `${HOME}/video`,
     body: "Take any clip and seamlessly extend it, no reshoots, no awkward cuts.",
   },
   {
     title: "Inpaint",
-    video: "/media/capabilities/inpaint.mp4",
+    image: "/media/suite/inpaint.jpg",
     href: `${HOME}/edit/inpaint`,
     body: "Edit precisely. Remove, replace, or refine any part of an image with a brush.",
   },
   {
     title: "AI Influencer / UGC",
-    video: "/media/capabilities/ugc.mp4",
+    image: "/media/suite/ugc.jpg",
     href: `${HOME}/apps/heygen-avatar`,
     body: "Generate consistent, authentic-feeling creators and user-generated content at scale.",
   },
   {
     title: "Music",
-    video: "/media/capabilities/music.mp4",
+    image: "/media/suite/music.jpg",
     href: `${HOME}/audio/music/elevenlabs-music`,
     body: "Score your content with original, royalty-free tracks generated to fit the moment.",
   },
   {
     title: "Ad Studio",
-    video: "/media/studios/ad-studio.mp4",
+    image: "/media/suite/ad-studio.jpg",
     href: `${HOME}/ad-studio`,
     body: "Produce performance-ready ad creative in every format and ratio, fast.",
   },
   {
     title: "Fashion Studio",
-    video: "/media/studios/fashion-studio.mp4",
+    image: "/media/suite/fashion-studio.jpg",
     href: `${HOME}/fashion-studio`,
     body: "Bring apparel and product to life with on-model imagery and editorial-grade visuals.",
   },
@@ -140,16 +145,8 @@ export function Suite() {
         {TOOLS.map((t, i) => (
           <a key={t.title} href={t.href} target="_blank" rel="noopener noreferrer" className="suite-card">
             <span className="suite-media">
-              {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-              <video
-                src={withBasePath(t.video)}
-                autoPlay
-                muted
-                loop
-                playsInline
-                preload={i < 4 ? "auto" : "metadata"}
-                aria-hidden
-              />
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={withBasePath(t.image)} alt="" loading={i < 4 ? "eager" : "lazy"} width={637} height={854} />
             </span>
             <span className="suite-text">
               <h3 className="suite-card-title">{t.title}</h3>
@@ -219,14 +216,14 @@ export function Suite() {
           overflow: hidden;
           background: var(--tile);
         }
-        .suite-media video {
+        .suite-media img {
           position: absolute; inset: 0;
           width: 100%; height: 100%;
           object-fit: cover;
           display: block;
           transition: transform 600ms cubic-bezier(0.22, 1, 0.36, 1);
         }
-        .suite-card:hover .suite-media video { transform: scale(1.03); }
+        .suite-card:hover .suite-media img { transform: scale(1.03); }
         .suite-card:focus-visible { outline: 2px solid var(--ink); outline-offset: 6px; border-radius: 12px; }
         .suite-text { display: flex; flex-direction: column; gap: 8px; padding: 0 8px; }
         .suite-card-title {
@@ -242,8 +239,8 @@ export function Suite() {
           .suite-media { height: 368px; }
         }
         @media (prefers-reduced-motion: reduce) {
-          .suite-media video { transition: none; }
-          .suite-card:hover .suite-media video { transform: none; }
+          .suite-media img { transition: none; }
+          .suite-card:hover .suite-media img { transform: none; }
         }
       `}</style>
     </section>
