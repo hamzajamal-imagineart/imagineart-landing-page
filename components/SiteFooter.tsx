@@ -1,93 +1,93 @@
 /* eslint-disable @next/next/no-img-element */
 import { withBasePath } from "@/lib/assets";
-import { HOME } from "@/lib/links";
 
-const BASE = HOME;
+const BASE = "https://www.imagine.art";
 
-// Shared site-wide, taken from the kit. Change only if the whole site changed.
-const COLUMNS: { heading: string; links: { label: string; href: string }[] }[] = [
+// Shared site-wide: only change these if the whole site changed, not for a
+// single page. Source: the "Footer" spec (Oct 2026). Links without an href are
+// pages that aren't live yet; they render as plain text with a "Soon" tag.
+type FooterLink = { label: string; href?: string; soon?: boolean; indent?: boolean };
+
+const COLUMNS: { heading: string; links: FooterLink[] }[] = [
   {
-    heading: "ImagineArt AI Studios",
-    links: [
-      { label: "Imagine Computer", href: `${BASE}/imagine-computer` },
-      { label: "Image Studio", href: `${BASE}/image` },
-      { label: "Video Studio", href: `${BASE}/video` },
-      { label: "Audio Studio", href: `${BASE}/audio-studio` },
-      { label: "Film Studio", href: `${BASE}/film-studio` },
-      { label: "Workflow", href: `${BASE}/flow` },
-      { label: "Enterprise", href: `${BASE}/business/enterprise` },
-      { label: "Teams", href: `${BASE}/teams-plan` },
-    ],
-  },
-  {
-    heading: "Imagine Computer",
-    links: [
-      { label: "AI Chat", href: `${BASE}/imagine-computer/ai-chat` },
-      { label: "AI Spreadsheet Generator", href: `${BASE}/imagine-computer/ai-spreadsheet-generator` },
-      { label: "Creative OS", href: `${BASE}/imagine-computer/ai-creative-os` },
-      { label: "AI Agent", href: `${BASE}/imagine-computer/agentic-ai` },
-      { label: "AI Document Generator", href: `${BASE}/imagine-computer/ai-document-generator` },
-      { label: "AI Website Builder", href: `${BASE}/imagine-computer/ai-website-builder` },
-      { label: "AI Slides Generator", href: `${BASE}/imagine-computer/ai-slides-generator` },
-    ],
-  },
-  {
-    heading: "Tools",
+    heading: "Platform",
     links: [
       { label: "AI Image Generator", href: `${BASE}/ai-image-generator` },
       { label: "AI Video Generator", href: `${BASE}/ai-video-generator` },
-      { label: "AI Audio Generator", href: `${BASE}/audio-studio` },
-      { label: "AI Text-to-Speech", href: `${BASE}/audio/text-to-speech` },
-      { label: "AI Music Generator", href: `${BASE}/audio/music/elevenlabs-music` },
-      { label: "AI Film Studio", href: `${BASE}/ai-film-studio` },
-      { label: "AI Workflows", href: `${BASE}/workflow` },
+      { label: "AI Tools", soon: true }, // TODO: link when live
+      { label: "Creative Agent", href: `${BASE}/imagine-computer` },
+      { label: "Workflows", href: `${BASE}/business/workflows` },
+      { label: "MCP", href: `${BASE}/mcp` },
+      { label: "Plugins", href: `${BASE}/plugins` },
+      { label: "AI Creative Studios", soon: true }, // TODO: link when live
+      { label: "Audio Studio", href: `${BASE}/audio-studio`, indent: true },
+      { label: "Film Studio", href: `${BASE}/ai-film-studio`, indent: true },
+      { label: "Ad Studio", href: `${BASE}/ai-ad-studio`, indent: true },
+      { label: "Fashion Studio", href: `${BASE}/ai-fashion-studio`, indent: true },
+    ],
+  },
+  {
+    heading: "Featured Models",
+    links: [
+      { label: "Runway Gen 4.5", href: `${BASE}/features/runway-gen-4.5` }, // TODO: returned 410 on 5 Oct 2026
+      { label: "GPT Image 2.5", href: `${BASE}/insights/gpt-image-2-5-overview` },
     ],
   },
   {
     heading: "Apps",
     links: [
-      { label: "Video Translate", href: `${BASE}/apps/video-translate` },
       { label: "HeyGen Avatar", href: `${BASE}/apps/heygen-avatar` },
-      { label: "Seedance 2.0", href: `${BASE}/features/seedance-2-0` },
-      { label: "Sora 2", href: `${BASE}/apps/sora-2` },
-      { label: "Veo 3.1", href: `${BASE}/features/veo-3-1-ai-video-generator` },
-      { label: "Kling 3.0", href: `${BASE}/apps/kling-3.0` },
-      { label: "Pixverse v6", href: `${BASE}/apps/pixverse-v6` },
-      { label: "Seedance 2.5", href: `${BASE}/features/seedance-2-5` },
-      { label: "ImagineArt 1.5", href: `${BASE}/features/imagineart-1-5` },
-      { label: "ImagineArt 2.0", href: `${BASE}/features/imagineart-2-0` },
-      { label: "GPT Image 2", href: `${BASE}/apps/gpt-image-2` },
-      { label: "Nano Banana 2", href: `${BASE}/apps/nano-banana-2` },
-      { label: "Image Upscaler", href: `${BASE}/apps/image-upscaler` },
-      { label: "Flux 2", href: `${BASE}/features/flux-2` },
+      { label: "AI Image Editor", href: `${BASE}/apps/ai-image-editor` },
+      { label: "Video Upscaler", href: `${BASE}/apps/video-upscaler` },
+      { label: "Background Changer", href: `${BASE}/apps/background-changer` },
+      { label: "Background Remover", href: `${BASE}/apps/background-remover` },
     ],
   },
   {
-    heading: "Contact Us",
+    heading: "Business",
     links: [
-      { label: "Contact Sales", href: `${BASE}/business/enterprise/contact-us` },
-      { label: "Book a Demo", href: "https://cal.com/team/imagineart/imagineart-customer-assist" },
+      { label: "Enterprise", href: `${BASE}/business` },
+      { label: "Solutions", href: `${BASE}/business/solutions` },
+      { label: "Case Studies", href: `${BASE}/business/case-studies` },
     ],
   },
   {
+    heading: "Resources",
+    links: [
+      { label: "Blog", href: `${BASE}/insights` },
+      { label: "Announcements", href: `${BASE}/announcements` },
+      { label: "Imagine Academy", soon: true }, // TODO: link not provided yet
+      { label: "Help Docs", href: "https://docs.imagine.art/" },
+      { label: "Case Studies", href: `${BASE}/business/case-studies` },
+    ],
+  },
+  {
+    heading: "Collaborate",
+    links: [
+      { label: "Creators Program", href: `${BASE}/creators-program` },
+      { label: "Affiliate Program", href: `${BASE}/affiliate-program` },
+    ],
+  },
+  {
+    // One page; each link should land on its own section.
+    // TODO: add the section anchors (e.g. #teams) once known.
     heading: "Pricing",
-    links: [{ label: "See Plans", href: `${BASE}/subscription` }],
+    links: [
+      { label: "Individuals", href: `${BASE}/subscription` },
+      { label: "Teams", href: `${BASE}/subscription` },
+      { label: "Enterprise", href: `${BASE}/subscription` },
+    ],
   },
 ];
 
-const COMMUNITY: { label: string; href: string }[] = [
-  { label: "Discord", href: "https://discord.com/invite/z7kjUyvAbv" },
-  { label: "Twitter / X", href: "https://x.com/Imagineart_x" },
-  { label: "Instagram", href: "https://www.instagram.com/imagineartofficial" },
-];
-
+// Discord keeps the existing invite: the spec lists Discord without a link.
 const SOCIALS: { title: string; href: string; path: string }[] = [
-  { title: "Facebook", href: "https://www.facebook.com/groups/imagineai", path: "M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" },
-  { title: "Twitter / X", href: "https://x.com/Imagineart_x", path: "M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.741l7.432-8.5L2.25 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z" },
-  { title: "Discord", href: "https://discord.com/invite/z7kjUyvAbv", path: "M20.317 4.37a19.791 19.791 0 00-4.885-1.515.074.074 0 00-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 00-5.487 0 12.64 12.64 0 00-.617-1.25.077.077 0 00-.079-.037A19.736 19.736 0 003.677 4.37a.07.07 0 00-.032.027C.533 9.046-.32 13.58.099 18.057c.002.022.015.04.03.05a19.9 19.9 0 005.993 3.03.078.078 0 00.084-.028 14.09 14.09 0 001.226-1.994.076.076 0 00-.041-.106 13.107 13.107 0 01-1.872-.892.077.077 0 01-.008-.128c.126-.094.252-.192.372-.292a.074.074 0 01.077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 01.078.01c.12.1.246.198.373.292a.077.077 0 01-.006.127 12.299 12.299 0 01-1.873.892.077.077 0 00-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 00.084.028 19.839 19.839 0 006.002-3.03.077.077 0 00.032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 00-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z" },
+  { title: "Facebook", href: "https://www.facebook.com/p/ImagineArt-61559336162381/", path: "M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" },
   { title: "Instagram", href: "https://www.instagram.com/imagineartofficial", path: "M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" },
   { title: "YouTube", href: "https://www.youtube.com/@imagineartofficial", path: "M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12z" },
+  { title: "X", href: "https://x.com/ImagineArt_X", path: "M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.741l7.432-8.5L2.25 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z" },
   { title: "Reddit", href: "https://www.reddit.com/r/ImagineAiArt/", path: "M12 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0zm5.01 4.744c.688 0 1.25.561 1.25 1.249a1.25 1.25 0 0 1-2.498.056l-2.597-.547-.8 3.747c1.824.07 3.48.632 4.674 1.488.308-.309.73-.491 1.207-.491.968 0 1.754.786 1.754 1.754 0 .716-.435 1.333-1.01 1.614a3.111 3.111 0 0 1 .042.52c0 2.694-3.13 4.87-7.004 4.87-3.874 0-7.004-2.176-7.004-4.87 0-.183.015-.366.043-.534A1.748 1.748 0 0 1 4.028 12c0-.968.786-1.754 1.754-1.754.463 0 .898.196 1.207.49 1.207-.883 2.878-1.43 4.744-1.487l.885-4.182a.342.342 0 0 1 .14-.197.35.35 0 0 1 .238-.042l2.906.617a1.214 1.214 0 0 1 1.108-.701zM9.25 12C8.561 12 8 12.562 8 13.25c0 .687.561 1.248 1.25 1.248.687 0 1.248-.561 1.248-1.249 0-.688-.561-1.249-1.249-1.249zm5.5 0c-.687 0-1.248.561-1.248 1.25 0 .687.561 1.248 1.249 1.248.688 0 1.249-.561 1.249-1.249 0-.687-.562-1.249-1.25-1.249zm-5.466 3.99a.327.327 0 0 0-.231.094.33.33 0 0 0 0 .463c.842.842 2.484.913 2.961.913.477 0 2.105-.056 2.961-.913a.361.361 0 0 0 .029-.463.33.33 0 0 0-.464 0c-.547.533-1.684.73-2.512.73-.828 0-1.979-.196-2.512-.73a.326.326 0 0 0-.232-.095z" },
+  { title: "Discord", href: "https://discord.com/invite/z7kjUyvAbv", path: "M20.317 4.37a19.791 19.791 0 00-4.885-1.515.074.074 0 00-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 00-5.487 0 12.64 12.64 0 00-.617-1.25.077.077 0 00-.079-.037A19.736 19.736 0 003.677 4.37a.07.07 0 00-.032.027C.533 9.046-.32 13.58.099 18.057c.002.022.015.04.03.05a19.9 19.9 0 005.993 3.03.078.078 0 00.084-.028 14.09 14.09 0 001.226-1.994.076.076 0 00-.041-.106 13.107 13.107 0 01-1.872-.892.077.077 0 01-.008-.128c.126-.094.252-.192.372-.292a.074.074 0 01.077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 01.078.01c.12.1.246.198.373.292a.077.077 0 01-.006.127 12.299 12.299 0 01-1.873.892.077.077 0 00-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 00.084.028 19.839 19.839 0 006.002-3.03.077.077 0 00.032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 00-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z" },
 ];
 
 export function SiteFooter() {
@@ -98,11 +98,12 @@ export function SiteFooter() {
       <div className="max-w-[1240px] mx-auto px-5 md:px-10 pt-10 md:pt-14 pb-8">
         <div className="flex flex-col md:flex-row items-start justify-between gap-8 flex-wrap">
 
+          {/* Brand */}
           <div className="flex flex-col w-full md:w-32 shrink-0 items-start justify-start gap-6 md:gap-8 flex-wrap">
             <img src={withBasePath("/media/footer/logo-icon.svg")} alt="ImagineArt" width={28} height={28} className="block" />
 
             <div className="flex flex-col gap-2">
-              <span className="text-[11px] font-semibold tracking-[0.5px] text-white/[0.62] mb-1">
+              <span className="text-[11px] font-semibold tracking-[0.5px] text-white/[0.38] mb-1">
                 Try Imagine Mobile
               </span>
               <a
@@ -124,45 +125,38 @@ export function SiteFooter() {
                 Google Play
               </a>
             </div>
-
-            <div>
-              <span className="block text-[11px] font-semibold tracking-[0.5px] text-white/[0.62] mb-5">
-                Community
-              </span>
-              <ul className="flex flex-col gap-3 list-none m-0 p-0">
-                {COMMUNITY.map((l) => (
-                  <li key={l.label}>
-                    <a
-                      href={l.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-[13px] leading-[1.4] text-white/55 hover:text-white/90 transition-colors no-underline"
-                    >
-                      {l.label}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-[repeat(5,auto)] xl:grid-cols-[repeat(6,auto)] justify-between gap-x-6 gap-y-10 flex-1 min-w-0">
+          {/* Link columns */}
+          {/* Tracks are content-sized (auto) rather than equal (1fr) so labels
+              like "Background Remover" stay on one line. */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-[repeat(4,auto)] xl:grid-cols-[repeat(7,auto)] justify-between gap-x-6 gap-y-10 flex-1 min-w-0">
             {COLUMNS.map((col) => (
               <div key={col.heading}>
-                <span className="block text-[11px] font-semibold tracking-[0.5px] text-white/[0.62] mb-5">
+                <span className="block text-[11px] font-semibold tracking-[0.5px] text-white/[0.38] mb-5">
                   {col.heading}
                 </span>
                 <ul className="flex flex-col gap-3 list-none m-0 p-0">
                   {col.links.map((l) => (
-                    <li key={l.label}>
-                      <a
-                        href={l.href}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-[13px] leading-[1.4] text-white/55 hover:text-white/90 transition-colors no-underline"
-                      >
-                        {l.label}
-                      </a>
+                    <li key={l.label} className={l.indent ? "pl-3" : undefined}>
+                      {l.href ? (
+                        <a
+                          href={l.href}
+                          {...(l.href.startsWith(BASE) ? {} : { target: "_blank", rel: "noopener noreferrer" })}
+                          className="text-[13px] leading-[1.4] text-white/55 hover:text-white/90 transition-colors no-underline"
+                        >
+                          {l.label}
+                        </a>
+                      ) : (
+                        <span className="inline-flex items-center gap-1.5 text-[13px] leading-[1.4] text-white/30">
+                          {l.label}
+                          {l.soon && (
+                            <span className="text-[10px] leading-none font-medium px-1.5 py-[3px] rounded-[5px] bg-white/[0.08] text-white/45">
+                              Soon
+                            </span>
+                          )}
+                        </span>
+                      )}
                     </li>
                   ))}
                 </ul>
@@ -173,16 +167,21 @@ export function SiteFooter() {
         </div>
       </div>
 
+      {/* Big watermark */}
       <div className="max-w-[1240px] mx-auto text-center select-none pointer-events-none px-5 md:px-10 pt-4 leading-[0]">
         <img src={withBasePath("/media/footer/watermark.svg")} alt="" aria-hidden="true" className="w-full max-w-[1240px] h-auto inline-block" />
       </div>
 
+      {/* Bottom bar */}
       <div className="max-w-[1240px] mx-auto px-5 md:px-10 pb-6 md:pb-8">
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 pt-5 pb-2 border-t border-white/[0.06] flex-wrap">
           <div className="flex items-center gap-0.5 flex-wrap">
             <span className="text-[12px] text-white/25">
-              © {year} <strong className="font-semibold">Vyro Turkey</strong>. All rights reserved.
+              © {year} <strong className="font-semibold">Vyro</strong>. All rights reserved.
             </span>
+            <button type="button" className="text-[12px] text-white/25 px-3 bg-transparent border-none cursor-pointer hover:text-white/55 transition-colors">
+              Manage Cookie Preferences
+            </button>
           </div>
           <div className="flex items-center gap-0.5">
             {SOCIALS.map((s) => (

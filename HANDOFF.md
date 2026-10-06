@@ -58,7 +58,7 @@ Verify with `npx next build` plus grep or DOM measurement. Keep replies short.
 The three studio banners share one height, `--studio-band-h` in
 `globals.css`, and follow each other with no rules between them.
 
-Nav is **Suite · Industries · Use Cases · Studios · Workflows · Agents · Pricing** (24 Sep: page order, MCP dropped — it is a hero tab; `#mcp` still selects it from a deep link), CTA Get
+**Nav and footer come from the central kit** (6 Oct): `SiteNav`, `SiteFooter` and `lib/nav-menu.ts` are copied verbatim from github.com/hamzajamal-imagineart/guidelines-for-landing-page (`template/`, at `d5dedc7`), with `public/media/nav/platform-teams.jpg` from its `assets/nav/`. They are shared by every landing page — **edit them in the kit and re-copy, don't fork them here**; nav items, copy, links and dropdown cards live in `lib/nav-menu.ts`. The nav is the site-wide mega-menu (Platform · Business · Resources · Collaborate · Pricing, Sign in, "Try it free"), so it no longer carries this page's section anchors. The page passes `variant="onDark"`: the kit's `onLight` uses fixed near-black ink, which disappears on this dark page.
 Started. **Keep the nav in the same order as the page** so no link scrolls
 backwards.
 
