@@ -126,11 +126,11 @@ export function Suite() {
             target="_blank"
             rel="noopener noreferrer"
             aria-label={t.title}
-            className={`suite-card suite-tone-${(i % 5) + 1}${i < 2 ? ` suite-bg suite-bg-${i + 1}` : ""}${i === 1 ? " suite-on-light" : ""}`}
+            className={`suite-card suite-tone-${(i % 5) + 1}${i < 2 ? ` suite-bg suite-bg-${i + 1}` : ""}`}
           >
             <h3 className="suite-card-title">{t.title}</h3>
             <p className="suite-card-body">{t.body}</p>
-            <span className={`suite-arrow ${i === 1 ? "glass-on-light" : "glass"}`} aria-hidden>
+            <span className="suite-arrow glass" aria-hidden>
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
                 <path d="M6 12h12M13 6l6 6-6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
@@ -203,13 +203,12 @@ export function Suite() {
         .suite-tone-4 { background-color: #24302f; }
         .suite-tone-5 { background-color: #141414; }
         /* The first two cards sit on grainy gradient stills (Hamza, 6 Oct):
-           a dark teal with an orange glow, which keeps white type, and a cool
-           blue that is light at the top-left where the title sits, so that
-           one runs dark type and a light-glass arrow (.suite-on-light). */
+           a dark teal with an orange glow, and an indigo that fades to white
+           toward the bottom-right. Both are dark at the top-left where the
+           title sits, so the white type stays. */
         .suite-bg { background-size: cover; background-position: center; background-repeat: no-repeat; }
         .suite-bg-1 { background-image: url(${withBasePath("/media/suite/bg-1.jpg")}); }
         .suite-bg-2 { background-image: url(${withBasePath("/media/suite/bg-2.jpg")}); }
-        .suite-on-light, .suite-on-light .suite-arrow { color: #141414; }
 
         .suite-card-title {
           font-size: 19px;
@@ -234,7 +233,6 @@ export function Suite() {
           color: rgba(255, 255, 255, 0.6);
           max-width: 24ch;
         }
-        .suite-on-light .suite-card-body { color: rgba(20, 20, 20, 0.62); }
         /* One frame per card, bottom-anchored, so the media lines up
            across the rail whatever each source's own ratio is. */
         .suite-mock { margin-top: auto; flex: 1; position: relative; min-height: 0; }
