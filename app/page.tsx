@@ -7,6 +7,7 @@ import { ReviewsSection } from "@/components/ReviewsSection";
 import { Hero } from "@/components/sections/Hero";
 import { Partners } from "@/components/sections/Partners";
 import { Suite } from "@/components/sections/Suite";
+import { Outcomes } from "@/components/sections/Outcomes";
 import { Industries } from "@/components/sections/Industries";
 import { Workflows } from "@/components/sections/Workflows";
 import { AdStudio } from "@/components/sections/AdStudio";
@@ -33,7 +34,7 @@ const softwareSchema = {
  *
  * Order follows the funnel: what it is (hero, which carries the platform
  * strip and with it the MCP panel), what is in it (the suite rail, from the
- * Enterprise page), who it is for (industries, also from the Enterprise page), where to do the work (the three
+ * Enterprise page), what it makes (outcomes, from Figma 644:4317), who it is for (industries, also from the Enterprise page), where to do the work (the three
  * studio banners), how to put it on rails (workflows, with its connectors and
  * plugins), what to do instead of building one (the agent), what to start
  * from (use cases), what powers it (models), whether it is safe to put work
@@ -56,6 +57,7 @@ export default function Page() {
         <Hero />
         <Partners />
         <Suite />
+        <Outcomes />
         <Industries />
         <UseCases />
         <AdStudio />
