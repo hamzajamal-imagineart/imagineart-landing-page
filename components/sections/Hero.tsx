@@ -70,7 +70,13 @@ export function Hero() {
           pointer-events: none;
           background: radial-gradient(circle, var(--ink-heading) 1.1px, transparent 1.5px) 0 0 / 12px 12px;
           opacity: 0.32;
+          /* The grid crawls slowly on the diagonal (Hamza, 6 Oct): one cell
+             every 5s, so it reads as drift rather than motion. */
+          animation: hs-dots-drift 5s linear infinite;
         }
+        .hs-dots-r { animation-direction: reverse; }
+        @keyframes hs-dots-drift { to { background-position: 12px 12px; } }
+        @media (prefers-reduced-motion: reduce) { .hs-dots { animation: none; } }
         .hs-dots-l {
           left: 0;
           -webkit-mask-image: linear-gradient(to right, #000 0%, rgba(0, 0, 0, 0.5) 45%, transparent 100%), linear-gradient(to bottom, transparent 0%, #000 12%, rgba(0, 0, 0, 0.35) 40%, #000 62%, transparent 100%);
@@ -90,17 +96,18 @@ export function Hero() {
         .hc-stage { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
         .hg-host { position: absolute; inset: 0; }
         .hg-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
-        /* The veil: a dark pool centred on the copy with a 4px backdrop
+        /* The veil: a dark pool centred on the copy with a strong backdrop
            blur, masked to the same ellipse so it has no edge; the planet's
-           rim stays bright and sharp around it. */
+           rim stays bright and sharp around it. Heavier than the first cut
+           (Hamza, 6 Oct): the type has to read over the turning tiles. */
         .hc-veil {
           position: absolute;
           inset: 0;
-          background: radial-gradient(ellipse 46% 52% at 50% 50%, rgba(0, 0, 0, 0.78) 0%, rgba(0, 0, 0, 0.5) 55%, rgba(0, 0, 0, 0) 100%);
-          -webkit-backdrop-filter: blur(4px);
-          backdrop-filter: blur(4px);
-          -webkit-mask-image: radial-gradient(ellipse 46% 52% at 50% 50%, #000 40%, transparent 100%);
-          mask-image: radial-gradient(ellipse 46% 52% at 50% 50%, #000 40%, transparent 100%);
+          background: radial-gradient(ellipse 38% 44% at 50% 50%, rgba(0, 0, 0, 0.92) 0%, rgba(0, 0, 0, 0.8) 50%, rgba(0, 0, 0, 0.35) 78%, rgba(0, 0, 0, 0) 100%);
+          -webkit-backdrop-filter: blur(10px);
+          backdrop-filter: blur(10px);
+          -webkit-mask-image: radial-gradient(ellipse 38% 44% at 50% 50%, #000 50%, transparent 100%);
+          mask-image: radial-gradient(ellipse 38% 44% at 50% 50%, #000 50%, transparent 100%);
         }
 
         .hc-copy {
