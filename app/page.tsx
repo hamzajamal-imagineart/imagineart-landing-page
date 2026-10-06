@@ -12,7 +12,6 @@ import { Workflows } from "@/components/sections/Workflows";
 import { AdStudio } from "@/components/sections/AdStudio";
 import { FashionStudio } from "@/components/sections/FashionStudio";
 import { FilmStudio } from "@/components/sections/FilmStudio";
-import { Agent } from "@/components/sections/Agent";
 import { UseCases } from "@/components/sections/UseCases";
 import { Models } from "@/components/sections/Models";
 import { Security } from "@/components/sections/Security";
@@ -41,7 +40,7 @@ const softwareSchema = {
  * into (security), who vouches for it (reviews), what people ask (FAQ), then
  * the closing action.
  *
- * <Apps>, <StudioReel>, <Mcp> and <CreativeTools> are pulled, not deleted: all four are still
+ * <Apps>, <StudioReel>, <Mcp>, <CreativeTools> and <Agent> are pulled, not deleted: all five are still
  * on disk, so recovering any is one import and one line here. MCP is not
  * gone from the page — the hero's MCP chip carries the same panel, which is
  * why the section came out.
@@ -51,7 +50,7 @@ export default function Page() {
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(softwareSchema) }} />
       <PageTint palette="slate" />
-      <SiteNav variant="onDark" />
+      <SiteNav variant="onDark" theme="dark" />
 
       <main>
         <Hero />
@@ -63,7 +62,6 @@ export default function Page() {
         <FashionStudio />
         <FilmStudio />
         <Workflows />
-        <Agent />
         <Models />
         <Security />
         <ReviewsSection />

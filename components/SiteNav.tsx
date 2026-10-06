@@ -3,6 +3,7 @@
 /* eslint-disable @next/next/no-img-element */
 import { Fragment, useEffect, useRef, useState } from "react";
 import { withBasePath } from "@/lib/assets";
+import { PAGE_THEME, type PageTheme } from "@/lib/theme";
 import {
   NAV,
   NAV_CTA,
@@ -201,12 +202,16 @@ function Panel({ panel, onNavigate }: { panel: NavPanel; onNavigate: () => void 
 
 export function SiteNav({
   variant = "onLight",
+  theme = PAGE_THEME,
 }: {
   /** Theme of the hero the navbar sits over while at the top of the page.
    *  "onDark" → white links/logo/CTA. "onLight" → dark ones (default).
    *  The scrolled pill is always the dark glass treatment. Opening a
    *  dropdown never changes the bar; the panel hangs under it as-is. */
   variant?: "onDark" | "onLight";
+  /** Colour scheme of the dropdown panels and the mobile sheet. Follows the
+   *  page (PAGE_THEME in lib/theme.ts) unless a page overrides it here. */
+  theme?: PageTheme;
 } = {}) {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -215,6 +220,10 @@ export function SiteNav({
   /** Label of the expanded mobile accordion row, or null. */
   const [openRow, setOpenRow] = useState<string | null>(null);
   const focusPanel = useRef(false);
+  /** Pending hover open/close, so crossing the gap to the panel doesn't close it. */
+  const hoverTimer = useRef<number | undefined>(undefined);
+  /** The open panel came from hover: the click that usually follows mustn't toggle it shut. */
+  const openedByHover = useRef(false);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 32);
@@ -254,6 +263,27 @@ export function SiteNav({
 
   const closeAll = () => { setOpenPanel(null); setMenuOpen(false); };
 
+  // Desktop menus open on hover (mouse only; touch and keyboard use click).
+  useEffect(() => () => window.clearTimeout(hoverTimer.current), []);
+  const isMouse = (e: React.PointerEvent) => e.pointerType === "mouse";
+  const hoverOpen = (label: string) => (e: React.PointerEvent) => {
+    if (!isMouse(e)) return;
+    window.clearTimeout(hoverTimer.current);
+    // Small intent delay from closed, instant when moving between open menus.
+    hoverTimer.current = window.setTimeout(() => {
+      openedByHover.current = true;
+      setOpenPanel(label);
+    }, openPanel ? 0 : 90);
+  };
+  const hoverClose = (e: React.PointerEvent) => {
+    if (!isMouse(e)) return;
+    window.clearTimeout(hoverTimer.current);
+    hoverTimer.current = window.setTimeout(() => setOpenPanel(null), 180);
+  };
+  const hoverKeep = (e: React.PointerEvent) => {
+    if (isMouse(e)) window.clearTimeout(hoverTimer.current);
+  };
+
   const compact = scrolled;
   const panelEntry = NAV.find((e) => e.label === openPanel && e.panel);
   const darkTheme = compact || variant === "onDark";
@@ -271,6 +301,8 @@ export function SiteNav({
           "--nav-cta-fg": "#0A0A0B",
           "--nav-cta-glow": "rgba(255,255,255,0.08)",
           "--nav-burger": "rgba(255,255,255,0.9)",
+          "--nav-sel-bg": "rgba(255,255,255,0.22)",
+          "--nav-sel-fg": "#ffffff",
         }
       : {
           "--nav-fg": "#757575",
@@ -280,6 +312,8 @@ export function SiteNav({
           "--nav-cta-fg": "#ffffff",
           "--nav-cta-glow": "rgba(11,11,12,0.08)",
           "--nav-burger": "rgba(11,11,12,0.8)",
+          "--nav-sel-bg": "rgba(23,23,23,0.12)",
+          "--nav-sel-fg": "#171717",
         }
   ) as React.CSSProperties;
 
@@ -302,13 +336,40 @@ export function SiteNav({
         }
         @keyframes navMenuIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: none; } }
 
-        /* ── Dropdown panel ─────────────────────────────────────
-           --mm-accent-soft is the "New" badge and the tinted card.
-           Figma has it as lavender rgba(165,110,255,0.15); it ships
-           grey here per the monochrome rule (GUIDELINES §2) until
-           that colour is signed off. One value to swap. */
-        .mm-scope { --mm-accent-soft: rgba(23,23,23,0.07); --mm-tint-surface: #f1f2f3; --mm-hover: #ebebeb; --mm-fg: #0f0f0f; --mm-muted: #757575; }
-        .mm-panel { position: fixed; left: 0; right: 0; margin-inline: auto; width: max-content; max-width: calc(100vw - 32px); z-index: 59; display: flex; align-items: flex-start; gap: 24px; padding: 24px; box-sizing: border-box; background: #fff; border: 1px solid rgba(0,0,0,0.06); border-radius: 20px; box-shadow: 0 4px 8px rgba(176,175,175,0.2), 0 18px 50px rgba(23,35,56,0.08); animation: navMenuIn 0.22s ${NAV_EASE} both; transition: top ${NAV_DURATION} ${NAV_EASE}; font-family: ${FONT}; }
+        /* Selection follows the bar's own theme, whatever the page sets. */
+        .site-nav ::selection { background: var(--nav-sel-bg); color: var(--nav-sel-fg); }
+
+        /* ── Menu theme ─────────────────────────────────────────
+           Every colour in the dropdowns and the mobile sheet comes from
+           these tokens. data-menu-theme="dark" swaps the whole set; pick it
+           with the \`theme\` prop or PAGE_THEME in lib/theme.ts.
+           --mm-accent-soft is the "New"/"Soon" badge and the tinted card.
+           Figma has it lavender rgba(165,110,255,0.15); it ships grey per
+           the monochrome rule (GUIDELINES §2) until that's signed off. */
+        .mm-scope {
+          --mm-surface: #ffffff; --mm-border: rgba(0,0,0,0.06); --mm-divider: #dbdbdb;
+          --mm-fg: #0f0f0f; --mm-muted: #757575; --mm-row: #3d3d3d; --mm-more: #3d3d3d;
+          --mm-hover: #ebebeb; --mm-accent-soft: rgba(23,23,23,0.07); --mm-tint-surface: #f1f2f3;
+          --mm-badge-muted-bg: #dbdbdb; --mm-badge-muted-fg: #3d3d3d;
+          --mm-cta-bg: #171717; --mm-cta-fg: #ffffff; --mm-cta-glow: rgba(11,11,12,0.08);
+          --mm-shadow: 0 4px 8px rgba(176,175,175,0.2), 0 18px 50px rgba(23,35,56,0.08);
+          --mm-sel-bg: rgba(23,23,23,0.12); --mm-sel-fg: #171717; --mm-logo-filter: none;
+        }
+        .mm-scope[data-menu-theme="dark"] {
+          --mm-surface: #141416; --mm-border: rgba(255,255,255,0.08); --mm-divider: rgba(255,255,255,0.1);
+          --mm-fg: #f5f5f5; --mm-muted: rgba(255,255,255,0.55); --mm-row: rgba(255,255,255,0.85); --mm-more: rgba(255,255,255,0.75);
+          --mm-hover: rgba(255,255,255,0.08); --mm-accent-soft: rgba(255,255,255,0.1); --mm-tint-surface: #1c1c1f;
+          --mm-badge-muted-bg: rgba(255,255,255,0.12); --mm-badge-muted-fg: rgba(255,255,255,0.7);
+          --mm-cta-bg: #ffffff; --mm-cta-fg: #0a0a0b; --mm-cta-glow: rgba(255,255,255,0.1);
+          --mm-shadow: 0 18px 50px rgba(0,0,0,0.5);
+          --mm-sel-bg: rgba(255,255,255,0.22); --mm-sel-fg: #ffffff; --mm-logo-filter: brightness(0) invert(1);
+        }
+        .mm-scope ::selection { background: var(--mm-sel-bg); color: var(--mm-sel-fg); }
+
+        /* ── Dropdown panel ───────────────────────────────────── */
+        .mm-panel { position: fixed; left: 0; right: 0; margin-inline: auto; width: max-content; max-width: calc(100vw - 32px); z-index: 59; display: flex; align-items: flex-start; gap: 24px; padding: 24px; box-sizing: border-box; background: var(--mm-surface); border: 1px solid var(--mm-border); border-radius: 20px; box-shadow: var(--mm-shadow); animation: navMenuIn 0.22s ${NAV_EASE} both; transition: top ${NAV_DURATION} ${NAV_EASE}; font-family: ${FONT}; }
+        /* Invisible bridge over the gap to the bar, so hover survives the trip down. */
+        .mm-panel::before { content: ""; position: absolute; left: 0; right: 0; top: -34px; height: 34px; }
         .mm-backdrop { position: fixed; inset: 0; z-index: 58; }
 
         .mm-col { display: flex; flex-direction: column; gap: 23px; width: 247px; flex-shrink: 0; }
@@ -333,11 +394,11 @@ export function SiteNav({
         .mm-desc { font-size: 14px; line-height: 20px; font-weight: 400; letter-spacing: 0.01em; color: var(--mm-muted); max-width: 227px; }
 
         .mm-badge { display: inline-flex; align-items: center; height: 20px; padding: 2px 6px; box-sizing: border-box; border-radius: 6px; background: var(--mm-accent-soft); font-size: 12px; line-height: 16px; font-weight: 500; letter-spacing: 0.02em; color: var(--mm-fg); }
-        .mm-badge-muted { height: 16px; padding: 1px 5px; background: #dbdbdb; font-size: 10px; line-height: 14px; color: #3d3d3d; }
+        .mm-badge-muted { height: 16px; padding: 1px 5px; background: var(--mm-badge-muted-bg); font-size: 10px; line-height: 14px; color: var(--mm-badge-muted-fg); }
 
         .mm-link { padding: 4px 10px; border-radius: 10px; font-size: 14px; line-height: 20px; font-weight: 500; letter-spacing: 0.01em; color: var(--mm-fg); text-decoration: none; transition: background 0.2s; }
         .mm-link:hover, .mm-link:focus-visible { background: var(--mm-hover); outline: none; }
-        .mm-more { margin-top: 8px; align-self: flex-start; display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 6px 10px; box-sizing: border-box; border-radius: 10px; font-size: 14px; font-weight: 500; letter-spacing: 0.02em; color: #3d3d3d; text-decoration: none; transition: background 0.2s; }
+        .mm-more { margin-top: 8px; align-self: flex-start; display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 6px 10px; box-sizing: border-box; border-radius: 10px; font-size: 14px; font-weight: 500; letter-spacing: 0.02em; color: var(--mm-more); text-decoration: none; transition: background 0.2s; }
         .mm-more:hover, .mm-more:focus-visible { background: var(--mm-hover); outline: none; }
 
         .mm-cards { display: flex; gap: 20px; align-self: stretch; }
@@ -347,14 +408,14 @@ export function SiteNav({
         /* Cards drop out before the panel can outgrow a narrow desktop window. */
         @media (max-width: 1180px) { .mm-cards { display: none; } }
 
-        .mm-card { width: 260px; display: flex; flex-direction: column; gap: 12px; padding: 16px; box-sizing: border-box; border: 1px solid var(--mm-hover); border-radius: 12px; background: #fff; overflow: hidden; }
+        .mm-card { width: 260px; display: flex; flex-direction: column; gap: 12px; padding: 16px; box-sizing: border-box; border: 1px solid var(--mm-hover); border-radius: 12px; background: var(--mm-surface); overflow: hidden; }
         .mm-card-tint { background: var(--mm-tint-surface); }
-        .mm-card-muted { background: #f4f4f4; border-color: #d3d3d3; }
+        .mm-card-muted { background: var(--mm-tint-surface); border-color: var(--mm-divider); }
         .mm-card-copy { display: flex; flex-direction: column; gap: 4px; }
         .mm-card-title { margin: 0; display: flex; align-items: center; gap: 12px; font-size: 20px; line-height: 28px; font-weight: 500; color: var(--mm-fg); }
         .mm-card-body { margin: 0; font-size: 14px; line-height: 20px; font-weight: 400; letter-spacing: 0.01em; color: var(--mm-muted); }
-        .mm-card-cta { align-self: flex-start; display: inline-flex; align-items: center; height: 32px; padding: 6px 10px; box-sizing: border-box; border-radius: 10px; background: #171717; color: #fff; font-size: 14px; font-weight: 500; letter-spacing: 0.02em; text-decoration: none; transition: box-shadow 0.2s; }
-        .mm-card-cta:hover { box-shadow: 0 0 0 5px rgba(11,11,12,0.08); }
+        .mm-card-cta { align-self: flex-start; display: inline-flex; align-items: center; height: 32px; padding: 6px 10px; box-sizing: border-box; border-radius: 10px; background: var(--mm-cta-bg); color: var(--mm-cta-fg); font-size: 14px; font-weight: 500; letter-spacing: 0.02em; text-decoration: none; transition: box-shadow 0.2s; }
+        .mm-card-cta:hover { box-shadow: 0 0 0 5px var(--mm-cta-glow); }
 
         .mm-media-image { aspect-ratio: 243 / 186; border-radius: 12px; overflow: hidden; }
         .mm-media-image img { display: block; width: 100%; height: 100%; object-fit: cover; transform: scale(1.55); transform-origin: 50% 45%; }
@@ -364,18 +425,18 @@ export function SiteNav({
         .mm-fan .mm-fan-left { left: 6px; transform: rotate(-7.75deg); }
         .mm-fan .mm-fan-right { right: 6px; transform: rotate(7.75deg); object-position: left center; }
         .mm-fan .mm-fan-front { top: 0; left: 0; right: 0; margin-inline: auto; width: 62px; height: 84px; z-index: 1; }
-        .mm-split { display: flex; height: 208px; border-radius: 6px; overflow: hidden; border: 0.6px solid #dbdbdb; box-shadow: 0 4.8px 9.7px rgba(176,175,175,0.25); }
+        .mm-split { display: flex; height: 208px; border-radius: 6px; overflow: hidden; border: 0.6px solid var(--mm-divider); box-shadow: 0 4.8px 9.7px rgba(176,175,175,0.25); }
         .mm-split img { display: block; width: 50%; height: 100%; object-fit: cover; }
         .mm-split-mirror { transform: scaleX(-1); }
 
         /* ── Mobile sheet ───────────────────────────────────── */
-        .ms-row { width: 100%; display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border: none; background: transparent; cursor: pointer; text-align: left; text-decoration: none; font-family: ${FONT}; font-size: 18px; line-height: 28px; font-weight: 600; color: #3d3d3d; }
-        .ms-chev { color: #0f0f0f; transition: transform 0.25s ${NAV_EASE}; }
+        .ms-row { width: 100%; display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border: none; background: transparent; cursor: pointer; text-align: left; text-decoration: none; font-family: ${FONT}; font-size: 18px; line-height: 28px; font-weight: 600; color: var(--mm-row); }
+        .ms-chev { color: var(--mm-fg); transition: transform 0.25s ${NAV_EASE}; }
         .ms-row[aria-expanded="true"] .ms-chev { transform: rotate(180deg); }
         .ms-body { display: flex; flex-direction: column; gap: 23px; padding: 4px 0 16px; animation: navMenuIn 0.2s ${NAV_EASE} both; }
         .ms-body .mm-group { gap: 8px; }
         .ms-body .mm-heading { padding: 0; }
-        .ms-body .mm-item, .ms-body .mm-link { border-radius: 0; padding: 8px 10px; border-bottom: 1px solid #dbdbdb; }
+        .ms-body .mm-item, .ms-body .mm-link { border-radius: 0; padding: 8px 10px; border-bottom: 1px solid var(--mm-divider); }
         .ms-body .mm-item:hover, .ms-body .mm-link:hover { background: transparent; }
         .ms-body .mm-item-title { font-size: 14px; line-height: 20px; }
         .ms-body .mm-chev { display: none; }
@@ -388,7 +449,7 @@ export function SiteNav({
       `}</style>
 
       <nav
-        className="mm-scope"
+        className="site-nav"
         aria-label="Main"
         style={{
           ...themeVars,
@@ -441,7 +502,7 @@ export function SiteNav({
           />
         </a>
 
-        {/* Desktop nav: dropdown triggers open on click, plain entries are links */}
+        {/* Desktop nav: dropdown triggers open on hover or click, plain entries are links */}
         <div className="nav-desktop" style={{ alignItems: "center", gap: 2 }}>
           {NAV.map((entry) =>
             entry.panel ? (
@@ -451,15 +512,24 @@ export function SiteNav({
                 className="nav-tab"
                 aria-expanded={openPanel === entry.label}
                 aria-controls="nav-dropdown"
+                onPointerEnter={hoverOpen(entry.label)}
+                onPointerLeave={hoverClose}
                 onClick={(e) => {
+                  window.clearTimeout(hoverTimer.current);
                   focusPanel.current = e.detail === 0;
+                  // A click right after hover opened this menu shouldn't close it.
+                  if (openedByHover.current && openPanel === entry.label) {
+                    openedByHover.current = false;
+                    return;
+                  }
+                  openedByHover.current = false;
                   setOpenPanel((cur) => (cur === entry.label ? null : entry.label));
                 }}
               >
                 {entry.label}
               </button>
             ) : (
-              <a key={entry.label} href={entry.href} className="nav-tab" onClick={closeAll} {...linkTarget(entry.href!)}>
+              <a key={entry.label} href={entry.href} className="nav-tab" onPointerEnter={hoverClose} onClick={closeAll} {...linkTarget(entry.href!)}>
                 {entry.label}
               </a>
             ),
@@ -502,7 +572,10 @@ export function SiteNav({
             role="region"
             aria-label={panelEntry.label}
             className="mm-scope mm-panel"
+            data-menu-theme={theme}
             style={{ top: barTop + barHeight + 10 }}
+            onPointerEnter={hoverKeep}
+            onPointerLeave={hoverClose}
           >
             <Panel panel={panelEntry.panel} onNavigate={closeAll} />
           </div>
@@ -513,24 +586,25 @@ export function SiteNav({
       {menuOpen && (
         <div
           className="mm-scope"
+          data-menu-theme={theme}
           role="dialog"
           aria-modal="true"
           aria-label="Menu"
           style={{
-            position: "fixed", inset: 0, zIndex: 101, background: "#fff",
+            position: "fixed", inset: 0, zIndex: 101, background: "var(--mm-surface)",
             display: "flex", flexDirection: "column", fontFamily: FONT,
             animation: "navMenuIn 0.22s cubic-bezier(0.4,0,0.2,1) forwards",
           }}
         >
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "16px 24px", flexShrink: 0 }}>
             <a href={NAV_HOME} onClick={closeAll} style={{ display: "inline-flex", alignItems: "center" }} aria-label="ImagineArt home">
-              <img src={withBasePath("/media/imagine-art-wordmark.svg")} alt="ImagineArt" style={{ display: "block", height: 24, width: "auto" }} />
+              <img src={withBasePath("/media/imagine-art-wordmark.svg")} alt="ImagineArt" style={{ display: "block", height: 24, width: "auto", filter: "var(--mm-logo-filter)" }} />
             </a>
             <button
               onClick={() => setMenuOpen(false)}
               style={{
                 display: "flex", alignItems: "center", justifyContent: "center", width: 40, height: 40,
-                borderRadius: 999, border: "1px solid #e7e7e7", background: "#171717", color: "#ebebeb", cursor: "pointer",
+                borderRadius: 999, border: "1px solid var(--mm-border)", background: "var(--mm-cta-bg)", color: "var(--mm-cta-fg)", cursor: "pointer",
               }}
               aria-label="Close menu"
             >
@@ -539,7 +613,7 @@ export function SiteNav({
               </svg>
             </button>
           </div>
-          <div style={{ height: 1, background: "#dbdbdb", margin: "0 24px", flexShrink: 0 }} />
+          <div style={{ height: 1, background: "var(--mm-divider)", margin: "0 24px", flexShrink: 0 }} />
 
           <div style={{ flex: 1, overflowY: "auto", padding: "8px 24px", display: "flex", flexDirection: "column", gap: 2 }}>
             {NAV.map((entry) => {
@@ -580,7 +654,7 @@ export function SiteNav({
               onClick={closeAll}
               style={{
                 display: "inline-flex", alignItems: "center", height: 48, padding: "12px 16px", boxSizing: "border-box",
-                borderRadius: 14, background: "#171717", color: "#fff", fontSize: 14, fontWeight: 500,
+                borderRadius: 14, background: "var(--mm-cta-bg)", color: "var(--mm-cta-fg)", fontSize: 14, fontWeight: 500,
                 letterSpacing: "0.02em", textDecoration: "none",
               }}
             >
@@ -589,7 +663,7 @@ export function SiteNav({
             <a
               href={NAV_SIGN_IN}
               onClick={closeAll}
-              style={{ display: "inline-flex", alignItems: "center", gap: 10, fontSize: 16, fontWeight: 500, color: "#0f0f0f", textDecoration: "none" }}
+              style={{ display: "inline-flex", alignItems: "center", gap: 10, fontSize: 16, fontWeight: 500, color: "var(--mm-fg)", textDecoration: "none" }}
             >
               Sign in
               <ArrowUpRight />
