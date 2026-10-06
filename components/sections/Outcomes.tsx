@@ -9,30 +9,31 @@ import { START_HREF } from "@/lib/links";
  *
  * Layout and copy are the frame's: heading, one line, a white "Start
  * creating" action, three tall cards in a row and one wide card under them,
- * each with a title and a line over the media's foot. **The frame's images
- * are Magnific's own** (it is a Magnific page, one is their magazine cover),
- * so every card carries our footage instead — the use-case gallery's clips,
- * which were otherwise unused, so nothing repeats from Industries below.
+ * each with a title and a line over the image's foot. **The images are the
+ * frame's own** (Hamza, 6 Oct, "use the images that Figma had"), downloaded
+ * to media/outcomes/ and saved as JPEG (62–78KB each). The frame is a
+ * Magnific reference page, and the Brand campaigns image is a magazine cover
+ * reading "MAGNIFIC" — flagged in HANDOFF as one to replace before launch.
  *
- * The scrim is heavier than the frame's 25%: white type over live footage
+ * The scrim is heavier than the frame's 25%: white type over a photograph
  * needs a floor under it, not a tint.
  */
 const CARDS = [
-  { title: "Advertising", body: "Brief to final asset. No vendor chain, no waiting. Just the work.", video: "/media/use-cases/advertising.mp4" },
-  { title: "Product shots", body: "AI-powered photoshoots. No studio. No crew. No scheduling.", video: "/media/use-cases/product.mp4" },
-  { title: "Brand campaigns", body: "On-brand visuals, video, and audio at any scale, any format.", video: "/media/use-cases/fashion.mp4" },
+  { title: "Advertising", body: "Brief to final asset. No vendor chain, no waiting. Just the work.", image: "/media/outcomes/advertising.jpg" },
+  { title: "Product shots", body: "AI-powered photoshoots. No studio. No crew. No scheduling.", image: "/media/outcomes/product.jpg" },
+  { title: "Brand campaigns", body: "On-brand visuals, video, and audio at any scale, any format.", image: "/media/outcomes/brand.jpg" },
 ];
 const WIDE = {
   title: "Filmmaking",
   body: "Characters, storyboards, and concepts to explore. Cinematic tools made for the final frame.",
-  video: "/media/hero/modes/video/1-prompt.mp4",
+  image: "/media/outcomes/film.jpg",
 };
 
-function Card({ title, body, video, wide }: { title: string; body: string; video: string; wide?: boolean }) {
+function Card({ title, body, image, wide }: { title: string; body: string; image: string; wide?: boolean }) {
   return (
     <div className={`oc-card ${wide ? "oc-wide" : ""}`}>
-      {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-      <video className="oc-media" src={withBasePath(video)} autoPlay muted loop playsInline preload="metadata" aria-hidden />
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img className="oc-media" src={withBasePath(image)} alt="" loading="lazy" />
       <span className="oc-scrim" aria-hidden />
       <div className="oc-copy">
         <h3 className="oc-title">{title}</h3>
@@ -100,7 +101,6 @@ export function Outcomes() {
         }
         .oc-wide { grid-column: 1 / -1; height: clamp(300px, 28vw, 405px); }
         .oc-media { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; z-index: -2; }
-        .oc-wide .oc-media { object-position: center 30%; }
         /* A floor under the type, not the frame's 25% tint: white over live
            footage needs it. */
         .oc-scrim {
