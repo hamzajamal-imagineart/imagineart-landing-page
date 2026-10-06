@@ -10,7 +10,6 @@ import { Suite } from "@/components/sections/Suite";
 import { Outcomes } from "@/components/sections/Outcomes";
 import { Industries } from "@/components/sections/Industries";
 import { Workflows } from "@/components/sections/Workflows";
-import { UseCases } from "@/components/sections/UseCases";
 import { Models } from "@/components/sections/Models";
 import { Security } from "@/components/sections/Security";
 import { ClosingCta } from "@/components/sections/ClosingCta";
@@ -55,7 +54,6 @@ export default function Page() {
         <Suite />
         <Outcomes />
         <Industries />
-        <UseCases />
         <Workflows />
         <Models />
         <Security />
