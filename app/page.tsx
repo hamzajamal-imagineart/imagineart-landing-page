@@ -10,9 +10,6 @@ import { Suite } from "@/components/sections/Suite";
 import { Outcomes } from "@/components/sections/Outcomes";
 import { Industries } from "@/components/sections/Industries";
 import { Workflows } from "@/components/sections/Workflows";
-import { AdStudio } from "@/components/sections/AdStudio";
-import { FashionStudio } from "@/components/sections/FashionStudio";
-import { FilmStudio } from "@/components/sections/FilmStudio";
 import { UseCases } from "@/components/sections/UseCases";
 import { Models } from "@/components/sections/Models";
 import { Security } from "@/components/sections/Security";
@@ -34,8 +31,7 @@ const softwareSchema = {
  *
  * Order follows the funnel: what it is (hero, which carries the platform
  * strip and with it the MCP panel), what is in it (the suite rail, from the
- * Enterprise page), what it makes (outcomes, from Figma 644:4317), who it is for (industries, also from the Enterprise page), where to do the work (the three
- * studio banners), how to put it on rails (workflows, with its connectors and
+ * Enterprise page), what it makes (outcomes, from Figma 644:4317), who it is for (industries, also from the Enterprise page), how to put it on rails (workflows, with its connectors and
  * plugins), what to do instead of building one (the agent), what to start
  * from (use cases), what powers it (models), whether it is safe to put work
  * into (security), who vouches for it (reviews), what people ask (FAQ), then
@@ -50,8 +46,8 @@ export default function Page() {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(softwareSchema) }} />
-      <PageTint palette="slate" />
-      <SiteNav variant="onDark" theme="dark" />
+      <PageTint palette="neutral" />
+      <SiteNav variant="onLight" theme="light" />
 
       <main>
         <Hero />
@@ -60,9 +56,6 @@ export default function Page() {
         <Outcomes />
         <Industries />
         <UseCases />
-        <AdStudio />
-        <FashionStudio />
-        <FilmStudio />
         <Workflows />
         <Models />
         <Security />

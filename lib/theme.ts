@@ -39,7 +39,7 @@ const THEMES: Record<HeroTheme, ThemeConfig> = {
 };
 
 /** ← THE SWITCH. Change this one value. */
-export const HERO_THEME: HeroTheme = "dark"; // this page ships dark
+export const HERO_THEME: HeroTheme = "light";
 
 const active = THEMES[HERO_THEME];
 

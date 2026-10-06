@@ -39,7 +39,7 @@
   /* Headings sit a step off pure black: at display sizes #141414 reads
      heavy, and the lighter value keeps plenty of contrast on white.
      Re-declared per route by <PageTint>. */
-  --ink-heading: #2f4358;
+  --ink-heading: #171717;
   --ink-2: #5b5b5b;
   /* #6b6b6b, not #7a7a7a: the light page went live on 6 Oct and #7a7a7a
      was 3.8:1 on --page-bg; this is 4.7:1. */
@@ -51,7 +51,8 @@
   /* White stays white: against a tinted page wash it is the elevation cue. */
   --panel: #ffffff;
 
-  /* Slate defaults, overridden by <PageTint>.
+  /* Neutral defaults on white (6 Oct: no slate tint for now), overridden
+     by <PageTint>.
 
      Four surfaces, in order of depth, and nothing between them. Anything that
      needs a slate ground picks one of these; hard-coding a value three units
@@ -62,21 +63,21 @@
        --tile      recessed: framed panels, bento tiles, media grounds
        --tile-2    a light tile inside a recessed panel
        --track     the groove a segmented control runs in            */
-  --page-bg: #eef1f5;
-  --heading-muted: #7b8ea3; /* 3:1 on --page-bg for the large muted clause */
-  --tile: #dce4ee;
+  --page-bg: #ffffff;
+  --heading-muted: #6e6e73; /* 5.1:1 on white */
+  --tile: #f1f2f3;
   /* Orphaned: --panel-2 sat two percent off --page-bg on this palette and was
      invisible as a surface. Kept only because <PageTint> still emits it and
      the unused RailGrid still reads it. Use --tile. */
-  --tile-2: #f3f5f8;
-  --track: #cfd9e5;
+  --tile-2: #fafafa;
+  --track: #e5e7ea;
   /* Dark bands (Ad, Film, closing). Neutral, like every other dark surface
      here; a blue-tinted black read as a different design. */
   --ground: #0a0a0b;
   /* Two shades of the page wash for nested containers, so a framed panel
      and the container inside it both read against the page and each other. */
-  --shade-1: #e3e8ee;
-  --shade-2: #d7dee6;
+  --shade-1: #f1f2f3;
+  --shade-2: #e5e7ea;
   /* One height for the three studio banners (Ad, Fashion, Film). */
   --studio-band-h: clamp(360px, 30vw, 420px);
 
@@ -90,7 +91,7 @@
 
   --font-fallback: "Google Sans", "Helvetica Neue", Arial, sans-serif;
 
-  --page-noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0.4  0 0 0 0 0.46  0 0 0 0 0.58  0 0 0 0.5 0'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+  --page-noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0.5  0 0 0 0 0.5  0 0 0 0 0.5  0 0 0 0.5 0'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 /* ---------------------------------------------------------------------------
    Dark mode.
@@ -160,8 +161,8 @@
   --glow-tint: transparent;
   /* Row hover on a tinted tile. */
   --hover-wash: rgba(255, 255, 255, 0.55);
-  --progress-wash: rgba(47, 67, 88, 0.05);
-  --selection-bg: rgba(47, 67, 88, 0.18);
+  --progress-wash: rgba(0, 0, 0, 0.04);
+  --selection-bg: rgba(0, 0, 0, 0.12);
 }
 :root[data-theme="dark"] {
   --guide-line: rgba(255, 255, 255, 0.08);

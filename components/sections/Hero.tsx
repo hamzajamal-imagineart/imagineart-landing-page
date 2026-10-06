@@ -13,9 +13,8 @@ import { PlatformStrip } from "@/components/sections/Platform";
  * the bottom-left corner. The top-right notes and the chat-card sales action
  * came out on 6 Oct (Hamza).
  *
- * The stage is dark on a light page on purpose: it is a band, like the studio
- * banners, so its colours are fixed rather than themed. The nav sits over it
- * as `onDark`.
+ * The stage takes the page's tokens (white on the light page since 6 Oct),
+ * and the nav sits over it as `onLight`.
  *
  * The cluster moves with the pointer: each card carries a depth (`--z`) and
  * shifts by that much of the pointer's offset from the centre, so the front
@@ -134,10 +133,11 @@ export function Hero() {
       </div>
 
       <style>{`
-        /* The stage. Fixed dark in either theme: it is a band on the page,
-           like the studio banners, not the page itself. */
+        /* The stage. On the page's own tokens since 6 Oct (Hamza: "make the
+           hero light too"), so it is white on the light page and still dark
+           if the theme flips back. */
         .hx {
-          --hx-ink: #f2f2f0;
+          --hx-ink: var(--ink-heading);
           --hx-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
           --hx-pad: clamp(16px, 2.2vw, 36px);
           position: relative;
@@ -145,9 +145,7 @@ export function Hero() {
           overflow: hidden;
           height: max(100svh, 720px);
           max-height: 1080px;
-          background:
-            radial-gradient(60% 50% at 50% 48%, rgba(255, 255, 255, 0.05), transparent 70%),
-            #111112;
+          background: var(--page-bg);
           color: var(--hx-ink);
         }
 
@@ -156,21 +154,22 @@ export function Hero() {
           position: absolute;
           top: 92px;
           width: 18px; height: 18px;
-          border-top: 1px solid rgba(255, 255, 255, 0.28);
+          border-top: 1px solid var(--line-strong);
           pointer-events: none;
         }
-        .hx-corner-l { left: var(--hx-pad); border-left: 1px solid rgba(255, 255, 255, 0.28); }
-        .hx-corner-r { right: var(--hx-pad); border-right: 1px solid rgba(255, 255, 255, 0.28); }
+        .hx-corner-l { left: var(--hx-pad); border-left: 1px solid var(--line-strong); }
+        .hx-corner-r { right: var(--hx-pad); border-right: 1px solid var(--line-strong); }
 
         .hx-dust { position: absolute; inset: 0; pointer-events: none; }
         .hx-dust span {
           position: absolute;
           width: 4px; height: 4px;
           border-radius: 999px;
-          background: rgba(255, 255, 255, 0.22);
+          background: var(--ink-heading);
+          opacity: 0.16;
           animation: hx-drift 9s ease-in-out infinite;
         }
-        .hx-dust span:nth-child(3n) { width: 6px; height: 6px; background: rgba(255, 255, 255, 0.14); }
+        .hx-dust span:nth-child(3n) { width: 6px; height: 6px; opacity: 0.1; }
         @keyframes hx-drift {
           0%, 100% { transform: translate(0, 0); }
           50%      { transform: translate(6px, -10px); }
@@ -214,12 +213,14 @@ export function Hero() {
           position: absolute;
           border-radius: 14px;
           overflow: hidden;
-          background: #1c1c1e;
+          background: var(--tile);
           box-shadow:
-            0 1px 0 rgba(255, 255, 255, 0.14) inset,
-            0 18px 40px rgba(0, 0, 0, 0.55),
-            0 4px 10px rgba(0, 0, 0, 0.35);
-          filter: brightness(calc(0.55 + var(--z) * 0.45)) saturate(calc(0.8 + var(--z) * 0.2));
+            0 18px 40px rgba(0, 0, 0, 0.16),
+            0 4px 10px rgba(0, 0, 0, 0.08);
+          /* Depth by fading the back cards toward the page, not darkening
+             them: on white a dimmed card reads as dirty grey. */
+          opacity: calc(0.55 + var(--z) * 0.45);
+          filter: saturate(calc(0.8 + var(--z) * 0.2));
           transform:
             translate3d(calc(var(--mx) * var(--z) * 22px), calc(var(--my) * var(--z) * 16px), 0)
             scale(calc(0.94 + var(--z) * 0.06));
@@ -235,7 +236,7 @@ export function Hero() {
           z-index: 21;
         }
         .hx-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
-        .hx-list li { font-size: 15px; letter-spacing: 0.02em; color: rgba(255, 255, 255, 0.7); }
+        .hx-list li { font-size: 15px; letter-spacing: 0.02em; color: var(--ink-2); }
         .hx-go {
           margin-top: 22px;
           display: inline-flex;
@@ -244,16 +245,16 @@ export function Hero() {
           height: 40px;
           padding: 0 16px;
           border-radius: 10px;
-          background: #f2f2f0;
-          color: #111112;
+          background: var(--ink-heading);
+          color: var(--page-bg);
           font-size: 13.5px;
           font-weight: 500;
           letter-spacing: 0.01em;
           text-decoration: none;
-          transition: background 200ms ease;
+          transition: opacity 200ms ease;
         }
-        .hx-go:hover { background: #fff; }
-        .hx-go:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+        .hx-go:hover { opacity: 0.86; }
+        .hx-go:focus-visible { outline: 2px solid var(--ink-heading); outline-offset: 3px; }
 
         .hx-strip { padding-top: clamp(48px, 6vw, 80px); padding-bottom: clamp(40px, 6vh, 72px); }
 

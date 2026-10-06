@@ -23,8 +23,8 @@ Verify with `npx next build` plus grep or DOM measurement. Keep replies short.
    demo" (cal.com) is secondary. No contact form. The **hero carries two
    actions**: "Start creating for free" and "Contact sales" (the cal.com
    booking); the closing band and footer offer "Book a demo".
-3. **The page ships dark** (back to dark 6 Oct, after a few hours in light).
-   Light still works — the three switches in §3 flip it.
+3. **The page ships light, on white** (6 Oct: neutral palette, no slate
+   tint for now). Dark still works — the switches in §3 flip it.
 4. **Separate project** from the Guidelines kit, deployed on its own path
    (undecided, §8).
 5. **References used:** Kyoso (hero layout), the ElevenLabs enterprise page
@@ -45,12 +45,9 @@ Verify with `npx next build` plus grep or DOM measurement. Keep replies short.
 | Outcomes `#outcomes` | `sections/Outcomes` | From Figma H-Drafts `644:4317` (6 Oct), above Industries: "From product shot to viral phenomenon", one line, a white "Start creating", three tall cards (Advertising · Product shots · Brand campaigns) and one wide (Filmmaking), title and line over each image's foot. **Images are the frame's own** (Hamza: "use the images that Figma had"), in `media/outcomes/*.jpg` (62–78KB). ⚠ The frame is a Magnific reference page and **the Brand campaigns image is a magazine cover reading "MAGNIFIC"** — replace before launch. Scrim 0.86 → 0 over the bottom 60%. Copy is the frame's. |
 | Industries `#industries` | `sections/Industries` | Ported from the Enterprise page's `IndustriesSection` (24 Sep), **replacing Creative Tools** in that slot (`CreativeTools` is pulled, on disk). Eyebrow "Industries", heading "Built for / your industry", lede, then ten `MediaCard`s at 3:4 in a 2/3/4-column grid, each with its own clip (`media/industries/`, 8.1MB, copied across) and a link into the enterprise template gallery filtered by category. Copy verbatim from the source. Nav "Tools" became "Industries". |
 | Use Cases `#use-cases` | `sections/UseCases` + `UseCaseWheel` | "USE CASES" eyebrow, heading "One-click skills for every creative task". A centred vertical list of six use cases advancing every 3s, the active one in a pill with an arrow into the template gallery, four of its cards scattered either side. The six are Photography · Branding · Interior Design · Try On · Product · Style Transfer. |
-| Studios `#studios` | `sections/AdStudio` | Heading "Studios" + lede, then the **Ad Studio banner**: five vertical marquee columns of 9:16 ad clips (30 clips, CDN, posters, `preload="none"`) and a frosted left panel. |
-| Fashion Studio `#fashion-studio` | `sections/FashionStudio` | Banner: campaign clip full-bleed, rising scrim, white wordmark, glass "Try Now". |
-| Film Studio `#film-studio` | `sections/FilmStudio` | Banner: CSS marquee of 24 film thumbnails, with a left-hand block (presents line, logo, one line, pill) on a scrim raked in from the left. The whole band links to the studio. |
-| Workflows `#workflows` | `sections/Workflows` | Bento, spans [2,1] / [1,1,1]: Node canvas (wide, clip), Brand Guidelines (clip), Creative Analyser (clip), Connectors as a `MarkCluster`, Plugins as a linked list. Every tile carries a gradient ground. No borders, 460px rows. |
+| Workflows `#workflows` | `sections/Workflows` | Bento, spans [2,1] / [1,1,1]: Node canvas (wide, clip), Brand Guidelines (clip), Creative Analyser (clip), Connectors as a `MarkCluster`, Plugins as a linked list. Tiles are flat `--tile` (the gradient grounds came out 6 Oct; images stay in `media/workflows/bg/`). No borders, 460px rows. |
 | Models | `sections/Models` | Eight model cards, four by two: provider sample full-bleed fading into a per-card tone. |
-| Security `#security` | `sections/Security` | **Compact since 6 Oct:** seven small grain tiles, icon chip and title on one row and one line under, four across with Zero data retention spanning two (two short rows, 824px for the whole section at 1440). The photographs and the zero-retention flow diagram are gone; `media/security/*.jpg` stay on disk. |
+| Security `#security` | `sections/Security` | **Minimal since 6 Oct:** eyebrow and heading, no lede; seven flat tiles on `--tile` (icon chip on `--panel`, title, a few words), four across with Zero data retention spanning two. No grain, no fixed dark tones; `media/security/*.jpg` stay on disk. |
 | Reviews `#reviews` | `ReviewsSection` | A bento of five real Trustpilot five-star reviews (24 Sep, to a reference): three columns, a tall featured card in the middle (`hero/showcase/illustration.jpg` fading into the copy since 25 Sep — an illustration, not a photo, so it cannot read as the reviewer; it was a video clip), dark-short over lighter-tall on the left and the mirror on the right — two shades of dark (`#141416`, `#232327`), not dark and white, since the page ships dark. Monogram avatars and "via Trustpilot" under the name, since the source gives neither photos nor titles. **The reference's stat row is left out** — no real figures; `stats` on a review renders it. Two columns under 1000px (featured across the top), one under 640. Five of the old ten quotes are no longer shown. |
 | FAQ `#faq` | `FAQSection` | Sticky heading rail + accordion, rows open by default, FAQPage JSON-LD from the same array. |
 | Closing CTA | `sections/ClosingCta` | Full-bleed `cta/portal.jpg`, scrim in from the left, copy on the page grid, white + glass buttons. |
@@ -142,9 +139,7 @@ utility class without touching a className.
 Dark is **neutral** — shades of black rather than a darkened slate. The hue is
 what warms the light page against white; on black it reads as a blue cast.
 
-**Dark again since 6 Oct** (it was light for one round). The three switches:
-`<html data-theme="dark">` in `app/layout.tsx`, `HERO_THEME = "dark"` in
-`lib/theme.ts`, and `<SiteNav variant="onDark" theme="dark" />`. For light,
+**Light on white since 6 Oct (later the same day).** `<html data-theme="light">`, `HERO_THEME = "light"`, `<SiteNav variant="onLight" theme="light" />`, and `<PageTint palette="neutral" />` (white page, `#171717` headings, `#6e6e73` muted, `#f1f2f3` tiles, `#e5e7ea` track); the `:root` defaults in `globals.css` are neutral too, so nothing falls back to slate. The hero stage, Security tiles and Workflows tiles now take page tokens, so they are white/light grey. Audited every text node outside the kit nav and footer at 1440: no failures. Earlier switches for dark: For light,
 flip all three to light (the nav keeps `variant="onDark"`, since it sits over
 the dark hero stage either way). Audited dark at 1340 after the switch: no
 failures outside the kit nav and footer. The light-mode work below stays in
