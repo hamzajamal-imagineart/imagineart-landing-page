@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { withBasePath } from "@/lib/assets";
 import { BlurHeading } from "@/components/BlurHeading";
 import { SectionGuides } from "@/components/primitives/SectionGuides";
@@ -18,8 +18,13 @@ import { HOME } from "@/lib/links";
  * server + client split: that split existed so other server components could
  * slice the tool arrays, and nothing here does.
  *
- * Re-toned for dark: the pagers take the page's tokens rather than white, and
- * the cards carry the 12% white hairline the studio banners use.
+ * **Layout since 6 Oct: Figma H-Drafts 647:239** (a Lovart reference): the
+ * heading on the left and two round pagers on the right on one baseline, then
+ * a rail of 320px cards, 32px apart, each a 433px clip on a 12px radius with
+ * the title (20px) and one line under it rather than over it. The rail starts
+ * on the heading's edge and bleeds off the right; the pagers dim at either
+ * end. The eyebrow and lede went, as the frame has neither. The frame's
+ * images are Lovart's own UI, so the cards keep our clips.
  */
 type Tool = { title: string; body: string; video: string; href: string };
 
@@ -82,6 +87,22 @@ const TOOLS: Tool[] = [
 
 export function Suite() {
   const trackRef = useRef<HTMLDivElement | null>(null);
+  const [atStart, setAtStart] = useState(true);
+  const [atEnd, setAtEnd] = useState(false);
+
+  /* The pagers dim at either end, as in the frame, rather than wrapping. */
+  useEffect(() => {
+    const el = trackRef.current;
+    if (!el) return;
+    const sync = () => {
+      setAtStart(el.scrollLeft <= 2);
+      setAtEnd(el.scrollLeft >= el.scrollWidth - el.clientWidth - 2);
+    };
+    sync();
+    el.addEventListener("scroll", sync, { passive: true });
+    window.addEventListener("resize", sync);
+    return () => { el.removeEventListener("scroll", sync); window.removeEventListener("resize", sync); };
+  }, []);
 
   // Animated by `scroll-behavior: smooth` on the track. Assigning scrollLeft
   // rather than calling scrollBy({behavior}), which some engines ignore.
@@ -89,165 +110,141 @@ export function Suite() {
     const el = trackRef.current;
     if (!el) return;
     const card = el.querySelector<HTMLElement>(".suite-card");
-    const amount = card ? card.offsetWidth + 14 : el.clientWidth * 0.8;
+    const amount = card ? (card.offsetWidth + 32) * 2 : el.clientWidth * 0.8;
     const max = el.scrollWidth - el.clientWidth;
-    const to = Math.max(0, Math.min(max, el.scrollLeft + dir * amount));
-    if (to !== el.scrollLeft) el.scrollLeft = to;
+    el.scrollLeft = Math.max(0, Math.min(max, el.scrollLeft + dir * amount));
+    // Re-check the ends once the smooth scroll settles, in case the browser
+    // coalesced the scroll events away.
+    window.setTimeout(() => el.dispatchEvent(new Event("scroll")), 520);
   };
 
   return (
     <section id="suite" className="relative border-t border-[color:var(--line)] py-24 md:py-32 lg:border-t-0">
       <SectionGuides edge="top" />
       <div className="container-page">
-        <div className="max-w-[640px]">
-          <p className="eyebrow">The suite</p>
-          <BlurHeading className="h2 mt-4" lead="Everything your team" muted="needs to create" />
-          <p className="lede mt-5">
-            A full suite of tools that take you from idea to finished asset, no
-            stitching together five different products.
-          </p>
+        {/* Heading left, pagers right, both sitting on the same baseline. */}
+        <div className="suite-head">
+          <BlurHeading className="h2" lead="Everything your team" muted="needs to create" />
+          <div className="suite-pagers">
+            <button type="button" onClick={() => scrollByCards(-1)} aria-label="Previous tools" className="suite-pager" disabled={atStart}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden><path d="M15 6l-6 6 6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+            </button>
+            <button type="button" onClick={() => scrollByCards(1)} aria-label="Next tools" className="suite-pager" disabled={atEnd}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden><path d="M9 6l6 6-6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* A rail rather than a grid: nine over four columns leaves a last row
-          of one card and three empty cells. */}
-      <div ref={trackRef} className="suite-track no-scrollbar mt-14">
+      <div ref={trackRef} className="suite-track no-scrollbar">
         {TOOLS.map((t, i) => (
-          <a
-            key={t.title}
-            href={t.href}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label={t.title}
-            className={`suite-card suite-tone-${(i % 5) + 1}`}
-          >
-            <h3 className="suite-card-title">{t.title}</h3>
-            <p className="suite-card-body">{t.body}</p>
-            <span className="suite-arrow glass" aria-hidden>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                <path d="M6 12h12M13 6l6 6-6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
+          <a key={t.title} href={t.href} target="_blank" rel="noopener noreferrer" className="suite-card">
+            <span className="suite-media">
+              {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+              <video
+                src={withBasePath(t.video)}
+                autoPlay
+                muted
+                loop
+                playsInline
+                preload={i < 4 ? "auto" : "metadata"}
+                aria-hidden
+              />
             </span>
-
-            <div className="suite-mock">
-              <div className="suite-embed">
-                {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-                <video
-                  className="suite-media"
-                  src={withBasePath(t.video)}
-                  autoPlay
-                  muted
-                  loop
-                  playsInline
-                  preload={i < 3 ? "auto" : "metadata"}
-                  aria-hidden
-                />
-              </div>
-            </div>
+            <span className="suite-text">
+              <h3 className="suite-card-title">{t.title}</h3>
+              <p className="suite-card-body">{t.body}</p>
+            </span>
           </a>
         ))}
       </div>
 
-      <div className="container-page">
-        <div className="mt-6 flex items-center justify-end gap-3">
-          <button type="button" onClick={() => scrollByCards(-1)} aria-label="Previous tools" className="suite-pager">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden><path d="M15 6l-6 6 6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-          </button>
-          <button type="button" onClick={() => scrollByCards(1)} aria-label="Next tools" className="suite-pager">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden><path d="M9 6l6 6-6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-          </button>
-        </div>
-      </div>
-
       <style>{`
-        /* Gutters match .container-page so the first card lines up with the
-           heading above it rather than hugging the viewport edge. */
-        .suite-track {
+        .suite-head {
           display: flex;
-          gap: 14px;
-          overflow-x: auto;
-          padding-left: max(32px, calc((100vw - 1240px) / 2 + 32px));
-          padding-right: max(32px, calc((100vw - 1240px) / 2 + 32px));
-          scroll-behavior: smooth;
-          min-width: 0;
-          /* overflow-x: auto coerces overflow-y to auto, so the hover scale
-             needs headroom or the card is clipped. */
-          padding-block: 12px;
+          align-items: flex-end;
+          justify-content: space-between;
+          gap: 24px;
         }
-        @media (max-width: 768px) {
-          .suite-track { padding-left: 20px; padding-right: 20px; }
-        }
-        .suite-card {
-          position: relative;
-          flex: 0 0 auto;
-          width: clamp(260px, 27vw, 380px);
-          height: clamp(420px, 46vw, 520px);
-          border-radius: 20px;
-          padding: 28px 26px 0;
-          display: flex;
-          flex-direction: column;
-          color: #fff;
-          overflow: hidden;
-          text-decoration: none;
-          box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
-          transition: transform 320ms cubic-bezier(0.22, 1, 0.36, 1);
-        }
-        .suite-card:hover,
-        .suite-card:focus-visible { transform: scale(1.015); }
-        @media (prefers-reduced-motion: reduce) {
-          .suite-card { transition: none; }
-          .suite-card:hover, .suite-card:focus-visible { transform: none; }
-        }
-        .suite-tone-1 { background-color: #2b2a28; }
-        .suite-tone-2 { background-color: #33393e; }
-        .suite-tone-3 { background-color: #3d3b34; }
-        .suite-tone-4 { background-color: #24302f; }
-        .suite-tone-5 { background-color: #1a1a1b; }
-
-        .suite-card-title {
-          font-size: 19px;
-          font-weight: 400;
-          letter-spacing: -0.01em;
-          line-height: 1.2;
-        }
-        .suite-card-body {
-          margin-top: 8px;
-          font-size: 13.5px;
-          line-height: 1.5;
-          color: rgba(255, 255, 255, 0.64);
-          max-width: 24ch;
-        }
-        .suite-arrow {
-          margin-top: 16px;
-          width: 34px; height: 34px;
-          border-radius: 999px;
-          display: grid; place-items: center;
-          color: #fff;
-          flex: 0 0 auto;
-        }
-        /* One 16:9 frame per card, bottom-anchored, so the media lines up
-           across the rail whatever each source's own ratio is. */
-        .suite-mock { margin-top: auto; flex: 1; position: relative; min-height: 0; }
-        .suite-embed {
-          position: absolute;
-          left: 0; right: 0; bottom: 22px;
-          aspect-ratio: 16 / 9;
-          border-radius: 12px;
-          overflow: hidden;
-        }
-        .suite-media { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .suite-pagers { display: flex; gap: 12px; flex: 0 0 auto; }
         .suite-pager {
-          width: 38px; height: 38px;
+          width: 48px; height: 48px;
           border-radius: 999px;
-          border: 1px solid var(--line);
-          background: var(--tile);
+          border: 0;
+          background: var(--hover-wash);
+          box-shadow: inset 0 0 0 1px var(--line);
           color: var(--ink);
           display: grid; place-items: center;
           cursor: pointer;
-          transition: background 160ms ease;
+          transition: background 160ms ease, opacity 160ms ease;
         }
-        .suite-pager:hover { background: var(--hover-wash); }
+        .suite-pager:hover:not(:disabled) { background: var(--tile-2); }
+        .suite-pager:disabled { opacity: 0.4; cursor: default; }
         .suite-pager:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+        /* Starts on the heading's left edge and bleeds off the right, as the
+           frame does. overflow-x: auto coerces overflow-y to auto, so the
+           card's hover lift needs a little headroom. */
+        .suite-track {
+          margin-top: 56px;
+          display: flex;
+          gap: 32px;
+          overflow-x: auto;
+          padding-left: max(32px, calc((100vw - 1240px) / 2 + 32px));
+          padding-right: max(32px, calc((100vw - 1240px) / 2 + 32px));
+          padding-block: 6px;
+          scroll-behavior: smooth;
+          scroll-padding-left: max(32px, calc((100vw - 1240px) / 2 + 32px));
+          scroll-snap-type: x proximity;
+        }
+        @media (max-width: 768px) {
+          .suite-track { padding-left: 20px; padding-right: 20px; gap: 20px; scroll-padding-left: 20px; }
+          .suite-pagers { display: none; }
+        }
+        .suite-card {
+          flex: 0 0 auto;
+          width: 320px;
+          display: flex;
+          flex-direction: column;
+          gap: 20px;
+          color: inherit;
+          text-decoration: none;
+          scroll-snap-align: start;
+        }
+        .suite-media {
+          position: relative;
+          display: block;
+          height: 433px;
+          border-radius: 12px;
+          overflow: hidden;
+          background: var(--tile);
+        }
+        .suite-media video {
+          position: absolute; inset: 0;
+          width: 100%; height: 100%;
+          object-fit: cover;
+          display: block;
+          transition: transform 600ms cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .suite-card:hover .suite-media video { transform: scale(1.03); }
+        .suite-card:focus-visible { outline: 2px solid var(--ink); outline-offset: 6px; border-radius: 12px; }
+        .suite-text { display: flex; flex-direction: column; gap: 8px; padding: 0 8px; }
+        .suite-card-title {
+          font-size: 20px;
+          line-height: 1.2;
+          font-weight: 500;
+          letter-spacing: -0.01em;
+          color: var(--ink-heading);
+        }
+        .suite-card-body { font-size: 14px; line-height: 1.5; color: var(--ink-2); }
+        @media (max-width: 768px) {
+          .suite-card { width: 272px; }
+          .suite-media { height: 368px; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .suite-media video { transition: none; }
+          .suite-card:hover .suite-media video { transform: none; }
+        }
       `}</style>
     </section>
   );
