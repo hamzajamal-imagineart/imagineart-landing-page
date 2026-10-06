@@ -275,11 +275,11 @@ export function Hero() {
           z-index: 1;
           padding: 7px 11px;
           border-radius: 8px 8px 8px 2px;
-          background: #ef3b3b;
+          background: #d92d2d; /* white on it is 4.8:1; #ef3b3b was 3.9 */
           color: #fff;
           font-size: 12.5px;
           letter-spacing: 0.01em;
-          box-shadow: 0 6px 16px rgba(239, 59, 59, 0.3);
+          box-shadow: 0 6px 16px rgba(217, 45, 45, 0.3);
         }
         .hx-chat-card {
           display: flex;

@@ -23,8 +23,8 @@ Verify with `npx next build` plus grep or DOM measurement. Keep replies short.
    demo" (cal.com) is secondary. No contact form. The **hero carries two
    actions**: "Start creating for free" and "Contact sales" (the cal.com
    booking); the closing band and footer offer "Book a demo".
-3. **The page ships light** (6 Oct; it shipped dark 22 Sep – 6 Oct). Dark
-   still works — `data-theme="dark"` on `<html>` flips it back (§3).
+3. **The page ships dark** (back to dark 6 Oct, after a few hours in light).
+   Light still works — the three switches in §3 flip it.
 4. **Separate project** from the Guidelines kit, deployed on its own path
    (undecided, §8).
 5. **References used:** Kyoso (hero layout), the ElevenLabs enterprise page
@@ -141,9 +141,13 @@ utility class without touching a className.
 Dark is **neutral** — shades of black rather than a darkened slate. The hue is
 what warms the light page against white; on black it reads as a blue cast.
 
-**Light since 6 Oct.** `<html data-theme="light">`, `HERO_THEME = "light"` in
-`lib/theme.ts`, and `<SiteNav variant="onLight" theme="light" />`. To go back
-to dark, flip all three. Light-only overrides are scoped
+**Dark again since 6 Oct** (it was light for one round). The three switches:
+`<html data-theme="dark">` in `app/layout.tsx`, `HERO_THEME = "dark"` in
+`lib/theme.ts`, and `<SiteNav variant="onDark" theme="dark" />`. For light,
+flip all three to light (the nav keeps `variant="onDark"`, since it sits over
+the dark hero stage either way). Audited dark at 1340 after the switch: no
+failures outside the kit nav and footer. The light-mode work below stays in
+place, scoped so it only applies in light: Light-only overrides are scoped
 `:root:not([data-theme="dark"])` so dark keeps working: the hero scrim becomes
 a wash of `--page-bg` (dark ink reads over the mosaic; worst case over a black
 tile ≈ 5.9:1), "Contact sales" is ink on frosted white, the platform tabs take
