@@ -288,8 +288,12 @@ export function SiteNav({
   const panelEntry = NAV.find((e) => e.label === openPanel && e.panel);
   const darkTheme = compact || variant === "onDark";
 
-  const barTop = compact ? 16 : 12;
-  const barHeight = compact ? 72 : 64;
+  // Full width and flush to the top at all times (Hamza, 6 Oct): no gap
+  // above the bar and no compact pill; scrolling only brings in the dark
+  // glass. Local change to the kit's file — fold it back into
+  // guidelines-for-landing-page.
+  const barTop = 0;
+  const barHeight = 64;
 
   const themeVars = (
     darkTheme
@@ -459,24 +463,24 @@ export function SiteNav({
           right: 0,
           marginInline: "auto",
           // Respect the page container (.container-page: max 1240px, 32px gutters).
-          maxWidth: compact ? "min(1240px, calc(100vw - 32px))" : "100%",
+          maxWidth: "100%",
           zIndex: 60,
           height: barHeight,
-          paddingLeft: compact ? 28 : "max(32px, calc((100vw - 1240px) / 2 + 32px))",
-          paddingRight: compact ? 16 : "max(32px, calc((100vw - 1240px) / 2 + 32px))",
+          paddingLeft: "max(32px, calc((100vw - 1240px) / 2 + 32px))",
+          paddingRight: "max(32px, calc((100vw - 1240px) / 2 + 32px))",
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
           gap: 16,
           background: compact ? "rgba(10,10,11,0.42)" : "transparent",
           // No frosted band at the top of the page (Hamza, 6 Oct): the bar is
-          // fully clear until it compacts into the pill. Local change to the
-          // kit's file — fold it back into guidelines-for-landing-page.
+          // fully clear until the page scrolls. Local change to the kit's
+          // file — fold it back into guidelines-for-landing-page.
           backdropFilter: compact ? "blur(32px) saturate(180%)" : "none",
           WebkitBackdropFilter: compact ? "blur(32px) saturate(180%)" : "none",
-          borderRadius: compact ? 999 : 0,
+          borderRadius: 0,
           boxShadow: compact
-            ? "0 20px 48px rgba(0,0,0,0.32), inset 0 1px 0 rgba(255,255,255,0.08), 0 0 0 1px rgba(255,255,255,0.1)"
+            ? "0 12px 32px rgba(0,0,0,0.18), inset 0 -1px 0 rgba(255,255,255,0.08)"
             : "none",
           boxSizing: "border-box",
           transition: [
