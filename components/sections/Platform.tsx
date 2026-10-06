@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { withBasePath } from "@/lib/assets";
+import { BlurHeading } from "@/components/BlurHeading";
 import { McpPanel } from "@/components/sections/Mcp";
 import { SlidingIndicator, slidingIndicatorCss, useSlidingIndicator } from "@/components/primitives/SlidingIndicator";
 import { pluginHref, PLUGINS_HREF } from "@/lib/links";
@@ -465,6 +466,12 @@ export function PlatformStrip() {
     <div id="mcp" className="pf">
       {/* No heading of its own: it sits under the hero's, and two in one fold
           is one too many. */}
+      {/* A heading over the tabs (Hamza, 6 Oct, to a reference): one line
+          and a lede, centred, above the tab row. */}
+      <div className="pf-head">
+        <BlurHeading className="h2 pf-h2" lead="One workspace, every way in" />
+        <p className="lede mt-4">Start from the suite, an agent, the MCP or a plugin. Every tool, every model, every format.</p>
+      </div>
       <div className="pf-tabs" role="tablist" aria-label="Platform" ref={tabs.containerRef as React.Ref<HTMLDivElement>}>
         <SlidingIndicator box={tabs.box} ready={tabs.ready} className="pf-tab-fill" />
         {TABS.map((x, i) => (
@@ -500,6 +507,10 @@ export function PlatformStrip() {
         /* Minimal tabs (Hamza, 6 Oct, to a reference): no track and no
            dividers, a small dot glyph before each label, and only the
            selected tab on a soft fill. Above the container. */
+        .pf-head { text-align: center; margin: 0 auto 40px; max-width: 720px; display: flex; flex-direction: column; align-items: center; }
+        .pf-head .lede { max-width: 56ch; }
+        /* Flat ink, not the h2 gradient fill (Hamza, 6 Oct). */
+        .pf-h2 { background: none; -webkit-text-fill-color: currentColor; color: var(--ink-heading); }
         .pf-tabs {
           position: relative;
           margin: 0 auto;

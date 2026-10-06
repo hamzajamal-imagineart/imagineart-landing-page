@@ -17,24 +17,46 @@ import { START_HREF } from "@/lib/links";
  *
  * The scrim is heavier than the frame's 25%: white type over a photograph
  * needs a floor under it, not a tint.
+ *
+ * Studio marks (Hamza, 6 Oct): the cards a studio serves carry its white
+ * wordmark in the top-left corner — Ad Studio on Advertising, Fashion Studio
+ * on Product shots, Film Studio on Filmmaking — over a light scrim at the
+ * top so the mark holds on a bright image. The marks are the ones the
+ * (now unlisted) Studios sections use.
  */
-const CARDS = [
-  { title: "Advertising", body: "Brief to final asset. No vendor chain, no waiting. Just the work.", image: "/media/outcomes/advertising.jpg" },
-  { title: "Product shots", body: "AI-powered photoshoots. No studio. No crew. No scheduling.", image: "/media/outcomes/product.jpg" },
+type Logo = { src: string; alt: string; h: number };
+const CARDS: { title: string; body: string; image: string; logo?: Logo }[] = [
+  {
+    title: "Advertising",
+    body: "Brief to final asset. No vendor chain, no waiting. Just the work.",
+    image: "/media/outcomes/advertising.jpg",
+    logo: { src: "/media/studios/logos/ad-studio-white.svg", alt: "Ad Studio", h: 24 },
+  },
+  {
+    title: "Product shots",
+    body: "AI-powered photoshoots. No studio. No crew. No scheduling.",
+    image: "/media/outcomes/product.jpg",
+    logo: { src: "/media/studios/logos/fashion-studio-white.svg", alt: "Fashion Studio", h: 32 },
+  },
   { title: "Brand campaigns", body: "On-brand visuals, video, and audio at any scale, any format.", image: "/media/outcomes/brand.jpg" },
 ];
 const WIDE = {
   title: "Filmmaking",
   body: "Characters, storyboards, and concepts to explore. Cinematic tools made for the final frame.",
   image: "/media/outcomes/film.jpg",
+  logo: { src: "/media/studios/logos/film-studio.png", alt: "Film Studio", h: 32 },
 };
 
-function Card({ title, body, image, wide }: { title: string; body: string; image: string; wide?: boolean }) {
+function Card({ title, body, image, logo, wide }: { title: string; body: string; image: string; logo?: Logo; wide?: boolean }) {
   return (
     <div className={`oc-card ${wide ? "oc-wide" : ""}`}>
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img className="oc-media" src={withBasePath(image)} alt="" loading="lazy" />
-      <span className="oc-scrim" aria-hidden />
+      <span className={`oc-scrim ${logo ? "oc-scrim-top" : ""}`} aria-hidden />
+      {logo && (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img className="oc-logo" src={withBasePath(logo.src)} alt={logo.alt} style={{ height: logo.h }} />
+      )}
       <div className="oc-copy">
         <h3 className="oc-title">{title}</h3>
         <p className="oc-body">{body}</p>
@@ -109,6 +131,13 @@ export function Outcomes() {
           z-index: -1;
           background: linear-gradient(to top, rgba(0, 0, 0, 0.86) 0%, rgba(0, 0, 0, 0.52) 30%, rgba(0, 0, 0, 0) 60%);
         }
+        /* A light floor at the top too, only on cards that carry a mark. */
+        .oc-scrim-top {
+          background:
+            linear-gradient(to bottom, rgba(0, 0, 0, 0.42) 0%, rgba(0, 0, 0, 0) 26%),
+            linear-gradient(to top, rgba(0, 0, 0, 0.86) 0%, rgba(0, 0, 0, 0.52) 30%, rgba(0, 0, 0, 0) 60%);
+        }
+        .oc-logo { position: absolute; top: 24px; left: 24px; width: auto; display: block; filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.25)); }
         .oc-copy { position: absolute; left: 24px; right: 24px; bottom: 24px; color: #fff; }
         .oc-wide .oc-copy { right: auto; max-width: 512px; }
         .oc-title { font-size: 24px; line-height: 1.3; font-weight: 600; letter-spacing: -0.01em; }

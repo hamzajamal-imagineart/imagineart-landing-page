@@ -580,7 +580,11 @@ export function SiteNav({
             aria-label={panelEntry.label}
             className="mm-scope mm-panel"
             data-menu-theme={theme}
-            style={{ top: barTop + barHeight + 10 }}
+            // Tucked up under the bar (Hamza, 6 Oct: less space between the
+            // item and its panel): the bar is 64 tall and its items end about
+            // 10px above its foot, so −4 puts the panel 6px under the item.
+            // Local change to the kit's file — fold it back.
+            style={{ top: barTop + barHeight - 4 }}
             onPointerEnter={hoverKeep}
             onPointerLeave={hoverClose}
           >
