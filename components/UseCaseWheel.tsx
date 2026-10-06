@@ -164,6 +164,10 @@ export function UseCaseWheel({ groups, label }: { groups: WheelGroup[]; label: s
           z-index: 1;
           transition: color 380ms ease;
         }
+        /* On the light page the tint is 3:1, too faint for 18px names;
+           --ink-3 is 4.7:1 and still sits behind the selected pill's ink. */
+        :root:not([data-theme="dark"]) .uw-name { color: var(--ink-3); }
+        :root:not([data-theme="dark"]) .uw-on { color: var(--ink); }
         .uw-on {
           padding: 6px 6px 6px 20px;
           color: var(--ink);

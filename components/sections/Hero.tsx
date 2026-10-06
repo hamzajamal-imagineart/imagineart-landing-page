@@ -272,6 +272,22 @@ export function Hero() {
           box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.5);
         }
 
+        /* Light theme (6 Oct). The scrim turns into a wash of the page colour,
+           so dark ink reads over the mosaic the way white read over the dark
+           wash, and the second action takes ink on a frosted white. */
+        :root:not([data-theme="dark"]) .hero-bg-scrim {
+          background:
+            linear-gradient(rgba(238, 241, 245, 0.5), rgba(238, 241, 245, 0.5)),
+            radial-gradient(80% 62% at 50% 32%, rgba(238, 241, 245, 0.92) 0%, rgba(238, 241, 245, 0.66) 62%, rgba(238, 241, 245, 0.2) 100%),
+            linear-gradient(to bottom, rgba(238, 241, 245, 0.4) 0%, rgba(238, 241, 245, 0.16) 28%, rgba(238, 241, 245, 0.6) 66%, var(--page-bg) 100%);
+        }
+        :root:not([data-theme="dark"]) .hero-cta2 {
+          color: var(--ink-heading);
+          background: rgba(255, 255, 255, 0.62);
+          box-shadow: inset 0 0 0 1px rgba(15, 15, 20, 0.14);
+        }
+        :root:not([data-theme="dark"]) .hero-cta2:hover { background: #fff; box-shadow: inset 0 0 0 1px rgba(15, 15, 20, 0.24); }
+
         @media (max-width: 880px) {
           .hero-mosaic { column-count: 3; }
         }

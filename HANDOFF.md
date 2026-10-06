@@ -23,8 +23,8 @@ Verify with `npx next build` plus grep or DOM measurement. Keep replies short.
    demo" (cal.com) is secondary. No contact form. The **hero carries two
    actions**: "Start creating for free" and "Contact sales" (the cal.com
    booking); the closing band and footer offer "Book a demo".
-3. **The page ships dark.** The light palette still exists and still works —
-   one attribute flips it back (§3).
+3. **The page ships light** (6 Oct; it shipped dark 22 Sep – 6 Oct). Dark
+   still works — `data-theme="dark"` on `<html>` flips it back (§3).
 4. **Separate project** from the Guidelines kit, deployed on its own path
    (undecided, §8).
 5. **References used:** Kyoso (hero layout), the ElevenLabs enterprise page
@@ -140,6 +140,23 @@ utility class without touching a className.
 
 Dark is **neutral** — shades of black rather than a darkened slate. The hue is
 what warms the light page against white; on black it reads as a blue cast.
+
+**Light since 6 Oct.** `<html data-theme="light">`, `HERO_THEME = "light"` in
+`lib/theme.ts`, and `<SiteNav variant="onLight" theme="light" />`. To go back
+to dark, flip all three. Light-only overrides are scoped
+`:root:not([data-theme="dark"])` so dark keeps working: the hero scrim becomes
+a wash of `--page-bg` (dark ink reads over the mosaic; worst case over a black
+tile ≈ 5.9:1), "Contact sales" is ink on frosted white, the platform tabs take
+`--ink-2` (3:1 → 7:1 on the track), the plugin hub's mark is `#0F0F0F` (the
+light wordmark's own colour) with dark dots, the tall review cards go white,
+and the Use Cases names take `--ink-3`. Two light tokens moved for contrast:
+`--ink-3` `#7a7a7a` → `#6b6b6b` (3.8 → 4.7:1) and `--heading-muted` `#97aabd`
+→ `#7b8ea3` (2.1 → 3:1, set in both `globals.css` and `PageTint`'s slate).
+Audited every text node outside the nav and footer at 1340: no failures.
+**Left alone:** the kit's nav tabs (`#757575` on the page, 4.07:1) and some
+footer labels — they are the central kit's, so fix them there. Banners and
+cards over footage (studios, industries, suite, models, security, closing
+CTA) keep their dark grounds and white type by design.
 
 ### Tokens
 

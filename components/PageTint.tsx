@@ -29,7 +29,7 @@ type Palette = {
  */
 const PALETTES = {
   /** Slate blue, the coolest of the family. This page's palette. */
-  slate:   { bg: "#eef1f5", ink: "#2f4358", muted: "#97aabd", tile: "#dce4ee", tile2: "#f3f5f8", track: "#cfd9e5", panel: "#e6ebf1", shade1: "#e3e8ee", shade2: "#d7dee6", noise: [0.4, 0.46, 0.58] },
+  slate:   { bg: "#eef1f5", ink: "#2f4358", muted: "#7b8ea3", tile: "#dce4ee", tile2: "#f3f5f8", track: "#cfd9e5", panel: "#e6ebf1", shade1: "#e3e8ee", shade2: "#d7dee6", noise: [0.4, 0.46, 0.58] },
   sage:    { bg: "#f3f6f1", ink: "#2c332b", muted: "#9dab9c", tile: "#dfe7de", tile2: "#f2f5f1", track: "#d2ddd1", panel: "#eaeee8", shade1: "#e8ede6", shade2: "#dbe3d9", noise: [0.42, 0.52, 0.4] },
   sand:    { bg: "#f4f2ed", ink: "#3a352b", muted: "#aca596", tile: "#e6e1d6", tile2: "#f6f4ef", track: "#dcd5c8", panel: "#eeebe4", shade1: "#ebe8e1", shade2: "#dfdbd1", noise: [0.56, 0.5, 0.4] },
   mineral: { bg: "#eef4f4", ink: "#283a3a", muted: "#93abab", tile: "#dbe8e8", tile2: "#f0f5f5", track: "#cadcdc", panel: "#e6eeee", shade1: "#e3ebeb", shade2: "#d6e2e2", noise: [0.38, 0.52, 0.53] },

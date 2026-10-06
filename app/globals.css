@@ -41,7 +41,9 @@
      Re-declared per route by <PageTint>. */
   --ink-heading: #2f4358;
   --ink-2: #5b5b5b;
-  --ink-3: #7a7a7a;
+  /* #6b6b6b, not #7a7a7a: the light page went live on 6 Oct and #7a7a7a
+     was 3.8:1 on --page-bg; this is 4.7:1. */
+  --ink-3: #6b6b6b;
   --line: rgba(0, 0, 0, 0.09);
   --line-strong: rgba(0, 0, 0, 0.14);
 
@@ -61,7 +63,7 @@
        --tile-2    a light tile inside a recessed panel
        --track     the groove a segmented control runs in            */
   --page-bg: #eef1f5;
-  --heading-muted: #97aabd;
+  --heading-muted: #7b8ea3; /* 3:1 on --page-bg for the large muted clause */
   --tile: #dce4ee;
   /* Orphaned: --panel-2 sat two percent off --page-bg on this palette and was
      invisible as a surface. Kept only because <PageTint> still emits it and

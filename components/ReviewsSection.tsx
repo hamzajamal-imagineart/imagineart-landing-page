@@ -170,6 +170,18 @@ export function ReviewsSection() {
           --rv-star-off: rgba(255, 255, 255, 0.2);
         }
 
+        /* Light theme (6 Oct): the tall cards go white, as in the reference
+           — dark and white alternating on a light page. */
+        :root:not([data-theme="dark"]) .rv-light {
+          background: #ffffff;
+          color: #141414;
+          box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(16, 20, 30, 0.04);
+          --rv-2: #3a3a3c;
+          --rv-3: #6b6b70;
+          --rv-avatar: #ececea;
+          --rv-star-off: rgba(0, 0, 0, 0.16);
+        }
+
         .rv-stars { display: inline-flex; gap: 3px; }
         .rv-stars svg { width: 15px; height: 15px; display: block; }
         .rv-star-on { fill: #f06a3c; }

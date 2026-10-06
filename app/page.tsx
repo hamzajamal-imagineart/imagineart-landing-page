@@ -50,7 +50,7 @@ export default function Page() {
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(softwareSchema) }} />
       <PageTint palette="slate" />
-      <SiteNav variant="onDark" theme="dark" />
+      <SiteNav variant="onLight" theme="light" />
 
       <main>
         <Hero />
