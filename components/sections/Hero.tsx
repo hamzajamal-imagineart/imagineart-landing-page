@@ -123,16 +123,16 @@ export function Hero() {
         }
         .hc-muted { color: var(--heading-muted); }
         /* Two lines, always (Hamza, 6 Oct, to a reference): "One canvas at
-           scale for your" white, "work generations" muted, large and bold;
+           scale for your" white, "work generations" muted, large at weight 500;
            each line is held whole and the size scales with the viewport so
            the longer one fits the column. */
         .hc-line { display: block; white-space: nowrap; }
         .hc-title {
-          /* The first line is about 14em wide; 4vw keeps it inside the
+          /* The first line is about 14em wide; 3.6vw keeps it inside the
              62vw column (less padding) at every width. */
-          font-size: clamp(30px, 4vw, 66px);
+          font-size: clamp(28px, 3.6vw, 58px);
           line-height: 1.1;
-          font-weight: 600;
+          font-weight: 500;
           letter-spacing: -0.03em;
           color: var(--ink-heading);
           text-wrap: balance;

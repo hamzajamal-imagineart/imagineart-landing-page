@@ -429,9 +429,23 @@ const DOT_SETS: [number, number][][] = [
   [[15, 3], [11, 7], [7, 11], [3, 15]],
 ];
 function TabDots({ v }: { v: number }) {
+  if (v === 2) return <McpGlyph />;
   return (
     <svg className="pf-tab-dots" width="18" height="18" viewBox="0 0 18 18" aria-hidden>
       {DOT_SETS[v % DOT_SETS.length].map(([cx, cy], k) => <circle key={k} cx={cx} cy={cy} r="1.5" fill="currentColor" />)}
+    </svg>
+  );
+}
+/** MCP's glyph (Hamza, 6 Oct: "a better icon"): a hub with three spokes to
+    three nodes, the connect-anything idea, in the same dot language as the
+    other tabs rather than the diagonal scatter it had. */
+function McpGlyph() {
+  const spokes: [number, number][] = [[9, 2.6], [3.4, 12.2], [14.6, 12.2]];
+  return (
+    <svg className="pf-tab-dots" width="18" height="18" viewBox="0 0 18 18" aria-hidden>
+      {spokes.map(([x, y], k) => <line key={`l${k}`} x1="9" y1="9" x2={x} y2={y} stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" opacity="0.55" />)}
+      {spokes.map(([x, y], k) => <circle key={`c${k}`} cx={x} cy={y} r="1.7" fill="currentColor" />)}
+      <circle cx="9" cy="9" r="2.3" fill="currentColor" />
     </svg>
   );
 }
@@ -464,8 +478,6 @@ export function PlatformStrip() {
 
   return (
     <div id="mcp" className="pf">
-      {/* No heading of its own: it sits under the hero's, and two in one fold
-          is one too many. */}
       {/* A heading over the tabs (Hamza, 6 Oct, to a reference): one line
           and a lede, centred, above the tab row. */}
       <div className="pf-head">
