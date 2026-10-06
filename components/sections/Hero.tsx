@@ -68,7 +68,7 @@ export function Hero() {
           <BlurHeading
             as="h1"
             className="display hero-h1"
-            lead="Creative suite"
+            lead="ImagineArt suite"
             muted="built for your business"
             mutedClassName=""
             lineBreak
