@@ -114,6 +114,9 @@
 
    - `:root[data-theme="dark"]` outranks the `:root` that <PageTint> emits
      (0,1,1 against 0,1,0), so the per-route palette does not fight it.
+   - The same block also matches any element carrying data-theme="dark", so
+     one section can go dark on a light page (the hero, 6 Oct): tokens set on
+     that element win over the root's for everything inside it.
    - Tailwind v4 compiles its utilities to `var(--color-*)`, so redefining
      those flips `bg-content-primary`, `border-border-secondary` and the rest
      without touching a single className.
@@ -122,7 +125,8 @@
    inverts that — the wash is the floor and every surface steps up from it,
    because below near-black there is nowhere left to go.
    --------------------------------------------------------------------------- */
-:root[data-theme="dark"] {
+:root[data-theme="dark"],
+[data-theme="dark"] {
   color-scheme: dark;
 
   /* Neutral throughout. The slate hue is what gives the light page its
@@ -176,7 +180,8 @@
   --progress-wash: rgba(0, 0, 0, 0.04);
   --selection-bg: rgba(0, 0, 0, 0.12);
 }
-:root[data-theme="dark"] {
+:root[data-theme="dark"],
+[data-theme="dark"] {
   --guide-line: rgba(255, 255, 255, 0.08);
   --guide-dot: rgba(255, 255, 255, 0.45);
   --head-glow: rgba(255, 255, 255, 0.19);

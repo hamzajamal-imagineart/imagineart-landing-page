@@ -43,7 +43,7 @@ const [A, B, FEATURED, C, D]: Review[] = [
 /** An image the product made, over the featured review (Hamza, 25 Sep; it
     was a clip). An illustration on purpose, not a photograph: a face over a
     named review would read as the reviewer, and Trustpilot gives no photo. */
-const FEATURED_IMAGE = "/media/hero/showcase/illustration.jpg";
+const FEATURED_IMAGE = "/media/reviews/featured.jpg";
 
 const initials = (name: string) =>
   name.split(/\s+/).map((w) => w[0]).slice(0, 2).join("").toUpperCase();
@@ -171,7 +171,14 @@ export function ReviewsSection() {
         }
 
         /* Light theme (6 Oct): the tall cards go white, as in the reference
-           — dark and white alternating on a light page. */
+           — dark and white alternating on a light page. The dark ones are a
+           charcoal grey rather than near-black (Hamza, 6 Oct), which sits
+           more softly on white; white text on it is 11:1. */
+        :root:not([data-theme="dark"]) .rv-dark {
+          background: #2c2c30;
+          box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+          --rv-avatar: rgba(255, 255, 255, 0.1);
+        }
         :root:not([data-theme="dark"]) .rv-light {
           background: #ffffff;
           color: #141414;

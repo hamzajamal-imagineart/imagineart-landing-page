@@ -4,154 +4,178 @@ import { PlatformStrip } from "@/components/sections/Platform";
 import { CorridorDrift } from "@/components/sections/CorridorDrift";
 
 /**
- * Hero (Hamza, 6 Oct): the wordmark, a two-line claim, one line and the
- * purple "Start creating for free" centred between two walls of the
- * product's work receding toward the middle, like standing in a corridor of
- * screens.
- *
- * Real 3D: the stage has one perspective, and each column is a panel turned
- * 90° to stand on a wall plane at x = ±44vw, set at its own depth, so nearer
- * columns land tall at the screen edge and deeper ones shorter toward the
- * middle. Lengths are in vw, so it holds its proportions at any width.
- *
- * Deliberately irregular ("random mix and match"): each wall is built from its
- * own seeded sequence (identical on every build, no hydration mismatch), so
- * spacing, length, height, vertical offset, frame count and image order vary
- * and the walls do not mirror. It runs about 230vw deep.
- *
- * Made smoother after the TwelveLabs comparison: rounded frames, depth of
- * field (deeper columns soften as well as fade), a soft shadow under the near
- * frames, and a slight drift of the vanishing point with the pointer
- * (<CorridorDrift>).
- *
- * It keeps moving (Hamza, 6 Oct): every column walks slowly toward the
- * viewer and loops back to the far end, a quarter of them faster on a lane
- * just inside the wall; fog and blur are keyframed along the trip.
- * The copy sits on a soft pool of the page colour so it reads whatever
- * passes behind it.
+ * Hero (Hamza, 6 Oct): a two-line claim, one line and the purple "Start
+ * creating for free" centred, with the product's work streaming out from
+ * behind it to the left and right, in the manner of the TwelveLabs hero.
+ * The section is dark on a light page (Hamza, 6 Oct): it carries
+ * data-theme="dark", which globals.css honours on any element, so every
+ * token inside it (page colour, inks, tile) is the dark set while the nav's
+ * scrolled state, the platform strip and the rest stay light.
+ * The gallery is described above the constants below. One CSS keyframe per
+ * card (position, scale, focus), with negative delays so the rows are full
+ * on load; no JS runs except the pointer drift of the field (<CorridorDrift>).
+ * Reduced motion freezes them in place.
  */
-/** Ten industry images generated in ImagineArt for the corridor (Nano Banana
-    Pro, 2K, 6 Oct), one per Industries category, interleaved with the
-    eighteen mosaic tiles. */
-const INDUSTRY = ["fashion", "cpg", "fast-food", "food-beverage", "home-decor", "electronics", "beauty", "automotive", "telecom", "ecommerce"].map((n) => `/media/hero/corridor/${n}.jpg`);
-// m8 and m10 are abstract gradients, not work; left out of the corridor.
-const MOSAIC = [3, 9, 12, 1, 13, 5, 15, 6, 11, 2, 17, 14, 4, 18, 7, 16].map((n) => `/media/hero/mosaic/m${n}.jpg`);
-const IMAGES = MOSAIC.flatMap((m, i) => (i < INDUSTRY.length ? [INDUSTRY[i], m] : [m]));
+
+/** The generated, top-quality set first: ten industry images, the four
+    Outcomes cards and the nine Suite cards, then the best mosaic tiles (the
+    two gradient tiles, m8 and m10, are left out). */
+const IMAGES = [
+  ...["fashion", "cpg", "fast-food", "food-beverage", "home-decor", "electronics", "beauty", "automotive", "telecom", "ecommerce"].map((n) => `/media/hero/corridor/${n}.jpg`),
+  ...["advertising", "product", "brand"].map((n) => `/media/outcomes/${n}.jpg`),
+  ...["workflows", "canvas", "brand-guidelines", "video-extend", "inpaint", "ugc", "music", "ad-studio", "fashion-studio"].map((n) => `/media/suite/${n}.jpg`),
+  ...[3, 9, 12, 13, 15, 17, 18].map((n) => `/media/hero/mosaic/m${n}.jpg`),
+];
+/** Clips with real footage, on every other card so the field moves within
+    the cards too (Hamza, 6 Oct). The UI screen recordings (Workflows, Canvas,
+    the image modes) are left out: dark panels read wrong on a light page.
+    Also left out: the two clips with recognisable brands and the two heavy
+    files (film-studio, lipsync). About forty live decoders is as many as a
+    laptop takes comfortably. */
+const CLIPS = [
+  "/media/capabilities/video-extend.mp4",
+  "/media/studios/fashion-studio.mp4",
+  "/media/capabilities/inpaint.mp4",
+  "/media/hero/modes/video/3-bike.mp4",
+  "/media/capabilities/music.mp4",
+  "/media/templates/product-studio.mp4",
+  "/media/capabilities/ugc.mp4",
+  "/media/capabilities/vfx.mp4",
+  "/media/templates/fashion-tryon.mp4",
+  "/media/capabilities/variate.mp4",
+  "/media/studios/ad-studio.mp4",
+  "/media/hero/modes/video/1-prompt.mp4",
+  "/media/capabilities/sketch-to-render.mp4",
+  "/media/tools/motion-sync.mp4",
+  "/media/capabilities/reframe-presets.mp4",
+  "/media/hero/modes/video/2-fashion.mp4",
+  "/media/capabilities/outfit-tryon.mp4",
+  "/media/tools/ai-voiceover.mp4",
+  "/media/capabilities/video-reframe.mp4",
+];
+
 /**
- * The corridor, deliberately irregular (Hamza, 6 Oct: "shouldn't feel like
- * perfect order, random mix and match"). Each wall is built from its own
- * seeded random sequence, so the two sides do not mirror and every build is
- * the same (no hydration mismatch): column spacing, length, height, vertical
- * offset, frame count and frame proportions all vary, and images are dealt
- * in a shuffled order.
- *
- * Depths run from just in front of the screen (cut by the viewport edge) to
- * about 230vw back toward the vanishing point; past ~36vw the columns fade
- * into the dark (fog), and the copy sits on a soft pool of the page colour
- * so it reads whatever passes behind it.
+ * The gallery, after twelvelabs.io (Hamza's screenshots, 6 Oct), run out to
+ * both sides (Hamza, later that day: "from both sides like before"). Four
+ * parallel rows, evenly spaced (about 11vw apart), run straight from behind
+ * the centred copy out past the left and right edges; only in the last
+ * quarter do they bow apart, the top rows lifting and the bottom ones
+ * dipping, in proportion to their distance from the middle. Cards are
+ * smallest at the far point behind the copy (3.4vw) and grow steadily to
+ * 7.5vw at the edge. The pitch between neighbours tracks the card's size, so
+ * the gap stays about a third of a card and each row reads as one chain.
+ * Cards sit a little above or below their row, so the rows are not ruled
+ * lines. Far cards are translucent, no blur (that smudged on the light page),
+ * and a wash of the page colour lies over the middle, so the rows show
+ * through faintly behind the copy, which also sits on a soft overlay of the
+ * page colour; both edges are full and sharp. Drawn in 2D, no perspective.
  */
-type Col = { z: number; len: number; h: number; dy: number; rows: number[]; fast: boolean };
+/** Row offsets from the vertical centre, in vw. */
+const ROW_Y = [-16.5, -5.5, 5.5, 16.5];
+/** How much a row's offset has grown by the edge; eased in hard (t⁴) so the
+    bow is confined to the last quarter. */
+const FAN = 1.45;
+/** Near-end card width; the scale at the far point (behind the copy) and at
+    the edge; the pitch between neighbours as a multiple of the card's width
+    at that point; where the near end sits (past the edge); and the vertical
+    jitter of a card off its row (vw), which keeps the rows from reading as
+    ruled lines. */
+const W = 7.5, S0 = 0.45, S1 = 1, PITCH = 1.35, X_NEAR = 62, JITTER = 1.1;
+/** Seconds for one card's trip from behind the headline to past the edge. */
+const TRIP = 40;
 
-function rng(seed: number) {
-  let t = seed >>> 0;
-  return () => {
-    t = (t + 0x6d2b79f5) >>> 0;
-    let r = Math.imul(t ^ (t >>> 15), 1 | t);
-    r ^= r + Math.imul(r ^ (r >>> 7), 61 | r);
-    return ((r ^ (r >>> 14)) >>> 0) / 4294967296;
-  };
-}
-
-function buildWall(seed: number): Col[] {
-  const r = rng(seed);
-  const out: Col[] = [];
-  let z = -6 - r() * 3;
-  while (z < 230) {
-    const deep = Math.max(0, z) / 230;
-    const len = (7 + r() * 8) * (1 + deep * 2.2);
-    const h = 24 + r() * 16;                 // 24–40vw tall
-    const dy = (r() - 0.5) * 9;              // ±4.5vw off centre
-    const n = 2 + Math.floor(r() * 3);       // 2–4 frames
-    const rows = Array.from({ length: n }, () => 0.6 + r() * 0.9);
-    out.push({ z: z + len / 2, len, h, dy, rows, fast: r() < 0.25 });
-    z += len + (4 + r() * 8) * (1 + deep * 2.5); // never tight: 4vw minimum
-  }
+const scaleAt = (t: number) => S0 + (S1 - S0) * t;
+/** Distance travelled per card-interval by time t: the integral of the pitch,
+    which is PITCH × the card's width at that point (numerically, 200 steps). */
+const travel = (() => {
+  const out = [0];
+  for (let i = 1; i <= 200; i++) out.push(out[i - 1] + (PITCH * W * scaleAt((i - 0.5) / 200)) / 200);
   return out;
-}
-const WALLS = { l: buildWall(7), r: buildWall(19) };
+})();
+/** Cards per row per side: as many as span the half-width at that pitch. */
+const PER_ROW = Math.ceil(X_NEAR / travel[200]);
 
-function shuffled<T>(arr: T[], seed: number) {
-  const r = rng(seed), a = [...arr];
-  for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
-  return a;
-}
-const DECK = { l: shuffled(IMAGES, 3), r: shuffled(IMAGES, 11) };
+/**
+ * The keyframes, generated. Scale grows linearly from S0 to S1. Since cards
+ * are evenly spaced in time, x is PER_ROW times the travel integral, signed
+ * by the side (--dir), which lands the near end past the edge. Far cards
+ * are translucent and come to full by just past halfway; a wash of the page
+ * colour over the middle of the stage (below) and the overlay behind the
+ * copy do the rest.
+ */
+const KEYFRAMES = (() => {
+  const stops: string[] = [];
+  for (let n = 0; n <= 20; n++) {
+    const t = n / 20;
+    const sc = scaleAt(t);
+    const x = PER_ROW * travel[n * 10];
+    const fan = 1 + (FAN - 1) * Math.pow(t, 4);
+    // Far cards wash toward the page colour rather than blur: a blur on a
+    // light page reads as grey smudges (Hamza, 6 Oct). In over the first
+    // tenth, then up from a third to full by just past halfway.
+    const op = t < 0.1 ? (t / 0.1) * 0.35 : Math.min(1, 0.35 + 0.65 * ((t - 0.1) / 0.45));
+    stops.push(
+      `${(t * 100).toFixed(1)}% { transform: translate(calc(var(--dir) * ${x.toFixed(2)}vw), calc(var(--y) * ${fan.toFixed(3)} + var(--j))) scale(${sc.toFixed(3)}); opacity: ${op.toFixed(2)}; }`,
+    );
+  }
+  return `@keyframes hc-row { ${stops.join(" ")} }`;
+})();
 
-/** Fog: full strength to 36vw deep, down to 0.3 by 80vw, then to 0.1. */
-const fog = (z: number) =>
-  z <= 36 ? 1 : z <= 80 ? 1 - ((z - 36) / 44) * 0.7 : Math.max(0.1, 0.3 - ((z - 80) / 150) * 0.2);
-/** The walk: every column travels from FAR (deep) to NEAR (past the screen
-    edge) and loops. SLOW is the trip in seconds; a quarter of the columns
-    are FAST, and ride a lane 3vw inside the wall so they overtake without
-    passing through the slower panels. A column's negative delay is its
-    current depth as a share of the trip, so on load each sits where the
-    static layout put it. */
-const FAR = 230, NEAR = -30, SLOW = 90, FAST = 58;
-const phase = (z: number) => (FAR - z) / (FAR - NEAR);
-
-/** Depth of field: sharp to 30vw, softening to 3px by 120vw. */
-const dof = (z: number) => (z <= 30 ? 0 : Math.min(3, ((z - 30) / 90) * 3));
+type Card = { dir: 1 | -1; y: number; j: number; delay: number; src: string; clip: boolean };
+const CARDS: Card[] = (() => {
+  const out: Card[] = [];
+  let img = 0, vid = 0;
+  ([1, -1] as const).forEach((dir, di) => {
+    ROW_Y.forEach((y, ri) => {
+      // Rows start at different points in the cycle so no two line up.
+      const offset = (((ri * 0.381 + di * 0.5) % 1) * TRIP) / PER_ROW;
+      for (let k = 0; k < PER_ROW; k++) {
+        const clip = k % 2 === 1;
+        out.push({
+          dir,
+          y,
+          j: JITTER * Math.sin((di * 31 + ri * 7 + k) * 12.9898) /* deterministic, −1..1 */,
+          delay: -(((k * TRIP) / PER_ROW + offset) % TRIP),
+          src: clip ? CLIPS[vid++ % CLIPS.length] : IMAGES[(img++ * 7) % IMAGES.length],
+          clip,
+        });
+      }
+    });
+  });
+  return out;
+})();
 
 export function Hero() {
-  const wall = (side: "l" | "r") => {
-    let img = 0;
-    return WALLS[side].map((c, i) => {
-      const blur = dof(c.z);
-      return (
-        <span
-          key={`${side}${i}`}
-          className={`hc-col hc-${side}`}
-          style={{
-            ["--sx" as string]: `${(side === "l" ? -1 : 1) * (c.fast ? 41 : 44)}vw`,
-            ["--ry" as string]: side === "l" ? "90deg" : "-90deg",
-            animationDuration: `${c.fast ? FAST : SLOW}s`,
-            animationDelay: `${(-phase(c.z) * (c.fast ? FAST : SLOW)).toFixed(2)}s`,
-            ["--z" as string]: `${c.z.toFixed(2)}vw`,
-            ["--len" as string]: `${c.len.toFixed(2)}vw`,
-            ["--h" as string]: `${c.h.toFixed(2)}vw`,
-            ["--dy" as string]: `${c.dy.toFixed(2)}vw`,
-            opacity: Number(fog(c.z).toFixed(3)),
-            filter: blur > 0.05 ? `blur(${blur.toFixed(2)}px)` : undefined,
-          }}
-        >
-          {c.rows.map((g, k) => (
-            <span key={k} className="hc-frame" style={{ flexGrow: Number(g.toFixed(3)) }}>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={withBasePath(DECK[side][img++ % DECK[side].length])} alt="" />
-            </span>
-          ))}
-        </span>
-      );
-    });
-  };
-
   return (
     <>
-      <section id="top" className="hc">
+      <section id="top" className="hc" data-theme="dark">
         <span className="hs-dots hs-dots-l" aria-hidden />
         <span className="hs-dots hs-dots-r" aria-hidden />
 
         <CorridorDrift />
         <div className="hc-stage" aria-hidden>
-          {wall("l")}
-          {wall("r")}
+          {CARDS.map((c, i) => (
+            <span
+              key={i}
+              className="hc-card"
+              style={{
+                ["--dir" as string]: c.dir,
+                ["--y" as string]: `${c.y}vw`,
+                ["--j" as string]: `${c.j.toFixed(2)}vw`,
+                animationDelay: `${c.delay.toFixed(2)}s`,
+              }}
+            >
+              {c.clip ? (
+                <video src={withBasePath(c.src)} muted autoPlay loop playsInline preload="auto" />
+              ) : (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={withBasePath(c.src)} alt="" decoding="async" />
+              )}
+            </span>
+          ))}
         </div>
 
         <div className="hc-copy">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img className="hc-logo hc-logo-on-dark" src={withBasePath("/media/imagine-art-wordmark-dark.svg")} alt="ImagineArt" />
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img className="hc-logo hc-logo-on-light" src={withBasePath("/media/imagine-art-wordmark.svg")} alt="" aria-hidden />
           <h1 className="hc-title"><span className="hc-line">Generate, animate, and edit</span><span className="hc-line hc-muted">at scale. One Canvas</span></h1>
           <p className="hc-lede">
             Every leading model for image, video and audio in one workspace, with your brand held
@@ -210,80 +234,64 @@ export function Hero() {
           mask-composite: intersect;
         }
 
-        /* One perspective for the whole corridor. The vanishing point drifts
-           a little with the pointer (--px, --py from <CorridorDrift>). */
+        /* The gallery's stage; the whole field drifts a little with the
+           pointer (--px, --py from <CorridorDrift>). */
         .hc-stage {
           --px: 0; --py: 0;
           position: absolute;
           inset: 64px 0 0;
           z-index: 1;
-          perspective: 48vw;
-          perspective-origin: calc(50% + var(--px) * 3vw) calc(50% + var(--py) * 2vw);
-          transition: perspective-origin 900ms cubic-bezier(0.22, 1, 0.36, 1);
+          transform: translate(calc(var(--px) * -1.2vw), calc(var(--py) * -0.8vw));
+          transition: transform 900ms cubic-bezier(0.22, 1, 0.36, 1);
           pointer-events: none;
         }
-        /* A column: a panel --len long (along the wall) and --h tall, turned
-           to stand on the wall plane and pushed to its depth. */
-        .hc-col {
+        /* A wash of the page colour over the middle, as on twelvelabs.io:
+           the rows behind the copy read as a faint texture and both ends are
+           full. */
+        .hc-stage::after {
+          content: "";
+          position: absolute;
+          inset: 0;
+          z-index: 1;
+          background: linear-gradient(90deg, transparent 18%, color-mix(in srgb, var(--page-bg) 40%, transparent) 32%, color-mix(in srgb, var(--page-bg) 70%, transparent) 42%, color-mix(in srgb, var(--page-bg) 70%, transparent) 58%, color-mix(in srgb, var(--page-bg) 40%, transparent) 68%, transparent 82%);
+        }
+        /* A card: rounded 16:9 at its near-end size, centred on the stage and
+           moved out along its row by the keyframe (x, y, scale, focus). */
+        .hc-card {
           position: absolute;
           left: 50%;
           top: 50%;
-          width: var(--len);
-          height: var(--h);
-          margin-left: calc(var(--len) / -2);
-          margin-top: calc(var(--h) / -2 + var(--dy));
-          display: flex;
-          flex-direction: column;
-          gap: 1.6vw;
-        }
-        /* Static placement (and the reduced-motion state): each column at its
-           own depth on its wall. */
-        .hc-col { transform: translateX(var(--sx)) translateZ(calc(var(--z) * -1)) rotateY(var(--ry)); }
-        /* The walk, FAR → NEAR. Opacity and blur follow depth: z = 230 − 260p,
-           so fog lifts past ~62% and the blur clears by ~77%. The first 4%
-           fades in so the loop's jump back to the far end is never seen. */
-        .hc-col {
-          animation-name: hc-walk;
-          animation-timing-function: linear;
-          animation-iteration-count: infinite;
-          will-change: transform, opacity;
-        }
-        @keyframes hc-walk {
-          0%   { transform: translateX(var(--sx)) translateZ(-230vw) rotateY(var(--ry)); opacity: 0;    filter: blur(3px); }
-          4%   {                                                                          opacity: 0.1; }
-          42%  {                                                                          opacity: 0.16; filter: blur(3px); }
-          62%  {                                                                          opacity: 0.3; }
-          77%  {                                                                          filter: blur(0); }
-          81%  {                                                                          opacity: 1; }
-          100% { transform: translateX(var(--sx)) translateZ(30vw) rotateY(var(--ry));   opacity: 1;    filter: blur(0); }
-        }
-        @media (prefers-reduced-motion: reduce) {
-          .hc-col { animation: none; }
-        }
-        .hc-frame {
-          position: relative;
-          flex-basis: 0;
-          min-height: 0;
+          width: ${W}vw;
+          aspect-ratio: 16 / 9;
+          margin-left: ${-W / 2}vw;
+          margin-top: ${-W * 0.28125}vw;
           overflow: hidden;
-          border-radius: calc(0.9vw * var(--corner));
+          border-radius: calc(0.7vw * var(--corner));
           background: var(--tile);
-          box-shadow: 0 0.8vw 2.4vw rgba(0, 0, 0, 0.35);
+          box-shadow: 0 0.5vw 1.5vw rgba(0, 0, 0, 0.35);
+          opacity: 0;
+          will-change: transform, opacity;
+          animation: hc-row ${TRIP}s linear infinite;
         }
-        .hc-frame img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+        .hc-card img, .hc-card video { width: 100%; height: 100%; object-fit: cover; display: block; }
+        ${KEYFRAMES}
         @media (prefers-reduced-motion: reduce) {
+          .hc-card { animation-play-state: paused; }
+          .hc-card video { display: none; }
           .hc-stage { transition: none; }
         }
 
-
-
-        /* A soft pool of the page colour behind the copy: the corridor runs
-           back behind it, and this keeps the type on near-solid ground. */
+        /* A soft overlay of the page colour behind the copy (Hamza, 6 Oct:
+           an overlay, not a blur): near-solid at the type, fading out across
+           a wide ellipse so it has no edge, and the rows show through faintly
+           at its rim. */
         .hc-copy::before {
           content: "";
           position: absolute;
-          inset: -40% -34%;
+          inset: -55% -42%;
           z-index: -1;
-          background: radial-gradient(closest-side, var(--page-bg) 72%, color-mix(in srgb, var(--page-bg) 70%, transparent) 86%, transparent 100%);
+          border-radius: 50%;
+          background: radial-gradient(closest-side, color-mix(in srgb, var(--page-bg) 94%, transparent) 40%, color-mix(in srgb, var(--page-bg) 72%, transparent) 70%, transparent 100%);
           pointer-events: none;
         }
         .hc-copy {
@@ -297,11 +305,6 @@ export function Hero() {
           align-items: center;
           text-align: center;
         }
-        /* The wordmark, in the theme's own file (light letters on dark). */
-        .hc-logo { display: block; height: clamp(22px, 2vw, 30px); width: auto; margin-bottom: 28px; }
-        .hc-logo-on-light { display: none; }
-        :root:not([data-theme="dark"]) .hc-logo-on-dark { display: none; }
-        :root:not([data-theme="dark"]) .hc-logo-on-light { display: block; }
         .hc-muted { color: var(--heading-muted); }
         /* Two lines, always (Hamza, 6 Oct): each line is held whole and the
            size scales with the viewport so the longer one fits the column. */
@@ -311,7 +314,7 @@ export function Hero() {
              46vw column (less padding) at every width. */
           font-size: clamp(24px, 3.25vw, 52px);
           line-height: 1.08;
-          font-weight: 600;
+          font-weight: 500;
           letter-spacing: -0.03em;
           color: var(--ink-heading);
           text-wrap: balance;

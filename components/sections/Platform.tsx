@@ -167,7 +167,8 @@ type Tab = {
 };
 
 const TABS: Tab[] = [
-  { id: "creative", label: "Creative Suite", kind: "reel", videos: [...IMAGE_SET, ...VIDEO_SET] },
+  // One campaign video (Hamza, 6 Oct), streamed from the product's CDN.
+  { id: "creative", label: "Creative Suite", kind: "clip", videos: ["https://imagine.animagic.art/imagine-one/home/campaigns/gpt-2.5.mp4"] },
   { id: "agents", label: "Agents", kind: "clip", videos: [AGENT_CLIP], audio: true },
   { id: "mcp", label: "MCP", isNew: true, kind: "mcp" },
   { id: "plugins", label: "Plugins", kind: "plugins" },
@@ -511,6 +512,9 @@ export function PlatformStrip() {
         }
         .pf-tabs::-webkit-scrollbar { display: none; }
         .pf-tab-fill { border-radius: calc(10px * var(--corner)); background: var(--tile); }
+        /* On the light palette --tile is two percent off white and the pill
+           barely shows; a step darker reads as a selection (Hamza, 6 Oct). */
+        :root:not([data-theme="dark"]) .pf-tab-fill { background: #e9eaec; }
         .pf-tab {
           position: relative;
           z-index: 1;
@@ -552,17 +556,15 @@ export function PlatformStrip() {
         }
         :root:not([data-theme="dark"]) .pf-new { background: #ede9fe; color: #6d28d9; }
 
-        /* The container: a hairline, a ground one step off the page, and a
-           faint dot grid (Hamza, 6 Oct: no gradient). */
+        /* The container: one hairline, nothing nested inside it (Hamza,
+           6 Oct: "no double borders"). The stage fills it edge to edge. */
         .pf-frame {
           position: relative;
           margin-top: 20px;
-          padding: clamp(10px, 1vw, 14px);
+          overflow: hidden;
           border-radius: var(--radius-5);
           border: 1px solid var(--line);
-          background:
-            radial-gradient(circle, var(--line) 1px, transparent 1.3px) 0 0 / 16px 16px,
-            var(--tile);
+          background: var(--tile);
         }
         .pf-panel { padding: 0; }
 
@@ -571,8 +573,6 @@ export function PlatformStrip() {
           position: relative;
           overflow: hidden;
           aspect-ratio: 16 / 9;
-          border-radius: var(--radius-3);
-          border: 1px solid var(--line);
           background: var(--tile-2);
           --hc-float: clamp(12px, 2.2%, 22px);
         }

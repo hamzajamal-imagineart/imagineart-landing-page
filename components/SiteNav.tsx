@@ -469,8 +469,11 @@ export function SiteNav({
           justifyContent: "space-between",
           gap: 16,
           background: compact ? "rgba(10,10,11,0.42)" : "transparent",
-          backdropFilter: compact ? "blur(32px) saturate(180%)" : "blur(20px)",
-          WebkitBackdropFilter: compact ? "blur(32px) saturate(180%)" : "blur(20px)",
+          // No frosted band at the top of the page (Hamza, 6 Oct): the bar is
+          // fully clear until it compacts into the pill. Local change to the
+          // kit's file — fold it back into guidelines-for-landing-page.
+          backdropFilter: compact ? "blur(32px) saturate(180%)" : "none",
+          WebkitBackdropFilter: compact ? "blur(32px) saturate(180%)" : "none",
           borderRadius: compact ? 999 : 0,
           boxShadow: compact
             ? "0 20px 48px rgba(0,0,0,0.32), inset 0 1px 0 rgba(255,255,255,0.08), 0 0 0 1px rgba(255,255,255,0.1)"

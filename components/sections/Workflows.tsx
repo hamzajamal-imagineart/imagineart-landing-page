@@ -44,7 +44,7 @@ export function Workflows() {
       <SectionGuides edge="top" />
       <div className="container-page">
         <div className="mx-auto max-w-[680px] text-center">
-          <BlurHeading className="h2" lead="Workflows" />
+          <BlurHeading className="h2" lead="Content at Scale" />
           <p className="lede mx-auto mt-5">
             Build the pipeline once, connect your tools to it, schedule the runs, and see what worked.
           </p>
