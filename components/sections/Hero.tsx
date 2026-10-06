@@ -96,18 +96,13 @@ export function Hero() {
         .hc-stage { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
         .hg-host { position: absolute; inset: 0; }
         .hg-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
-        /* The veil: a dark pool centred on the copy with a strong backdrop
-           blur, masked to the same ellipse so it has no edge; the planet's
-           rim stays bright and sharp around it. Heavier than the first cut
-           (Hamza, 6 Oct): the type has to read over the turning tiles. */
+        /* The veil: a dark pool centred on the copy, no blur (Hamza, 6 Oct:
+           the blur looked wrong); the tiles stay crisp and simply darken
+           under the type, and the planet's rim stays bright around it. */
         .hc-veil {
           position: absolute;
           inset: 0;
           background: radial-gradient(ellipse 38% 44% at 50% 50%, rgba(0, 0, 0, 0.92) 0%, rgba(0, 0, 0, 0.8) 50%, rgba(0, 0, 0, 0.35) 78%, rgba(0, 0, 0, 0) 100%);
-          -webkit-backdrop-filter: blur(10px);
-          backdrop-filter: blur(10px);
-          -webkit-mask-image: radial-gradient(ellipse 38% 44% at 50% 50%, #000 50%, transparent 100%);
-          mask-image: radial-gradient(ellipse 38% 44% at 50% 50%, #000 50%, transparent 100%);
         }
 
         .hc-copy {
@@ -183,7 +178,6 @@ export function Hero() {
         @media (max-width: 760px) {
           .hc-copy { max-width: none; }
           .hc-stage { opacity: 0.35; }
-          .hc-veil { -webkit-mask-image: none; mask-image: none; }
           .hs-dots { width: 48px; }
           .hs-cta { height: 48px; padding: 0 20px 4px; font-size: 15px; }
         }
