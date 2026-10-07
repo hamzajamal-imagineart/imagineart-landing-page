@@ -27,16 +27,19 @@ const templateHref = (category?: string) =>
   category ? `${TEMPLATES_HREF}?category=${category}` : TEMPLATES_HREF;
 
 const INDUSTRIES = [
-  { name: "Fashion & Apparel", video: "/media/industries/fashion.mp4", category: "fashion", body: "Design, PDP and e-com imagery, editorials (stills + video), fashion films, lookbooks, social, banners, and static + motion ads." },
-  { name: "CPG", video: "/media/industries/cpg.mp4", category: "fmcg", body: "End-to-end campaigns, static + motion ads, product-window animations, in-store POS, DVCs / TVCs, mascot design, and trend-jacking video." },
-  { name: "Fast Food", video: "/media/industries/fast-food.mp4", category: "fastfood", body: "Food photography, end-to-end campaigns, static + motion ads, product windows, in-store POS, DVCs / TVCs, mascot design, and trend-jacking video." },
-  { name: "Food & Beverage", video: "/media/industries/food-beverage.mp4", category: "fmcg", body: "Food photography, end-to-end campaigns, static + motion ads, product-window animations, in-store POS, DVCs / TVCs, and mascot design." },
-  { name: "Furniture / Home Décor", video: "/media/industries/furniture.mp4", body: "Furniture and lifestyle renders, editorials (stills + video), social, static + motion ads, DVCs / TVCs, and in-store POS." },
-  { name: "Electronics", video: "/media/industries/electronics.mp4", body: "Product and lifestyle renders, editorials (stills + video), banners, social, static + motion ads, DVCs / TVCs, and in-store POS." },
-  { name: "Beauty & Cosmetics", video: "/media/industries/beauty.mp4", category: "fmcg", body: "End-to-end campaigns, static + motion ads, product windows, banners, in-store POS, DVCs / TVCs, mascot design, and trend-jacking video." },
-  { name: "Automotive", video: "/media/industries/automotive.mp4", category: "cinematic", body: "Launch films, static + motion ads, banners, and video-based sales training." },
-  { name: "Telecom", video: "/media/industries/telecom.mp4", category: "advertising", body: "Social, banners, static + motion ads, in-store POS, and video-based compliance training." },
-  { name: "E-commerce / Marketplaces", video: "/media/industries/ecommerce.mp4", category: "advertising", body: "Seller PDP and listing imagery, on-page product motion, static + motion ads, and store banners." },
+  /* Card copy rewritten as plain sentences for an enterprise reader
+     (Hamza, 7 Oct): what the team makes, then why it matters, with the
+     shorthand (PDP, POS, DVC/TVC) spelled out. */
+  { name: "Fashion & Apparel", video: "/media/industries/fashion.mp4", category: "fashion", body: "From design to launch: product-page imagery, editorials, lookbooks and fashion films, plus the social, banners and ads that sell them." },
+  { name: "CPG", video: "/media/industries/cpg.mp4", category: "fmcg", body: "Full campaigns in-house: ads, in-store displays and TV spots. Design a mascot, animate products and ride trends while they last." },
+  { name: "Fast Food", video: "/media/industries/fast-food.mp4", category: "fastfood", body: "Make every menu item look its best, then run it everywhere: campaigns, ads, in-store displays and TV spots, the same day a trend hits." },
+  { name: "Food & Beverage", video: "/media/industries/food-beverage.mp4", category: "fmcg", body: "Appetising food and drink photography, carried straight into campaigns, ads, product animations, in-store displays and TV spots." },
+  { name: "Furniture / Home Décor", video: "/media/industries/furniture.mp4", body: "Every piece in a styled room, no shoot needed. Renders that become editorials, social, ads, TV spots and in-store displays." },
+  { name: "Electronics", video: "/media/industries/electronics.mp4", body: "Launch-ready product and lifestyle renders, carried through editorials, banners, social, ads, TV spots and in-store displays." },
+  { name: "Beauty & Cosmetics", video: "/media/industries/beauty.mp4", category: "fmcg", body: "Keep pace with a fast category: campaigns, ads, product animations, in-store displays and TV spots, plus trend-led video in the moment." },
+  { name: "Automotive", video: "/media/industries/automotive.mp4", category: "cinematic", body: "Launch films and ads that sell the model, and video training that keeps your sales teams current." },
+  { name: "Telecom", video: "/media/industries/telecom.mp4", category: "advertising", body: "Keep offers fresh across social, banners, ads and stores, and turn compliance training into video staff actually watch." },
+  { name: "E-commerce / Marketplaces", video: "/media/industries/ecommerce.mp4", category: "advertising", body: "Listing-ready images and on-page motion for every seller, promoted with ads and storefront banners." },
 ];
 
 /* Cycled across the ten cards. Each palette carries its own --grain-fg, so a

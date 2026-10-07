@@ -167,7 +167,7 @@ type Tab = {
   label: string;
   /** Carries the NEW tag. */
   isNew?: boolean;
-  kind: "reel" | "clip" | "mcp" | "toolkit" | "studios" | "plugins";
+  kind: "reel" | "clip" | "toolkit" | "studios" | "integrations";
   videos?: string[];
   /** Whether the clip carries sound, so it gets the control bar. */
   audio?: boolean;
@@ -181,10 +181,11 @@ const TABS: Tab[] = [
   { id: "agent", label: "Agent", kind: "clip", videos: [COMPUTER_CLIP], audio: true },
   { id: "toolkit", label: "Toolkit", kind: "toolkit" },
   { id: "workflows", label: "Workflows", kind: "clip", videos: [WORKFLOWS_CLIP], audio: true },
-  { id: "mcp", label: "MCP", isNew: true, kind: "mcp" },
   // Ad, Fashion and Film Studio footage with chips to switch (Hamza, 7 Oct).
   { id: "studios", label: "Studios", kind: "studios" },
-  { id: "plugins", label: "Plugins", kind: "plugins" },
+  // MCP and Plugins, merged (Hamza, 7 Oct): both are ways to use ImagineArt
+  // from somewhere else, so one tab with a two-way switch under the tab row.
+  { id: "integrations", label: "MCP & Plugins", isNew: true, kind: "integrations" },
 ];
 
 /**
@@ -441,7 +442,8 @@ const DOT_SETS: [number, number][][] = [
   [[15, 3], [11, 7], [7, 11], [3, 15]],
 ];
 function TabDots({ v, id }: { v: number; id: string }) {
-  if (id === "mcp") return <McpGlyph />;
+  if (id === "integrations") return <McpGlyph />;
+  if (id === "workflows") return <WorkflowGlyph />;
   return (
     <svg className="pf-tab-dots" width="18" height="18" viewBox="0 0 18 18" aria-hidden>
       {DOT_SETS[v % DOT_SETS.length].map(([cx, cy], k) => <circle key={k} cx={cx} cy={cy} r="1.5" fill="currentColor" />)}
@@ -451,6 +453,20 @@ function TabDots({ v, id }: { v: number; id: string }) {
 /** MCP's glyph (Hamza, 6 Oct: "a better icon"): a hub with three spokes to
     three nodes, the connect-anything idea, in the same dot language as the
     other tabs rather than the diagonal scatter it had. */
+/** Workflows' glyph (Hamza, 7 Oct: "a better icon"): a small node graph,
+    two inputs feeding a step that feeds an output, in the same dot-and-line
+    language as the hub. */
+function WorkflowGlyph() {
+  return (
+    <svg className="pf-tab-dots" width="18" height="18" viewBox="0 0 18 18" aria-hidden>
+      <path d="M4.2 4.5C7 4.5 6.5 9 9 9M4.2 13.5C7 13.5 6.5 9 9 9M9 9h4.6" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" opacity="0.55" />
+      <circle cx="2.8" cy="4.5" r="1.7" fill="currentColor" />
+      <circle cx="2.8" cy="13.5" r="1.7" fill="currentColor" />
+      <rect x="7.2" y="7.2" width="3.6" height="3.6" rx="1" fill="currentColor" />
+      <circle cx="15.2" cy="9" r="1.9" fill="none" stroke="currentColor" strokeWidth="1.4" />
+    </svg>
+  );
+}
 function McpGlyph() {
   const spokes: [number, number][] = [[9, 2.6], [3.4, 12.2], [14.6, 12.2]];
   return (
@@ -464,6 +480,8 @@ function McpGlyph() {
 
 export function PlatformStrip() {
   const [tab, setTab] = useState(0);
+  /** Which side of the Integrations tab is showing. */
+  const [via, setVia] = useState<"mcp" | "plugins">("mcp");
   const tabs = useSlidingIndicator<HTMLButtonElement>(tab);
   const t = TABS[tab];
 
@@ -471,10 +489,13 @@ export function PlatformStrip() {
    * A deep link to #mcp lands on a tab here rather than a section.
    * The strip carries that id so the browser scrolls to it on its own; this
    * is what selects the matching tab, on load and on every later hash change.
+   * #mcp and #plugins open Integrations on that side.
    */
   useEffect(() => {
     const sync = () => {
-      const i = TABS.findIndex((x) => x.id === window.location.hash.slice(1));
+      const h = window.location.hash.slice(1);
+      if (h === "mcp" || h === "plugins") { setVia(h); setTab(TABS.findIndex((x) => x.id === "integrations")); return; }
+      const i = TABS.findIndex((x) => x.id === h);
       if (i >= 0) setTab(i);
     };
     sync();
@@ -483,10 +504,9 @@ export function PlatformStrip() {
   }, []);
 
   const stage =
-    t.kind === "mcp" ? <div className="pf-mcp"><McpPanel /></div>
+    t.kind === "integrations" ? (via === "mcp" ? <div className="pf-mcp"><McpPanel /></div> : <PluginHub />)
     : t.kind === "toolkit" ? <ToolkitStage />
     : t.kind === "studios" ? <StudiosStage />
-    : t.kind === "plugins" ? <PluginHub />
     : t.kind === "reel" ? <ImageReel key={t.id} videos={t.videos ?? []} />
     : <ClipPlayer videos={t.videos ?? []} audio={t.audio} />;
 
@@ -496,7 +516,7 @@ export function PlatformStrip() {
           and a lede, centred, above the tab row. */}
       <div className="pf-head">
         <BlurHeading className="h2 pf-h2" lead="Start wherever you work" />
-        <p className="lede mt-4">Start from an agent, the toolkit, a workflow, the MCP, a studio or a plugin. Every tool, every model, every format.</p>
+        <p className="lede mt-4">Start from an agent, the toolkit, a workflow or a studio, or bring it into your own tools over MCP and plugins.</p>
       </div>
       <div className="pf-tabs" role="tablist" aria-label="Platform" ref={tabs.containerRef as React.Ref<HTMLDivElement>}>
         <SlidingIndicator box={tabs.box} ready={tabs.ready} className="pf-tab-fill" />
@@ -518,6 +538,19 @@ export function PlatformStrip() {
         ))}
       </div>
 
+      {/* Integrations' two sides, as a small switch under the tab row. */}
+      {t.kind === "integrations" && (
+        <div className="pf-via" role="group" aria-label="MCP and Plugins" data-on={via}>
+          <span className="pf-via-thumb" aria-hidden />
+          {(["mcp", "plugins"] as const).map((v) => (
+            <button key={v} type="button" aria-pressed={via === v} className={`pf-via-btn ${via === v ? "pf-via-on" : ""}`} onClick={() => setVia(v)}>
+              {v === "mcp" ? "MCP" : "Plugins"}
+              {v === "mcp" && <span className="pf-via-new">New</span>}
+            </button>
+          ))}
+        </div>
+      )}
+
       {/* The product, in a quiet bordered container on a faint dot grid. */}
       <div className="pf-frame">
         <div className="pf-panel">
@@ -528,6 +561,45 @@ export function PlatformStrip() {
 
       <style>{`
         .pf { isolation: isolate; }
+        /* The MCP & Plugins switch (Hamza, 7 Oct: "make it better"): one
+           segmented control, a soft track with a raised thumb that slides
+           between two equal halves, and "New" as a small violet word rather
+           than a filled tag. */
+        .pf-via {
+          position: relative;
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          width: max-content;
+          margin: 16px auto 0;
+          padding: 4px;
+          border-radius: var(--radius-pill);
+          background: var(--track);
+        }
+        .pf-via-thumb {
+          position: absolute;
+          top: 4px; bottom: 4px; left: 4px;
+          width: calc(50% - 4px);
+          border-radius: var(--radius-pill);
+          background: var(--panel);
+          box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.06);
+          transition: transform var(--dur-med) var(--ease-out);
+        }
+        .pf-via[data-on="plugins"] .pf-via-thumb { transform: translateX(100%); }
+        .pf-via-btn {
+          position: relative;
+          display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+          height: 34px; min-width: 112px; padding: 0 16px;
+          border: 0; border-radius: var(--radius-pill);
+          background: transparent;
+          font: inherit; font-size: 14px; font-weight: 500;
+          color: var(--ink-3);
+          cursor: pointer;
+          transition: color var(--dur-fast) ease;
+        }
+        .pf-via-btn:hover, .pf-via-on { color: var(--ink-heading); }
+        .pf-via-new { font-size: 10.5px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--brand); }
+        [data-theme="dark"] .pf-via-new { color: var(--brand-soft); }
+        .pf-via-btn:focus-visible { outline: none; box-shadow: inset 0 0 0 1.5px var(--line-strong); }
         ${slidingIndicatorCss}
 
         /* Minimal tabs (Hamza, 6 Oct, to a reference): no track and no
