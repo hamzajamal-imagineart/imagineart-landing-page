@@ -51,7 +51,8 @@ export default function Page() {
       <SiteNav variant="onDark" theme="light" />
 
       <main>
-        <HeroGlobeSection />
+        {/* Always open; opens further after 1s of hover (Hamza, 7 Oct). */}
+        <HeroGlobeSection alwaysOpen />
         <Partners />
         <Suite />
         {/* Pastel washes behind Outcomes and Models (Hamza, 7 Oct). */}

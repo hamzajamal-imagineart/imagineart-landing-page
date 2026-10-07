@@ -85,9 +85,9 @@ export const NAV: NavEntry[] = [
             {
               heading: "Create",
               items: [
-                { title: "AI Image Generator", description: "Create images from text with the top models", href: `${IA}/ai-image-generator` },
-                { title: "AI Video Generator", description: "Turn prompts and images into video", href: `${IA}/ai-video-generator` },
-                { title: "AI Tools", description: "Editing, upscaling and effects in one place", badge: "Soon" }, // TODO: link when the page is live
+                { title: "AI Image Generator", description: "Images from text, top models", href: `${IA}/ai-image-generator` },
+                { title: "AI Video Generator", description: "Prompts and images into video", href: `${IA}/ai-video-generator` },
+                { title: "AI Tools", description: "Edit, upscale and add effects", badge: "Soon" }, // TODO: link when the page is live
               ],
             },
           ],
@@ -97,11 +97,11 @@ export const NAV: NavEntry[] = [
             {
               heading: "Build",
               items: [
-                { title: "Creative Agent", description: "An AI agent that plans and makes the work", href: `${IA}/imagine-computer` },
-                { title: "Workflows", description: "Chain models into repeatable pipelines", href: `${IA}/business/workflows` },
+                { title: "Creative Agent", description: "An agent that plans and creates", href: `${IA}/imagine-computer` },
+                { title: "Workflows", description: "Repeatable model pipelines", href: `${IA}/business/workflows` },
                 {
                   title: "Integrations",
-                  description: "Use Imagine inside the tools you already work in",
+                  description: "Imagine inside your tools",
                   links: [
                     { label: "MCP", href: `${IA}/mcp` },
                     { label: "Plugins", href: `${IA}/plugins` },
@@ -116,7 +116,7 @@ export const NAV: NavEntry[] = [
             {
               heading: "Studios",
               items: [
-                { title: "AI Creative Studios", description: "Purpose-built studios for every format", badge: "Soon" }, // TODO: link when the page is live
+                { title: "AI Creative Studios", description: "A studio for every format", badge: "Soon" }, // TODO: link when the page is live
               ],
               links: [
                 { label: "Audio Studio", href: `${IA}/audio-studio` },
@@ -149,9 +149,9 @@ export const NAV: NavEntry[] = [
             {
               heading: "Business",
               items: [
-                { title: "Enterprise", description: "Security, admin controls and support for large teams", href: `${IA}/business` },
-                { title: "Solutions", description: "Built for marketing, sales, agencies and more", href: `${IA}/business/solutions` },
-                { title: "Case Studies", description: "How teams make more creative with Imagine", href: `${IA}/business/case-studies` },
+                { title: "Enterprise", description: "Security and control at scale", href: `${IA}/business` },
+                { title: "Solutions", description: "For marketing, sales and agencies", href: `${IA}/business/solutions` },
+                { title: "Case Studies", description: "Results from real teams", href: `${IA}/business/case-studies` },
               ],
             },
           ],
@@ -168,10 +168,10 @@ export const NAV: NavEntry[] = [
             {
               heading: "Resources",
               items: [
-                { title: "Blog", description: "Tutorials, creative tips and AI trends", href: `${IA}/insights` },
-                { title: "Announcements", description: "Launches, new models and product updates", href: `${IA}/announcements` },
+                { title: "Blog", description: "Tutorials, tips and AI trends", href: `${IA}/insights` },
+                { title: "Announcements", description: "Launches and product updates", href: `${IA}/announcements` },
                 // Same page as Business > Case Studies, cross-listed.
-                { title: "Case Studies", description: "How teams make more creative with Imagine", href: `${IA}/business/case-studies` },
+                { title: "Case Studies", description: "Results from real teams", href: `${IA}/business/case-studies` },
               ],
             },
           ],
@@ -188,8 +188,8 @@ export const NAV: NavEntry[] = [
             {
               heading: "Collaborate",
               items: [
-                { title: "Creators Program", description: "Create, share and get rewarded for your work", href: `${IA}/creators-program` },
-                { title: "Affiliate Program", description: "Earn by bringing new creators to Imagine", href: `${IA}/affiliate-program` },
+                { title: "Creators Program", description: "Get rewarded for your work", href: `${IA}/creators-program` },
+                { title: "Affiliate Program", description: "Earn by referring creators", href: `${IA}/affiliate-program` },
               ],
             },
           ],

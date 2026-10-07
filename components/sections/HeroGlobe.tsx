@@ -113,6 +113,12 @@ const SPREAD_DIST = 24;
 const OPEN_PUSH = 16, OPEN_REACH = 1.15, OPEN_WIDE = 1.5, OPEN_TAU = 0.45;
 /** The pointer has to stay over the hero this long (s) before it opens. */
 const OPEN_DELAY = 0.5;
+/* Always open (home hero, Hamza, 7 Oct): the globe sits opened at rest, as it
+   used to only on hover. Once the pointer has stayed over the hero for
+   BLOOM_DELAY seconds it parts further, the push growing by BLOOM_EXTRA ×
+   (16 → 24 units), eased with BLOOM_TAU, and eases back when the pointer
+   leaves. No further opening on touch screens or under reduced motion. */
+const BLOOM_DELAY = 1, BLOOM_EXTRA = 0.5, BLOOM_TAU = 0.6;
 /* Other shapes for the hero variants (Hamza, 7 Oct). The same tiles,
    billboarding, depth shading, hover and opening; only where tiles sit
    changes. `radius` is the shape's reach, which the depth shading and the
@@ -328,6 +334,7 @@ export function HeroGlobe({
   shape = "globe",
   parted,
   morph = false,
+  alwaysOpen = false,
 }: {
   /** Stills for the tiles. Changing the list retextures the globe in place. */
   images?: string[];
@@ -351,12 +358,14 @@ export function HeroGlobe({
   parted?: { push: number; wide: number };
   /** Cards at the edges that become the globe on hover (/hero-7). */
   morph?: boolean;
+  /** Opened from the start, then opened further after BLOOM_DELAY (home). */
+  alwaysOpen?: boolean;
 } = {}) {
   const hostRef = useRef<HTMLDivElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   /** The scene's "swap the media" hook, set once the scene exists. */
   const applyRef = useRef<((images: string[], clips: string[]) => void) | null>(null);
-  const initial = useRef({ images, clips, distance, light, shape, parted, morph });
+  const initial = useRef({ images, clips, distance, light, shape, parted, morph, alwaysOpen });
   const softRef = useRef(softCentre);
   softRef.current = softCentre;
 
@@ -365,7 +374,8 @@ export function HeroGlobe({
     if (!host || !canvas) return;
     const { images: images0, clips: clips0, distance: distance0, shape: shape0 } = initial.current;
     const form = SHAPES[shape0];
-    const held = !!initial.current.parted;
+    const held = !!initial.current.parted || initial.current.alwaysOpen;
+    const bloomOn = initial.current.alwaysOpen && !initial.current.parted;
     const morph = initial.current.morph;
     const tanHalf = Math.tan((FOV / 2) * Math.PI / 180);
     const ray = new THREE.Vector3(), cardAt = new THREE.Vector3();
@@ -537,7 +547,7 @@ export function HeroGlobe({
     const camDir = new THREE.Vector3(), toCam = new THREE.Vector3(), globeWorld = new THREE.Vector3(), tileWorld = new THREE.Vector3(), tileDir = new THREE.Vector3(), proj = new THREE.Vector3();
     const globeQuatInv = new THREE.Quaternion(), globeQuat = new THREE.Quaternion();
     const camRight = new THREE.Vector3(), camUp = new THREE.Vector3(), lat = new THREE.Vector3(), pos = new THREE.Vector3();
-    let open = 0, insideFor = 0, lastOpen = -1;
+    let open = 0, insideFor = 0, lastOpen = -1, bloom = 0;
     const stage = (host.closest("section") as HTMLElement | null) ?? host;
     let disposed = false;
 
@@ -568,6 +578,9 @@ export function HeroGlobe({
       insideFor = inside ? insideFor + step : 0;
       open = held ? 1 : open + ((insideFor >= (morph ? MORPH_DELAY : OPEN_DELAY) ? 1 : 0) - open) * (1 - Math.exp(-step / OPEN_TAU));
       const openE = open * open * (3 - 2 * open);
+      // Always-open globe: part further after BLOOM_DELAY of hover.
+      if (bloomOn) bloom += ((insideFor >= BLOOM_DELAY ? 1 : 0) - bloom) * (1 - Math.exp(-step / BLOOM_TAU));
+      const bloomE = bloom * bloom * (3 - 2 * bloom);
       // Tell the section how open the globe is (--globe-open, 0–1), so
       // overlays behind the copy can clear as it parts (Hamza, 7 Oct).
       if (Math.abs(openE - lastOpen) > 0.002 || (openE === 0 && lastOpen !== 0)) {
@@ -659,7 +672,7 @@ export function HeroGlobe({
           pos.applyMatrix4(globe.matrixWorld);
           lat.subVectors(pos, globeWorld);
           const lx = lat.dot(camRight), ly = lat.dot(camUp);
-          if (held) {
+          if (held && !bloomOn) {
             // Parted for good: sideways only, so the tiles gather into two
             // full-height wings. The span 0..reach is squeezed into
             // push..reach, so nothing lands inside the clear band and the
@@ -670,7 +683,7 @@ export function HeroGlobe({
           } else {
             const r = Math.sqrt((lx / openWide) ** 2 + ly * ly) || 0.0001;
             const f = Math.max(0, 1 - r / (form.radius * OPEN_REACH));
-            const push = openE * openPush * f;
+            const push = openE * openPush * f * (1 + BLOOM_EXTRA * bloomE);
             pos.addScaledVector(camRight, (lx / r) * push);
             pos.addScaledVector(camUp, (ly / r) * push);
           }

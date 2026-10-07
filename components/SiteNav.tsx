@@ -215,6 +215,9 @@ export function SiteNav({
   theme?: PageTheme;
 } = {}) {
   const [scrolled, setScrolled] = useState(false);
+  /** A dark hero (the page's first section, data-theme="dark") is still
+      under the bar. While it is, the menus go dark to match it. */
+  const [overDarkHero, setOverDarkHero] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   /** Label of the open desktop dropdown, or null. */
   const [openPanel, setOpenPanel] = useState<string | null>(null);
@@ -227,7 +230,11 @@ export function SiteNav({
   const openedByHover = useRef(false);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 32);
+    const onScroll = () => {
+      setScrolled(window.scrollY > 32);
+      const hero = document.querySelector<HTMLElement>('main > [data-theme="dark"]:first-child');
+      setOverDarkHero(!!hero && hero.getBoundingClientRect().bottom > 64);
+    };
     window.addEventListener("scroll", onScroll, { passive: true });
     onScroll();
     return () => window.removeEventListener("scroll", onScroll);
@@ -286,6 +293,10 @@ export function SiteNav({
   };
 
   const compact = scrolled;
+  /* Menus are dark over a dark hero only (Hamza, 7 Oct); once the next
+     section reaches the bar they return to the page's theme. Local change to
+     the kit's file — fold it back. */
+  const menuTheme: PageTheme = overDarkHero ? "dark" : theme;
   const panelEntry = NAV.find((e) => e.label === openPanel && e.panel);
   const darkTheme = compact || variant === "onDark";
 
@@ -295,9 +306,10 @@ export function SiteNav({
   // guidelines-for-landing-page.
   const barTop = 0;
   const barHeight = 64;
-  /** Space between the bar and the dropdown (Hamza, 7 Oct: it looked
-      attached). The panel's invisible bridge spans it, so hover survives. */
-  const PANEL_GAP = 10;
+  /** Space between the bar and the dropdown. 0 since the panel went full
+      width (7 Oct): a full-width sheet reads as part of the bar, and a strip
+      of page between them looked like a gap. The invisible bridge stays. */
+  const PANEL_GAP = 0;
 
   const themeVars = (
     darkTheme
@@ -378,11 +390,48 @@ export function SiteNav({
         .mm-scope ::selection { background: var(--mm-sel-bg); color: var(--mm-sel-fg); }
 
         /* ── Dropdown panel ───────────────────────────────────── */
-        .mm-panel { position: fixed; left: 0; right: 0; margin-inline: auto; width: max-content; max-width: calc(100vw - 32px); z-index: 59; display: flex; align-items: flex-start; gap: 16px; padding: 16px; box-sizing: border-box; background: var(--mm-surface); -webkit-backdrop-filter: blur(32px) saturate(160%); backdrop-filter: blur(32px) saturate(160%); border: 1px solid var(--mm-border); border-radius: 18px; box-shadow: var(--mm-shadow); animation: navMenuIn 0.22s ${NAV_EASE} both; transition: top ${NAV_DURATION} ${NAV_EASE}; font-family: ${FONT}; }
+        /* Full width (Hamza, 7 Oct): the panel spans the window edge to edge,
+           flush under the bar, with its content centred and held to the page
+           container's gutters. Local change to the kit's file — fold it back. */
+        .mm-panel { position: fixed; left: 0; right: 0; width: 100%; z-index: 59; display: block; padding: 32px max(32px, calc((100vw - 1240px) / 2 + 32px)) 40px; box-sizing: border-box; background: var(--mm-surface); -webkit-backdrop-filter: blur(32px) saturate(160%); backdrop-filter: blur(32px) saturate(160%); border: 0; border-bottom: 1px solid var(--mm-divider); border-radius: 0; box-shadow: var(--mm-shadow); animation: navMenuIn 0.22s ${NAV_EASE} both; transition: top ${NAV_DURATION} ${NAV_EASE}; font-family: ${FONT}; }
         /* Invisible bridge over the gap to the bar, so hover survives the trip down. */
         .mm-panel::before { content: ""; position: absolute; left: 0; right: 0; top: -34px; height: 34px; }
         @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) { .mm-panel { background: var(--mm-solid); } }
         .mm-backdrop { position: fixed; inset: 0; z-index: 58; }
+
+        /* ── Full-width sheet layout (7 Oct) ─────────────────────
+           Content starts on the logo's left edge rather than floating in the
+           middle. Columns sit well apart, each after the first set off by a
+           hairline; headings are small spaced caps; a feature card is pushed
+           to the container's right edge. Single-list menus run their items
+           across the row instead of down one narrow column. Scoped to
+           .mm-panel so the mobile accordion, which shares these pieces, is
+           untouched. Local change to the kit's file — fold it back. */
+        .mm-inner { display: flex; align-items: stretch; width: 100%; }
+        .mm-panel .mm-col { width: 248px; gap: 28px; }
+        /* Columns after the first carry the 40px gutter inside their own box,
+           so they are 40px wider to keep the same content width. */
+        .mm-panel .mm-col + .mm-col { width: 288px; margin-left: 40px; padding-left: 40px; border-left: 1px solid var(--mm-divider); }
+        .mm-panel .mm-col-narrow { width: 200px; }
+        .mm-panel .mm-col-divider { width: 248px; padding-right: 0; border-right: 0; }
+        .mm-panel .mm-group { gap: 4px; }
+        .mm-panel .mm-heading { margin-bottom: 8px; font-size: 11px; line-height: 16px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; }
+        /* Compact items (7 Oct): more menu entries are coming, so titles drop
+           to 14px, descriptions to one 12px line (clipped with an ellipsis
+           if a future one runs long), and items sit tighter. */
+        .mm-panel .mm-item { gap: 1px; padding: 6px 10px; }
+        .mm-panel .mm-item-title { font-size: 14px; line-height: 20px; }
+        .mm-panel .mm-desc { font-size: 12px; line-height: 17px; max-width: none; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .mm-panel .mm-sublinks { margin-top: 4px; }
+        .mm-panel .mm-sublink, .mm-panel .mm-link { font-size: 13px; }
+        .mm-panel .mm-cards { margin-left: auto; padding-left: 40px; }
+
+        .mm-panel-single .mm-col, .mm-panel-single .mm-col + .mm-col { width: auto; flex: 1; }
+        .mm-panel-single .mm-group { display: grid; grid-template-columns: repeat(auto-fill, 264px); column-gap: 40px; row-gap: 4px; }
+        .mm-panel-single .mm-heading { grid-column: 1 / -1; }
+        .mm-panel-single .mm-item { position: relative; }
+        .mm-panel-single .mm-item + .mm-item::before { content: ""; position: absolute; left: -20px; top: 8px; bottom: 8px; width: 1px; background: var(--mm-divider); }
+        .mm-panel-single .mm-desc { max-width: none; }
 
         .mm-col { display: flex; flex-direction: column; gap: 14px; width: 228px; flex-shrink: 0; }
         .mm-col-narrow { width: 196px; }
@@ -582,7 +631,7 @@ export function SiteNav({
         </button>
       </nav>
 
-      {/* Desktop dropdown: hangs 10px under the bar; the backdrop closes it on an outside click */}
+      {/* Desktop dropdown: full width, flush under the bar; the backdrop closes it on an outside click */}
       {panelEntry?.panel && (
         <>
           <div className="mm-backdrop" onClick={() => setOpenPanel(null)} aria-hidden />
@@ -591,8 +640,10 @@ export function SiteNav({
             id="nav-dropdown"
             role="region"
             aria-label={panelEntry.label}
-            className="mm-scope mm-panel"
-            data-menu-theme={theme}
+            className={`mm-scope mm-panel${
+              panelEntry.panel.columns.length === 1 && !panelEntry.panel.cards ? " mm-panel-single" : ""
+            }`}
+            data-menu-theme={menuTheme}
             // Tucked up under the bar (Hamza, 6 Oct: less space between the
             // item and its panel): the bar is 64 tall and its items end about
             // 10px above its foot, so −4 puts the panel 6px under the item.
@@ -601,7 +652,9 @@ export function SiteNav({
             onPointerEnter={hoverKeep}
             onPointerLeave={hoverClose}
           >
-            <Panel panel={panelEntry.panel} onNavigate={closeAll} />
+            <div className="mm-inner">
+              <Panel panel={panelEntry.panel} onNavigate={closeAll} />
+            </div>
           </div>
         </>
       )}
@@ -610,7 +663,7 @@ export function SiteNav({
       {menuOpen && (
         <div
           className="mm-scope"
-          data-menu-theme={theme}
+          data-menu-theme={menuTheme}
           role="dialog"
           aria-modal="true"
           aria-label="Menu"
