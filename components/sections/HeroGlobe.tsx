@@ -301,6 +301,7 @@ export function HeroGlobe({
   softCentre,
   light = false,
   shape = "globe",
+  parted,
 }: {
   /** Stills for the tiles. Changing the list retextures the globe in place. */
   images?: string[];
@@ -317,12 +318,17 @@ export function HeroGlobe({
   light?: boolean;
   /** Where the tiles sit: the globe, a spiral disc, or a streaming hourglass. */
   shape?: GlobeShape;
+  /** Held open all the time (/hero-6): the tiles part sideways into two
+      wings either side of the copy, leaving a clear band `push` units each
+      side of centre; tiles out to `wide` × the radius are squeezed outward.
+      Hover no longer changes it. */
+  parted?: { push: number; wide: number };
 } = {}) {
   const hostRef = useRef<HTMLDivElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   /** The scene's "swap the media" hook, set once the scene exists. */
   const applyRef = useRef<((images: string[], clips: string[]) => void) | null>(null);
-  const initial = useRef({ images, clips, distance, light, shape });
+  const initial = useRef({ images, clips, distance, light, shape, parted });
   const softRef = useRef(softCentre);
   softRef.current = softCentre;
 
@@ -331,6 +337,8 @@ export function HeroGlobe({
     if (!host || !canvas) return;
     const { images: images0, clips: clips0, distance: distance0, shape: shape0 } = initial.current;
     const form = SHAPES[shape0];
+    const held = !!initial.current.parted;
+    const openPush = initial.current.parted?.push ?? OPEN_PUSH, openWide = initial.current.parted?.wide ?? OPEN_WIDE;
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const hover = window.matchMedia("(hover: hover)").matches;
 
@@ -524,7 +532,7 @@ export function HeroGlobe({
       // Open while the pointer is over the hero, eased both ways.
       const inside = hover && !reduced && Math.abs(pointer.x) <= 1 && Math.abs(pointer.y) <= 1;
       insideFor = inside ? insideFor + step : 0;
-      open += ((insideFor >= OPEN_DELAY ? 1 : 0) - open) * (1 - Math.exp(-step / OPEN_TAU));
+      open = held ? 1 : open + ((insideFor >= OPEN_DELAY ? 1 : 0) - open) * (1 - Math.exp(-step / OPEN_TAU));
       const openE = open * open * (3 - 2 * open);
       // Tell the section how open the globe is (--globe-open, 0–1), so
       // overlays behind the copy can clear as it parts (Hamza, 7 Oct).
@@ -596,11 +604,21 @@ export function HeroGlobe({
           pos.applyMatrix4(globe.matrixWorld);
           lat.subVectors(pos, globeWorld);
           const lx = lat.dot(camRight), ly = lat.dot(camUp);
-          const r = Math.sqrt((lx / OPEN_WIDE) ** 2 + ly * ly) || 0.0001;
-          const f = Math.max(0, 1 - r / (form.radius * OPEN_REACH));
-          const push = openE * OPEN_PUSH * f;
-          pos.addScaledVector(camRight, (lx / r) * push);
-          pos.addScaledVector(camUp, (ly / r) * push);
+          if (held) {
+            // Parted for good: sideways only, so the tiles gather into two
+            // full-height wings. The span 0..reach is squeezed into
+            // push..reach, so nothing lands inside the clear band and the
+            // tiles keep their order.
+            const reach = form.radius * openWide;
+            const f = Math.max(0, 1 - Math.abs(lx) / reach);
+            pos.addScaledVector(camRight, (lx < 0 ? -1 : 1) * openPush * f);
+          } else {
+            const r = Math.sqrt((lx / openWide) ** 2 + ly * ly) || 0.0001;
+            const f = Math.max(0, 1 - r / (form.radius * OPEN_REACH));
+            const push = openE * openPush * f;
+            pos.addScaledVector(camRight, (lx / r) * push);
+            pos.addScaledVector(camUp, (ly / r) * push);
+          }
           globe.worldToLocal(pos);
         }
         tile.group.position.copy(pos);

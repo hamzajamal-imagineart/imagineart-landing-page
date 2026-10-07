@@ -11,6 +11,9 @@ const NO_CLIPS: string[] = [];
 const GLOBE_SOFT = { rx: 0.62, ry: 0.5, dim: 0.6, blur: 3 };
 const SPIRAL_SOFT = { rx: 0.62, ry: 0.5, dim: 0, blur: 3 };
 const HOURGLASS_SOFT = { rx: 0.62, ry: 0.5, dim: 0.4, blur: 0 };
+/** /hero-6: the globe held open in two wings, the copy on clear ground
+    between them, so no block and no dimming (Hamza, 7 Oct). */
+const PARTED = { push: 30, wide: 2 };
 /** How dark the black block behind the copy is (0–1). */
 const VEIL_ALPHA = 0.85;
 /** The glow behind the CTA: size as % of the button, and its strength. */
@@ -34,7 +37,7 @@ const CTA_GLOW_W = 140, CTA_GLOW_H = 220, CTA_GLOW_ALPHA = 0.35;
  *  `light` (Hamza, 7 Oct, /hero-2): the same hero on the light page, with
  *  ink dots, ink type, a white block behind the copy and tiles that fade to
  *  white rather than black. */
-export function HeroGlobeSection({ light = false, shape = "globe" }: { light?: boolean; shape?: GlobeShape } = {}) {
+export function HeroGlobeSection({ light = false, shape = "globe", parted = false }: { light?: boolean; shape?: GlobeShape; parted?: boolean } = {}) {
   return (
     <>
       <section id="top" className={`hc${light ? " hc-light" : ""}`} data-theme={light ? undefined : "dark"}>
@@ -43,7 +46,7 @@ export function HeroGlobeSection({ light = false, shape = "globe" }: { light?: b
         <HeroDots className="hs-dots" />
 
         <div className="hc-stage" aria-hidden>
-          <HeroGlobe clips={NO_CLIPS} distance={68} softCentre={shape === "hourglass" ? HOURGLASS_SOFT : shape === "spiral" ? SPIRAL_SOFT : GLOBE_SOFT} light={light} shape={shape} />
+          <HeroGlobe clips={NO_CLIPS} distance={68} softCentre={parted ? undefined : shape === "hourglass" ? HOURGLASS_SOFT : shape === "spiral" ? SPIRAL_SOFT : GLOBE_SOFT} light={light} shape={shape} parted={parted ? PARTED : undefined} />
           {/* A feathered black block behind the copy, over the globe's own
               dimming (Hamza, 7 Oct: no blur on the globe). */}
           {/* The spiral has no block behind the copy (Hamza, 7 Oct): its
@@ -51,7 +54,7 @@ export function HeroGlobeSection({ light = false, shape = "globe" }: { light?: b
           {/* A feathered dark block behind the copy on the globe and the
               hourglass (Hamza, 7 Oct), over the tiles' own blur and dimming;
               on the globe it clears as the globe opens. */}
-          {shape !== "spiral" && <span className={`hc-veil${shape === "globe" ? " hc-veil-opens" : ""}`} />}
+          {shape !== "spiral" && !parted && <span className={`hc-veil${shape === "globe" ? " hc-veil-opens" : ""}`} />}
           <span className="hc-topband" />
         </div>
 

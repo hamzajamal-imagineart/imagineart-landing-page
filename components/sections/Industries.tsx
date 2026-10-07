@@ -12,20 +12,9 @@ import { MediaCard, MediaCardStyles } from "@/components/MediaCard";
  *
  * <CreativeTools> is pulled, not deleted.
  */
-/* Cards deep-link into the template gallery, filtered to the closest category
-   it offers. The seven slugs are confirmed, not derived from the chip labels —
-   two of them do not follow from the label at all: "Fashion & Apparel" is
-   ?category=fashion and "Fast Food" is ?category=fastfood, unhyphenated.
-
-     cinematic · advertising · fashion · branding · fmcg · fastfood · editing
-
-   Furniture and Electronics have no honest match among the seven, so they go
-   to the gallery unfiltered rather than to a category that misdescribes them. */
-const TEMPLATES_HREF = "https://www.imagine.art/enterprise/template";
-
-const templateHref = (category?: string) =>
-  category ? `${TEMPLATES_HREF}?category=${category}` : TEMPLATES_HREF;
-
+/* The cards are not links (Hamza, 7 Oct: they won't redirect). They used to
+   deep-link into the template gallery (enterprise/template?category=…); the
+   `category` on each entry is that slug, kept in case the links come back. */
 const INDUSTRIES = [
   /* Card copy rewritten as plain sentences for an enterprise reader
      (Hamza, 7 Oct): what the team makes, then why it matters, with the
@@ -75,7 +64,8 @@ export function Industries() {
         {INDUSTRIES.map((i, n) => (
           <MediaCard
             key={i.name}
-            href={templateHref(i.category)}
+            /* Not a link (Hamza, 7 Oct): the cards don't redirect, so no
+               href, which also drops the arrow button. */
             video={i.video}
             title={i.name}
             body={i.body}

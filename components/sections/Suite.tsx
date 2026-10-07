@@ -87,13 +87,15 @@ const TOOLS: Tool[] = [
   },
 ];
 
-/* A grainy gradient behind every card (Hamza, 7 Oct), all in card 1's
-   style: a near-black ground with one soft beam of colour rising from the
-   foot. Card 1 keeps its teal-and-orange still; the other eight were
-   generated in ImagineArt to match it in eight colours, so the rail reads as
-   one family. All dark, so the type stays white. */
-const CARD_BG = ["bg-1", "beam-violet", "beam-coral", "beam-lime", "beam-cyan", "beam-magenta", "beam-gold", "beam-pink", "beam-ice"]
-  .map((n) => `/media/suite/${n}.jpg`);
+/* A grainy gradient behind every card (Hamza, 7 Oct), after two reference
+   wallpapers: one muted colour filling the card, lighter low and toward the
+   middle, falling to near-black at the top and corners, with fine even
+   grain. Nine colours, generated in ImagineArt as one set so the rail reads
+   as one family; all dark at the top, where the white title sits. */
+const CARD_BG = ["teal", "terracotta", "indigo", "sage", "plum", "ochre", "rose", "slate", "olive"]
+  .map((n) => `/media/suite/field-${n}.jpg`);
+/** A flat black wash over each still, to sit them a step darker (Hamza, 7 Oct). */
+const CARD_DARKEN = 0.52;
 
 export function Suite() {
   const trackRef = useRef<HTMLDivElement | null>(null);
@@ -137,7 +139,7 @@ export function Suite() {
             rel="noopener noreferrer"
             aria-label={t.title}
             className={`suite-card suite-tone-${(i % 5) + 1} suite-bg`}
-            style={CARD_BG[i] ? { backgroundImage: `url(${withBasePath(CARD_BG[i])})` } : undefined}
+            style={CARD_BG[i] ? { backgroundImage: `linear-gradient(rgba(0, 0, 0, ${CARD_DARKEN}), rgba(0, 0, 0, ${CARD_DARKEN})), url(${withBasePath(CARD_BG[i])})` } : undefined}
           >
             <h3 className="suite-card-title">{t.title}</h3>
             <p className="suite-card-body">{t.body}</p>
