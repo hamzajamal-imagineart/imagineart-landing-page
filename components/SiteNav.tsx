@@ -295,6 +295,9 @@ export function SiteNav({
   // guidelines-for-landing-page.
   const barTop = 0;
   const barHeight = 64;
+  /** Space between the bar and the dropdown (Hamza, 7 Oct: it looked
+      attached). The panel's invisible bridge spans it, so hover survives. */
+  const PANEL_GAP = 10;
 
   const themeVars = (
     darkTheme
@@ -594,7 +597,7 @@ export function SiteNav({
             // item and its panel): the bar is 64 tall and its items end about
             // 10px above its foot, so −4 puts the panel 6px under the item.
             // Local change to the kit's file — fold it back.
-            style={{ top: barTop + barHeight - 4 }}
+            style={{ top: barTop + barHeight + PANEL_GAP }}
             onPointerEnter={hoverKeep}
             onPointerLeave={hoverClose}
           >

@@ -169,9 +169,10 @@ type Tab = {
 };
 
 const TABS: Tab[] = [
+  // Agents first (Hamza, 7 Oct).
+  { id: "agents", label: "Agents", kind: "clip", videos: [AGENT_CLIP], audio: true },
   // One campaign video (Hamza, 6 Oct), streamed from the product's CDN.
   { id: "creative", label: "Creative Suite", kind: "clip", videos: ["https://imagine.animagic.art/imagine-one/home/campaigns/gpt-2.5.mp4"] },
-  { id: "agents", label: "Agents", kind: "clip", videos: [AGENT_CLIP], audio: true },
   { id: "mcp", label: "MCP", isNew: true, kind: "mcp" },
   // Ad, Fashion and Film Studio footage with chips to switch (Hamza, 7 Oct).
   { id: "studios", label: "Studios", kind: "studios" },
@@ -486,7 +487,7 @@ export function PlatformStrip() {
           and a lede, centred, above the tab row. */}
       <div className="pf-head">
         <BlurHeading className="h2 pf-h2" lead="Start wherever you work" />
-        <p className="lede mt-4">Start from the suite, an agent, the MCP, a studio or a plugin. Every tool, every model, every format.</p>
+        <p className="lede mt-4">Start from an agent, the suite, the MCP, a studio or a plugin. Every tool, every model, every format.</p>
       </div>
       <div className="pf-tabs" role="tablist" aria-label="Platform" ref={tabs.containerRef as React.Ref<HTMLDivElement>}>
         <SlidingIndicator box={tabs.box} ready={tabs.ready} className="pf-tab-fill" />
@@ -562,6 +563,11 @@ export function PlatformStrip() {
           transition: color 220ms ease;
         }
         .pf-tab:hover, .pf-tab-on, .pf-tab-on:hover { color: var(--ink-heading); }
+        /* Keyboard focus (Hamza, 7 Oct: the browser's black outline was
+           clipped by the scrolling row): a soft inset ring in the line colour
+           instead, inside the tab so nothing cuts it off. */
+        .pf-tab:focus { outline: none; }
+        .pf-tab:focus-visible { outline: none; color: var(--ink-heading); box-shadow: inset 0 0 0 1.5px var(--line-strong); }
         .pf-tab-dots { flex: 0 0 auto; display: block; }
         /* Violet tint, not ink (Hamza, 24 Sep, to a reference): the one
            colour in the strip, so it reads as a flag rather than a label.

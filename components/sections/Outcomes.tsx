@@ -18,11 +18,9 @@ import { START_HREF } from "@/lib/links";
  * The scrim is heavier than the frame's 25%: white type over a photograph
  * needs a floor under it, not a tint.
  *
- * Studio marks (Hamza, 6 Oct): the cards a studio serves carry its white
- * wordmark in the top-left corner — Ad Studio on Advertising, Fashion Studio
- * on Product shots, Film Studio on Filmmaking — over a light scrim at the
- * top so the mark holds on a bright image. The marks are the ones the
- * (now unlisted) Studios sections use.
+ * Studio marks: the cards carried studio wordmarks top-left until 7 Oct
+ * (Hamza: removed). A card can still take an optional `logo`, which brings
+ * its own light scrim at the top.
  */
 type Logo = { src: string; alt: string; h: number };
 const CARDS: { title: string; body: string; image: string; logo?: Logo }[] = [
@@ -30,13 +28,11 @@ const CARDS: { title: string; body: string; image: string; logo?: Logo }[] = [
     title: "Advertising",
     body: "Brief to final asset. No vendor chain, no waiting. Just the work.",
     image: "/media/outcomes/advertising.jpg",
-    logo: { src: "/media/studios/logos/ad-studio-white.svg", alt: "Ad Studio", h: 24 },
   },
   {
     title: "Product shots",
     body: "AI-powered photoshoots. No studio. No crew. No scheduling.",
     image: "/media/outcomes/product.jpg",
-    logo: { src: "/media/studios/logos/fashion-studio-white.svg", alt: "Fashion Studio", h: 32 },
   },
   { title: "Brand campaigns", body: "On-brand visuals, video, and audio at any scale, any format.", image: "/media/outcomes/brand.jpg" },
 ];
@@ -47,7 +43,6 @@ const WIDE = {
   /* Footage behind the card (Hamza, 7 Oct): the Film Studio clip, streamed
      from the same CDN the old studio reel used, with the still as poster. */
   video: "https://imagine.animagic.art/imagine-one/film-studio/video/27.mp4",
-  logo: { src: "/media/studios/logos/film-studio.png", alt: "Film Studio", h: 32 },
 };
 
 function Card({ title, body, image, video, logo, wide }: { title: string; body: string; image: string; video?: string; logo?: Logo; wide?: boolean }) {
