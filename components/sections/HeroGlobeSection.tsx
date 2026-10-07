@@ -1,10 +1,16 @@
 import { START_HREF } from "@/lib/links";
 import { PlatformStrip } from "@/components/sections/Platform";
-import { HeroGlobe } from "@/components/sections/HeroGlobe";
+import { HeroGlobe, type GlobeShape } from "@/components/sections/HeroGlobe";
 import { HeroDots } from "@/components/sections/HeroDots";
 
 /** Stills only on the globe, no video (Hamza, 7 Oct). */
 const NO_CLIPS: string[] = [];
+/** Tiles behind the copy (Hamza, 7 Oct): on the globe blurred and darkened
+    (both clear as it opens), on the spiral only blurred, on the hourglass
+    dimmed under its block. */
+const GLOBE_SOFT = { rx: 0.62, ry: 0.5, dim: 0.6, blur: 3 };
+const SPIRAL_SOFT = { rx: 0.62, ry: 0.5, dim: 0, blur: 3 };
+const HOURGLASS_SOFT = { rx: 0.62, ry: 0.5, dim: 0.4, blur: 0 };
 /** How dark the black block behind the copy is (0–1). */
 const VEIL_ALPHA = 0.85;
 /** The glow behind the CTA: size as % of the button, and its strength. */
@@ -23,10 +29,12 @@ const CTA_GLOW_W = 140, CTA_GLOW_H = 220, CTA_GLOW_ALPHA = 0.35;
  * token inside it (page colour, inks, tile) is the dark set while the nav's
  * scrolled state, the platform strip and the rest stay light.
  */
-/** `light` (Hamza, 7 Oct, /hero-2): the same hero on the light page, with
+/** `shape` picks the tile arrangement: the globe (home), a spiral
+ *  (/hero-3) or a streaming hourglass (/hero-4).
+ *  `light` (Hamza, 7 Oct, /hero-2): the same hero on the light page, with
  *  ink dots, ink type, a white block behind the copy and tiles that fade to
  *  white rather than black. */
-export function HeroGlobeSection({ light = false }: { light?: boolean } = {}) {
+export function HeroGlobeSection({ light = false, shape = "globe" }: { light?: boolean; shape?: GlobeShape } = {}) {
   return (
     <>
       <section id="top" className={`hc${light ? " hc-light" : ""}`} data-theme={light ? undefined : "dark"}>
@@ -35,10 +43,15 @@ export function HeroGlobeSection({ light = false }: { light?: boolean } = {}) {
         <HeroDots className="hs-dots" />
 
         <div className="hc-stage" aria-hidden>
-          <HeroGlobe clips={NO_CLIPS} distance={68} softCentre={{ rx: 0.62, ry: 0.5, dim: 0.4, blur: 0 }} light={light} />
+          <HeroGlobe clips={NO_CLIPS} distance={68} softCentre={shape === "hourglass" ? HOURGLASS_SOFT : shape === "spiral" ? SPIRAL_SOFT : GLOBE_SOFT} light={light} shape={shape} />
           {/* A feathered black block behind the copy, over the globe's own
               dimming (Hamza, 7 Oct: no blur on the globe). */}
-          <span className="hc-veil" />
+          {/* The spiral has no block behind the copy (Hamza, 7 Oct): its
+              centre tiles are blurred instead. */}
+          {/* A feathered dark block behind the copy on the globe and the
+              hourglass (Hamza, 7 Oct), over the tiles' own blur and dimming;
+              on the globe it clears as the globe opens. */}
+          {shape !== "spiral" && <span className={`hc-veil${shape === "globe" ? " hc-veil-opens" : ""}`} />}
           <span className="hc-topband" />
         </div>
 
@@ -103,6 +116,8 @@ export function HeroGlobeSection({ light = false }: { light?: boolean } = {}) {
           background: rgba(0, 0, 0, ${VEIL_ALPHA});
           filter: blur(44px);
         }
+
+        .hc-veil-opens { opacity: calc(1 - var(--globe-open, 0)); }
 
         /* A band of the page colour under the nav (Hamza, 7 Oct): solid for
            the bar's height, gone by 170px, so the tiles never pass behind the

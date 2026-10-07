@@ -113,6 +113,73 @@ const SPREAD_DIST = 24;
 const OPEN_PUSH = 16, OPEN_REACH = 1.15, OPEN_WIDE = 1.5, OPEN_TAU = 0.45;
 /** The pointer has to stay over the hero this long (s) before it opens. */
 const OPEN_DELAY = 0.5;
+/* Other shapes for the hero variants (Hamza, 7 Oct). The same tiles,
+   billboarding, depth shading, hover and opening; only where tiles sit
+   changes. `radius` is the shape's reach, which the depth shading and the
+   opening measure against.
+
+   spiral (/hero-3): a disc of SPIRAL_ARMS arms winding out from the centre,
+   tiles small at the core and full size at the rim, tipped toward the
+   viewer and turning.
+
+   hourglass (/hero-4): tiles on an hourglass round a vertical axis, wide at
+   the top, pinched in the middle, wide again at the foot. They stream
+   downward at HG_FLOW of the height a second while the shape turns, so
+   images come round to the front; each fades in at the top and out at the
+   bottom, where it wraps. */
+export type GlobeShape = "globe" | "spiral" | "hourglass";
+const SPIRAL_ARMS = 3, SPIRAL_PER_ARM = 34, SPIRAL_R0 = 4, SPIRAL_R1 = 42, SPIRAL_TURNS = 1.15;
+/* Spiral, tuned (Hamza, 7 Oct): it turns at SPIRAL_ROTATION (slower than the
+   globe), tiles grow from SPIRAL_SIZE_MIN× at the core to SPIRAL_SIZE_MAX× at
+   the rim, and the core ones are blurred, SPIRAL_BLUR mip levels at the very
+   centre easing to none by SPIRAL_SHARP_AT of the way out. */
+const SPIRAL_ROTATION = 0.025, SPIRAL_SIZE_MIN = 0.32, SPIRAL_SIZE_MAX = 1.3, SPIRAL_BLUR = 3.2, SPIRAL_SHARP_AT = 0.6;
+const HG_ROWS = 9, HG_PER_ROW = 13, HG_H = 36, HG_R_MIN = 9, HG_R_MAX = 36, HG_FLOW = 0.018, HG_FADE = 0.09;
+const SHAPES: Record<GlobeShape, { radius: number; tilt: [number, number]; offset: THREE.Vector3 }> = {
+  globe: { radius: GLOBE, tilt: [TILT_X, TILT_Z], offset: GLOBE_OFFSET },
+  spiral: { radius: SPIRAL_R1, tilt: [1.0, -0.18], offset: new THREE.Vector3(0, 3, 0) },
+  hourglass: { radius: HG_R_MAX, tilt: [0.06, 0], offset: new THREE.Vector3(0, 0, 0) },
+};
+/** Where each tile sits: position, ring and angle for the bob, a size
+    factor, and (hourglass) its place down the height, 0 at the top. */
+type Point = { x: number; y: number; z: number; theta: number; ring: number; size: number; u: number };
+const hourglassAt = (u: number, theta: number) => {
+  const w = (2 * u - 1) ** 2;
+  const r = HG_R_MIN + (HG_R_MAX - HG_R_MIN) * w;
+  return { x: Math.cos(theta) * r, y: HG_H - u * 2 * HG_H, z: Math.sin(theta) * r, size: 0.8 + 0.35 * w };
+};
+function layout(shape: GlobeShape): Point[] {
+  const pts: Point[] = [];
+  if (shape === "spiral") {
+    for (let a = 0; a < SPIRAL_ARMS; a++) for (let k = 0; k < SPIRAL_PER_ARM; k++) {
+      const t = (k + 0.5) / SPIRAL_PER_ARM;
+      const r = SPIRAL_R0 + (SPIRAL_R1 - SPIRAL_R0) * Math.sqrt(t);
+      const theta = (a / SPIRAL_ARMS) * Math.PI * 2 + t * SPIRAL_TURNS * Math.PI * 2;
+      // `u` carries how far out the tile is (0 core, 1 rim) for the blur.
+      const out = Math.sqrt(t);
+      pts.push({ x: Math.cos(theta) * r, y: (hash(a * 97 + k) - 0.5) * 1.5, z: Math.sin(theta) * r, theta, ring: a, size: SPIRAL_SIZE_MIN + (SPIRAL_SIZE_MAX - SPIRAL_SIZE_MIN) * out, u: out });
+    }
+  } else if (shape === "hourglass") {
+    for (let row = 0; row < HG_ROWS; row++) for (let k = 0; k < HG_PER_ROW; k++) {
+      const u = (row + 0.5) / HG_ROWS;
+      const theta = ((k + (row % 2) * 0.5) / HG_PER_ROW) * Math.PI * 2;
+      const p = hourglassAt(u, theta);
+      pts.push({ ...p, theta, ring: row, u });
+    }
+  } else {
+    for (let r = 0; r < RINGS; r++) {
+      const phi = ((r + 1) / (RINGS + 1)) * Math.PI;
+      const per = ringCount(phi);
+      for (let k = 0; k < per; k++) {
+        // Alternate rings are offset by half a step so tiles brick rather than stack.
+        const theta = ((k + (r % 2) * 0.5) / per) * Math.PI * 2;
+        const ringR = Math.sin(phi) * GLOBE;
+        pts.push({ x: Math.cos(theta) * ringR, y: Math.cos(phi) * GLOBE, z: Math.sin(theta) * ringR, theta, ring: r, size: 1, u: 0 });
+      }
+    }
+  }
+  return pts;
+}
 const COVER_HIDDEN = 0, COVER_LIT = 0;
 /* A gradient band can sweep across tiles now and then; off (Hamza, 6 Oct:
    no gradient on the images). Raise BAND_SHARE to bring it back. */
@@ -217,6 +284,10 @@ type Tile = {
   ring: number;
   baseY: number;
   base: THREE.Vector3;
+  /** Size factor from the shape (smaller at the spiral's core). */
+  size: number;
+  /** Hourglass: place down the height, 0–1, advancing as tiles stream. */
+  u: number;
   progress: number;
   scale: number;
   dot: number;
@@ -229,6 +300,7 @@ export function HeroGlobe({
   distance = CAMERA_DIST,
   softCentre,
   light = false,
+  shape = "globe",
 }: {
   /** Stills for the tiles. Changing the list retextures the globe in place. */
   images?: string[];
@@ -243,19 +315,22 @@ export function HeroGlobe({
   softCentre?: { rx: number; ry: number; dim?: number; blur?: number };
   /** On a light page: dimmed and far tiles fade toward white, not black. */
   light?: boolean;
+  /** Where the tiles sit: the globe, a spiral disc, or a streaming hourglass. */
+  shape?: GlobeShape;
 } = {}) {
   const hostRef = useRef<HTMLDivElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   /** The scene's "swap the media" hook, set once the scene exists. */
   const applyRef = useRef<((images: string[], clips: string[]) => void) | null>(null);
-  const initial = useRef({ images, clips, distance, light });
+  const initial = useRef({ images, clips, distance, light, shape });
   const softRef = useRef(softCentre);
   softRef.current = softCentre;
 
   useEffect(() => {
     const host = hostRef.current, canvas = canvasRef.current;
     if (!host || !canvas) return;
-    const { images: images0, clips: clips0, distance: distance0 } = initial.current;
+    const { images: images0, clips: clips0, distance: distance0, shape: shape0 } = initial.current;
+    const form = SHAPES[shape0];
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const hover = window.matchMedia("(hover: hover)").matches;
 
@@ -269,8 +344,8 @@ export function HeroGlobe({
     const camera = new THREE.PerspectiveCamera(FOV, 1, 0.1, 300);
     camera.position.set(0, 0, distance0);
     const tilt = new THREE.Group();
-    tilt.position.copy(GLOBE_OFFSET);
-    tilt.rotation.set(TILT_X, 0, TILT_Z);
+    tilt.position.copy(form.offset);
+    tilt.rotation.set(form.tilt[0], 0, form.tilt[1]);
     scene.add(tilt);
     const globe = new THREE.Group();
     tilt.add(globe);
@@ -342,23 +417,15 @@ export function HeroGlobe({
       return out;
     };
 
-    const counts = Array.from({ length: RINGS }, (_, r) => ringCount(((r + 1) / (RINGS + 1)) * Math.PI));
-    const total = counts.reduce((a, b) => a + b, 0);
+    const points = layout(shape0);
 
     const plate = roundedPlate(TILE_W, TILE_H, TILE_H * CORNER);
     const grad = gradientTexture();
     const bg = new THREE.Color(BG);
     const tiles: Tile[] = [];
-    let n = -1;
-    for (let r = 0; r < RINGS; r++) {
-      const phi = ((r + 1) / (RINGS + 1)) * Math.PI;
-      const per = counts[r];
-      for (let k = 0; k < per; k++) {
-        n++;
-        // Alternate rings are offset by half a step so tiles brick rather than stack.
-        const theta = ((k + (r % 2) * 0.5) / per) * Math.PI * 2;
-        const ringR = Math.sin(phi) * GLOBE;
-        const x = Math.cos(theta) * ringR, y = Math.cos(phi) * GLOBE, z = Math.sin(theta) * ringR;
+    points.forEach((pt, n) => {
+      {
+        const { x, y, z, theta, ring: r } = pt;
         const image = new THREE.ShaderMaterial({ uniforms: { uMap: { value: null }, uProgress: { value: 0 }, uBrightness: { value: 1 }, uAspect: { value: PLATE_ASPECT }, uBlur: { value: 0 }, uLight: { value: initial.current.light ? 1 : 0 } }, vertexShader: VERT, fragmentShader: FRAG_IMAGE, transparent: true, depthWrite: false, side: THREE.DoubleSide });
         const cover = new THREE.ShaderMaterial({ uniforms: { uColor: { value: bg.clone() }, uProgress: { value: 0 }, uMin: { value: COVER_HIDDEN }, uMax: { value: COVER_LIT } }, vertexShader: VERT, fragmentShader: FRAG_COVER, transparent: true, depthWrite: false, side: THREE.DoubleSide });
         const seed = n * 7 + 13;
@@ -373,10 +440,10 @@ export function HeroGlobe({
         tiles.push({
           group, image, cover, band,
           bandAnim: band ? { duration: 2.5 + hash(seed + 1) * 2, pause: 3 + hash(seed + 2) * 7, offset: hash(seed) * 10 } : null,
-          video: null, theta, ring: r, baseY: y, base: new THREE.Vector3(x, y, z), progress: 0, scale: 1, dot: 0, hover: 0,
+          video: null, theta, ring: r, baseY: y, base: new THREE.Vector3(x, y, z), size: pt.size, u: pt.u, progress: 0, scale: 1, dot: 0, hover: 0,
         });
       }
-    }
+    });
 
     const applyMedia = (imgs: string[], cls: string[]) => {
       disposeMedia();
@@ -428,7 +495,8 @@ export function HeroGlobe({
     const camDir = new THREE.Vector3(), toCam = new THREE.Vector3(), globeWorld = new THREE.Vector3(), tileWorld = new THREE.Vector3(), tileDir = new THREE.Vector3(), proj = new THREE.Vector3();
     const globeQuatInv = new THREE.Quaternion(), globeQuat = new THREE.Quaternion();
     const camRight = new THREE.Vector3(), camUp = new THREE.Vector3(), lat = new THREE.Vector3(), pos = new THREE.Vector3();
-    let open = 0, insideFor = 0;
+    let open = 0, insideFor = 0, lastOpen = -1;
+    const stage = (host.closest("section") as HTMLElement | null) ?? host;
     let disposed = false;
 
     const tick = () => {
@@ -438,12 +506,12 @@ export function HeroGlobe({
       const t = clock.elapsedTime;
       const step = Math.min(dt, 0.05);
 
-      if (!reduced) globe.rotation.y -= dt * ROTATION;
+      if (!reduced) globe.rotation.y -= dt * (shape0 === "spiral" ? SPIRAL_ROTATION : ROTATION);
       const targetX = hover ? mouse.x * PARALLAX : 0;
       const targetY = hover ? mouse.y * PARALLAX * 0.5 : 0;
       camera.position.x += (targetX - camera.position.x) * 0.05;
       camera.position.y += (targetY - camera.position.y) * 0.05;
-      camera.lookAt(GLOBE_OFFSET);
+      camera.lookAt(form.offset);
       scene.updateMatrixWorld(true);
       camera.updateMatrixWorld(true);
 
@@ -458,14 +526,23 @@ export function HeroGlobe({
       insideFor = inside ? insideFor + step : 0;
       open += ((insideFor >= OPEN_DELAY ? 1 : 0) - open) * (1 - Math.exp(-step / OPEN_TAU));
       const openE = open * open * (3 - 2 * open);
+      // Tell the section how open the globe is (--globe-open, 0–1), so
+      // overlays behind the copy can clear as it parts (Hamza, 7 Oct).
+      if (Math.abs(openE - lastOpen) > 0.002 || (openE === 0 && lastOpen !== 0)) {
+        lastOpen = openE;
+        stage.style.setProperty("--globe-open", openE.toFixed(3));
+      }
       camRight.setFromMatrixColumn(camera.matrixWorld, 0);
       camUp.setFromMatrixColumn(camera.matrixWorld, 1);
       const playing: Record<string, HTMLVideoElement> = {};
 
       for (const tile of tiles) {
         tileWorld.setFromMatrixPosition(tile.group.matrixWorld);
-        tileDir.subVectors(tileWorld, globeWorld).normalize();
-        tile.dot = tileDir.dot(toCam);
+        // Depth: how far toward the camera, against the shape's reach (on the
+        // globe this is the same cosine as before; it also serves the disc
+        // and the hourglass, whose tiles are not all one distance out).
+        tileDir.subVectors(tileWorld, globeWorld);
+        tile.dot = Math.max(-1, Math.min(1, tileDir.dot(toCam) / form.radius));
         const lit = tile.dot > WIPE_AT;
         let hv = 0, soft = 0;
         proj.copy(tileWorld).project(camera);
@@ -479,10 +556,13 @@ export function HeroGlobe({
         if (sc && onScreen) {
           // 0 at the ellipse's rim and beyond, 1 at its centre, eased.
           const e = (proj.x / sc.rx) ** 2 + (proj.y / sc.ry) ** 2;
-          if (e < 1) { const w = 1 - Math.sqrt(e); soft = w * w * (3 - 2 * w); }
+          // Clears as the globe opens: the parted tiles show sharp and full.
+          if (e < 1) { const w = 1 - Math.sqrt(e); soft = w * w * (3 - 2 * w) * (1 - openE); }
         }
         tile.hover = hv;
-        tile.image.uniforms.uBlur.value = soft * (sc?.blur ?? 0);
+        let coreBlur = 0;
+        if (shape0 === "spiral") { const k = Math.max(0, 1 - tile.u / SPIRAL_SHARP_AT); coreBlur = SPIRAL_BLUR * k * k; }
+        tile.image.uniforms.uBlur.value = Math.max(soft * (sc?.blur ?? 0), coreBlur);
 
         // Face the camera: undo the globe's turn, then take the camera's facing.
         tile.group.quaternion.copy(globeQuatInv).multiply(camera.quaternion);
@@ -498,6 +578,16 @@ export function HeroGlobe({
           else { tile.band.uniforms.uPos.value = -2.5; tile.band.uniforms.uOpacity.value = 0; }
         }
 
+        // Hourglass: stream down, wrapping at the foot, faded at both ends.
+        let ends = 1;
+        if (shape0 === "hourglass") {
+          if (!reduced) tile.u = (tile.u + step * HG_FLOW) % 1;
+          const p = hourglassAt(tile.u, tile.theta);
+          tile.base.set(p.x, p.y, p.z); tile.size = p.size;
+          const a = Math.min(1, tile.u / HG_FADE, (1 - tile.u) / HG_FADE);
+          ends = a * a * (3 - 2 * a);
+          tile.image.uniforms.uBrightness.value *= ends;
+        }
         pos.copy(tile.base);
         if (!reduced) pos.y += Math.sin(tile.theta * 3 + t * 0.2 + tile.ring * 0.8) * BOB;
         if (openE > 0.001) {
@@ -507,7 +597,7 @@ export function HeroGlobe({
           lat.subVectors(pos, globeWorld);
           const lx = lat.dot(camRight), ly = lat.dot(camUp);
           const r = Math.sqrt((lx / OPEN_WIDE) ** 2 + ly * ly) || 0.0001;
-          const f = Math.max(0, 1 - r / (GLOBE * OPEN_REACH));
+          const f = Math.max(0, 1 - r / (form.radius * OPEN_REACH));
           const push = openE * OPEN_PUSH * f;
           pos.addScaledVector(camRight, (lx / r) * push);
           pos.addScaledVector(camUp, (ly / r) * push);
@@ -518,7 +608,7 @@ export function HeroGlobe({
         // Near tiles grow, far ones shrink.
         const depth = DEPTH_FAR + ((tile.dot + 1) * 0.5) * (DEPTH_NEAR - DEPTH_FAR);
         tile.scale += ((1 + tile.hover * HOVER_SCALE) - tile.scale) * step * 10;
-        tile.group.scale.setScalar(TILE_SCALE * tile.scale * depth);
+        tile.group.scale.setScalar(TILE_SCALE * tile.scale * depth * tile.size * (0.6 + 0.4 * ends));
 
         if (tile.video && tile.hover > 0.25) playing[tile.video.src] = tile.video;
       }
