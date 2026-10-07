@@ -1,4 +1,4 @@
-import { START_HREF } from "@/lib/links";
+import { DEMO_HREF, START_HREF } from "@/lib/links";
 import { PlatformStrip } from "@/components/sections/Platform";
 import { HeroGlobe, type GlobeShape } from "@/components/sections/HeroGlobe";
 import { HeroDots } from "@/components/sections/HeroDots";
@@ -61,12 +61,18 @@ export function HeroGlobeSection({ light = false, shape = "globe" }: { light?: b
             Every leading model for image, video and audio in one workspace, with your brand held
             across every output and the security your organisation needs.
           </p>
-          <a href={START_HREF} className="hs-cta">
-            Start creating for free
-            <svg width="13" height="12" viewBox="0 0 12 11" fill="none" aria-hidden>
-              <path d="M11.17 5.5H1M7.75 10l3.585-3.97c.53-.53.54-.52 0-1.06L7.75 1" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-            </svg>
-          </a>
+          {/* Two actions (Hamza, 7 Oct): start free, or talk to sales. */}
+          <div className="hc-actions">
+            <a href={START_HREF} className="hs-cta">
+              Start creating for free
+              <svg width="13" height="12" viewBox="0 0 12 11" fill="none" aria-hidden>
+                <path d="M11.17 5.5H1M7.75 10l3.585-3.97c.53-.53.54-.52 0-1.06L7.75 1" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+              </svg>
+            </a>
+            <a href={DEMO_HREF} className="hc-sales">
+              Contact sales
+            </a>
+          </div>
         </div>
       </section>
 
@@ -165,8 +171,25 @@ export function HeroGlobeSection({ light = false, shape = "globe" }: { light?: b
 
         /* The purple action the hero carried before (from 8e207f9): the
            brand radial, a 4px lip along the foot, and a violet glow. */
+        .hc-actions { margin-top: 32px; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 12px; }
+        /* The secondary action: glass on the stage, same height as the
+           primary, no fill colour of its own. */
+        .hc-sales {
+          display: inline-flex; align-items: center;
+          height: 52px;
+          padding: 0 26px;
+          border-radius: calc(21px * var(--corner));
+          font-size: 16px; font-weight: 500; letter-spacing: -0.005em; white-space: nowrap;
+          color: var(--ink-heading);
+          background: color-mix(in srgb, var(--ink-heading) 8%, transparent);
+          border: 1px solid color-mix(in srgb, var(--ink-heading) 18%, transparent);
+          -webkit-backdrop-filter: blur(var(--glass-blur));
+          backdrop-filter: blur(var(--glass-blur));
+          transition: background var(--dur-fast) ease, border-color var(--dur-fast) ease;
+        }
+        .hc-sales:hover { background: color-mix(in srgb, var(--ink-heading) 14%, transparent); border-color: color-mix(in srgb, var(--ink-heading) 30%, transparent); }
+        .hc-sales:focus-visible { outline: 2px solid var(--ink-heading); outline-offset: 3px; }
         .hs-cta {
-          margin-top: 32px;
           display: inline-flex;
           align-items: center;
           gap: 11px;
@@ -229,6 +252,7 @@ export function HeroGlobeSection({ light = false, shape = "globe" }: { light?: b
           .hc-copy { max-width: none; }
           .hc-stage { opacity: 0.35; }
           .hs-cta { height: 48px; padding: 0 20px 4px; font-size: 15px; }
+          .hc-sales { height: 48px; padding: 0 20px; font-size: 15px; }
         }
       `}</style>
     </>

@@ -115,6 +115,7 @@ function Group({ group, onNavigate }: { group: NavGroup; onNavigate: () => void 
       {group.links?.map((link) => (
         <a key={link.label} href={link.href} className="mm-link" onClick={onNavigate} {...linkTarget(link.href)}>
           {link.label}
+          <span className="mm-link-arrow"><ArrowRight /></span>
         </a>
       ))}
       {group.more && (
@@ -324,7 +325,7 @@ export function SiteNav({
   return (
     <>
       <style>{`
-        .nav-tab { display: inline-flex; align-items: center; height: 32px; padding: 6px 12px; border: none; border-radius: 10px; background: transparent; cursor: pointer; text-decoration: none; white-space: nowrap; font-family: ${FONT}; font-size: 14px; font-weight: 500; line-height: 20px; letter-spacing: 0.02em; color: var(--nav-fg); transition: color 0.25s, background 0.25s; }
+        .nav-tab { display: inline-flex; align-items: center; height: 32px; padding: 6px 10px; border: none; border-radius: 10px; background: transparent; cursor: pointer; text-decoration: none; white-space: nowrap; font-family: ${FONT}; font-size: 14px; font-weight: 500; line-height: 20px; letter-spacing: 0.02em; color: var(--nav-fg); transition: color 0.25s, background 0.25s; }
         .nav-tab:hover, .nav-tab:focus-visible, .nav-tab[aria-expanded="true"] { color: var(--nav-fg-hover); background: var(--nav-tab-hover); outline: none; }
 
         .nav-signin { font-family: ${FONT}; font-size: 14px; font-weight: 500; color: var(--nav-fg-hover); text-decoration: none; padding: 6px 10px; border-radius: 10px; white-space: nowrap; transition: color 0.3s, background 0.25s; }
@@ -351,18 +352,21 @@ export function SiteNav({
            Figma has it lavender rgba(165,110,255,0.15); it ships grey per
            the monochrome rule (GUIDELINES §2) until that's signed off. */
         .mm-scope {
-          --mm-surface: #ffffff; --mm-border: rgba(0,0,0,0.06); --mm-divider: #dbdbdb;
+          /* Glass, not a white sheet (Hamza, 7 Oct): a translucent surface
+             frosted by .mm-panel's backdrop filter. --mm-solid is for the
+             full-screen mobile sheet, which needs to cover the page. */
+          --mm-surface: rgba(255,255,255,0.9); --mm-solid: #ffffff; --mm-border: rgba(255,255,255,0.6); --mm-divider: rgba(0,0,0,0.08);
           --mm-fg: #0f0f0f; --mm-muted: #757575; --mm-row: #3d3d3d; --mm-more: #3d3d3d;
-          --mm-hover: #ebebeb; --mm-accent-soft: rgba(23,23,23,0.07); --mm-tint-surface: #f1f2f3;
+          --mm-hover: rgba(0,0,0,0.06); --mm-accent-soft: rgba(23,23,23,0.07); --mm-tint-surface: rgba(255,255,255,0.8);
           --mm-badge-muted-bg: #dbdbdb; --mm-badge-muted-fg: #3d3d3d;
           --mm-cta-bg: #171717; --mm-cta-fg: #ffffff; --mm-cta-glow: rgba(11,11,12,0.08);
           --mm-shadow: 0 4px 8px rgba(176,175,175,0.2), 0 18px 50px rgba(23,35,56,0.08);
           --mm-sel-bg: rgba(23,23,23,0.12); --mm-sel-fg: #171717; --mm-logo-filter: none;
         }
         .mm-scope[data-menu-theme="dark"] {
-          --mm-surface: #141416; --mm-border: rgba(255,255,255,0.08); --mm-divider: rgba(255,255,255,0.1);
+          --mm-surface: rgba(20,20,22,0.9); --mm-solid: #141416; --mm-border: rgba(255,255,255,0.1); --mm-divider: rgba(255,255,255,0.1);
           --mm-fg: #f5f5f5; --mm-muted: rgba(255,255,255,0.55); --mm-row: rgba(255,255,255,0.85); --mm-more: rgba(255,255,255,0.75);
-          --mm-hover: rgba(255,255,255,0.08); --mm-accent-soft: rgba(255,255,255,0.1); --mm-tint-surface: #1c1c1f;
+          --mm-hover: rgba(255,255,255,0.08); --mm-accent-soft: rgba(255,255,255,0.1); --mm-tint-surface: rgba(255,255,255,0.05);
           --mm-badge-muted-bg: rgba(255,255,255,0.12); --mm-badge-muted-fg: rgba(255,255,255,0.7);
           --mm-cta-bg: #ffffff; --mm-cta-fg: #0a0a0b; --mm-cta-glow: rgba(255,255,255,0.1);
           --mm-shadow: 0 18px 50px rgba(0,0,0,0.5);
@@ -371,21 +375,22 @@ export function SiteNav({
         .mm-scope ::selection { background: var(--mm-sel-bg); color: var(--mm-sel-fg); }
 
         /* ── Dropdown panel ───────────────────────────────────── */
-        .mm-panel { position: fixed; left: 0; right: 0; margin-inline: auto; width: max-content; max-width: calc(100vw - 32px); z-index: 59; display: flex; align-items: flex-start; gap: 24px; padding: 24px; box-sizing: border-box; background: var(--mm-surface); border: 1px solid var(--mm-border); border-radius: 20px; box-shadow: var(--mm-shadow); animation: navMenuIn 0.22s ${NAV_EASE} both; transition: top ${NAV_DURATION} ${NAV_EASE}; font-family: ${FONT}; }
+        .mm-panel { position: fixed; left: 0; right: 0; margin-inline: auto; width: max-content; max-width: calc(100vw - 32px); z-index: 59; display: flex; align-items: flex-start; gap: 16px; padding: 16px; box-sizing: border-box; background: var(--mm-surface); -webkit-backdrop-filter: blur(32px) saturate(160%); backdrop-filter: blur(32px) saturate(160%); border: 1px solid var(--mm-border); border-radius: 18px; box-shadow: var(--mm-shadow); animation: navMenuIn 0.22s ${NAV_EASE} both; transition: top ${NAV_DURATION} ${NAV_EASE}; font-family: ${FONT}; }
         /* Invisible bridge over the gap to the bar, so hover survives the trip down. */
         .mm-panel::before { content: ""; position: absolute; left: 0; right: 0; top: -34px; height: 34px; }
+        @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) { .mm-panel { background: var(--mm-solid); } }
         .mm-backdrop { position: fixed; inset: 0; z-index: 58; }
 
-        .mm-col { display: flex; flex-direction: column; gap: 23px; width: 247px; flex-shrink: 0; }
+        .mm-col { display: flex; flex-direction: column; gap: 14px; width: 228px; flex-shrink: 0; }
         .mm-col-narrow { width: 196px; }
-        .mm-col-divider { padding-right: 24px; border-right: 1px solid var(--mm-hover); width: 271px; box-sizing: border-box; }
-        .mm-group { display: flex; flex-direction: column; gap: 16px; }
-        .mm-group-links { gap: 8px; }
+        .mm-col-divider { padding-right: 16px; border-right: 1px solid var(--mm-divider); width: 244px; box-sizing: border-box; }
+        .mm-group { display: flex; flex-direction: column; gap: 8px; }
+        .mm-group-links { gap: 2px; }
         .mm-heading { margin: 0; padding: 0 10px; font-size: 14px; line-height: 20px; font-weight: 500; letter-spacing: 0.01em; color: var(--mm-muted); }
 
-        .mm-item { display: flex; flex-direction: column; gap: 2px; padding: 8px 10px; border-radius: 10px; text-decoration: none; transition: background 0.2s; outline: none; }
+        .mm-item { display: flex; flex-direction: column; gap: 1px; padding: 6px 10px; border-radius: 10px; text-decoration: none; transition: background 0.2s; outline: none; }
         .mm-item:hover, .mm-item:focus-visible { background: var(--mm-hover); }
-        .mm-item-title { display: flex; align-items: center; gap: 10px; font-size: 18px; line-height: 28px; font-weight: 600; color: var(--mm-fg); }
+        .mm-item-title { display: flex; align-items: center; gap: 8px; font-size: 16px; line-height: 24px; font-weight: 600; color: var(--mm-fg); }
         .mm-item-title .mm-badge { margin-left: 4px; }
         .mm-chev { color: var(--mm-fg); opacity: 0; transform: translateX(-4px); transition: opacity 0.2s, transform 0.2s; flex-shrink: 0; }
         .mm-item:hover .mm-chev, .mm-item:focus-visible .mm-chev { opacity: 1; transform: none; }
@@ -395,29 +400,34 @@ export function SiteNav({
         .mm-sublinks { display: flex; gap: 4px; margin: 6px 0 0 -8px; }
         .mm-sublink { display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 4px 8px; box-sizing: border-box; border-radius: 8px; font-size: 14px; font-weight: 500; letter-spacing: 0.01em; color: var(--mm-fg); text-decoration: none; transition: background 0.2s; }
         .mm-sublink:hover, .mm-sublink:focus-visible { background: var(--mm-hover); outline: none; }
-        .mm-desc { font-size: 14px; line-height: 20px; font-weight: 400; letter-spacing: 0.01em; color: var(--mm-muted); max-width: 227px; }
+        .mm-desc { font-size: 13px; line-height: 18px; font-weight: 400; letter-spacing: 0.01em; color: var(--mm-muted); max-width: 208px; }
 
         .mm-badge { display: inline-flex; align-items: center; height: 20px; padding: 2px 6px; box-sizing: border-box; border-radius: 6px; background: var(--mm-accent-soft); font-size: 12px; line-height: 16px; font-weight: 500; letter-spacing: 0.02em; color: var(--mm-fg); }
         .mm-badge-muted { height: 16px; padding: 1px 5px; background: var(--mm-badge-muted-bg); font-size: 10px; line-height: 14px; color: var(--mm-badge-muted-fg); }
 
-        .mm-link { padding: 4px 10px; border-radius: 10px; font-size: 14px; line-height: 20px; font-weight: 500; letter-spacing: 0.01em; color: var(--mm-fg); text-decoration: none; transition: background 0.2s; }
+        .mm-link { padding: 3px 10px; border-radius: 10px; font-size: 14px; line-height: 20px; font-weight: 500; letter-spacing: 0.01em; color: var(--mm-fg); text-decoration: none; transition: background 0.2s; }
         .mm-link:hover, .mm-link:focus-visible { background: var(--mm-hover); outline: none; }
-        .mm-more { margin-top: 8px; align-self: flex-start; display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 6px 10px; box-sizing: border-box; border-radius: 10px; font-size: 14px; font-weight: 500; letter-spacing: 0.02em; color: var(--mm-more); text-decoration: none; transition: background 0.2s; }
+        /* A right arrow on each plain link (Hamza, 7 Oct), shown only on hover
+           or focus, sliding in from the left. */
+        .mm-link { display: flex; align-items: center; gap: 8px; }
+        .mm-link-arrow { margin-left: auto; display: inline-flex; color: var(--mm-fg); opacity: 0; transform: translateX(-4px); transition: opacity 0.2s, transform 0.2s; }
+        .mm-link:hover .mm-link-arrow, .mm-link:focus-visible .mm-link-arrow { opacity: 1; transform: none; }
+        .mm-more { margin-top: 4px; align-self: flex-start; display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 6px 10px; box-sizing: border-box; border-radius: 10px; font-size: 14px; font-weight: 500; letter-spacing: 0.02em; color: var(--mm-more); text-decoration: none; transition: background 0.2s; }
         .mm-more:hover, .mm-more:focus-visible { background: var(--mm-hover); outline: none; }
 
-        .mm-cards { display: flex; gap: 20px; align-self: stretch; }
-        .mm-tile { display: block; width: 260px; min-height: 374px; border-radius: 16px; overflow: hidden; background: var(--mm-tint-surface); }
+        .mm-cards { display: flex; gap: 12px; align-self: stretch; }
+        .mm-tile { display: block; width: 220px; min-height: 300px; border-radius: 12px; overflow: hidden; background: var(--mm-tint-surface); }
         .mm-tile img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ${NAV_EASE}; }
         .mm-tile:hover img { transform: scale(1.03); }
         /* Cards drop out before the panel can outgrow a narrow desktop window. */
         @media (max-width: 1180px) { .mm-cards { display: none; } }
 
-        .mm-card { width: 260px; display: flex; flex-direction: column; gap: 12px; padding: 16px; box-sizing: border-box; border: 1px solid var(--mm-hover); border-radius: 12px; background: var(--mm-surface); overflow: hidden; }
+        .mm-card { width: 220px; display: flex; flex-direction: column; gap: 10px; padding: 12px; box-sizing: border-box; border: 1px solid var(--mm-divider); border-radius: 12px; background: var(--mm-tint-surface); overflow: hidden; }
         .mm-card-tint { background: var(--mm-tint-surface); }
         .mm-card-muted { background: var(--mm-tint-surface); border-color: var(--mm-divider); }
         .mm-card-copy { display: flex; flex-direction: column; gap: 4px; }
-        .mm-card-title { margin: 0; display: flex; align-items: center; gap: 12px; font-size: 20px; line-height: 28px; font-weight: 500; color: var(--mm-fg); }
-        .mm-card-body { margin: 0; font-size: 14px; line-height: 20px; font-weight: 400; letter-spacing: 0.01em; color: var(--mm-muted); }
+        .mm-card-title { margin: 0; display: flex; align-items: center; gap: 10px; font-size: 17px; line-height: 24px; font-weight: 500; color: var(--mm-fg); }
+        .mm-card-body { margin: 0; font-size: 13px; line-height: 18px; font-weight: 400; letter-spacing: 0.01em; color: var(--mm-muted); }
         .mm-card-cta { align-self: flex-start; display: inline-flex; align-items: center; height: 32px; padding: 6px 10px; box-sizing: border-box; border-radius: 10px; background: var(--mm-cta-bg); color: var(--mm-cta-fg); font-size: 14px; font-weight: 500; letter-spacing: 0.02em; text-decoration: none; transition: box-shadow 0.2s; }
         .mm-card-cta:hover { box-shadow: 0 0 0 5px var(--mm-cta-glow); }
 
@@ -429,7 +439,7 @@ export function SiteNav({
         .mm-fan .mm-fan-left { left: 6px; transform: rotate(-7.75deg); }
         .mm-fan .mm-fan-right { right: 6px; transform: rotate(7.75deg); object-position: left center; }
         .mm-fan .mm-fan-front { top: 0; left: 0; right: 0; margin-inline: auto; width: 62px; height: 84px; z-index: 1; }
-        .mm-split { display: flex; height: 208px; border-radius: 6px; overflow: hidden; border: 0.6px solid var(--mm-divider); box-shadow: 0 4.8px 9.7px rgba(176,175,175,0.25); }
+        .mm-split { display: flex; height: 176px; border-radius: 6px; overflow: hidden; border: 0.6px solid var(--mm-divider); box-shadow: 0 4.8px 9.7px rgba(176,175,175,0.25); }
         .mm-split img { display: block; width: 50%; height: 100%; object-fit: cover; }
         .mm-split-mirror { transform: scaleX(-1); }
 
@@ -602,7 +612,7 @@ export function SiteNav({
           aria-modal="true"
           aria-label="Menu"
           style={{
-            position: "fixed", inset: 0, zIndex: 101, background: "var(--mm-surface)",
+            position: "fixed", inset: 0, zIndex: 101, background: "var(--mm-solid)",
             display: "flex", flexDirection: "column", fontFamily: FONT,
             animation: "navMenuIn 0.22s cubic-bezier(0.4,0,0.2,1) forwards",
           }}
