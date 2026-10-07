@@ -3,26 +3,23 @@ import { withBasePath } from "@/lib/assets";
 import { SectionGuides } from "@/components/primitives/SectionGuides";
 
 /**
- * Partner marks, ported from the Enterprise page.
- *
- * The supplied SVGs are single-colour paths, so they are painted via CSS mask
- * plus background: the mask takes the glyph's alpha and the background gives
- * the colour, which is what lets a flat file carry Kling's gradient. Real
- * brand marks are the one sanctioned exception to the monochrome rule. Wan
- * and fal are PNGs and render as images.
+ * "Trusted by": the customer marks in a still grid (Hamza, 7 Oct), seven
+ * across on desktop. The model partners' row that sat under it was removed;
+ * those marks are still in public/media/partners.
  *
  * The only section on the page that keeps the kit's SectionGuides (the
  * container-edge rules and corner dots), by request.
+ *
+ * The set and heights come from the AI Ad Studio page
+ * (hamzajamal-imagineart/ai-ad-studio, assets/brand-logos): grey
+ * single-colour SVGs, each with its own cap so they read at one optical size.
  */
-type Brand = { name: string; logo: string; paint?: string };
-
-const BRANDS: Brand[] = [
-  { name: "ByteDance", logo: "/media/partners/bytedance.svg", paint: "#325AB4" },
-  { name: "Kling AI", logo: "/media/partners/kling.svg", paint: "linear-gradient(135deg, #6D4AE0 0%, #8B5CF6 55%, #A78BFA 100%)" },
-  { name: "MINIMAX", logo: "/media/partners/minimax.svg", paint: "#EB0045" },
-  { name: "Wan", logo: "/media/partners/wan.png" },
-  { name: "fal", logo: "/media/partners/fal.png" },
-  { name: "Grok", logo: "/media/partners/grok.svg", paint: "#0A0A0A" },
+const CUSTOMERS: { name: string; h: number }[] = [
+  { name: "Unilever", h: 30 }, { name: "Knorr", h: 28 }, { name: "Kayali", h: 28 },
+  { name: "Pega", h: 19 }, { name: "Ashley", h: 22 }, { name: "Buzzlab", h: 18 },
+  { name: "Crumble", h: 18 }, { name: "DAP", h: 30 }, { name: "Framon", h: 18 },
+  { name: "Komodo", h: 20 }, { name: "ROLLEMAN", h: 15 }, { name: "Smarters", h: 16 },
+  { name: "mnsaj", h: 30 }, { name: "xolour", h: 13 },
 ];
 
 export function Partners() {
@@ -31,42 +28,31 @@ export function Partners() {
       <SectionGuides edge="top" />
       <div className="container-page">
         <p className="pt-cap">Trusted by the brands you benchmark against</p>
-        <div className="pt-row mt-8">
-          {BRANDS.map((b) => (
-            <span key={b.name} className="pt-brand">
-              {b.paint ? (
-                <span aria-hidden className="pt-logo" style={{ ["--logo" as string]: `url(${withBasePath(b.logo)})`, background: b.paint }} />
-              ) : (
-                <img src={withBasePath(b.logo)} alt="" aria-hidden className="pt-img" />
-              )}
-              <span className="pt-name">{b.name}</span>
-            </span>
+        {/* A still grid (Hamza, 7 Oct): no marquee. */}
+        <ul className="pt-grid mt-10">
+          {CUSTOMERS.map((c) => (
+            <li key={c.name} className="pt-cell">
+              <img src={withBasePath(`/media/brand-logos/${c.name}.svg`)} alt={c.name} loading="lazy" decoding="async" style={{ maxHeight: c.h }} />
+            </li>
           ))}
-        </div>
-        <p className="pt-cap mt-8">Partnering with global industry leaders to power your creative output</p>
+        </ul>
       </div>
 
       <style>{`
         .pt-cap { text-align: center; font-size: 13px; line-height: 1.5; color: var(--ink-3); }
-        .pt-row {
-          display: flex;
-          flex-wrap: wrap;
-          align-items: center;
-          justify-content: center;
-          gap: clamp(28px, 5vw, 56px);
+        .pt-grid {
+          list-style: none;
+          margin-left: auto; margin-right: auto;
+          max-width: 1080px;
+          display: grid;
+          grid-template-columns: repeat(7, minmax(0, 1fr));
+          row-gap: 36px;
+          column-gap: 24px;
         }
-        .pt-brand { display: inline-flex; align-items: center; gap: 10px; }
-        .pt-name { font-size: clamp(15px, 1.3vw, 18px); font-weight: 500; letter-spacing: -0.01em; color: var(--ink); white-space: nowrap; }
-        .pt-img { display: block; width: clamp(22px, 2.1vw, 27px); height: clamp(22px, 2.1vw, 27px); object-fit: contain; }
-        .pt-logo {
-          display: block;
-          width: clamp(22px, 2.1vw, 27px);
-          height: clamp(22px, 2.1vw, 27px);
-          -webkit-mask-image: var(--logo); mask-image: var(--logo);
-          -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
-          -webkit-mask-position: center; mask-position: center;
-          -webkit-mask-size: contain; mask-size: contain;
-        }
+        @media (max-width: 1023px) { .pt-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+        @media (max-width: 639px) { .pt-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); row-gap: 28px; } }
+        .pt-cell { display: flex; align-items: center; justify-content: center; height: 40px; }
+        .pt-cell img { display: block; width: auto; height: auto; max-width: 100%; }
       `}</style>
     </section>
   );

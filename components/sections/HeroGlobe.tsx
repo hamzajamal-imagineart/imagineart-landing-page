@@ -38,16 +38,24 @@ import { withBasePath } from "@/lib/assets";
  */
 
 export const GLOBE_IMAGES = [
-  /* Twenty use-case stills generated for the globe (Hamza, 6 Oct; Nano
-     Banana Pro, 16:9, 2K, the ImagineArt (Official) workspace, saved at
-     960px): product, fashion, food, automotive, interiors, beauty, travel,
-     sport, jewellery, architecture, beverage, film, electronics, pets,
-     hospitality, creators, aerial, footwear, fragrance, kids. Unbranded,
-     no text; each checked. */
-  ...["speaker", "fashion-dress", "burger", "car", "interior", "beauty", "travel", "sprinter", "ring", "house", "drink", "film-noir", "headphones", "puppy", "cocktail", "podcast", "coast-road", "sneaker", "perfume", "kids"].map((n) => `/media/hero/globe/${n}.jpg`),
-  ...["fashion", "cpg", "fast-food", "food-beverage", "home-decor", "electronics", "beauty", "automotive", "telecom", "ecommerce"].map((n) => `/media/hero/corridor/${n}.jpg`),
+  /* Photographic stills only (Hamza, 7 Oct: "best quality, best
+     photographic"). Kept from the generated globe set, the corridor, the
+     outcomes and the mosaic; the CG-looking and stock-looking ones were cut
+     (drink splash, both headphones, speaker, sneaker dust, exploding burger,
+     concept car, cpg, ecommerce, telecom selfie, podcast, puppy, kids, the
+     glitter figure). Joined by the Use Cases stills, minus the Wing Theory
+     and "Nocté Serum" frames (they carry marks) and the stand-ins that
+     duplicate stills already here. All unbranded, no text. */
+  ...["beauty", "burger", "car", "coast-road", "cocktail", "fashion-dress", "film-noir", "house", "interior", "perfume", "ring", "sprinter", "travel"].map((n) => `/media/hero/globe/${n}.jpg`),
+  ...["beauty", "fashion", "food-beverage", "home-decor"].map((n) => `/media/hero/corridor/${n}.jpg`),
   ...["advertising", "product", "brand"].map((n) => `/media/outcomes/${n}.jpg`),
-  ...[3, 9, 12, 13, 15, 17, 18].map((n) => `/media/hero/mosaic/m${n}.jpg`),
+  ...[9, 12, 13, 15, 17, 18].map((n) => `/media/hero/mosaic/m${n}.jpg`),
+  ...[1, 2, 3, 4, 8, 10, 11].map((n) => `/media/use-cases/architecture/${n}.jpg`),
+  ...[5, 6, 7, 8, 9, 10, 11].map((n) => `/media/use-cases/branding/${n}.jpg`),
+  ...[1, 2, 3, 5, 6, 7, 8, 9, 10, 11].map((n) => `/media/use-cases/photography/${n}.jpg`),
+  ...[1, 2, 3, 4].map((n) => `/media/use-cases/product/${n}.jpg`),
+  ...[1, 2, 3, 4].map((n) => `/media/use-cases/style-transfer/${n}.jpg`),
+  ...[1, 2, 3, 4, 5, 6, 8].map((n) => `/media/use-cases/try-on/${n}.jpg`),
 ];
 export const GLOBE_CLIPS = [
   "/media/capabilities/video-extend.mp4",
@@ -122,7 +130,7 @@ const VERT = /* glsl */ `
     width ÷ height), so a 3:4 still is not stretched. */
 const PLATE_ASPECT = TILE_W / TILE_H;
 const FRAG_IMAGE = /* glsl */ `
-  uniform sampler2D uMap; uniform float uProgress; uniform float uBrightness; uniform float uAspect; uniform float uBlur; varying vec2 vUv;
+  uniform sampler2D uMap; uniform float uProgress; uniform float uBrightness; uniform float uAspect; uniform float uBlur; uniform float uLight; varying vec2 vUv;
   void main() {
     float plate = ${(TILE_W / TILE_H).toFixed(5)};
     vec2 uv = vUv - 0.5;
@@ -137,7 +145,9 @@ const FRAG_IMAGE = /* glsl */ `
     float soft = 0.4;
     float edge = 1.0 - uProgress * (1.0 + soft * 2.0) + soft;
     float a = smoothstep(edge - soft, edge + soft, vUv.x);
-    gl_FragColor = vec4(t.rgb * uBrightness, a);
+    // On a light page, dimming fades a tile toward white rather than black.
+    vec3 c = uLight > 0.5 ? mix(vec3(1.0), t.rgb, clamp(uBrightness, 0.0, 1.0)) : t.rgb * uBrightness;
+    gl_FragColor = vec4(c, a);
   }
 `;
 /** The cover: the page colour, thick on an unlit tile and thin on a lit one,
@@ -216,6 +226,7 @@ export function HeroGlobe({
   clips = GLOBE_CLIPS,
   distance = CAMERA_DIST,
   softCentre,
+  light = false,
 }: {
   /** Stills for the tiles. Changing the list retextures the globe in place. */
   images?: string[];
@@ -228,12 +239,14 @@ export function HeroGlobe({
       brightness is taken at the centre (0–1) and `blur` the mip levels of
       blur there (0 for none). Off when omitted. */
   softCentre?: { rx: number; ry: number; dim?: number; blur?: number };
+  /** On a light page: dimmed and far tiles fade toward white, not black. */
+  light?: boolean;
 } = {}) {
   const hostRef = useRef<HTMLDivElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   /** The scene's "swap the media" hook, set once the scene exists. */
   const applyRef = useRef<((images: string[], clips: string[]) => void) | null>(null);
-  const initial = useRef({ images, clips, distance });
+  const initial = useRef({ images, clips, distance, light });
   const softRef = useRef(softCentre);
   softRef.current = softCentre;
 
@@ -344,7 +357,7 @@ export function HeroGlobe({
         const theta = ((k + (r % 2) * 0.5) / per) * Math.PI * 2;
         const ringR = Math.sin(phi) * GLOBE;
         const x = Math.cos(theta) * ringR, y = Math.cos(phi) * GLOBE, z = Math.sin(theta) * ringR;
-        const image = new THREE.ShaderMaterial({ uniforms: { uMap: { value: null }, uProgress: { value: 0 }, uBrightness: { value: 1 }, uAspect: { value: PLATE_ASPECT }, uBlur: { value: 0 } }, vertexShader: VERT, fragmentShader: FRAG_IMAGE, transparent: true, depthWrite: false, side: THREE.DoubleSide });
+        const image = new THREE.ShaderMaterial({ uniforms: { uMap: { value: null }, uProgress: { value: 0 }, uBrightness: { value: 1 }, uAspect: { value: PLATE_ASPECT }, uBlur: { value: 0 }, uLight: { value: initial.current.light ? 1 : 0 } }, vertexShader: VERT, fragmentShader: FRAG_IMAGE, transparent: true, depthWrite: false, side: THREE.DoubleSide });
         const cover = new THREE.ShaderMaterial({ uniforms: { uColor: { value: bg.clone() }, uProgress: { value: 0 }, uMin: { value: COVER_HIDDEN }, uMax: { value: COVER_LIT } }, vertexShader: VERT, fragmentShader: FRAG_COVER, transparent: true, depthWrite: false, side: THREE.DoubleSide });
         const seed = n * 7 + 13;
         const hasBand = hash(seed + 99) < BAND_SHARE;

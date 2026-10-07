@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { withBasePath } from "@/lib/assets";
 import { BlurHeading } from "@/components/BlurHeading";
 import { McpPanel } from "@/components/sections/Mcp";
+import { StudiosStage } from "@/components/sections/StudiosStage";
 import { SlidingIndicator, slidingIndicatorCss, useSlidingIndicator } from "@/components/primitives/SlidingIndicator";
 import { pluginHref, PLUGINS_HREF } from "@/lib/links";
 
@@ -161,7 +162,7 @@ type Tab = {
   label: string;
   /** Carries the NEW tag. */
   isNew?: boolean;
-  kind: "reel" | "clip" | "mcp" | "plugins";
+  kind: "reel" | "clip" | "mcp" | "studios" | "plugins";
   videos?: string[];
   /** Whether the clip carries sound, so it gets the control bar. */
   audio?: boolean;
@@ -172,6 +173,8 @@ const TABS: Tab[] = [
   { id: "creative", label: "Creative Suite", kind: "clip", videos: ["https://imagine.animagic.art/imagine-one/home/campaigns/gpt-2.5.mp4"] },
   { id: "agents", label: "Agents", kind: "clip", videos: [AGENT_CLIP], audio: true },
   { id: "mcp", label: "MCP", isNew: true, kind: "mcp" },
+  // Ad, Fashion and Film Studio footage with chips to switch (Hamza, 7 Oct).
+  { id: "studios", label: "Studios", kind: "studios" },
   { id: "plugins", label: "Plugins", kind: "plugins" },
 ];
 
@@ -472,6 +475,7 @@ export function PlatformStrip() {
 
   const stage =
     t.kind === "mcp" ? <div className="pf-mcp"><McpPanel /></div>
+    : t.kind === "studios" ? <StudiosStage />
     : t.kind === "plugins" ? <PluginHub />
     : t.kind === "reel" ? <ImageReel key={t.id} videos={t.videos ?? []} />
     : <ClipPlayer videos={t.videos ?? []} audio={t.audio} />;
@@ -482,7 +486,7 @@ export function PlatformStrip() {
           and a lede, centred, above the tab row. */}
       <div className="pf-head">
         <BlurHeading className="h2 pf-h2" lead="Start wherever you work" />
-        <p className="lede mt-4">Start from the suite, an agent, the MCP or a plugin. Every tool, every model, every format.</p>
+        <p className="lede mt-4">Start from the suite, an agent, the MCP, a studio or a plugin. Every tool, every model, every format.</p>
       </div>
       <div className="pf-tabs" role="tablist" aria-label="Platform" ref={tabs.containerRef as React.Ref<HTMLDivElement>}>
         <SlidingIndicator box={tabs.box} ready={tabs.ready} className="pf-tab-fill" />
@@ -527,7 +531,7 @@ export function PlatformStrip() {
           width: max-content;
           max-width: 100%;
           display: flex;
-          gap: clamp(8px, 1.6vw, 24px);
+          gap: 4px; /* tighter (Hamza, 7 Oct) */
           overflow-x: auto;
           scrollbar-width: none;
         }

@@ -23,16 +23,19 @@ const CTA_GLOW_W = 140, CTA_GLOW_H = 220, CTA_GLOW_ALPHA = 0.35;
  * token inside it (page colour, inks, tile) is the dark set while the nav's
  * scrolled state, the platform strip and the rest stay light.
  */
-export function HeroGlobeSection() {
+/** `light` (Hamza, 7 Oct, /hero-2): the same hero on the light page, with
+ *  ink dots, ink type, a white block behind the copy and tiles that fade to
+ *  white rather than black. */
+export function HeroGlobeSection({ light = false }: { light?: boolean } = {}) {
   return (
     <>
-      <section id="top" className="hc" data-theme="dark">
+      <section id="top" className={`hc${light ? " hc-light" : ""}`} data-theme={light ? undefined : "dark"}>
         {/* The halftone edges, live: dots give way to the pointer and spring
             back (sections/HeroDots). */}
         <HeroDots className="hs-dots" />
 
         <div className="hc-stage" aria-hidden>
-          <HeroGlobe clips={NO_CLIPS} distance={68} softCentre={{ rx: 0.62, ry: 0.5, dim: 0.4, blur: 0 }} />
+          <HeroGlobe clips={NO_CLIPS} distance={68} softCentre={{ rx: 0.62, ry: 0.5, dim: 0.4, blur: 0 }} light={light} />
           {/* A feathered black block behind the copy, over the globe's own
               dimming (Hamza, 7 Oct: no blur on the globe). */}
           <span className="hc-veil" />
@@ -65,8 +68,7 @@ export function HeroGlobeSection() {
           position: relative;
           isolation: isolate;
           overflow: hidden;
-          height: max(100svh, 720px);
-          max-height: 1000px;
+          height: 100vh; /* exactly one screen (Hamza, 7 Oct) */
           display: grid;
           place-items: center;
           padding-top: 64px;
@@ -197,6 +199,12 @@ export function HeroGlobeSection() {
         .hs-cta:hover::before { opacity: 1; }
         .hs-cta:active { transform: translateY(1px); }
         .hs-cta:focus-visible { outline: 2px solid #8a3ffc; outline-offset: 3px; }
+
+        /* Light variant: ink in place of white, a white block in place of
+           the black one. */
+        .hc-light .hs-dots { color: #171717; }
+        .hc-light .hc-title { color: var(--ink-heading); }
+        .hc-light .hc-veil { background: rgba(255, 255, 255, ${VEIL_ALPHA}); }
 
         .hs-strip { padding-top: clamp(40px, 5vw, 72px); padding-bottom: clamp(48px, 7vh, 88px); }
 
