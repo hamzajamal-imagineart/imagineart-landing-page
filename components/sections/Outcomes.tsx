@@ -44,14 +44,21 @@ const WIDE = {
   title: "Filmmaking",
   body: "Characters, storyboards, and concepts to explore. Cinematic tools made for the final frame.",
   image: "/media/outcomes/film.jpg",
+  /* Footage behind the card (Hamza, 7 Oct): the Film Studio clip, streamed
+     from the same CDN the old studio reel used, with the still as poster. */
+  video: "https://imagine.animagic.art/imagine-one/film-studio/video/27.mp4",
   logo: { src: "/media/studios/logos/film-studio.png", alt: "Film Studio", h: 32 },
 };
 
-function Card({ title, body, image, logo, wide }: { title: string; body: string; image: string; logo?: Logo; wide?: boolean }) {
+function Card({ title, body, image, video, logo, wide }: { title: string; body: string; image: string; video?: string; logo?: Logo; wide?: boolean }) {
   return (
     <div className={`oc-card ${wide ? "oc-wide" : ""}`}>
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img className="oc-media" src={withBasePath(image)} alt="" loading="lazy" />
+      {video ? (
+        <video className="oc-media" src={withBasePath(video)} poster={withBasePath(image)} autoPlay muted loop playsInline preload="metadata" aria-hidden />
+      ) : (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img className="oc-media" src={withBasePath(image)} alt="" loading="lazy" />
+      )}
       <span className={`oc-scrim ${logo ? "oc-scrim-top" : ""}`} aria-hidden />
       {logo && (
         // eslint-disable-next-line @next/next/no-img-element

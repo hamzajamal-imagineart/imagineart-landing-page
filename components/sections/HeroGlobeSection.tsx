@@ -9,6 +9,8 @@ import { HeroDots } from "@/components/sections/HeroDots";
 const BLUR_LAYERS: [number, number, number][] = [[1, 44, 40], [2.5, 34, 30]];
 /** How much of the page colour sits over the blurred centre (0–1). */
 const VEIL_ALPHA = 0.85;
+/** The glow behind the CTA: size as % of the button, and its strength. */
+const CTA_GLOW_W = 140, CTA_GLOW_H = 220, CTA_GLOW_ALPHA = 0.35;
 
 /**
  * Hero (Hamza, 6 Oct): a two-line claim, one line and the purple "Start
@@ -193,6 +195,27 @@ export function HeroGlobeSection() {
             0 16px 32px rgba(138, 63, 252, 0.22),
             inset 0 -4px 0 #491D8B;
         }
+        /* A violet glow behind the button so it carries over the globe
+           (Hamza, 7 Oct): a wide blurred ellipse under it, not on it. The
+           button itself makes no stacking context, so z-index -1 puts the
+           glow behind its fill but in front of the stage. */
+        .hs-cta { position: relative; }
+        .hs-cta::before {
+          content: "";
+          position: absolute;
+          left: 50%; top: 55%;
+          width: ${CTA_GLOW_W}%;
+          height: ${CTA_GLOW_H}%;
+          transform: translate(-50%, -50%);
+          border-radius: 50%;
+          background: radial-gradient(closest-side, rgba(138, 63, 252, ${CTA_GLOW_ALPHA}), rgba(138, 63, 252, 0));
+          filter: blur(18px);
+          z-index: -1;
+          pointer-events: none;
+          transition: opacity 0.2s ease;
+          opacity: 0.85;
+        }
+        .hs-cta:hover::before { opacity: 1; }
         .hs-cta:active { transform: translateY(1px); }
         .hs-cta:focus-visible { outline: 2px solid #8a3ffc; outline-offset: 3px; }
 

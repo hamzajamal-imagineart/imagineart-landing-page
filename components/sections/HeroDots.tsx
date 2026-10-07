@@ -23,8 +23,11 @@ const SPACING = 12, DOT = 0.95, BIG = 1.3, ALPHA = 0.22;
    ease of its own (FOLLOW_MIN–MAX), sits up to SPREAD px off the cursor so a
    caught group stays a cluster, and lets go once the cursor is further than
    its tether (TETHER_MIN–MAX px) from its home. RETURN is the spring home. */
-const CATCH = 30, SPREAD = 14, FOLLOW_MIN = 0.1, FOLLOW_MAX = 0.28;
-const TETHER_MIN = 90, TETHER_MAX = 200, RETURN = 0.08;
+const CATCH = 150, SPREAD = 60, FOLLOW_MIN = 0.08, FOLLOW_MAX = 0.26;
+const TETHER_MIN = 260, TETHER_MAX = 480, RETURN = 0.08;
+/* Sparkle (Hamza, 7 Oct): SPARKLE_PER_S random dots a second flare up to
+   SPARKLE_ALPHA and SPARKLE_GROW× their size, then fade over SPARKLE_S. */
+const SPARKLE_PER_S = 18, SPARKLE_S = 1.1, SPARKLE_ALPHA = 0.95, SPARKLE_GROW = 1.7;
 /* No drift of its own (Hamza, 7 Oct): the field is still until the cursor
    comes near. */
 const DRIFT_PX_PER_S = 0;
@@ -33,6 +36,8 @@ type Dot = {
   hx: number; hy: number; x: number; y: number; a: number; r: number;
   /** Attached to the cursor; its offset there, follow ease and tether. */
   on: boolean; ox: number; oy: number; k: number; tether: number;
+  /** Sparkle progress 0–1, or -1 when not sparkling. */
+  sp: number;
 };
 
 export function HeroDots({ className }: { className?: string }) {
@@ -76,6 +81,7 @@ export function HeroDots({ className }: { className?: string }) {
             on: false, ox: Math.cos(ang) * off, oy: Math.sin(ang) * off,
             k: FOLLOW_MIN + Math.random() * (FOLLOW_MAX - FOLLOW_MIN),
             tether: TETHER_MIN + Math.random() * (TETHER_MAX - TETHER_MIN),
+            sp: -1,
           });
         }
       }
@@ -107,6 +113,16 @@ export function HeroDots({ className }: { className?: string }) {
       frame = requestAnimationFrame(draw);
       const dt = Math.min(0.05, (now - last) / 1000); last = now;
       if (!reduced) drift = (drift + DRIFT_PX_PER_S * dt) % SPACING;
+      // Light a few random dots this frame (a fractional count carries over
+      // as a chance).
+      if (!reduced && dots.length) {
+        const want = SPARKLE_PER_S * dt;
+        let n = Math.floor(want) + (Math.random() < want % 1 ? 1 : 0);
+        while (n-- > 0) {
+          const d = dots[(Math.random() * dots.length) | 0];
+          if (d.sp < 0) d.sp = 0;
+        }
+      }
       ctx.clearRect(0, 0, w, h);
       ctx.fillStyle = ink;
       const c2 = CATCH * CATCH;
@@ -129,9 +145,16 @@ export function HeroDots({ className }: { className?: string }) {
         const k = d.on ? d.k : RETURN;
         d.x += (tx - d.x) * (reduced ? 1 : k);
         d.y += (ty - d.y) * (reduced ? 1 : k);
-        ctx.globalAlpha = d.a * ALPHA;
+        // A sparkle rises and falls on a sine over SPARKLE_S.
+        let glow = 0;
+        if (d.sp >= 0) {
+          d.sp += dt / SPARKLE_S;
+          if (d.sp >= 1) d.sp = -1;
+          else glow = Math.sin(d.sp * Math.PI);
+        }
+        ctx.globalAlpha = d.a * (ALPHA + (SPARKLE_ALPHA - ALPHA) * glow);
         ctx.beginPath();
-        ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
+        ctx.arc(d.x, d.y, d.r * (1 + (SPARKLE_GROW - 1) * glow), 0, Math.PI * 2);
         ctx.fill();
       }
       ctx.globalAlpha = 1;
