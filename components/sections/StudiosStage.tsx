@@ -77,7 +77,7 @@ export function StudiosStage() {
       </div>
 
       <style>{`
-        .st { position: absolute; inset: 0; background: #0b0b0c; }
+        .st { position: absolute; inset: 0; background: var(--media-ground); }
         .st-media { position: absolute; inset: 0; display: flex; animation: st-in 420ms ease both; }
         .st-video { flex: 1 1 0; min-width: 0; height: 100%; object-fit: cover; display: block; }
         .st-multi { gap: 2px; }
@@ -102,13 +102,13 @@ export function StudiosStage() {
           height: 64px;
           padding: 0 30px;
           border-radius: var(--radius-pill);
-          border: 1px solid rgba(255, 255, 255, 0.16);
-          background: rgba(10, 10, 11, 0.42);
-          -webkit-backdrop-filter: blur(10px);
-          backdrop-filter: blur(10px);
+          border: 1px solid var(--glass-line);
+          background: var(--glass);
+          -webkit-backdrop-filter: blur(var(--glass-blur));
+          backdrop-filter: blur(var(--glass-blur));
           cursor: pointer;
           opacity: 0.62;
-          transition: opacity 200ms ease, background 200ms ease, border-color 200ms ease;
+          transition: opacity var(--dur-fast) ease, background var(--dur-fast) ease, border-color var(--dur-fast) ease;
         }
         .st-chip img { display: block; width: auto; }
         .st-go {
@@ -118,18 +118,18 @@ export function StudiosStage() {
           width: 48px; height: 48px;
           border-radius: var(--radius-pill);
           display: grid; place-items: center;
-          color: #fff;
-          border: 1px solid rgba(255, 255, 255, 0.22);
-          background: rgba(10, 10, 11, 0.42);
-          -webkit-backdrop-filter: blur(10px);
-          backdrop-filter: blur(10px);
-          transition: background 200ms ease, transform 200ms ease;
+          color: var(--on-media);
+          border: 1px solid var(--glass-line);
+          background: var(--glass);
+          -webkit-backdrop-filter: blur(var(--glass-blur));
+          backdrop-filter: blur(var(--glass-blur));
+          transition: background var(--dur-fast) ease, transform var(--dur-fast) ease;
         }
-        .st-go:hover { background: rgba(255, 255, 255, 0.2); transform: translate(1px, -1px); }
-        .st-go:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+        .st-go:hover { background: var(--glass-fill-on); transform: translate(1px, -1px); }
+        .st-go:focus-visible { outline: 2px solid var(--on-media); outline-offset: 2px; }
         .st-chip:hover { opacity: 0.9; }
-        .st-chip-on { opacity: 1; background: rgba(255, 255, 255, 0.16); border-color: rgba(255, 255, 255, 0.4); }
-        .st-chip:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+        .st-chip-on { opacity: 1; background: var(--glass-fill-on); border-color: var(--glass-line-on); }
+        .st-chip:focus-visible { outline: 2px solid var(--on-media); outline-offset: 2px; }
         @media (max-width: 640px) {
           .st-chips { left: 12px; right: 12px; transform: none; gap: 6px; }
           .st-chip { flex: 1; min-width: 0; height: 44px; padding: 0 10px; }

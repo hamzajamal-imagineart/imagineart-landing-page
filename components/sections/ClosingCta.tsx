@@ -56,8 +56,8 @@ export function ClosingCta() {
           z-index: 1;
           pointer-events: none;
           background:
-            linear-gradient(to right, rgba(10, 10, 11, 0.86) 0%, rgba(10, 10, 11, 0.62) 32%, rgba(10, 10, 11, 0.1) 60%, transparent 80%),
-            linear-gradient(to top, rgba(10, 10, 11, 0.32), transparent 55%);
+            linear-gradient(to right, rgb(var(--glass-rgb) / 0.86) 0%, rgb(var(--glass-rgb) / 0.62) 32%, rgb(var(--glass-rgb) / 0.1) 60%, transparent 80%),
+            linear-gradient(to top, rgb(var(--glass-rgb) / 0.32), transparent 55%);
         }
 
         .cta-inner {
@@ -123,7 +123,7 @@ export function ClosingCta() {
         @media (max-width: 720px) {
           .cta-section { background-position: 58% center; }
           .cta-section::before {
-            background: linear-gradient(to top, rgba(10, 10, 11, 0.92) 0%, rgba(10, 10, 11, 0.7) 40%, rgba(10, 10, 11, 0.18) 72%, transparent 100%);
+            background: linear-gradient(to top, rgb(var(--glass-rgb) / 0.92) 0%, rgb(var(--glass-rgb) / 0.7) 40%, rgb(var(--glass-rgb) / 0.18) 72%, transparent 100%);
           }
           .cta-inner { align-items: flex-end; min-height: 460px; }
           .cta-copy { max-width: none; padding-block: 48px; }

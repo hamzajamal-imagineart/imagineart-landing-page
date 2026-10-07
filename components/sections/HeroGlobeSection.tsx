@@ -125,13 +125,13 @@ export function HeroGlobeSection({ light = false }: { light?: boolean } = {}) {
           align-items: center;
           text-align: center;
         }
-        /* Two lines, always (Hamza, 6 Oct, to a reference): "One canvas at
-           scale for your" white, "work generations" muted, large at weight 500;
+        /* Two lines, always (Hamza, 7 Oct): "One workspace for your" /
+           "content generations", both white, weight 600;
            each line is held whole and the size scales with the viewport so
            the longer one fits the column. */
         .hc-line { display: block; white-space: nowrap; }
         .hc-title {
-          /* The first line is about 14em wide; 3.6vw keeps it inside the
+          /* The first line is about 11.5em wide; 3.6vw keeps it inside the
              62vw column (less padding) at every width. */
           font-size: clamp(28px, 3.6vw, 58px);
           line-height: 1.1;
@@ -163,18 +163,18 @@ export function HeroGlobeSection({ light = false }: { light?: boolean } = {}) {
           letter-spacing: -0.005em;
           white-space: nowrap;
           color: #fff;
-          background: radial-gradient(63% 261% at 50% 50%, #8A3FFC 30.29%, #8A3FFC 63.46%, #491D8B 100%);
+          background: radial-gradient(63% 261% at 50% 50%, var(--brand) 30.29%, var(--brand) 63.46%, var(--brand-deep) 100%);
           box-shadow:
-            0 6px 12px rgba(138, 63, 252, 0.15),
-            0 12px 24px rgba(138, 63, 252, 0.15),
-            inset 0 -4px 0 #491D8B;
+            0 6px 12px rgb(var(--brand-rgb) / 0.15),
+            0 12px 24px rgb(var(--brand-rgb) / 0.15),
+            inset 0 -4px 0 var(--brand-deep);
           transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
         .hs-cta:hover {
           box-shadow:
-            0 8px 16px rgba(138, 63, 252, 0.26),
-            0 16px 32px rgba(138, 63, 252, 0.22),
-            inset 0 -4px 0 #491D8B;
+            0 8px 16px rgb(var(--brand-rgb) / 0.26),
+            0 16px 32px rgb(var(--brand-rgb) / 0.22),
+            inset 0 -4px 0 var(--brand-deep);
         }
         /* A violet glow behind the button so it carries over the globe
            (Hamza, 7 Oct): a wide blurred ellipse under it, not on it. The
@@ -189,7 +189,7 @@ export function HeroGlobeSection({ light = false }: { light?: boolean } = {}) {
           height: ${CTA_GLOW_H}%;
           transform: translate(-50%, -50%);
           border-radius: 50%;
-          background: radial-gradient(closest-side, rgba(138, 63, 252, ${CTA_GLOW_ALPHA}), rgba(138, 63, 252, 0));
+          background: radial-gradient(closest-side, rgb(var(--brand-rgb) / ${CTA_GLOW_ALPHA}), rgb(var(--brand-rgb) / 0));
           filter: blur(18px);
           z-index: -1;
           pointer-events: none;
@@ -198,7 +198,7 @@ export function HeroGlobeSection({ light = false }: { light?: boolean } = {}) {
         }
         .hs-cta:hover::before { opacity: 1; }
         .hs-cta:active { transform: translateY(1px); }
-        .hs-cta:focus-visible { outline: 2px solid #8a3ffc; outline-offset: 3px; }
+        .hs-cta:focus-visible { outline: 2px solid var(--brand); outline-offset: 3px; }
 
         /* Light variant: ink in place of white, a white block in place of
            the black one. */

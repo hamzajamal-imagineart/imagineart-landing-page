@@ -125,7 +125,7 @@ export function Outcomes() {
           overflow: hidden;
           border-radius: var(--radius-3);
           height: clamp(420px, 37vw, 526px);
-          background: #141416;
+          background: var(--media-ground);
           isolation: isolate;
         }
         .oc-wide { grid-column: 1 / -1; height: clamp(300px, 28vw, 405px); }
@@ -136,19 +136,19 @@ export function Outcomes() {
           position: absolute;
           inset: 0;
           z-index: -1;
-          background: linear-gradient(to top, rgba(0, 0, 0, 0.86) 0%, rgba(0, 0, 0, 0.52) 30%, rgba(0, 0, 0, 0) 60%);
+          background: linear-gradient(to top, var(--scrim-1) 0%, var(--scrim-2) 30%, rgba(0, 0, 0, 0) 60%);
         }
         /* A light floor at the top too, only on cards that carry a mark. */
         .oc-scrim-top {
           background:
-            linear-gradient(to bottom, rgba(0, 0, 0, 0.42) 0%, rgba(0, 0, 0, 0) 26%),
-            linear-gradient(to top, rgba(0, 0, 0, 0.86) 0%, rgba(0, 0, 0, 0.52) 30%, rgba(0, 0, 0, 0) 60%);
+            linear-gradient(to bottom, var(--scrim-3) 0%, rgba(0, 0, 0, 0) 26%),
+            linear-gradient(to top, var(--scrim-1) 0%, var(--scrim-2) 30%, rgba(0, 0, 0, 0) 60%);
         }
         .oc-logo { position: absolute; top: 24px; left: 24px; width: auto; display: block; filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.25)); }
-        .oc-copy { position: absolute; left: 24px; right: 24px; bottom: 24px; color: #fff; }
+        .oc-copy { position: absolute; left: 24px; right: 24px; bottom: 24px; color: var(--on-media); }
         .oc-wide .oc-copy { right: auto; max-width: 512px; }
         .oc-title { font-size: 24px; line-height: 1.3; font-weight: 600; letter-spacing: -0.01em; }
-        .oc-body { margin-top: 8px; font-size: 16px; line-height: 1.6; color: rgba(255, 255, 255, 0.78); }
+        .oc-body { margin-top: 8px; font-size: 16px; line-height: 1.6; color: var(--on-media-2); }
 
         @media (max-width: 900px) {
           .oc-grid { grid-template-columns: minmax(0, 1fr); }

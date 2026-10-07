@@ -2,6 +2,7 @@ import { SiteNav } from "@/components/SiteNav";
 import { SiteFooter } from "@/components/SiteFooter";
 import { PageTint } from "@/components/PageTint";
 import { Wash } from "@/components/Wash";
+import { ScrollReveal } from "@/components/ScrollReveal";
 import { FAQSection } from "@/components/FAQSection";
 import { ReviewsSection } from "@/components/ReviewsSection";
 
@@ -65,6 +66,7 @@ export default function Page() {
       </main>
 
       <SiteFooter />
+      <ScrollReveal />
     </>
   );
 }

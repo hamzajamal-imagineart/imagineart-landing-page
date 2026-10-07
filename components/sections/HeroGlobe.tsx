@@ -45,17 +45,19 @@ export const GLOBE_IMAGES = [
      concept car, cpg, ecommerce, telecom selfie, podcast, puppy, kids, the
      glitter figure). Joined by the Use Cases stills, minus the Wing Theory
      and "Nocté Serum" frames (they carry marks) and the stand-ins that
-     duplicate stills already here. All unbranded, no text. */
+     duplicate stills already here. Blank mockups and abstracts dropped too
+     (Hamza, 7 Oct: branding 5–7 and 9–11, photography 6, try-on 8). All
+     unbranded, no text. */
   ...["beauty", "burger", "car", "coast-road", "cocktail", "fashion-dress", "film-noir", "house", "interior", "perfume", "ring", "sprinter", "travel"].map((n) => `/media/hero/globe/${n}.jpg`),
   ...["beauty", "fashion", "food-beverage", "home-decor"].map((n) => `/media/hero/corridor/${n}.jpg`),
   ...["advertising", "product", "brand"].map((n) => `/media/outcomes/${n}.jpg`),
   ...[9, 12, 13, 15, 17, 18].map((n) => `/media/hero/mosaic/m${n}.jpg`),
   ...[1, 2, 3, 4, 8, 10, 11].map((n) => `/media/use-cases/architecture/${n}.jpg`),
-  ...[5, 6, 7, 8, 9, 10, 11].map((n) => `/media/use-cases/branding/${n}.jpg`),
-  ...[1, 2, 3, 5, 6, 7, 8, 9, 10, 11].map((n) => `/media/use-cases/photography/${n}.jpg`),
+  ...[8].map((n) => `/media/use-cases/branding/${n}.jpg`),
+  ...[1, 2, 3, 5, 7, 8, 9, 10, 11].map((n) => `/media/use-cases/photography/${n}.jpg`),
   ...[1, 2, 3, 4].map((n) => `/media/use-cases/product/${n}.jpg`),
   ...[1, 2, 3, 4].map((n) => `/media/use-cases/style-transfer/${n}.jpg`),
-  ...[1, 2, 3, 4, 5, 6, 8].map((n) => `/media/use-cases/try-on/${n}.jpg`),
+  ...[1, 2, 3, 4, 5, 6].map((n) => `/media/use-cases/try-on/${n}.jpg`),
 ];
 export const GLOBE_CLIPS = [
   "/media/capabilities/video-extend.mp4",

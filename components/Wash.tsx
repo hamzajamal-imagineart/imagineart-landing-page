@@ -17,21 +17,22 @@ const STRENGTH = 0.75;
 
 type Variant = "a" | "b" | "c";
 
-/* Each variant is a stack of radials on the page colour. */
+/* Each variant is a stack of radials on the page colour, in the --wash-*
+   tokens from globals.css. */
 const LAYERS: Record<Variant, string> = {
   // Left to right: green, butter, peach, lilac at the far edge.
-  a: `radial-gradient(60% 70% at 0% 40%, #cfe8a6 0%, transparent 70%),
-      radial-gradient(50% 60% at 40% 30%, #ecdf9f 0%, transparent 70%),
-      radial-gradient(45% 60% at 72% 35%, #f7d3a6 0%, transparent 70%),
-      radial-gradient(40% 70% at 100% 45%, #ecd2f6 0%, transparent 70%)`,
+  a: `radial-gradient(60% 70% at 0% 40%, var(--wash-green) 0%, transparent 70%),
+      radial-gradient(50% 60% at 40% 30%, var(--wash-butter) 0%, transparent 70%),
+      radial-gradient(45% 60% at 72% 35%, var(--wash-peach) 0%, transparent 70%),
+      radial-gradient(40% 70% at 100% 45%, var(--wash-lilac) 0%, transparent 70%)`,
   // Pooled bottom-left: peach in the corner, green spreading right.
-  b: `radial-gradient(45% 60% at 0% 85%, #f6cf96 0%, transparent 70%),
-      radial-gradient(55% 55% at 30% 95%, #cfe8a6 0%, transparent 70%),
-      radial-gradient(40% 55% at 12% 30%, #f3d9e8 0%, transparent 70%)`,
+  b: `radial-gradient(45% 60% at 0% 85%, var(--wash-peach) 0%, transparent 70%),
+      radial-gradient(55% 55% at 30% 95%, var(--wash-green) 0%, transparent 70%),
+      radial-gradient(40% 55% at 12% 30%, var(--wash-blush) 0%, transparent 70%)`,
   // Mirrored: lilac left, butter and green to the right.
-  c: `radial-gradient(45% 65% at 0% 50%, #e8d4f6 0%, transparent 70%),
-      radial-gradient(50% 60% at 62% 40%, #f2e1a8 0%, transparent 70%),
-      radial-gradient(50% 70% at 100% 60%, #d3eaae 0%, transparent 70%)`,
+  c: `radial-gradient(45% 65% at 0% 50%, var(--wash-lilac) 0%, transparent 70%),
+      radial-gradient(50% 60% at 62% 40%, var(--wash-butter) 0%, transparent 70%),
+      radial-gradient(50% 70% at 100% 60%, var(--wash-green) 0%, transparent 70%)`,
 };
 
 /** `flushTop` keeps the wash from bleeding upward, for a section that sits

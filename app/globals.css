@@ -169,6 +169,55 @@
   --color-border-tertiary: rgb(255 255 255 / 0.28);
 }
 
+/* ---------------------------------------------------------------------------
+   Shared tokens (QA pass, 7 Oct). The same in both themes: brand colour,
+   anything laid over imagery or footage (which is dark whatever the page
+   is), the pastel washes, focus and motion. Each was hard-coded in two to
+   six places with drifting values; use these by name.
+
+   The *-rgb channels exist for alpha: rgb(var(--brand-rgb) / 0.2).
+   --------------------------------------------------------------------------- */
+:root {
+  /* Brand violet: the primary action and its glow. --brand-soft is the
+     violet that reads on dark grounds (wires, NEW tags, rings). */
+  --brand: #8a3ffc;
+  --brand-deep: #491d8b;
+  --brand-soft: #a78bfa;
+  --brand-rgb: 138 63 252;
+  --brand-soft-rgb: 167 139 250;
+
+  /* On media: type and controls over imagery are always light. */
+  --on-media: #ffffff;
+  --on-media-2: rgba(255, 255, 255, 0.78);
+  --on-media-3: rgba(255, 255, 255, 0.6);
+  /* The ground a clip or still sits on before it paints. */
+  --media-ground: #0b0b0c;
+  /* Glass controls over media: chips, round buttons. */
+  --glass-rgb: 10 10 11;
+  --glass: rgb(var(--glass-rgb) / 0.42);
+  --glass-strong: rgb(var(--glass-rgb) / 0.72);
+  --glass-line: rgba(255, 255, 255, 0.16);
+  --glass-line-on: rgba(255, 255, 255, 0.4);
+  --glass-fill-on: rgba(255, 255, 255, 0.16);
+  --glass-blur: 10px;
+  /* Floors under type on media, strongest at the edge the type sits on. */
+  --scrim-1: rgba(0, 0, 0, 0.86);
+  --scrim-2: rgba(0, 0, 0, 0.52);
+  --scrim-3: rgba(0, 0, 0, 0.42);
+
+  /* Pastel washes behind light sections (<Wash>). */
+  --wash-green: #cfe8a6;
+  --wash-butter: #ecdf9f;
+  --wash-peach: #f7d3a6;
+  --wash-lilac: #ecd2f6;
+  --wash-blush: #f3d9e8;
+
+  /* Motion. */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-fast: 200ms;
+  --dur-med: 320ms;
+}
+
 /* The guide grid is drawn in ink, so it needs a value per theme. */
 :root {
   --guide-line: rgba(0, 0, 0, 0.055);
@@ -567,4 +616,20 @@ body::before {
 }
 @media (prefers-reduced-motion: reduce) {
   .skel::after { animation: none; }
+}
+
+/* Scroll reveal (<ScrollReveal>, 7 Oct): blocks fade and rise in as they
+   enter, ease-out, and sink back out as they leave, ease-in, either way. */
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 500ms ease-in, transform 500ms ease-in;
+}
+.reveal.is-in {
+  opacity: 1;
+  transform: none;
+  transition: opacity 700ms ease-out, transform 700ms ease-out;
+}
+@media (prefers-reduced-motion: reduce) {
+  .reveal, .reveal.is-in { opacity: 1; transform: none; transition: none; }
 }

@@ -572,8 +572,8 @@ export function PlatformStrip() {
           height: 20px;
           padding: 0 7px;
           border-radius: calc(6px * var(--corner));
-          background: rgba(139, 92, 246, 0.2);
-          color: #a78bfa;
+          background: rgb(var(--brand-rgb) / 0.2);
+          color: var(--brand-soft);
           font-size: 10.5px;
           font-weight: 600;
           letter-spacing: 0.04em;
@@ -582,7 +582,7 @@ export function PlatformStrip() {
         :root:not([data-theme="dark"]) .pf-new:not([data-theme="dark"] *) { background: #ede9fe; color: #6d28d9; }
         /* On the selected tab the pill's grey swallowed the tag's tint
            (Hamza, 7 Oct): a step stronger there, on both palettes. */
-        .pf-tab-on .pf-new { background: rgba(139, 92, 246, 0.34); }
+        .pf-tab-on .pf-new { background: rgb(var(--brand-rgb) / 0.34); }
         :root:not([data-theme="dark"]) .pf-tab-on .pf-new:not([data-theme="dark"] *) { background: #ddd6fe; color: #5b21b6; }
 
         /* The container: one hairline, nothing nested inside it (Hamza,
@@ -619,7 +619,7 @@ export function PlatformStrip() {
           gap: clamp(16px, 3vw, 48px);
           padding: clamp(24px, 4vw, 56px);
           background:
-            radial-gradient(circle at 70% 50%, rgba(138, 63, 252, 0.10), transparent 55%),
+            radial-gradient(circle at 70% 50%, rgb(var(--brand-rgb) / 0.10), transparent 55%),
             radial-gradient(var(--pf-dot, rgba(255, 255, 255, 0.07)) 1px, transparent 1.2px) 0 0 / 22px 22px,
             var(--tile-2);
         }
@@ -656,11 +656,11 @@ export function PlatformStrip() {
         .pf-plug-fig { position: relative; width: 100%; aspect-ratio: 560 / 440; max-height: 100%; justify-self: center; }
         .pf-plug-wires { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
         .pf-wire { fill: none; stroke: var(--line-strong); stroke-width: 1.2; transition: stroke 240ms ease; }
-        .pf-wire-on .pf-wire { stroke: rgba(167, 139, 250, 0.9); }
+        .pf-wire-on .pf-wire { stroke: rgb(var(--brand-soft-rgb) / 0.9); }
         /* A short dash that runs the length of the cable into the hub. */
         .pf-pulse {
           fill: none;
-          stroke: #a78bfa;
+          stroke: var(--brand-soft);
           stroke-width: 2;
           stroke-linecap: round;
           stroke-dasharray: 0.08 1;
@@ -707,9 +707,9 @@ export function PlatformStrip() {
           animation-delay: var(--arrive, 0s);
         }
         @keyframes pf-arrive {
-          0%, 78%  { box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35), 0 0 0 0 rgba(167, 139, 250, 0); }
-          90%      { box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35), 0 0 0 5px rgba(167, 139, 250, 0.28); }
-          100%     { box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35), 0 0 0 10px rgba(167, 139, 250, 0); }
+          0%, 78%  { box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35), 0 0 0 0 rgb(var(--brand-soft-rgb) / 0); }
+          90%      { box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35), 0 0 0 5px rgb(var(--brand-soft-rgb) / 0.28); }
+          100%     { box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35), 0 0 0 10px rgb(var(--brand-soft-rgb) / 0); }
         }
         .pf-node img { width: 50%; height: 50%; object-fit: contain; display: block; }
         /* Stretched to the tile and clipped to its radius, so the file's own
@@ -724,9 +724,9 @@ export function PlatformStrip() {
         }
         .pf-node:hover, .pf-node-on {
           transform: translateY(-3px) scale(1.08);
-          border-color: rgba(167, 139, 250, 0.75);
+          border-color: rgb(var(--brand-soft-rgb) / 0.75);
           animation: none;
-          box-shadow: 0 14px 30px rgba(0, 0, 0, 0.45), 0 0 0 4px rgba(167, 139, 250, 0.18);
+          box-shadow: 0 14px 30px rgba(0, 0, 0, 0.45), 0 0 0 4px rgb(var(--brand-soft-rgb) / 0.18);
         }
         .pf-node:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
         /* Open badge, top-right, always showing. */
@@ -840,17 +840,17 @@ export function PlatformStrip() {
         .hc-round {
           width: 34px; height: 34px;
           display: grid; place-items: center;
-          border: 1px solid rgba(255, 255, 255, 0.14);
+          border: 1px solid var(--glass-line);
           border-radius: var(--radius-pill);
-          background: rgba(10, 10, 11, 0.72);
-          backdrop-filter: blur(10px);
-          -webkit-backdrop-filter: blur(10px);
-          color: #fff;
+          background: var(--glass-strong);
+          backdrop-filter: blur(var(--glass-blur));
+          -webkit-backdrop-filter: blur(var(--glass-blur));
+          color: var(--on-media);
           cursor: pointer;
-          transition: background 160ms ease;
+          transition: background var(--dur-fast) ease;
         }
-        .hc-round:hover { background: rgba(10, 10, 11, 0.9); }
-        .hc-round:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+        .hc-round:hover { background: rgb(var(--glass-rgb) / 0.9); }
+        .hc-round:focus-visible { outline: 2px solid var(--on-media); outline-offset: 2px; }
 
         /* The control bar, on the modes that carry sound. Ported from the
            B2B Workflows page's VideoCard. It sat above the chip row rather
@@ -870,7 +870,7 @@ export function PlatformStrip() {
           gap: 10px;
           padding: 8px 12px;
           border-radius: var(--radius-3);
-          background: rgba(10, 10, 11, 0.62);
+          background: rgb(var(--glass-rgb) / 0.62);
           backdrop-filter: blur(10px);
           -webkit-backdrop-filter: blur(10px);
           opacity: 0;

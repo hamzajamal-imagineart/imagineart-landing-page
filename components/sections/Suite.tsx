@@ -185,7 +185,7 @@ export function Suite() {
           padding: 28px 26px 0;
           display: flex;
           flex-direction: column;
-          color: #fff;
+          color: var(--on-media);
           overflow: hidden;
           text-decoration: none;
           transition: transform 320ms cubic-bezier(0.22, 1, 0.36, 1);
@@ -222,14 +222,14 @@ export function Suite() {
           width: 34px; height: 34px;
           border-radius: var(--radius-pill);
           display: grid; place-items: center;
-          color: #fff;
+          color: var(--on-media);
         }
         .suite-card-title { padding-right: 48px; }
         .suite-card-body {
           margin-top: 8px;
           font-size: 13.5px;
           line-height: 1.5;
-          color: rgba(255, 255, 255, 0.6);
+          color: var(--on-media-3);
           max-width: 24ch;
         }
         /* One frame per card, bottom-anchored, so the media lines up
