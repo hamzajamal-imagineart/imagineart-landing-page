@@ -180,6 +180,27 @@ function layout(shape: GlobeShape): Point[] {
   }
   return pts;
 }
+/* Morph (/hero-7; Hamza, 7 Oct, to a reference): at rest a few tiles stand
+   as tall cards in two loose stacks at the screen's edges, the rest of the
+   globe hidden; held over for OPEN_DELAY they fly into the globe, opened up
+   as the home hero's is on hover, while the
+   others grow in around them, and fly back out when the pointer leaves.
+   Each card: x, y in screen space (-1..1), its height as a share of the
+   screen at its distance, and that distance from the camera. MORPH_ASPECT
+   is the cards' w ÷ h. */
+const MORPH_ASPECT = 0.75;
+/** The morph waits longer than the home hover before it forms (Hamza, 7 Oct). */
+const MORPH_DELAY = 1.2;
+const MORPH_CARDS: { x: number; y: number; h: number; d: number }[] = [
+  // Left: an outer column half off the edge, a front column, an inner one.
+  { x: -1.02, y: 0.5, h: 0.34, d: 60 }, { x: -1.0, y: -0.3, h: 0.34, d: 60 },
+  { x: -0.8, y: 0.62, h: 0.42, d: 52 }, { x: -0.8, y: -0.1, h: 0.42, d: 52 }, { x: -0.84, y: -0.82, h: 0.3, d: 58 },
+  { x: -0.6, y: 0.38, h: 0.36, d: 56 }, { x: -0.6, y: -0.32, h: 0.36, d: 56 }, { x: -0.5, y: 0.02, h: 0.26, d: 62 },
+  // Right, mirrored and staggered.
+  { x: 1.02, y: 0.6, h: 0.36, d: 60 }, { x: 1.0, y: -0.2, h: 0.36, d: 60 },
+  { x: 0.8, y: 0.45, h: 0.42, d: 52 }, { x: 0.8, y: -0.28, h: 0.42, d: 52 }, { x: 0.86, y: -0.86, h: 0.3, d: 58 },
+  { x: 0.6, y: 0.3, h: 0.34, d: 56 }, { x: 0.62, y: -0.42, h: 0.3, d: 58 }, { x: 0.5, y: 0.66, h: 0.24, d: 62 },
+];
 const COVER_HIDDEN = 0, COVER_LIT = 0;
 /* A gradient band can sweep across tiles now and then; off (Hamza, 6 Oct:
    no gradient on the images). Raise BAND_SHARE to bring it back. */
@@ -199,9 +220,11 @@ const VERT = /* glsl */ `
     width ÷ height), so a 3:4 still is not stretched. */
 const PLATE_ASPECT = TILE_W / TILE_H;
 const FRAG_IMAGE = /* glsl */ `
-  uniform sampler2D uMap; uniform float uProgress; uniform float uBrightness; uniform float uAspect; uniform float uBlur; uniform float uLight; varying vec2 vUv;
+  uniform sampler2D uMap; uniform float uProgress; uniform float uBrightness; uniform float uAspect; uniform float uBlur; uniform float uLight; uniform float uPlate; varying vec2 vUv;
   void main() {
-    float plate = ${(TILE_W / TILE_H).toFixed(5)};
+    // The plate's own shape (w ÷ h): 16:9 on the globe, taller while the
+    // morph hero holds its cards upright.
+    float plate = uPlate;
     vec2 uv = vUv - 0.5;
     if (uAspect > plate) uv.x *= plate / uAspect; else uv.y *= uAspect / plate;
     uv += 0.5;
@@ -284,6 +307,8 @@ type Tile = {
   ring: number;
   baseY: number;
   base: THREE.Vector3;
+  /** Morph hero: this tile's card at rest, or -1 if it only joins the globe. */
+  card: number;
   /** Size factor from the shape (smaller at the spiral's core). */
   size: number;
   /** Hourglass: place down the height, 0–1, advancing as tiles stream. */
@@ -302,6 +327,7 @@ export function HeroGlobe({
   light = false,
   shape = "globe",
   parted,
+  morph = false,
 }: {
   /** Stills for the tiles. Changing the list retextures the globe in place. */
   images?: string[];
@@ -323,12 +349,14 @@ export function HeroGlobe({
       side of centre; tiles out to `wide` × the radius are squeezed outward.
       Hover no longer changes it. */
   parted?: { push: number; wide: number };
+  /** Cards at the edges that become the globe on hover (/hero-7). */
+  morph?: boolean;
 } = {}) {
   const hostRef = useRef<HTMLDivElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   /** The scene's "swap the media" hook, set once the scene exists. */
   const applyRef = useRef<((images: string[], clips: string[]) => void) | null>(null);
-  const initial = useRef({ images, clips, distance, light, shape, parted });
+  const initial = useRef({ images, clips, distance, light, shape, parted, morph });
   const softRef = useRef(softCentre);
   softRef.current = softCentre;
 
@@ -338,6 +366,9 @@ export function HeroGlobe({
     const { images: images0, clips: clips0, distance: distance0, shape: shape0 } = initial.current;
     const form = SHAPES[shape0];
     const held = !!initial.current.parted;
+    const morph = initial.current.morph;
+    const tanHalf = Math.tan((FOV / 2) * Math.PI / 180);
+    const ray = new THREE.Vector3(), cardAt = new THREE.Vector3();
     const openPush = initial.current.parted?.push ?? OPEN_PUSH, openWide = initial.current.parted?.wide ?? OPEN_WIDE;
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const hover = window.matchMedia("(hover: hover)").matches;
@@ -434,7 +465,7 @@ export function HeroGlobe({
     points.forEach((pt, n) => {
       {
         const { x, y, z, theta, ring: r } = pt;
-        const image = new THREE.ShaderMaterial({ uniforms: { uMap: { value: null }, uProgress: { value: 0 }, uBrightness: { value: 1 }, uAspect: { value: PLATE_ASPECT }, uBlur: { value: 0 }, uLight: { value: initial.current.light ? 1 : 0 } }, vertexShader: VERT, fragmentShader: FRAG_IMAGE, transparent: true, depthWrite: false, side: THREE.DoubleSide });
+        const image = new THREE.ShaderMaterial({ uniforms: { uMap: { value: null }, uProgress: { value: 0 }, uBrightness: { value: 1 }, uAspect: { value: PLATE_ASPECT }, uBlur: { value: 0 }, uLight: { value: initial.current.light ? 1 : 0 }, uPlate: { value: PLATE_ASPECT } }, vertexShader: VERT, fragmentShader: FRAG_IMAGE, transparent: true, depthWrite: false, side: THREE.DoubleSide });
         const cover = new THREE.ShaderMaterial({ uniforms: { uColor: { value: bg.clone() }, uProgress: { value: 0 }, uMin: { value: COVER_HIDDEN }, uMax: { value: COVER_LIT } }, vertexShader: VERT, fragmentShader: FRAG_COVER, transparent: true, depthWrite: false, side: THREE.DoubleSide });
         const seed = n * 7 + 13;
         const hasBand = hash(seed + 99) < BAND_SHARE;
@@ -448,10 +479,13 @@ export function HeroGlobe({
         tiles.push({
           group, image, cover, band,
           bandAnim: band ? { duration: 2.5 + hash(seed + 1) * 2, pause: 3 + hash(seed + 2) * 7, offset: hash(seed) * 10 } : null,
-          video: null, theta, ring: r, baseY: y, base: new THREE.Vector3(x, y, z), size: pt.size, u: pt.u, progress: 0, scale: 1, dot: 0, hover: 0,
+          video: null, theta, ring: r, baseY: y, base: new THREE.Vector3(x, y, z), card: -1, size: pt.size, u: pt.u, progress: 0, scale: 1, dot: 0, hover: 0,
         });
       }
     });
+
+    // Morph: spread the cards over the tile list so their images differ.
+    if (initial.current.morph) MORPH_CARDS.forEach((_, k) => { const i = Math.floor((k + 0.5) * tiles.length / MORPH_CARDS.length); tiles[i].card = k; });
 
     const applyMedia = (imgs: string[], cls: string[]) => {
       disposeMedia();
@@ -532,7 +566,7 @@ export function HeroGlobe({
       // Open while the pointer is over the hero, eased both ways.
       const inside = hover && !reduced && Math.abs(pointer.x) <= 1 && Math.abs(pointer.y) <= 1;
       insideFor = inside ? insideFor + step : 0;
-      open = held ? 1 : open + ((insideFor >= OPEN_DELAY ? 1 : 0) - open) * (1 - Math.exp(-step / OPEN_TAU));
+      open = held ? 1 : open + ((insideFor >= (morph ? MORPH_DELAY : OPEN_DELAY) ? 1 : 0) - open) * (1 - Math.exp(-step / OPEN_TAU));
       const openE = open * open * (3 - 2 * open);
       // Tell the section how open the globe is (--globe-open, 0–1), so
       // overlays behind the copy can clear as it parts (Hamza, 7 Oct).
@@ -565,7 +599,7 @@ export function HeroGlobe({
           // 0 at the ellipse's rim and beyond, 1 at its centre, eased.
           const e = (proj.x / sc.rx) ** 2 + (proj.y / sc.ry) ** 2;
           // Clears as the globe opens: the parted tiles show sharp and full.
-          if (e < 1) { const w = 1 - Math.sqrt(e); soft = w * w * (3 - 2 * w) * (1 - openE); }
+          if (e < 1) { const w = 1 - Math.sqrt(e); soft = w * w * (3 - 2 * w) * (morph ? openE : 1 - openE); }
         }
         tile.hover = hv;
         let coreBlur = 0;
@@ -598,7 +632,28 @@ export function HeroGlobe({
         }
         pos.copy(tile.base);
         if (!reduced) pos.y += Math.sin(tile.theta * 3 + t * 0.2 + tile.ring * 0.8) * BOB;
-        if (openE > 0.001) {
+        let cardScale = -1, cardPlate = PLATE_ASPECT;
+        if (morph) {
+          // Between the card at the edge (rest) and the tile's place on the
+          // globe opened up as on the home hero's hover (Hamza, 7 Oct: the
+          // expanded globe, not the compact one), both in world space.
+          pos.applyMatrix4(globe.matrixWorld);
+          lat.subVectors(pos, globeWorld);
+          const lx = lat.dot(camRight), ly = lat.dot(camUp);
+          const r = Math.sqrt((lx / OPEN_WIDE) ** 2 + ly * ly) || 0.0001;
+          const f = Math.max(0, 1 - r / (form.radius * OPEN_REACH));
+          pos.addScaledVector(camRight, (lx / r) * OPEN_PUSH * f);
+          pos.addScaledVector(camUp, (ly / r) * OPEN_PUSH * f);
+          if (tile.card >= 0) {
+            const c = MORPH_CARDS[tile.card];
+            ray.set(c.x, c.y, 0.5).unproject(camera).sub(camera.position).normalize();
+            cardAt.copy(camera.position).addScaledVector(ray, c.d);
+            if (!reduced) cardAt.y += Math.sin(t * 0.5 + tile.card * 1.7) * 0.35;
+            pos.lerpVectors(cardAt, pos, openE);
+            cardScale = (c.h * 2 * c.d * tanHalf) / TILE_H; // card height in plate units
+          }
+          globe.worldToLocal(pos);
+        } else if (openE > 0.001) {
           // Out across the view: the tile's offset from the camera axis, in
           // the camera's right/up plane, pushed further out, widest sideways.
           pos.applyMatrix4(globe.matrixWorld);
@@ -626,7 +681,21 @@ export function HeroGlobe({
         // Near tiles grow, far ones shrink.
         const depth = DEPTH_FAR + ((tile.dot + 1) * 0.5) * (DEPTH_NEAR - DEPTH_FAR);
         tile.scale += ((1 + tile.hover * HOVER_SCALE) - tile.scale) * step * 10;
-        tile.group.scale.setScalar(TILE_SCALE * tile.scale * depth * tile.size * (0.6 + 0.4 * ends));
+        const g = TILE_SCALE * tile.scale * depth * tile.size * (0.6 + 0.4 * ends);
+        if (morph && cardScale > 0) {
+          // A card: tall at rest, easing to the globe's 16:9 tile.
+          const sy = cardScale + (g - cardScale) * openE;
+          const sx = cardScale * MORPH_ASPECT * (TILE_H / TILE_W) + (g - cardScale * MORPH_ASPECT * (TILE_H / TILE_W)) * openE;
+          tile.group.scale.set(sx, sy, 1);
+          cardPlate = (sx * TILE_W) / (sy * TILE_H);
+          tile.image.uniforms.uBrightness.value = 1 + (tile.image.uniforms.uBrightness.value - 1) * openE;
+        } else if (morph) {
+          // Not a card: grows in only as the globe forms.
+          tile.group.scale.setScalar(Math.max(0.0001, g * openE));
+        } else {
+          tile.group.scale.setScalar(g);
+        }
+        tile.image.uniforms.uPlate.value = cardPlate;
 
         if (tile.video && tile.hover > 0.25) playing[tile.video.src] = tile.video;
       }

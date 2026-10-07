@@ -37,7 +37,7 @@ const CTA_GLOW_W = 140, CTA_GLOW_H = 220, CTA_GLOW_ALPHA = 0.35;
  *  `light` (Hamza, 7 Oct, /hero-2): the same hero on the light page, with
  *  ink dots, ink type, a white block behind the copy and tiles that fade to
  *  white rather than black. */
-export function HeroGlobeSection({ light = false, shape = "globe", parted = false }: { light?: boolean; shape?: GlobeShape; parted?: boolean } = {}) {
+export function HeroGlobeSection({ light = false, shape = "globe", parted = false, morph = false }: { light?: boolean; shape?: GlobeShape; parted?: boolean; morph?: boolean } = {}) {
   return (
     <>
       <section id="top" className={`hc${light ? " hc-light" : ""}`} data-theme={light ? undefined : "dark"}>
@@ -46,7 +46,7 @@ export function HeroGlobeSection({ light = false, shape = "globe", parted = fals
         <HeroDots className="hs-dots" />
 
         <div className="hc-stage" aria-hidden>
-          <HeroGlobe clips={NO_CLIPS} distance={68} softCentre={parted ? undefined : shape === "hourglass" ? HOURGLASS_SOFT : shape === "spiral" ? SPIRAL_SOFT : GLOBE_SOFT} light={light} shape={shape} parted={parted ? PARTED : undefined} />
+          <HeroGlobe clips={NO_CLIPS} distance={68} softCentre={parted ? undefined : shape === "hourglass" ? HOURGLASS_SOFT : shape === "spiral" ? SPIRAL_SOFT : GLOBE_SOFT} light={light} shape={shape} parted={parted ? PARTED : undefined} morph={morph} />
           {/* A feathered black block behind the copy, over the globe's own
               dimming (Hamza, 7 Oct: no blur on the globe). */}
           {/* The spiral has no block behind the copy (Hamza, 7 Oct): its
@@ -54,7 +54,7 @@ export function HeroGlobeSection({ light = false, shape = "globe", parted = fals
           {/* A feathered dark block behind the copy on the globe and the
               hourglass (Hamza, 7 Oct), over the tiles' own blur and dimming;
               on the globe it clears as the globe opens. */}
-          {shape !== "spiral" && !parted && <span className={`hc-veil${shape === "globe" ? " hc-veil-opens" : ""}`} />}
+          {shape !== "spiral" && !parted && <span className={`hc-veil${morph ? " hc-veil-forms" : shape === "globe" ? " hc-veil-opens" : ""}`} />}
           <span className="hc-topband" />
         </div>
 
@@ -127,6 +127,9 @@ export function HeroGlobeSection({ light = false, shape = "globe", parted = fals
         }
 
         .hc-veil-opens { opacity: calc(1 - var(--globe-open, 0)); }
+        /* Morph (/hero-7): the copy sits on clear ground between the cards,
+           so the block comes in only as the globe forms behind it. */
+        .hc-veil-forms { opacity: var(--globe-open, 0); }
 
         /* A band of the page colour under the nav (Hamza, 7 Oct): solid for
            the bar's height, gone by 170px, so the tiles never pass behind the
