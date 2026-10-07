@@ -101,6 +101,8 @@ const BOB = 0.5, HOVER_RADIUS = 0.2, HOVER_SCALE = 0.18;
 /** No two tiles closer than this (globe units, about two rings) share an image. */
 const SPREAD_DIST = 24;
 const OPEN_PUSH = 16, OPEN_REACH = 1.15, OPEN_WIDE = 1.5, OPEN_TAU = 0.45;
+/** The pointer has to stay over the hero this long (s) before it opens. */
+const OPEN_DELAY = 0.5;
 const COVER_HIDDEN = 0, COVER_LIT = 0;
 /* A gradient band can sweep across tiles now and then; off (Hamza, 6 Oct:
    no gradient on the images). Raise BAND_SHARE to bring it back. */
@@ -411,7 +413,7 @@ export function HeroGlobe({
     const camDir = new THREE.Vector3(), toCam = new THREE.Vector3(), globeWorld = new THREE.Vector3(), tileWorld = new THREE.Vector3(), tileDir = new THREE.Vector3(), proj = new THREE.Vector3();
     const globeQuatInv = new THREE.Quaternion(), globeQuat = new THREE.Quaternion();
     const camRight = new THREE.Vector3(), camUp = new THREE.Vector3(), lat = new THREE.Vector3(), pos = new THREE.Vector3();
-    let open = 0;
+    let open = 0, insideFor = 0;
     let disposed = false;
 
     const tick = () => {
@@ -438,7 +440,8 @@ export function HeroGlobe({
       const aspect = camera.aspect || 1;
       // Open while the pointer is over the hero, eased both ways.
       const inside = hover && !reduced && Math.abs(pointer.x) <= 1 && Math.abs(pointer.y) <= 1;
-      open += ((inside ? 1 : 0) - open) * (1 - Math.exp(-step / OPEN_TAU));
+      insideFor = inside ? insideFor + step : 0;
+      open += ((insideFor >= OPEN_DELAY ? 1 : 0) - open) * (1 - Math.exp(-step / OPEN_TAU));
       const openE = open * open * (3 - 2 * open);
       camRight.setFromMatrixColumn(camera.matrixWorld, 0);
       camUp.setFromMatrixColumn(camera.matrixWorld, 1);
