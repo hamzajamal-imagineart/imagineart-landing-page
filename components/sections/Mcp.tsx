@@ -305,7 +305,7 @@ export function McpPanel() {
     .mcp-tabs, .mcp-route {
       display: inline-flex;
       gap: 4px;
-      padding: 5px;
+      padding: 6px;
       border-radius: var(--radius-4);
       background: var(--track);
     }
@@ -343,7 +343,7 @@ export function McpPanel() {
     .mcp-tab img, .mcp-tab svg { width: 18px; height: 18px; display: block; }
     :root[data-theme="dark"] .mcp-mono { filter: brightness(0) invert(1); }
     .mcp-tabs-off .mcp-tab { color: var(--ink-3); }
-    .mcp-route { padding: 4px; border-radius: var(--radius-3); align-self: center; position: relative; }
+    .mcp-route { border-radius: var(--radius-3); align-self: center; position: relative; }
     .mcp-route .mcp-tab { height: 32px; padding: 0 10px; font-size: 13px; gap: 6px; border-radius: calc(13px * var(--corner)); }
     .mcp-route .mcp-tab svg { width: 14px; height: 14px; }
     .mcp-title { display: flex; justify-content: center; }

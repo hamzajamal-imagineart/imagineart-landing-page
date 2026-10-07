@@ -4,7 +4,7 @@ import { PageTint } from "@/components/PageTint";
 import { FAQSection } from "@/components/FAQSection";
 import { ReviewsSection } from "@/components/ReviewsSection";
 
-import { Hero } from "@/components/sections/Hero";
+import { HeroGlobeSection } from "@/components/sections/HeroGlobeSection";
 import { Partners } from "@/components/sections/Partners";
 import { Suite } from "@/components/sections/Suite";
 import { Outcomes } from "@/components/sections/Outcomes";
@@ -49,7 +49,7 @@ export default function Page() {
       <SiteNav variant="onDark" theme="light" />
 
       <main>
-        <Hero />
+        <HeroGlobeSection />
         <Partners />
         <Suite />
         <Outcomes />

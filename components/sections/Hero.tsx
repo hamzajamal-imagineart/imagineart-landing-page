@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { withBasePath } from "@/lib/assets";
+import { useState } from "react";
 import { START_HREF } from "@/lib/links";
 import { PlatformStrip } from "@/components/sections/Platform";
+import { HeroGlobe } from "@/components/sections/HeroGlobe";
 
 /**
  * Hero, rebuilt to a reference (Hamza, 6 Oct): a dark stage with the claim
@@ -13,58 +13,36 @@ import { PlatformStrip } from "@/components/sections/Platform";
  * the bottom-left corner. The top-right notes and the chat-card sales action
  * came out on 6 Oct (Hamza).
  *
- * The stage is dark on the light page (Hamza, 6 Oct): it carries
- * data-theme="dark", which globals.css honours on any element, and the nav
- * sits over it as `onDark`.
+ * The stage takes the page's tokens (light again since 7 Oct, Hamza), and
+ * the nav sits over it as `onLight`.
  *
- * The list bottom-left is the Use Cases section's six categories (Hamza,
- * 6 Oct). Each is a button: an arrow appears on hover, and choosing one puts
- * that category's eleven images on the eleven cards. The titles and the
- * first four files mirror sections/UseCases; they are repeated here rather
- * than imported so the client hero does not pull the server section in.
+ * The list bottom-left is the Use Cases section's categories, merged into
+ * two groups (Hamza, 7 Oct). Each is a button: an arrow appears on hover,
+ * and choosing one retextures the globe with that group's 33 images. The
+ * folders mirror sections/UseCases; they are named here rather than imported
+ * so the client hero does not pull the server section in.
  *
- * The cluster moves with the pointer: each card carries a depth (`--z`) and
- * shifts by that much of the pointer's offset from the centre, so the front
- * cards travel further than the back ones. Off under reduced motion and on
- * touch, where there is no pointer to follow.
+ * Between the words sits the planet of work from sections/HeroGlobe (Hamza,
+ * 7 Oct), in the box the card cluster used to fill; the globe handles its
+ * own pointer parallax and reduced-motion behaviour.
  *
  * Under the stage, the platform strip (`sections/Platform`), on the page.
  */
 
-type Card = { src: string; x: number; y: number; w: number; h: number; z: number };
-
-/** Positions in % of the cluster box (560 × 600 design units); z is depth,
-    0 at the back to 1 at the front. Back cards are smaller and dimmer. */
-const CARDS: Card[] = [
-  { src: "m3", x: 4, y: 15, w: 22, h: 35, z: 0.15 },
-  { src: "m17", x: 22, y: 6, w: 27, h: 39, z: 0.5 },
-  { src: "m12", x: 42, y: 3, w: 27, h: 41, z: 0.75 },
-  { src: "m18", x: 63, y: 9, w: 23, h: 40, z: 0.35 },
-  { src: "m1", x: 80, y: 28, w: 14, h: 34, z: 0.1 },
-  { src: "m14", x: 0, y: 49, w: 20, h: 36, z: 0.3 },
-  { src: "m13", x: 16, y: 45, w: 28, h: 42, z: 0.95 },
-  { src: "m9", x: 42, y: 42, w: 27, h: 44, z: 0.85 },
-  { src: "m11", x: 65, y: 46, w: 21, h: 37, z: 0.45 },
-  { src: "m4", x: 28, y: 84, w: 26, h: 14, z: 0.05 },
-  { src: "m6", x: 52, y: 84, w: 22, h: 13, z: 0.05 },
+/** The list bottom-left: the Use Cases categories merged into two groups
+    (Hamza, 7 Oct), so each click textures the globe with 33 images rather
+    than 11 and the tiles repeat less. Each folder holds eleven stills: the
+    four from sections/UseCases plus seven generated for the hero (6 Oct;
+    Nano Banana Pro, 3:4, unbranded, no text). The first group is the
+    default. */
+const GROUPS: { title: string; dirs: string[] }[] = [
+  { title: "Brand, product & photography", dirs: ["photography", "branding", "product"] },
+  { title: "Fashion, interiors & style", dirs: ["try-on", "architecture", "style-transfer"] },
 ];
-
-/** The Use Cases categories, each with eleven images, one per card: the
-    four from sections/UseCases plus seven more generated for the hero
-    (Hamza, 6 Oct; Nano Banana Pro, 3:4, unbranded, no text). The first is
-    the default. */
-const GROUPS: { title: string; dir: string }[] = [
-  { title: "Photography", dir: "photography" },
-  { title: "Branding", dir: "branding" },
-  { title: "Interior Design", dir: "architecture" },
-  { title: "Try On", dir: "try-on" },
-  { title: "Product", dir: "product" },
-  { title: "Style Transfer", dir: "style-transfer" },
-];
-const PER_GROUP = CARDS.length;
-const groupImages = (g: { dir: string }) => Array.from({ length: PER_GROUP }, (_, n) => `/media/use-cases/${g.dir}/${n + 1}.jpg`);
-/** Cards from front to back, so the chosen category lands on the front. */
-const CARDS_BY_DEPTH = CARDS.map((c, i) => ({ ...c, i })).sort((a, b) => b.z - a.z);
+/** Images per folder (the globe cycles them over its tiles). */
+const PER_DIR = 11;
+const groupImages = (g: { dirs: string[] }) =>
+  g.dirs.flatMap((dir) => Array.from({ length: PER_DIR }, (_, n) => `/media/use-cases/${dir}/${n + 1}.jpg`));
 
 /** Drifting dust, positions in % of the stage. */
 const DUST = [
@@ -73,41 +51,13 @@ const DUST = [
 ];
 
 export function Hero() {
-  const cluster = useRef<HTMLDivElement | null>(null);
   const [active, setActive] = useState(0);
-  /* One image per card from the chosen category alone, the strongest four
-     on the four front cards, so a switch changes every card. */
+  /* The chosen group's 33 images texture the globe. */
   const images = groupImages(GROUPS[active]);
-  const srcFor = new Map(CARDS_BY_DEPTH.map((c, k) => [c.i, images[k]]));
-
-  /**
-   * Pointer parallax. One listener on the stage writes the pointer's offset
-   * from the centre (-1 to 1) to two custom properties on the cluster; each
-   * card's transform reads them times its own depth, so the browser does the
-   * per-card work and React never re-renders.
-   */
-  useEffect(() => {
-    const el = cluster.current;
-    const stage = el?.closest(".hx") as HTMLElement | null;
-    if (!el || !stage) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce), (hover: none)").matches) return;
-    const onMove = (e: PointerEvent) => {
-      const r = stage.getBoundingClientRect();
-      el.style.setProperty("--mx", (((e.clientX - r.left) / r.width) * 2 - 1).toFixed(3));
-      el.style.setProperty("--my", (((e.clientY - r.top) / r.height) * 2 - 1).toFixed(3));
-    };
-    const onLeave = () => { el.style.setProperty("--mx", "0"); el.style.setProperty("--my", "0"); };
-    stage.addEventListener("pointermove", onMove, { passive: true });
-    stage.addEventListener("pointerleave", onLeave);
-    return () => {
-      stage.removeEventListener("pointermove", onMove);
-      stage.removeEventListener("pointerleave", onLeave);
-    };
-  }, []);
 
   return (
     <>
-      <section id="top" className="hx" data-theme="dark">
+      <section id="top" className="hx">
         <span className="hx-corner hx-corner-l" aria-hidden />
         <span className="hx-corner hx-corner-r" aria-hidden />
         <div className="hx-dust" aria-hidden>
@@ -123,28 +73,17 @@ export function Hero() {
           <span className="hx-word hx-word-b">At Scale</span>
         </h1>
 
-        <div className="hx-cluster" ref={cluster} aria-hidden>
-          {CARDS.map((c, i) => (
-            <span
-              key={c.src}
-              className="hx-card"
-              style={{
-                left: `${c.x}%`, top: `${c.y}%`, width: `${c.w}%`, height: `${c.h}%`,
-                ["--z" as string]: c.z,
-                zIndex: Math.round(c.z * 10),
-              }}
-            >
-              {/* Keyed on the file so a change remounts and fades in. */}
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img key={srcFor.get(i)} src={withBasePath(srcFor.get(i)!)} alt="" />
-            </span>
-          ))}
+        {/* The planet of work (sections/HeroGlobe), in the box the card
+            cluster used to fill (Hamza, 7 Oct), textured with the chosen
+            category's images; no clips here. */}
+        <div className="hx-cluster" aria-hidden>
+          <HeroGlobe images={images} clips={[]} distance={82} />
         </div>
 
         <div className="hx-foot">
           <ul className="hx-list" aria-label="Use cases">
             {GROUPS.map((g, i) => (
-              <li key={g.dir}>
+              <li key={g.title}>
                 <button type="button" className={`hx-pick ${i === active ? "hx-pick-on" : ""}`} aria-pressed={i === active} onClick={() => setActive(i)}>
                   <span className="hx-pick-arrow" aria-hidden>
                     <svg width="12" height="11" viewBox="0 0 12 11" fill="none"><path d="M11.17 5.5H1M7.75 10l3.585-3.97c.53-.53.54-.52 0-1.06L7.75 1" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" /></svg>
@@ -170,8 +109,8 @@ export function Hero() {
       </div>
 
       <style>{`
-        /* The stage. Dark on the light page via data-theme="dark" on the
-           section (Hamza, 6 Oct), so every token inside is the dark set. */
+        /* The stage, on the page's own tokens: light on the light page, and
+           still dark if the theme flips back. */
         .hx {
           --hx-ink: var(--ink-heading);
           --hx-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
@@ -234,37 +173,20 @@ export function Hero() {
            not the mono they had (Hamza, 6 Oct). */
         .hx-list, .hx-go { font-family: var(--font-sans); }
 
-        /* The cluster: a box in the middle of the stage, cards placed in it
-           by percentage, so it scales as one. */
+        /* The globe's box in the middle of the stage: the same box the card
+           cluster filled, so it scales as one. The canvas fills it. */
         .hx-cluster {
-          --mx: 0; --my: 0;
           position: absolute;
           left: 50%;
-          /* Low enough that the top cards clear CONTENT's baseline; the
-             bottom ones run under AT SCALE, as ATELIER does in the reference. */
           top: 55%;
           height: min(62%, 660px);
           aspect-ratio: 560 / 600;
           transform: translate(-50%, -50%);
           z-index: 10;
+          pointer-events: none;
         }
-        .hx-card {
-          position: absolute;
-          border-radius: 14px;
-          overflow: hidden;
-          background: var(--tile);
-          box-shadow:
-            0 18px 40px rgba(0, 0, 0, 0.16),
-            0 4px 10px rgba(0, 0, 0, 0.08);
-          /* Full opacity front to back (Hamza, 6 Oct); depth comes from
-             size, overlap and parallax alone. */
-          transform:
-            translate3d(calc(var(--mx) * var(--z) * 22px), calc(var(--my) * var(--z) * 16px), 0)
-            scale(calc(0.94 + var(--z) * 0.06));
-          transition: transform 600ms cubic-bezier(0.22, 1, 0.36, 1);
-        }
-        .hx-card img { width: 100%; height: 100%; object-fit: cover; display: block; }
-
+        .hx-cluster .hg-host { position: absolute; inset: 0; }
+        .hx-cluster .hg-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
 
         .hx-foot {
           position: absolute;
@@ -294,26 +216,39 @@ export function Hero() {
         .hx-pick:hover, .hx-pick-on { color: var(--ink-heading); }
         .hx-pick:hover .hx-pick-arrow, .hx-pick-on .hx-pick-arrow { opacity: 1; transform: none; }
         .hx-pick:focus-visible { outline: 2px solid var(--ink-heading); outline-offset: 3px; border-radius: 4px; }
-        @keyframes hx-card-in { from { opacity: 0; } to { opacity: 1; } }
-        .hx-card img { animation: hx-card-in 420ms ease both; }
+
+        /* The primary action in the brand purple the hero carried before
+           (Hamza, 7 Oct): the radial, a 4px lip along the foot, a violet
+           glow; white type. */
         .hx-go {
           margin-top: 22px;
           display: inline-flex;
           align-items: center;
           gap: 10px;
-          height: 40px;
-          padding: 0 16px;
-          border-radius: 10px;
-          background: var(--ink-heading);
-          color: var(--page-bg);
-          font-size: 13.5px;
+          height: 48px;
+          padding: 0 22px 4px;
+          border-radius: calc(19px * var(--corner));
+          font-size: 15px;
           font-weight: 500;
-          letter-spacing: 0.01em;
+          letter-spacing: -0.005em;
+          white-space: nowrap;
           text-decoration: none;
-          transition: opacity 200ms ease;
+          color: #fff;
+          background: radial-gradient(63% 261% at 50% 50%, #8A3FFC 30.29%, #8A3FFC 63.46%, #491D8B 100%);
+          box-shadow:
+            0 6px 12px rgba(138, 63, 252, 0.15),
+            0 12px 24px rgba(138, 63, 252, 0.15),
+            inset 0 -4px 0 #491D8B;
+          transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
-        .hx-go:hover { opacity: 0.86; }
-        .hx-go:focus-visible { outline: 2px solid var(--ink-heading); outline-offset: 3px; }
+        .hx-go:hover {
+          box-shadow:
+            0 8px 16px rgba(138, 63, 252, 0.26),
+            0 16px 32px rgba(138, 63, 252, 0.22),
+            inset 0 -4px 0 #491D8B;
+        }
+        .hx-go:active { transform: translateY(1px); }
+        .hx-go:focus-visible { outline: 2px solid #8a3ffc; outline-offset: 3px; }
 
         .hx-strip { padding-top: clamp(48px, 6vw, 80px); padding-bottom: clamp(40px, 6vh, 72px); }
 
@@ -340,8 +275,6 @@ export function Hero() {
         }
         @media (prefers-reduced-motion: reduce) {
           .hx-dust span { animation: none; }
-          .hx-card { transition: none; }
-          .hx-card img { animation: none; }
           .hx-pick-arrow { transition: none; }
         }
       `}</style>

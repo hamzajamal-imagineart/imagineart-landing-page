@@ -1,14 +1,15 @@
 import { START_HREF } from "@/lib/links";
 import { PlatformStrip } from "@/components/sections/Platform";
 import { HeroGlobe } from "@/components/sections/HeroGlobe";
+import { HeroDots } from "@/components/sections/HeroDots";
 
 /**
  * Hero (Hamza, 6 Oct): a two-line claim, one line and the purple "Start
  * creating for free" centred, over a slowly turning globe of the product's
  * work. The globe is a three.js scene in <HeroGlobe> (which documents how it
  * works and how it differs from the TwelveLabs hero that prompted it); over
- * it sits a dark pool with a backdrop blur, centred on the copy, so the type
- * stays legible where the planet passes behind it.
+ * it sits a full-width band of the page colour behind the copy, so the type
+ * sits on solid ground and the planet shows above and below it.
  *
  * The section is dark on a light page (Hamza, 6 Oct): it carries
  * data-theme="dark", which globals.css honours on any element, so every
@@ -19,12 +20,14 @@ export function HeroGlobeSection() {
   return (
     <>
       <section id="top" className="hc" data-theme="dark">
-        <span className="hs-dots hs-dots-l" aria-hidden />
-        <span className="hs-dots hs-dots-r" aria-hidden />
+        {/* The halftone edges, live: dots give way to the pointer and spring
+            back (sections/HeroDots). */}
+        <HeroDots className="hs-dots" />
 
         <div className="hc-stage" aria-hidden>
-          <HeroGlobe />
+          <HeroGlobe distance={60} />
           <span className="hc-veil" />
+          <span className="hc-topband" />
         </div>
 
         <div className="hc-copy">
@@ -60,49 +63,45 @@ export function HeroGlobeSection() {
           padding-top: 64px;
           background: var(--page-bg);
         }
-        /* Halftone at the edges: a dot grid on each side, fading out toward
-           the middle and patchy along its length. */
+        /* Halftone at the edges, drawn by <HeroDots> on a canvas over the
+           whole stage (its colour is this element's color). */
         .hs-dots {
           position: absolute;
-          top: 0; bottom: 0;
-          width: clamp(64px, 12vw, 200px);
+          inset: 0;
           z-index: 2;
           pointer-events: none;
-          background: radial-gradient(circle, var(--ink-heading) 1.1px, transparent 1.5px) 0 0 / 12px 12px;
-          opacity: 0.32;
-          /* The grid crawls slowly on the diagonal (Hamza, 6 Oct): one cell
-             every 5s, so it reads as drift rather than motion. */
-          animation: hs-dots-drift 5s linear infinite;
-        }
-        .hs-dots-r { animation-direction: reverse; }
-        @keyframes hs-dots-drift { to { background-position: 12px 12px; } }
-        @media (prefers-reduced-motion: reduce) { .hs-dots { animation: none; } }
-        .hs-dots-l {
-          left: 0;
-          -webkit-mask-image: linear-gradient(to right, #000 0%, rgba(0, 0, 0, 0.5) 45%, transparent 100%), linear-gradient(to bottom, transparent 0%, #000 12%, rgba(0, 0, 0, 0.35) 40%, #000 62%, transparent 100%);
-          -webkit-mask-composite: source-in;
-          mask-image: linear-gradient(to right, #000 0%, rgba(0, 0, 0, 0.5) 45%, transparent 100%), linear-gradient(to bottom, transparent 0%, #000 12%, rgba(0, 0, 0, 0.35) 40%, #000 62%, transparent 100%);
-          mask-composite: intersect;
-        }
-        .hs-dots-r {
-          right: 0;
-          -webkit-mask-image: linear-gradient(to left, #000 0%, rgba(0, 0, 0, 0.5) 45%, transparent 100%), linear-gradient(to bottom, #000 0%, rgba(0, 0, 0, 0.35) 30%, #000 55%, rgba(0, 0, 0, 0.2) 80%, #000 100%);
-          -webkit-mask-composite: source-in;
-          mask-image: linear-gradient(to left, #000 0%, rgba(0, 0, 0, 0.5) 45%, transparent 100%), linear-gradient(to bottom, #000 0%, rgba(0, 0, 0, 0.35) 30%, #000 55%, rgba(0, 0, 0, 0.2) 80%, #000 100%);
-          mask-composite: intersect;
+          color: var(--ink-heading);
         }
 
         /* The globe fills the section behind the copy. */
         .hc-stage { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
         .hg-host { position: absolute; inset: 0; }
         .hg-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
-        /* The veil: a dark pool centred on the copy, no blur (Hamza, 6 Oct:
-           the blur looked wrong); the tiles stay crisp and simply darken
-           under the type, and the planet's rim stays bright around it. */
+        /* The veil: a soft-edged block of the page colour just behind the
+           copy (Hamza, 7 Oct: the text clear, the globe showing around it on
+           all four sides). Sized to the copy column plus a margin, blurred
+           so it has no edge; the planet shows left and right of it as well
+           as above and below. */
         .hc-veil {
           position: absolute;
-          inset: 0;
-          background: radial-gradient(ellipse 38% 44% at 50% 50%, rgba(0, 0, 0, 0.92) 0%, rgba(0, 0, 0, 0.8) 50%, rgba(0, 0, 0, 0.35) 78%, rgba(0, 0, 0, 0) 100%);
+          left: 50%;
+          top: 50%;
+          width: calc(min(960px, 62vw) + 40px);
+          height: clamp(280px, 34%, 340px);
+          transform: translate(-50%, -50%);
+          border-radius: 48px;
+          background: var(--page-bg);
+          filter: blur(28px);
+        }
+
+        /* A band of the page colour under the nav (Hamza, 7 Oct): solid for
+           the bar's height, gone by 170px, so the tiles never pass behind the
+           links. */
+        .hc-topband {
+          position: absolute;
+          left: 0; right: 0; top: 0;
+          height: 170px;
+          background: linear-gradient(to bottom, var(--page-bg) 0%, var(--page-bg) 72px, transparent 100%);
         }
 
         .hc-copy {
@@ -178,7 +177,6 @@ export function HeroGlobeSection() {
         @media (max-width: 760px) {
           .hc-copy { max-width: none; }
           .hc-stage { opacity: 0.35; }
-          .hs-dots { width: 48px; }
           .hs-cta { height: 48px; padding: 0 20px 4px; font-size: 15px; }
         }
       `}</style>

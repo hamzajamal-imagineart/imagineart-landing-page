@@ -28,8 +28,10 @@ import { withBasePath } from "@/lib/assets";
  * Over the canvas, a centred dark pool with a masked backdrop blur (the
  * parent section draws it) keeps the copy legible.
  *
- * Media: the stills in IMAGES as textures, and the clips in CLIPS as video
- * textures parked on a frame partway in; a clip plays only while hovered.
+ * Media: stills as textures and clips as video textures parked on a frame
+ * partway in; a clip plays only while hovered. Both come in as props
+ * (defaulting to GLOBE_IMAGES / GLOBE_CLIPS) and can be swapped live, which
+ * the home hero's use-case picker does.
  * Reduced motion stops the rotation and bob. Rendering pauses while the hero
  * is out of view.
  */
@@ -85,7 +87,7 @@ const CAMERA_DIST = 76, FOV = 44;
 const PARALLAX = 5;
 /* Every tile is lit; the only dimming is brightness by depth plus the veil
    the section draws. */
-const WIPE_AT = -1, BRIGHT_MIN = 0.45, BRIGHT_MAX = 1.25;
+const WIPE_AT = -1, BRIGHT_MIN = 0.62, BRIGHT_MAX = 1.3;
 /** Near tiles grow and far ones shrink, linearly in depth: 0.7× to 1.25×. */
 const DEPTH_FAR = 0.7, DEPTH_NEAR = 1.25;
 const BOB = 0.5, HOVER_RADIUS = 0.2, HOVER_SCALE = 0.18;
@@ -190,13 +192,28 @@ type Tile = {
   hover: number;
 };
 
-export function HeroGlobe() {
+export function HeroGlobe({
+  images = GLOBE_IMAGES,
+  clips = GLOBE_CLIPS,
+  distance = CAMERA_DIST,
+}: {
+  /** Stills for the tiles. Changing the list retextures the globe in place. */
+  images?: string[];
+  /** Clips for the tiles (play only under the pointer). Empty for none. */
+  clips?: string[];
+  /** Camera distance from the globe's centre; larger shows more of it. */
+  distance?: number;
+} = {}) {
   const hostRef = useRef<HTMLDivElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  /** The scene's "swap the media" hook, set once the scene exists. */
+  const applyRef = useRef<((images: string[], clips: string[]) => void) | null>(null);
+  const initial = useRef({ images, clips, distance });
 
   useEffect(() => {
     const host = hostRef.current, canvas = canvasRef.current;
     if (!host || !canvas) return;
+    const { images: images0, clips: clips0, distance: distance0 } = initial.current;
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const hover = window.matchMedia("(hover: hover)").matches;
 
@@ -208,7 +225,7 @@ export function HeroGlobe() {
 
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(FOV, 1, 0.1, 300);
-    camera.position.set(0, 0, CAMERA_DIST);
+    camera.position.set(0, 0, distance0);
     const tilt = new THREE.Group();
     tilt.position.copy(GLOBE_OFFSET);
     tilt.rotation.set(TILT_X, 0, TILT_Z);
@@ -217,17 +234,21 @@ export function HeroGlobe() {
     tilt.add(globe);
 
     /* Media: every still as a texture, every clip as a video texture parked
-       partway in. Tiles take media in a shuffled, deterministic order. */
+       partway in. Tiles take media in a shuffled, deterministic order.
+       applyMedia builds the set and hands it to the tiles; it runs once here
+       and again whenever the images/clips props change. */
     const loader = new THREE.TextureLoader();
     /** Texture aspect (w ÷ h) per media item, filled in as each loads. */
     const aspects = new Map<THREE.Texture, number>();
-    const stills = GLOBE_IMAGES.map((src) => {
+    type Clip = { video: HTMLVideoElement; texture: THREE.VideoTexture };
+    const media = { stills: [] as THREE.Texture[], clips: [] as Clip[] };
+    const loadStills = (srcs: string[]) => srcs.map((src) => {
       const t = loader.load(withBasePath(src), (tex) => { const im = tex.image as HTMLImageElement; if (im?.width && im?.height) aspects.set(tex, im.width / im.height); });
       t.colorSpace = THREE.SRGBColorSpace;
       t.minFilter = THREE.LinearFilter;
       return t;
     });
-    const clips = GLOBE_CLIPS.map((src, i) => {
+    const loadClips = (srcs: string[]) => srcs.map((src, i) => {
       const v = document.createElement("video");
       v.muted = true; v.loop = true; v.playsInline = true; v.preload = "auto";
       v.src = withBasePath(src);
@@ -237,18 +258,22 @@ export function HeroGlobe() {
         if (v.videoWidth && v.videoHeight) aspects.set(t, v.videoWidth / v.videoHeight);
       }, { once: true });
       v.load();
-      t.colorSpace = THREE.SRGBColorSpace;
-      t.minFilter = THREE.LinearFilter; t.magFilter = THREE.LinearFilter;
       return { video: v, texture: t };
     });
-    const media: { texture: THREE.Texture; video: HTMLVideoElement | null }[] = [
-      ...stills.map((texture) => ({ texture, video: null })),
-      ...clips.map((c) => ({ texture: c.texture, video: c.video })),
-    ];
+    const disposeMedia = () => {
+      media.clips.forEach((c) => { c.video.pause(); c.video.removeAttribute("src"); c.video.load(); c.texture.dispose(); });
+      media.stills.forEach((t) => { aspects.delete(t); t.dispose(); });
+      media.stills = []; media.clips = [];
+    };
+    /** A shuffled, deterministic assignment of `count` media items over `total` tiles. */
+    const shuffledOrder = (total: number, count: number) => {
+      const order = Array.from({ length: total }, (_, i) => i % Math.max(1, count));
+      for (let i = total - 1; i > 0; i--) { const j = Math.floor(hash(i * 31 + 7 + 42) * (i + 1)); [order[i], order[j]] = [order[j], order[i]]; }
+      return order;
+    };
+
     const counts = Array.from({ length: RINGS }, (_, r) => ringCount(((r + 1) / (RINGS + 1)) * Math.PI));
     const total = counts.reduce((a, b) => a + b, 0);
-    const order = Array.from({ length: total }, (_, i) => i % media.length);
-    for (let i = total - 1; i > 0; i--) { const j = Math.floor(hash(i * 31 + 7 + 42) * (i + 1)); [order[i], order[j]] = [order[j], order[i]]; }
 
     const plate = roundedPlate(TILE_W, TILE_H, TILE_H * CORNER);
     const grad = gradientTexture();
@@ -264,8 +289,7 @@ export function HeroGlobe() {
         const theta = ((k + (r % 2) * 0.5) / per) * Math.PI * 2;
         const ringR = Math.sin(phi) * GLOBE;
         const x = Math.cos(theta) * ringR, y = Math.cos(phi) * GLOBE, z = Math.sin(theta) * ringR;
-        const m = media[order[n]];
-        const image = new THREE.ShaderMaterial({ uniforms: { uMap: { value: m.texture }, uProgress: { value: 0 }, uBrightness: { value: 1 }, uAspect: { value: PLATE_ASPECT } }, vertexShader: VERT, fragmentShader: FRAG_IMAGE, transparent: true, depthWrite: false, side: THREE.DoubleSide });
+        const image = new THREE.ShaderMaterial({ uniforms: { uMap: { value: null }, uProgress: { value: 0 }, uBrightness: { value: 1 }, uAspect: { value: PLATE_ASPECT } }, vertexShader: VERT, fragmentShader: FRAG_IMAGE, transparent: true, depthWrite: false, side: THREE.DoubleSide });
         const cover = new THREE.ShaderMaterial({ uniforms: { uColor: { value: bg.clone() }, uProgress: { value: 0 }, uMin: { value: COVER_HIDDEN }, uMax: { value: COVER_LIT } }, vertexShader: VERT, fragmentShader: FRAG_COVER, transparent: true, depthWrite: false, side: THREE.DoubleSide });
         const seed = n * 7 + 13;
         const hasBand = hash(seed + 99) < BAND_SHARE;
@@ -279,10 +303,28 @@ export function HeroGlobe() {
         tiles.push({
           group, image, cover, band,
           bandAnim: band ? { duration: 2.5 + hash(seed + 1) * 2, pause: 3 + hash(seed + 2) * 7, offset: hash(seed) * 10 } : null,
-          video: m.video, theta, ring: r, baseY: y, progress: 0, scale: 1, dot: 0, hover: 0,
+          video: null, theta, ring: r, baseY: y, progress: 0, scale: 1, dot: 0, hover: 0,
         });
       }
     }
+
+    const applyMedia = (imgs: string[], cls: string[]) => {
+      disposeMedia();
+      media.stills = loadStills(imgs);
+      media.clips = loadClips(cls);
+      const items = [
+        ...media.stills.map((texture) => ({ texture, video: null as HTMLVideoElement | null })),
+        ...media.clips.map((c) => ({ texture: c.texture as THREE.Texture, video: c.video as HTMLVideoElement | null })),
+      ];
+      const order = shuffledOrder(tiles.length, items.length);
+      tiles.forEach((tile, i) => {
+        const m = items[order[i]];
+        tile.image.uniforms.uMap.value = m?.texture ?? null;
+        tile.video = m?.video ?? null;
+      });
+    };
+    applyMedia(images0, clips0);
+    applyRef.current = applyMedia;
 
     /* Pointer: -1..1 across the window for the camera drift, and across the
        hero for the hover swell. */
@@ -380,7 +422,7 @@ export function HeroGlobe() {
 
         if (tile.video && tile.hover > 0.25) playing[tile.video.src] = tile.video;
       }
-      for (const c of clips) {
+      for (const c of media.clips) {
         if (playing[c.video.src]) { if (c.video.paused) c.video.play().catch(() => {}); }
         else if (!c.video.paused) c.video.pause();
       }
@@ -403,14 +445,23 @@ export function HeroGlobe() {
       window.removeEventListener("resize", resize);
       window.removeEventListener("pointermove", onMove);
       host.removeEventListener("pointerleave", onLeave);
-      clips.forEach((c) => { c.video.pause(); c.video.removeAttribute("src"); c.video.load(); c.texture.dispose(); });
-      stills.forEach((s) => s.dispose());
+      applyRef.current = null;
+      disposeMedia();
       grad.dispose();
       plate.dispose();
       tiles.forEach((tile) => { tile.image.dispose(); tile.cover.dispose(); tile.band?.dispose(); });
       renderer.dispose();
     };
   }, []);
+
+  /* Retexture in place when the media props change (the first set is applied
+     by the scene effect above). */
+  const imagesKey = images.join("|"), clipsKey = clips.join("|");
+  useEffect(() => {
+    if (imagesKey === initial.current.images.join("|") && clipsKey === initial.current.clips.join("|")) return;
+    applyRef.current?.(images, clips);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [imagesKey, clipsKey]);
 
   return (
     <div ref={hostRef} className="hg-host" aria-hidden>

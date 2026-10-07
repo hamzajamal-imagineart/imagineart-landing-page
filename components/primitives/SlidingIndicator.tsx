@@ -32,12 +32,14 @@ export function useSlidingIndicator<T extends HTMLElement>(active: number) {
     const host = containerRef.current;
     const item = active < 0 ? null : itemRefs.current[active];
     if (!host || !item) { setBox(null); return; }
-    setBox({
-      x: item.offsetLeft - host.scrollLeft,
-      y: item.offsetTop - host.scrollTop,
-      w: item.offsetWidth,
-      h: item.offsetHeight,
-    });
+    // Rects, not offsetLeft/Top: offsets are measured from the offsetParent,
+    // which some engines resolve past a padded inline-flex container, and the
+    // fill then sat flush with the track's edge (Hamza, 7 Oct). The rect
+    // difference is the item's visual offset inside the host; the fill is
+    // absolutely positioned in the host's scrolling content, so the host's
+    // scroll is added back to land it in content space.
+    const h = host.getBoundingClientRect(), r = item.getBoundingClientRect();
+    setBox({ x: r.left - h.left + host.scrollLeft, y: r.top - h.top + host.scrollTop, w: r.width, h: r.height });
   }, [active]);
 
   useLayoutEffect(() => { measure(); }, [measure]);

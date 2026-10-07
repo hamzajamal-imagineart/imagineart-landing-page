@@ -578,6 +578,10 @@ export function PlatformStrip() {
           text-transform: uppercase;
         }
         :root:not([data-theme="dark"]) .pf-new { background: #ede9fe; color: #6d28d9; }
+        /* On the selected tab the pill's grey swallowed the tag's tint
+           (Hamza, 7 Oct): a step stronger there, on both palettes. */
+        .pf-tab-on .pf-new { background: rgba(139, 92, 246, 0.34); }
+        :root:not([data-theme="dark"]) .pf-tab-on .pf-new { background: #ddd6fe; color: #5b21b6; }
 
         /* The container: one hairline, nothing nested inside it (Hamza,
            6 Oct: "no double borders"). The stage fills it edge to edge. */
@@ -760,6 +764,9 @@ export function PlatformStrip() {
         .pf-stage:has(.pf-mcp) { aspect-ratio: auto; overflow: visible; border: 0; background: transparent; }
         .pf-mcp { min-width: 0; }
         .pf-mcp .mcp-panel { border: 0; background: transparent; padding: 0; }
+        /* The tab tracks sit in from the frame's edges, not flush against
+           them (Hamza, 7 Oct). */
+        .pf-mcp .mcp-bar { padding: 16px 16px 0; }
 
         /* Image: the four clips on a ring, the centre one playing and its
            neighbours turned down either side. Sits on the panel's ground, so
