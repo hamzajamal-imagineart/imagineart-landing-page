@@ -5,6 +5,7 @@ import { withBasePath } from "@/lib/assets";
 import { BlurHeading } from "@/components/BlurHeading";
 import { McpPanel } from "@/components/sections/Mcp";
 import { StudiosStage } from "@/components/sections/StudiosStage";
+import { ToolkitStage } from "@/components/sections/ToolkitStage";
 import { SlidingIndicator, slidingIndicatorCss, useSlidingIndicator } from "@/components/primitives/SlidingIndicator";
 import { pluginHref, PLUGINS_HREF } from "@/lib/links";
 
@@ -35,7 +36,11 @@ const VIDEO_SET = [
 ];
 
 
-const AGENT_CLIP = "/media/hero/modes/agent.mp4";
+/** The Workflows recording (it ran under the Agents tab until 7 Oct, hence
+    the file's name). */
+const WORKFLOWS_CLIP = "/media/hero/modes/agent.mp4";
+/** The Imagine Computer recording, for the Agent tab. */
+const COMPUTER_CLIP = "/media/hero/computer.mp4";
 
 /**
  * The plugin marks and anchors the Workflows tile already carries.
@@ -162,17 +167,20 @@ type Tab = {
   label: string;
   /** Carries the NEW tag. */
   isNew?: boolean;
-  kind: "reel" | "clip" | "mcp" | "studios" | "plugins";
+  kind: "reel" | "clip" | "mcp" | "toolkit" | "studios" | "plugins";
   videos?: string[];
   /** Whether the clip carries sound, so it gets the control bar. */
   audio?: boolean;
 };
 
 const TABS: Tab[] = [
-  // Agents first (Hamza, 7 Oct).
-  { id: "agents", label: "Agents", kind: "clip", videos: [AGENT_CLIP], audio: true },
-  // One campaign video (Hamza, 6 Oct), streamed from the product's CDN.
-  { id: "creative", label: "Creative Suite", kind: "clip", videos: ["https://imagine.animagic.art/imagine-one/home/campaigns/gpt-2.5.mp4"] },
+  // Order and clips (Hamza, 7 Oct): Agent runs the Imagine Computer
+  // recording; Toolkit (was Creative Suite) runs five tool clips with pills;
+  // Workflows takes the clip the Agents tab used, which is a Workflows
+  // recording.
+  { id: "agent", label: "Agent", kind: "clip", videos: [COMPUTER_CLIP], audio: true },
+  { id: "toolkit", label: "Toolkit", kind: "toolkit" },
+  { id: "workflows", label: "Workflows", kind: "clip", videos: [WORKFLOWS_CLIP], audio: true },
   { id: "mcp", label: "MCP", isNew: true, kind: "mcp" },
   // Ad, Fashion and Film Studio footage with chips to switch (Hamza, 7 Oct).
   { id: "studios", label: "Studios", kind: "studios" },
@@ -432,8 +440,8 @@ const DOT_SETS: [number, number][][] = [
   [[15, 3], [10, 8], [5, 13], [3, 15], [13, 6]],
   [[15, 3], [11, 7], [7, 11], [3, 15]],
 ];
-function TabDots({ v }: { v: number }) {
-  if (v === 2) return <McpGlyph />;
+function TabDots({ v, id }: { v: number; id: string }) {
+  if (id === "mcp") return <McpGlyph />;
   return (
     <svg className="pf-tab-dots" width="18" height="18" viewBox="0 0 18 18" aria-hidden>
       {DOT_SETS[v % DOT_SETS.length].map(([cx, cy], k) => <circle key={k} cx={cx} cy={cy} r="1.5" fill="currentColor" />)}
@@ -476,6 +484,7 @@ export function PlatformStrip() {
 
   const stage =
     t.kind === "mcp" ? <div className="pf-mcp"><McpPanel /></div>
+    : t.kind === "toolkit" ? <ToolkitStage />
     : t.kind === "studios" ? <StudiosStage />
     : t.kind === "plugins" ? <PluginHub />
     : t.kind === "reel" ? <ImageReel key={t.id} videos={t.videos ?? []} />
@@ -487,7 +496,7 @@ export function PlatformStrip() {
           and a lede, centred, above the tab row. */}
       <div className="pf-head">
         <BlurHeading className="h2 pf-h2" lead="Start wherever you work" />
-        <p className="lede mt-4">Start from an agent, the suite, the MCP, a studio or a plugin. Every tool, every model, every format.</p>
+        <p className="lede mt-4">Start from an agent, the toolkit, a workflow, the MCP, a studio or a plugin. Every tool, every model, every format.</p>
       </div>
       <div className="pf-tabs" role="tablist" aria-label="Platform" ref={tabs.containerRef as React.Ref<HTMLDivElement>}>
         <SlidingIndicator box={tabs.box} ready={tabs.ready} className="pf-tab-fill" />
@@ -502,7 +511,7 @@ export function PlatformStrip() {
             className={`pf-tab ${i === tab ? "pf-tab-on" : ""}`}
             onClick={() => setTab(i)}
           >
-            <TabDots v={i} />
+            <TabDots v={i} id={x.id} />
             {x.label}
             {x.isNew && <span className="pf-new">New</span>}
           </button>
