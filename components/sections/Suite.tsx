@@ -28,6 +28,8 @@ import { HOME } from "@/lib/links";
  */
 type Tool = { title: string; body: string; clip: string; href: string };
 
+/* Order (Hamza, 7 Oct): Workflows, Image / Video, Music, then the tools,
+   then the studios last. */
 const TOOLS: Tool[] = [
   {
     title: "Workflows",
@@ -36,10 +38,16 @@ const TOOLS: Tool[] = [
     body: "Node-based, multi-step flows that turn a brief into finished assets. The repeatable backbone behind every campaign your team ships.",
   },
   {
-    title: "Image / Video Canvas",
+    title: "Image / Video",
     clip: "/media/suite/canvas.mp4",
     href: `${HOME}/image`,
     body: "Full editing surfaces for both. Create and refine in the same place, no exports, no handoffs, no drift.",
+  },
+  {
+    title: "Music",
+    clip: "/media/capabilities/music.mp4",
+    href: `${HOME}/audio/music/elevenlabs-music`,
+    body: "Score your content with original, royalty-free tracks generated to fit the moment.",
   },
   {
     title: "Brand Guidelines",
@@ -66,12 +74,6 @@ const TOOLS: Tool[] = [
     body: "Generate consistent, authentic-feeling creators and user-generated content at scale.",
   },
   {
-    title: "Music",
-    clip: "/media/capabilities/music.mp4",
-    href: `${HOME}/audio/music/elevenlabs-music`,
-    body: "Score your content with original, royalty-free tracks generated to fit the moment.",
-  },
-  {
     title: "Ad Studio",
     clip: "/media/studios/ad-studio.mp4",
     href: `${HOME}/ad-studio`,
@@ -84,6 +86,14 @@ const TOOLS: Tool[] = [
     body: "Bring apparel and product to life with on-model imagery and editorial-grade visuals.",
   },
 ];
+
+/* A grainy gradient behind every card (Hamza, 7 Oct), all in card 1's
+   style: a near-black ground with one soft beam of colour rising from the
+   foot. Card 1 keeps its teal-and-orange still; the other eight were
+   generated in ImagineArt to match it in eight colours, so the rail reads as
+   one family. All dark, so the type stays white. */
+const CARD_BG = ["bg-1", "beam-violet", "beam-coral", "beam-lime", "beam-cyan", "beam-magenta", "beam-gold", "beam-pink", "beam-ice"]
+  .map((n) => `/media/suite/${n}.jpg`);
 
 export function Suite() {
   const trackRef = useRef<HTMLDivElement | null>(null);
@@ -126,7 +136,8 @@ export function Suite() {
             target="_blank"
             rel="noopener noreferrer"
             aria-label={t.title}
-            className={`suite-card suite-tone-${(i % 5) + 1}${i === 0 ? " suite-bg suite-bg-1" : ""}`}
+            className={`suite-card suite-tone-${(i % 5) + 1} suite-bg`}
+            style={CARD_BG[i] ? { backgroundImage: `url(${withBasePath(CARD_BG[i])})` } : undefined}
           >
             <h3 className="suite-card-title">{t.title}</h3>
             <p className="suite-card-body">{t.body}</p>
@@ -202,12 +213,9 @@ export function Suite() {
         .suite-tone-3 { background-color: #3d3b34; }
         .suite-tone-4 { background-color: #24302f; }
         .suite-tone-5 { background-color: #141414; }
-        /* The first card sits on a grainy gradient still (Hamza, 6 Oct): a
-           dark teal with an orange glow, dark at the top-left where the title
-           sits, so the white type stays. The indigo still on card 2 was
-           dropped (7 Oct). */
+        /* Every card on a grainy gradient (see CARD_BG); the tone colour
+           shows only until the still loads. */
         .suite-bg { background-size: cover; background-position: center; background-repeat: no-repeat; }
-        .suite-bg-1 { background-image: url(${withBasePath("/media/suite/bg-1.jpg")}); }
 
         .suite-card-title {
           font-size: 19px;
