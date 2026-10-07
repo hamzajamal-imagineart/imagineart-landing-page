@@ -4,22 +4,26 @@ import { useEffect, useRef } from "react";
 
 /**
  * The hero's halftone edges as a live dot field (Hamza, 7 Oct, after
- * kyoso.ai): a grid of dots in a band down each side of the stage, fading
- * toward the middle and patchy along their length as the old CSS grids were,
- * still drifting slowly on the diagonal, but each dot now answers the
- * pointer like a filing to a magnet: within a radius it is drawn toward the
- * cursor, closer ones more strongly, and springs back home when it leaves.
+ * kyoso.ai): a plain, even grid of dots in a band down each side of the
+ * stage — straight rows and columns, no fade, no drift — where each dot
+ * answers the pointer like a filing to a magnet: within a radius it is
+ * drawn toward the cursor, closer ones more strongly, and springs back home
+ * when it leaves.
  *
  * One canvas over the stage, dots only in the two bands (about 2,500 at
  * 1600px), redrawn every frame while the hero is on screen. Colour comes
  * from the canvas's `color`, so it follows the section's theme. Under reduced motion the
  * field is static and does not react.
  */
-const SPACING = 12, DOT = 1.1, BIG = 1.6;
+/* A compact grid, brighter, each dot with its own weight (Hamza, 7 Oct,
+   after kyoso.ai). */
+const SPACING = 12, DOT = 0.95, BIG = 1.3, ALPHA = 0.22;
 /* The pull: dots within RADIUS move toward the pointer by up to PULL of
    their distance (closer ones more), like filings to a magnet. */
 const RADIUS = 140, PULL = 0.75, EASE = 0.16, RETURN = 0.08;
-const DRIFT_PX_PER_S = SPACING / 5; // one cell every 5s, as the CSS grid did
+/* No drift of its own (Hamza, 7 Oct): the field is still until the cursor
+   comes near. */
+const DRIFT_PX_PER_S = 0;
 
 type Dot = { hx: number; hy: number; x: number; y: number; a: number; r: number };
 
@@ -39,18 +43,6 @@ export function HeroDots({ className }: { className?: string }) {
     let w = 0, h = 0, dpr = 1, band = 0;
     const pointer = { x: -1e4, y: -1e4 };
 
-    /* Alpha for a dot at (x, y): the band's horizontal fade, times the
-       patchiness along its length the old masks drew. */
-    const alphaAt = (x: number, y: number, left: boolean) => {
-      const across = left ? x / band : (w - x) / band; // 0 at the edge, 1 at the band's inner end
-      const fade = across < 0.45 ? 1 - across * (0.5 / 0.45) : Math.max(0, 0.5 * (1 - (across - 0.45) / 0.55));
-      const t = y / h;
-      const along = left
-        ? (t < 0.12 ? t / 0.12 : t < 0.4 ? 1 - ((t - 0.12) / 0.28) * 0.65 : t < 0.62 ? 0.35 + ((t - 0.4) / 0.22) * 0.65 : 1 - (t - 0.62) / 0.38)
-        : (t < 0.3 ? 1 - (t / 0.3) * 0.65 : t < 0.55 ? 0.35 + ((t - 0.3) / 0.25) * 0.65 : t < 0.8 ? 1 - ((t - 0.55) / 0.25) * 0.8 : 0.2 + ((t - 0.8) / 0.2) * 0.8);
-      return Math.max(0, fade) * Math.max(0, along);
-    };
-
     const build = () => {
       const r = host.getBoundingClientRect();
       w = Math.max(1, Math.round(r.width)); h = Math.max(1, Math.round(r.height));
@@ -58,18 +50,19 @@ export function HeroDots({ className }: { className?: string }) {
       canvas.width = w * dpr; canvas.height = h * dpr;
       canvas.style.width = `${w}px`; canvas.style.height = `${h}px`;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      band = Math.max(64, Math.min(w * 0.12, 200));
+      // A third of the old band (Hamza, 7 Oct): about eight columns at 1600px.
+      band = Math.max(64, Math.min(w * 0.12, 200)) / 3;
       const narrow = w <= 760;
-      if (narrow) band = 48;
+      if (narrow) band = 16;
       dots = [];
       let i = 0;
       for (let y = 0; y < h + SPACING; y += SPACING) {
         for (let x = 0; x < w + SPACING; x += SPACING) {
           const left = x <= band, right = x >= w - band;
           if (!left && !right) continue;
-          const a = alphaAt(x, y, left);
-          if (a <= 0.02) continue;
-          dots.push({ hx: x, hy: y, x, y, a, r: i++ % 3 === 0 ? BIG : DOT });
+          // A plain grid: every dot the same weight, straight rows and
+          // columns, no fade (Hamza, 7 Oct).
+          dots.push({ hx: x, hy: y, x, y, a: 1, r: i++ % 4 === 0 ? BIG : DOT });
         }
       }
     };
@@ -119,7 +112,7 @@ export function HeroDots({ className }: { className?: string }) {
         const k = tx === hx && ty === hy ? RETURN : EASE;
         d.x += (tx - d.x) * (reduced ? 1 : k);
         d.y += (ty - d.y) * (reduced ? 1 : k);
-        ctx.globalAlpha = d.a * 0.32;
+        ctx.globalAlpha = d.a * ALPHA;
         ctx.beginPath();
         ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
         ctx.fill();

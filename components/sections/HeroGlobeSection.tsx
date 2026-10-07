@@ -7,9 +7,9 @@ import { HeroDots } from "@/components/sections/HeroDots";
  * Hero (Hamza, 6 Oct): a two-line claim, one line and the purple "Start
  * creating for free" centred, over a slowly turning globe of the product's
  * work. The globe is a three.js scene in <HeroGlobe> (which documents how it
- * works and how it differs from the TwelveLabs hero that prompted it); over
- * it sits a full-width band of the page colour behind the copy, so the type
- * sits on solid ground and the planet shows above and below it.
+ * works and how it differs from the TwelveLabs hero that prompted it). There
+ * is a widely feathered block of the page colour behind the copy, and the
+ * globe also dims its own tiles there (its softCentre prop).
  *
  * The section is dark on a light page (Hamza, 6 Oct): it carries
  * data-theme="dark", which globals.css honours on any element, so every
@@ -25,7 +25,10 @@ export function HeroGlobeSection() {
         <HeroDots className="hs-dots" />
 
         <div className="hc-stage" aria-hidden>
-          <HeroGlobe distance={60} />
+          <HeroGlobe distance={68} softCentre={{ rx: 0.62, ry: 0.5, dim: 0.4, blur: 0 }} />
+          {/* A soft block of the page colour behind the copy (Hamza, 7 Oct:
+              back, and smooth): widely feathered so it has no edge, with the
+              globe's own dimming underneath it. */}
           <span className="hc-veil" />
           <span className="hc-topband" />
         </div>
@@ -70,28 +73,27 @@ export function HeroGlobeSection() {
           inset: 0;
           z-index: 2;
           pointer-events: none;
-          color: var(--ink-heading);
+          /* Whiter than the heading ink (Hamza, 7 Oct). */
+          color: #fff;
         }
 
         /* The globe fills the section behind the copy. */
         .hc-stage { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
         .hg-host { position: absolute; inset: 0; }
         .hg-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
-        /* The veil: a soft-edged block of the page colour just behind the
-           copy (Hamza, 7 Oct: the text clear, the globe showing around it on
-           all four sides). Sized to the copy column plus a margin, blurred
-           so it has no edge; the planet shows left and right of it as well
-           as above and below. */
+        /* The veil behind the copy: the page colour at 92%, sized to the copy
+           column with a margin, feathered by a wide blur so it melts into the
+           tiles rather than cutting them. */
         .hc-veil {
           position: absolute;
           left: 50%;
           top: 50%;
-          width: calc(min(960px, 62vw) + 40px);
-          height: clamp(280px, 34%, 340px);
+          width: calc(min(960px, 62vw) + 120px);
+          height: clamp(300px, 36%, 360px);
           transform: translate(-50%, -50%);
-          border-radius: 48px;
-          background: var(--page-bg);
-          filter: blur(28px);
+          border-radius: 80px;
+          background: color-mix(in srgb, var(--page-bg) 92%, transparent);
+          filter: blur(44px);
         }
 
         /* A band of the page colour under the nav (Hamza, 7 Oct): solid for

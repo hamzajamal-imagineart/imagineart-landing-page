@@ -25,8 +25,9 @@ import { withBasePath } from "@/lib/assets";
  * The pointer drifts the camera (PARALLAX) and swells tiles under it
  * (HOVER_*), and only clips under the pointer play.
  *
- * Over the canvas, a centred dark pool with a masked backdrop blur (the
- * parent section draws it) keeps the copy legible.
+ * Legibility behind the copy is the globe's own job when `softCentre` is
+ * set: tiles that project inside that ellipse are dimmed (and optionally
+ * blurred in the shader), strongest at the centre, clear by the rim.
  *
  * Media: stills as textures and clips as video textures parked on a frame
  * partway in; a clip plays only while hovered. Both come in as props
@@ -110,12 +111,18 @@ const VERT = /* glsl */ `
     width ÷ height), so a 3:4 still is not stretched. */
 const PLATE_ASPECT = TILE_W / TILE_H;
 const FRAG_IMAGE = /* glsl */ `
-  uniform sampler2D uMap; uniform float uProgress; uniform float uBrightness; uniform float uAspect; varying vec2 vUv;
+  uniform sampler2D uMap; uniform float uProgress; uniform float uBrightness; uniform float uAspect; uniform float uBlur; varying vec2 vUv;
   void main() {
     float plate = ${(TILE_W / TILE_H).toFixed(5)};
     vec2 uv = vUv - 0.5;
     if (uAspect > plate) uv.x *= plate / uAspect; else uv.y *= uAspect / plate;
-    vec4 t = texture2D(uMap, uv + 0.5);
+    uv += 0.5;
+    // Softness behind the copy: a coarser mip level (stills) plus four
+    // offset taps (which also softens clips, whose textures have no mips).
+    float o = uBlur * 0.012;
+    vec4 t = texture2D(uMap, uv, uBlur) * 0.4
+      + (texture2D(uMap, uv + vec2(o, o), uBlur) + texture2D(uMap, uv + vec2(-o, o), uBlur)
+       + texture2D(uMap, uv + vec2(o, -o), uBlur) + texture2D(uMap, uv + vec2(-o, -o), uBlur)) * 0.15;
     float soft = 0.4;
     float edge = 1.0 - uProgress * (1.0 + soft * 2.0) + soft;
     float a = smoothstep(edge - soft, edge + soft, vUv.x);
@@ -196,6 +203,7 @@ export function HeroGlobe({
   images = GLOBE_IMAGES,
   clips = GLOBE_CLIPS,
   distance = CAMERA_DIST,
+  softCentre,
 }: {
   /** Stills for the tiles. Changing the list retextures the globe in place. */
   images?: string[];
@@ -203,12 +211,19 @@ export function HeroGlobe({
   clips?: string[];
   /** Camera distance from the globe's centre; larger shows more of it. */
   distance?: number;
+  /** Quieten tiles that project behind the copy: an ellipse of half-widths
+      rx, ry in clip space (1 = the frame's half-size); `dim` is how much
+      brightness is taken at the centre (0–1) and `blur` the mip levels of
+      blur there (0 for none). Off when omitted. */
+  softCentre?: { rx: number; ry: number; dim?: number; blur?: number };
 } = {}) {
   const hostRef = useRef<HTMLDivElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   /** The scene's "swap the media" hook, set once the scene exists. */
   const applyRef = useRef<((images: string[], clips: string[]) => void) | null>(null);
   const initial = useRef({ images, clips, distance });
+  const softRef = useRef(softCentre);
+  softRef.current = softCentre;
 
   useEffect(() => {
     const host = hostRef.current, canvas = canvasRef.current;
@@ -245,7 +260,8 @@ export function HeroGlobe({
     const loadStills = (srcs: string[]) => srcs.map((src) => {
       const t = loader.load(withBasePath(src), (tex) => { const im = tex.image as HTMLImageElement; if (im?.width && im?.height) aspects.set(tex, im.width / im.height); });
       t.colorSpace = THREE.SRGBColorSpace;
-      t.minFilter = THREE.LinearFilter;
+      t.minFilter = THREE.LinearMipmapLinearFilter; // mips: the centre blur reads coarser levels
+      t.generateMipmaps = true;
       return t;
     });
     const loadClips = (srcs: string[]) => srcs.map((src, i) => {
@@ -289,7 +305,7 @@ export function HeroGlobe({
         const theta = ((k + (r % 2) * 0.5) / per) * Math.PI * 2;
         const ringR = Math.sin(phi) * GLOBE;
         const x = Math.cos(theta) * ringR, y = Math.cos(phi) * GLOBE, z = Math.sin(theta) * ringR;
-        const image = new THREE.ShaderMaterial({ uniforms: { uMap: { value: null }, uProgress: { value: 0 }, uBrightness: { value: 1 }, uAspect: { value: PLATE_ASPECT } }, vertexShader: VERT, fragmentShader: FRAG_IMAGE, transparent: true, depthWrite: false, side: THREE.DoubleSide });
+        const image = new THREE.ShaderMaterial({ uniforms: { uMap: { value: null }, uProgress: { value: 0 }, uBrightness: { value: 1 }, uAspect: { value: PLATE_ASPECT }, uBlur: { value: 0 } }, vertexShader: VERT, fragmentShader: FRAG_IMAGE, transparent: true, depthWrite: false, side: THREE.DoubleSide });
         const cover = new THREE.ShaderMaterial({ uniforms: { uColor: { value: bg.clone() }, uProgress: { value: 0 }, uMin: { value: COVER_HIDDEN }, uMax: { value: COVER_LIT } }, vertexShader: VERT, fragmentShader: FRAG_COVER, transparent: true, depthWrite: false, side: THREE.DoubleSide });
         const seed = n * 7 + 13;
         const hasBand = hash(seed + 99) < BAND_SHARE;
@@ -388,23 +404,29 @@ export function HeroGlobe({
         tileDir.subVectors(tileWorld, globeWorld).normalize();
         tile.dot = tileDir.dot(toCam);
         const lit = tile.dot > WIPE_AT;
-        let hv = 0;
-        if (lit && hover) {
-          proj.copy(tileWorld).project(camera);
-          if (proj.z >= -1 && proj.z <= 1) {
-            const dx = (proj.x - pointer.x) * aspect, dy = proj.y - pointer.y;
-            const d = Math.sqrt(dx * dx + dy * dy);
-            if (d < HOVER_RADIUS) { const w = 1 - d / HOVER_RADIUS; hv = w * w * (3 - 2 * w); }
-          }
+        let hv = 0, soft = 0;
+        proj.copy(tileWorld).project(camera);
+        const onScreen = proj.z >= -1 && proj.z <= 1;
+        if (lit && hover && onScreen) {
+          const dx = (proj.x - pointer.x) * aspect, dy = proj.y - pointer.y;
+          const d = Math.sqrt(dx * dx + dy * dy);
+          if (d < HOVER_RADIUS) { const w = 1 - d / HOVER_RADIUS; hv = w * w * (3 - 2 * w); }
+        }
+        const sc = softRef.current;
+        if (sc && onScreen) {
+          // 0 at the ellipse's rim and beyond, 1 at its centre, eased.
+          const e = (proj.x / sc.rx) ** 2 + (proj.y / sc.ry) ** 2;
+          if (e < 1) { const w = 1 - Math.sqrt(e); soft = w * w * (3 - 2 * w); }
         }
         tile.hover = hv;
+        tile.image.uniforms.uBlur.value = soft * (sc?.blur ?? 0);
 
         // Face the camera: undo the globe's turn, then take the camera's facing.
         tile.group.quaternion.copy(globeQuatInv).multiply(camera.quaternion);
         tile.progress += ((lit ? 1 : 0) - tile.progress) * step * 3;
         tile.image.uniforms.uProgress.value = tile.progress;
         tile.cover.uniforms.uProgress.value = tile.progress;
-        tile.image.uniforms.uBrightness.value = BRIGHT_MIN + ((tile.dot + 1) * 0.5) * (BRIGHT_MAX - BRIGHT_MIN);
+        tile.image.uniforms.uBrightness.value = (BRIGHT_MIN + ((tile.dot + 1) * 0.5) * (BRIGHT_MAX - BRIGHT_MIN)) * (1 - soft * (sc?.dim ?? 0.5));
         tile.image.uniforms.uAspect.value = aspects.get(tile.image.uniforms.uMap.value as THREE.Texture) ?? PLATE_ASPECT;
 
         if (tile.band && tile.bandAnim) {
