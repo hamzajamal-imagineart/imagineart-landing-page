@@ -92,6 +92,15 @@ const WIPE_AT = -1, BRIGHT_MIN = 0.62, BRIGHT_MAX = 1.3;
 /** Near tiles grow and far ones shrink, linearly in depth: 0.7× to 1.25×. */
 const DEPTH_FAR = 0.7, DEPTH_NEAR = 1.25;
 const BOB = 0.5, HOVER_RADIUS = 0.2, HOVER_SCALE = 0.18;
+/* Open on hover (Hamza, 7 Oct): while the pointer is over the hero the globe
+   parts at the centre so the copy has room. Each tile moves out across the
+   view, away from the axis to the camera, by up to OPEN_PUSH units, the most
+   for tiles nearest the middle and none past OPEN_REACH × the radius;
+   OPEN_WIDE stretches the opening sideways to suit a line of text. It eases
+   in and out with a time constant of OPEN_TAU seconds. */
+/** No two tiles closer than this (globe units, about two rings) share an image. */
+const SPREAD_DIST = 24;
+const OPEN_PUSH = 16, OPEN_REACH = 1.15, OPEN_WIDE = 1.5, OPEN_TAU = 0.45;
 const COVER_HIDDEN = 0, COVER_LIT = 0;
 /* A gradient band can sweep across tiles now and then; off (Hamza, 6 Oct:
    no gradient on the images). Raise BAND_SHARE to bring it back. */
@@ -193,6 +202,7 @@ type Tile = {
   theta: number;
   ring: number;
   baseY: number;
+  base: THREE.Vector3;
   progress: number;
   scale: number;
   dot: number;
@@ -288,6 +298,33 @@ export function HeroGlobe({
       return order;
     };
 
+    /* Media per tile, kept apart (Hamza, 7 Oct: repeats were landing side by
+       side): tiles are visited in a shuffled order and each takes the
+       least-used item that no tile within SPREAD_DIST already shows, falling
+       back to the least-used overall only if every item is nearby. */
+    const spreadOrder = (count: number) => {
+      const n = tiles.length, out = new Array<number>(n).fill(-1);
+      if (count <= 0) return out;
+      const visit = shuffledOrder(n, n);
+      const uses = new Array<number>(count).fill(0);
+      const rank = Array.from({ length: count }, (_, k) => hash(k * 17 + 5));
+      const d2 = SPREAD_DIST * SPREAD_DIST;
+      for (const i of visit) {
+        const near = new Set<number>();
+        for (let j = 0; j < n; j++) if (out[j] >= 0 && tiles[j].base.distanceToSquared(tiles[i].base) < d2) near.add(out[j]);
+        let best = -1;
+        for (const pass of [true, false]) {
+          for (let k = 0; k < count; k++) {
+            if (pass && near.has(k)) continue;
+            if (best < 0 || uses[k] < uses[best] || (uses[k] === uses[best] && rank[k] < rank[best])) best = k;
+          }
+          if (best >= 0) break;
+        }
+        out[i] = best; uses[best]++;
+      }
+      return out;
+    };
+
     const counts = Array.from({ length: RINGS }, (_, r) => ringCount(((r + 1) / (RINGS + 1)) * Math.PI));
     const total = counts.reduce((a, b) => a + b, 0);
 
@@ -319,7 +356,7 @@ export function HeroGlobe({
         tiles.push({
           group, image, cover, band,
           bandAnim: band ? { duration: 2.5 + hash(seed + 1) * 2, pause: 3 + hash(seed + 2) * 7, offset: hash(seed) * 10 } : null,
-          video: null, theta, ring: r, baseY: y, progress: 0, scale: 1, dot: 0, hover: 0,
+          video: null, theta, ring: r, baseY: y, base: new THREE.Vector3(x, y, z), progress: 0, scale: 1, dot: 0, hover: 0,
         });
       }
     }
@@ -332,7 +369,7 @@ export function HeroGlobe({
         ...media.stills.map((texture) => ({ texture, video: null as HTMLVideoElement | null })),
         ...media.clips.map((c) => ({ texture: c.texture as THREE.Texture, video: c.video as HTMLVideoElement | null })),
       ];
-      const order = shuffledOrder(tiles.length, items.length);
+      const order = spreadOrder(items.length);
       tiles.forEach((tile, i) => {
         const m = items[order[i]];
         tile.image.uniforms.uMap.value = m?.texture ?? null;
@@ -373,6 +410,8 @@ export function HeroGlobe({
     const clock = new THREE.Clock();
     const camDir = new THREE.Vector3(), toCam = new THREE.Vector3(), globeWorld = new THREE.Vector3(), tileWorld = new THREE.Vector3(), tileDir = new THREE.Vector3(), proj = new THREE.Vector3();
     const globeQuatInv = new THREE.Quaternion(), globeQuat = new THREE.Quaternion();
+    const camRight = new THREE.Vector3(), camUp = new THREE.Vector3(), lat = new THREE.Vector3(), pos = new THREE.Vector3();
+    let open = 0;
     let disposed = false;
 
     const tick = () => {
@@ -397,6 +436,12 @@ export function HeroGlobe({
       globe.getWorldQuaternion(globeQuat);
       globeQuatInv.copy(globeQuat).invert();
       const aspect = camera.aspect || 1;
+      // Open while the pointer is over the hero, eased both ways.
+      const inside = hover && !reduced && Math.abs(pointer.x) <= 1 && Math.abs(pointer.y) <= 1;
+      open += ((inside ? 1 : 0) - open) * (1 - Math.exp(-step / OPEN_TAU));
+      const openE = open * open * (3 - 2 * open);
+      camRight.setFromMatrixColumn(camera.matrixWorld, 0);
+      camUp.setFromMatrixColumn(camera.matrixWorld, 1);
       const playing: Record<string, HTMLVideoElement> = {};
 
       for (const tile of tiles) {
@@ -435,7 +480,22 @@ export function HeroGlobe({
           else { tile.band.uniforms.uPos.value = -2.5; tile.band.uniforms.uOpacity.value = 0; }
         }
 
-        tile.group.position.y = reduced ? tile.baseY : tile.baseY + Math.sin(tile.theta * 3 + t * 0.2 + tile.ring * 0.8) * BOB;
+        pos.copy(tile.base);
+        if (!reduced) pos.y += Math.sin(tile.theta * 3 + t * 0.2 + tile.ring * 0.8) * BOB;
+        if (openE > 0.001) {
+          // Out across the view: the tile's offset from the camera axis, in
+          // the camera's right/up plane, pushed further out, widest sideways.
+          pos.applyMatrix4(globe.matrixWorld);
+          lat.subVectors(pos, globeWorld);
+          const lx = lat.dot(camRight), ly = lat.dot(camUp);
+          const r = Math.sqrt((lx / OPEN_WIDE) ** 2 + ly * ly) || 0.0001;
+          const f = Math.max(0, 1 - r / (GLOBE * OPEN_REACH));
+          const push = openE * OPEN_PUSH * f;
+          pos.addScaledVector(camRight, (lx / r) * push);
+          pos.addScaledVector(camUp, (ly / r) * push);
+          globe.worldToLocal(pos);
+        }
+        tile.group.position.copy(pos);
 
         // Near tiles grow, far ones shrink.
         const depth = DEPTH_FAR + ((tile.dot + 1) * 0.5) * (DEPTH_NEAR - DEPTH_FAR);

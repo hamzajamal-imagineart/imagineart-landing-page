@@ -25,9 +25,12 @@ const SPACING = 12, DOT = 0.95, BIG = 1.3, ALPHA = 0.22;
    its tether (TETHER_MIN–MAX px) from its home. RETURN is the spring home. */
 const CATCH = 150, SPREAD = 60, FOLLOW_MIN = 0.08, FOLLOW_MAX = 0.26;
 const TETHER_MIN = 260, TETHER_MAX = 480, RETURN = 0.08;
-/* Sparkle (Hamza, 7 Oct): SPARKLE_PER_S random dots a second flare up to
-   SPARKLE_ALPHA and SPARKLE_GROW× their size, then fade over SPARKLE_S. */
-const SPARKLE_PER_S = 18, SPARKLE_S = 1.1, SPARKLE_ALPHA = 0.95, SPARKLE_GROW = 1.7;
+/* Sparkle (Hamza, 7 Oct: rarer, and less cheap): SPARKLE_PER_S random dots a
+   second brighten to SPARKLE_ALPHA and SPARKLE_GROW× their size inside a soft
+   halo HALO px across at HALO_ALPHA. Each rises over the first SPARKLE_RISE
+   of SPARKLE_S and eases out over the rest, like a glint, not a blink. */
+const SPARKLE_PER_S = 7, SPARKLE_S = 2.2, SPARKLE_RISE = 0.22;
+const SPARKLE_ALPHA = 0.8, SPARKLE_GROW = 1.25, HALO = 14, HALO_ALPHA = 0.35;
 /* No drift of its own (Hamza, 7 Oct): the field is still until the cursor
    comes near. */
 const DRIFT_PX_PER_S = 0;
@@ -92,6 +95,23 @@ export function HeroDots({ className }: { className?: string }) {
     // ink, while the canvas's `color` is set from the section's theme tokens.
     const color = () => getComputedStyle(canvas).color;
     let ink = color();
+    // The halo sprite: a soft radial falloff in the ink colour, drawn once.
+    let halo: HTMLCanvasElement | null = null;
+    const makeHalo = () => {
+      const c = document.createElement("canvas"), n = 64;
+      c.width = c.height = n;
+      const g = c.getContext("2d");
+      if (!g) return null;
+      const grad = g.createRadialGradient(n / 2, n / 2, 0, n / 2, n / 2, n / 2);
+      const [r, gr, b] = (ink.match(/[\d.]+/g) ?? ["255", "255", "255"]).map(Number);
+      grad.addColorStop(0, `rgba(${r}, ${gr}, ${b}, 1)`);
+      grad.addColorStop(0.35, `rgba(${r}, ${gr}, ${b}, 0.35)`);
+      grad.addColorStop(1, `rgba(${r}, ${gr}, ${b}, 0)`);
+      g.fillStyle = grad;
+      g.fillRect(0, 0, n, n);
+      return c;
+    };
+    halo = makeHalo();
     const onMove = (e: PointerEvent) => {
       const r = host.getBoundingClientRect();
       pointer.x = e.clientX - r.left; pointer.y = e.clientY - r.top;
@@ -101,7 +121,7 @@ export function HeroDots({ className }: { className?: string }) {
       host.addEventListener("pointermove", onMove, { passive: true });
       host.addEventListener("pointerleave", onLeave);
     }
-    const ro = new ResizeObserver(() => { build(); ink = color(); });
+    const ro = new ResizeObserver(() => { build(); ink = color(); halo = makeHalo(); });
     ro.observe(host);
 
     let inView = true, running = false, frame = 0, last = performance.now(), drift = 0;
@@ -145,12 +165,18 @@ export function HeroDots({ className }: { className?: string }) {
         const k = d.on ? d.k : RETURN;
         d.x += (tx - d.x) * (reduced ? 1 : k);
         d.y += (ty - d.y) * (reduced ? 1 : k);
-        // A sparkle rises and falls on a sine over SPARKLE_S.
+        // A glint: a smooth rise, then a long ease-out.
         let glow = 0;
         if (d.sp >= 0) {
           d.sp += dt / SPARKLE_S;
           if (d.sp >= 1) d.sp = -1;
-          else glow = Math.sin(d.sp * Math.PI);
+          else if (d.sp < SPARKLE_RISE) { const t = d.sp / SPARKLE_RISE; glow = t * t * (3 - 2 * t); }
+          else { const t = 1 - (d.sp - SPARKLE_RISE) / (1 - SPARKLE_RISE); glow = t * t * t; }
+        }
+        if (glow > 0.01 && halo) {
+          ctx.globalAlpha = HALO_ALPHA * glow;
+          const hs = HALO * (0.6 + 0.4 * glow);
+          ctx.drawImage(halo, d.x - hs / 2, d.y - hs / 2, hs, hs);
         }
         ctx.globalAlpha = d.a * (ALPHA + (SPARKLE_ALPHA - ALPHA) * glow);
         ctx.beginPath();

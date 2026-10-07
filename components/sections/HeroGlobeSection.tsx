@@ -3,11 +3,9 @@ import { PlatformStrip } from "@/components/sections/Platform";
 import { HeroGlobe } from "@/components/sections/HeroGlobe";
 import { HeroDots } from "@/components/sections/HeroDots";
 
-/* Centre blur (Hamza, 7 Oct: like TwelveLabs, tiles go soft toward the copy).
-   Stacked backdrop-blur layers, each masked to a smaller ellipse, so the blur
-   builds toward the centre with no edge: [blur px, ellipse width %, height %]. */
-const BLUR_LAYERS: [number, number, number][] = [[1, 44, 40], [2.5, 34, 30]];
-/** How much of the page colour sits over the blurred centre (0–1). */
+/** Stills only on the globe, no video (Hamza, 7 Oct). */
+const NO_CLIPS: string[] = [];
+/** How dark the black block behind the copy is (0–1). */
 const VEIL_ALPHA = 0.85;
 /** The glow behind the CTA: size as % of the button, and its strength. */
 const CTA_GLOW_W = 140, CTA_GLOW_H = 220, CTA_GLOW_ALPHA = 0.35;
@@ -17,8 +15,8 @@ const CTA_GLOW_W = 140, CTA_GLOW_H = 220, CTA_GLOW_ALPHA = 0.35;
  * creating for free" centred, over a slowly turning globe of the product's
  * work. The globe is a three.js scene in <HeroGlobe> (which documents how it
  * works and how it differs from the TwelveLabs hero that prompted it). There
- * is a progressive blur toward the copy, a feathered block of the page colour
- * behind it, and the globe also dims its own tiles there (softCentre).
+ * is a feathered black block behind the copy, and the globe also dims its
+ * own tiles there (softCentre).
  *
  * The section is dark on a light page (Hamza, 6 Oct): it carries
  * data-theme="dark", which globals.css honours on any element, so every
@@ -34,20 +32,9 @@ export function HeroGlobeSection() {
         <HeroDots className="hs-dots" />
 
         <div className="hc-stage" aria-hidden>
-          <HeroGlobe distance={68} softCentre={{ rx: 0.62, ry: 0.5, dim: 0.4, blur: 0 }} />
-          {/* The centre goes soft: progressive backdrop blur, then a feathered
-              block of the page colour, over the globe's own dimming. */}
-          {BLUR_LAYERS.map(([px, w, h]) => (
-            <span
-              key={px}
-              className="hc-blur"
-              style={{
-                ["--b" as string]: `${px}px`,
-                ["--w" as string]: `${w}%`,
-                ["--h" as string]: `${h}%`,
-              }}
-            />
-          ))}
+          <HeroGlobe clips={NO_CLIPS} distance={68} softCentre={{ rx: 0.62, ry: 0.5, dim: 0.4, blur: 0 }} />
+          {/* A feathered black block behind the copy, over the globe's own
+              dimming (Hamza, 7 Oct: no blur on the globe). */}
           <span className="hc-veil" />
           <span className="hc-topband" />
         </div>
@@ -100,14 +87,6 @@ export function HeroGlobeSection() {
         .hc-stage { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
         .hg-host { position: absolute; inset: 0; }
         .hg-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
-        .hc-blur {
-          position: absolute;
-          inset: 0;
-          -webkit-backdrop-filter: blur(var(--b));
-          backdrop-filter: blur(var(--b));
-          -webkit-mask-image: radial-gradient(var(--w) var(--h) at 50% 50%, #000 35%, transparent 100%);
-          mask-image: radial-gradient(var(--w) var(--h) at 50% 50%, #000 35%, transparent 100%);
-        }
         /* The veil behind the copy: the page colour, sized to the copy
            column with a margin, feathered by a wide blur so it melts into the
            tiles rather than cutting them. */

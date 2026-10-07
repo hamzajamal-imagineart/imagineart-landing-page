@@ -535,7 +535,7 @@ export function PlatformStrip() {
         .pf-tab-fill { border-radius: calc(10px * var(--corner)); background: var(--tile); }
         /* On the light palette --tile is two percent off white and the pill
            barely shows; a step darker reads as a selection (Hamza, 6 Oct). */
-        :root:not([data-theme="dark"]) .pf-tab-fill { background: #e9eaec; }
+        :root:not([data-theme="dark"]) .pf-tab-fill:not([data-theme="dark"] *) { background: #e9eaec; }
         .pf-tab {
           position: relative;
           z-index: 1;
@@ -575,11 +575,11 @@ export function PlatformStrip() {
           letter-spacing: 0.04em;
           text-transform: uppercase;
         }
-        :root:not([data-theme="dark"]) .pf-new { background: #ede9fe; color: #6d28d9; }
+        :root:not([data-theme="dark"]) .pf-new:not([data-theme="dark"] *) { background: #ede9fe; color: #6d28d9; }
         /* On the selected tab the pill's grey swallowed the tag's tint
            (Hamza, 7 Oct): a step stronger there, on both palettes. */
         .pf-tab-on .pf-new { background: rgba(139, 92, 246, 0.34); }
-        :root:not([data-theme="dark"]) .pf-tab-on .pf-new { background: #ddd6fe; color: #5b21b6; }
+        :root:not([data-theme="dark"]) .pf-tab-on .pf-new:not([data-theme="dark"] *) { background: #ddd6fe; color: #5b21b6; }
 
         /* The container: one hairline, nothing nested inside it (Hamza,
            6 Oct: "no double borders"). The stage fills it edge to edge. */
@@ -619,7 +619,7 @@ export function PlatformStrip() {
             radial-gradient(var(--pf-dot, rgba(255, 255, 255, 0.07)) 1px, transparent 1.2px) 0 0 / 22px 22px,
             var(--tile-2);
         }
-        :root:not([data-theme="dark"]) .pf-plug { --pf-dot: rgba(15, 20, 30, 0.09); }
+        :root:not([data-theme="dark"]) .pf-plug:not([data-theme="dark"] *) { --pf-dot: rgba(15, 20, 30, 0.09); }
         .pf-plug-eyebrow {
           font-size: 12px;
           font-weight: 600;
@@ -684,7 +684,7 @@ export function PlatformStrip() {
         }
         /* The wordmark's own two colours: #F2F2F3 on dark, #0F0F0F on light. */
         .pf-hub-mark { width: 100%; height: auto; display: block; color: #F2F2F3; }
-        :root:not([data-theme="dark"]) .pf-hub-mark { color: #0F0F0F; }
+        :root:not([data-theme="dark"]) .pf-hub-mark:not([data-theme="dark"] *) { color: #0F0F0F; }
 
         .pf-nodes { list-style: none; position: absolute; inset: 0; margin: 0; padding: 0; }
         .pf-nodes li { position: absolute; transform: translate(-50%, -50%); }

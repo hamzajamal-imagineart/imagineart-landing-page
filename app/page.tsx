@@ -1,6 +1,7 @@
 import { SiteNav } from "@/components/SiteNav";
 import { SiteFooter } from "@/components/SiteFooter";
 import { PageTint } from "@/components/PageTint";
+import { Wash } from "@/components/Wash";
 import { FAQSection } from "@/components/FAQSection";
 import { ReviewsSection } from "@/components/ReviewsSection";
 
@@ -52,10 +53,11 @@ export default function Page() {
         <HeroGlobeSection />
         <Partners />
         <Suite />
-        <Outcomes />
+        {/* Pastel washes behind Outcomes and Models (Hamza, 7 Oct). */}
+        <Wash variant="a"><Outcomes /></Wash>
         <Industries />
         <Workflows />
-        <Models />
+        <Wash variant="b"><Models /></Wash>
         <Security />
         <ReviewsSection />
         <FAQSection />
