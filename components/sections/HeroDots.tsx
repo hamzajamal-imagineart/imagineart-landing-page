@@ -6,9 +6,10 @@ import { useEffect, useRef } from "react";
  * The hero's halftone edges as a live dot field (Hamza, 7 Oct, after
  * kyoso.ai): a plain, even grid of dots in a band down each side of the
  * stage — straight rows and columns, no fade, no drift — where each dot
- * answers the pointer like a filing to a magnet: within a radius it is
- * drawn toward the cursor, closer ones more strongly, and springs back home
- * when it leaves.
+ * acts on its own (Hamza, 7 Oct): when the cursor comes within CATCH of it,
+ * it latches on and follows, trailing at its own pace and sitting at its own
+ * spot around the cursor, until the cursor has dragged it past its tether;
+ * then it lets go and springs back home.
  *
  * One canvas over the stage, dots only in the two bands (about 2,500 at
  * 1600px), redrawn every frame while the hero is on screen. Colour comes
@@ -18,14 +19,21 @@ import { useEffect, useRef } from "react";
 /* A compact grid, brighter, each dot with its own weight (Hamza, 7 Oct,
    after kyoso.ai). */
 const SPACING = 12, DOT = 0.95, BIG = 1.3, ALPHA = 0.22;
-/* The pull: dots within RADIUS move toward the pointer by up to PULL of
-   their distance (closer ones more), like filings to a magnet. */
-const RADIUS = 140, PULL = 0.75, EASE = 0.16, RETURN = 0.08;
+/* Latching: a dot within CATCH px of the cursor attaches; it follows with an
+   ease of its own (FOLLOW_MIN–MAX), sits up to SPREAD px off the cursor so a
+   caught group stays a cluster, and lets go once the cursor is further than
+   its tether (TETHER_MIN–MAX px) from its home. RETURN is the spring home. */
+const CATCH = 30, SPREAD = 14, FOLLOW_MIN = 0.1, FOLLOW_MAX = 0.28;
+const TETHER_MIN = 90, TETHER_MAX = 200, RETURN = 0.08;
 /* No drift of its own (Hamza, 7 Oct): the field is still until the cursor
    comes near. */
 const DRIFT_PX_PER_S = 0;
 
-type Dot = { hx: number; hy: number; x: number; y: number; a: number; r: number };
+type Dot = {
+  hx: number; hy: number; x: number; y: number; a: number; r: number;
+  /** Attached to the cursor; its offset there, follow ease and tether. */
+  on: boolean; ox: number; oy: number; k: number; tether: number;
+};
 
 export function HeroDots({ className }: { className?: string }) {
   const ref = useRef<HTMLCanvasElement | null>(null);
@@ -62,7 +70,13 @@ export function HeroDots({ className }: { className?: string }) {
           if (!left && !right) continue;
           // A plain grid: every dot the same weight, straight rows and
           // columns, no fade (Hamza, 7 Oct).
-          dots.push({ hx: x, hy: y, x, y, a: 1, r: i++ % 4 === 0 ? BIG : DOT });
+          const ang = Math.random() * Math.PI * 2, off = Math.random() * SPREAD;
+          dots.push({
+            hx: x, hy: y, x, y, a: 1, r: i++ % 4 === 0 ? BIG : DOT,
+            on: false, ox: Math.cos(ang) * off, oy: Math.sin(ang) * off,
+            k: FOLLOW_MIN + Math.random() * (FOLLOW_MAX - FOLLOW_MIN),
+            tether: TETHER_MIN + Math.random() * (TETHER_MAX - TETHER_MIN),
+          });
         }
       }
     };
@@ -95,21 +109,24 @@ export function HeroDots({ className }: { className?: string }) {
       if (!reduced) drift = (drift + DRIFT_PX_PER_S * dt) % SPACING;
       ctx.clearRect(0, 0, w, h);
       ctx.fillStyle = ink;
-      const r2 = RADIUS * RADIUS;
+      const c2 = CATCH * CATCH;
       for (const d of dots) {
         // Home position, drifting on the diagonal; the left band drifts down
         // and right, the right band the other way, as the CSS grids did.
         const dir = d.hx <= band ? 1 : -1;
         const hx = d.hx + drift * dir, hy = d.hy + drift * dir;
-        let tx = hx, ty = hy;
         if (!reduced) {
-          const dx = hx - pointer.x, dy = hy - pointer.y, dd = dx * dx + dy * dy;
-          if (dd < r2 && dd > 0.01) {
-            const dist = Math.sqrt(dd), f = 1 - dist / RADIUS, pull = dist * PULL * f * f;
-            tx = hx - (dx / dist) * pull; ty = hy - (dy / dist) * pull;
+          if (d.on) {
+            // Let go once the cursor has pulled it past its tether.
+            const hdx = pointer.x - hx, hdy = pointer.y - hy;
+            if (hdx * hdx + hdy * hdy > d.tether * d.tether) d.on = false;
+          } else {
+            const dx = d.x - pointer.x, dy = d.y - pointer.y;
+            if (dx * dx + dy * dy < c2) d.on = true;
           }
-        }
-        const k = tx === hx && ty === hy ? RETURN : EASE;
+        } else d.on = false;
+        const tx = d.on ? pointer.x + d.ox : hx, ty = d.on ? pointer.y + d.oy : hy;
+        const k = d.on ? d.k : RETURN;
         d.x += (tx - d.x) * (reduced ? 1 : k);
         d.y += (ty - d.y) * (reduced ? 1 : k);
         ctx.globalAlpha = d.a * ALPHA;

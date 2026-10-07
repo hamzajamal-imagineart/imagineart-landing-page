@@ -481,7 +481,7 @@ export function PlatformStrip() {
       {/* A heading over the tabs (Hamza, 6 Oct, to a reference): one line
           and a lede, centred, above the tab row. */}
       <div className="pf-head">
-        <BlurHeading className="h2 pf-h2" lead="One workspace, every way in" />
+        <BlurHeading className="h2 pf-h2" lead="Start wherever you work" />
         <p className="lede mt-4">Start from the suite, an agent, the MCP or a plugin. Every tool, every model, every format.</p>
       </div>
       <div className="pf-tabs" role="tablist" aria-label="Platform" ref={tabs.containerRef as React.Ref<HTMLDivElement>}>
@@ -521,8 +521,6 @@ export function PlatformStrip() {
            selected tab on a soft fill. Above the container. */
         .pf-head { text-align: center; margin: 0 auto 40px; max-width: 720px; display: flex; flex-direction: column; align-items: center; }
         .pf-head .lede { max-width: 56ch; }
-        /* Flat ink, not the h2 gradient fill (Hamza, 6 Oct). */
-        .pf-h2 { background: none; -webkit-text-fill-color: currentColor; color: var(--ink-heading); }
         .pf-tabs {
           position: relative;
           margin: 0 auto;

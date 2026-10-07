@@ -126,7 +126,7 @@ export function Suite() {
             target="_blank"
             rel="noopener noreferrer"
             aria-label={t.title}
-            className={`suite-card suite-tone-${(i % 5) + 1}${i < 2 ? ` suite-bg suite-bg-${i + 1}` : ""}`}
+            className={`suite-card suite-tone-${(i % 5) + 1}${i === 0 ? " suite-bg suite-bg-1" : ""}`}
           >
             <h3 className="suite-card-title">{t.title}</h3>
             <p className="suite-card-body">{t.body}</p>
@@ -202,13 +202,12 @@ export function Suite() {
         .suite-tone-3 { background-color: #3d3b34; }
         .suite-tone-4 { background-color: #24302f; }
         .suite-tone-5 { background-color: #141414; }
-        /* The first two cards sit on grainy gradient stills (Hamza, 6 Oct):
-           a dark teal with an orange glow, and an indigo that fades to white
-           toward the bottom-right. Both are dark at the top-left where the
-           title sits, so the white type stays. */
+        /* The first card sits on a grainy gradient still (Hamza, 6 Oct): a
+           dark teal with an orange glow, dark at the top-left where the title
+           sits, so the white type stays. The indigo still on card 2 was
+           dropped (7 Oct). */
         .suite-bg { background-size: cover; background-position: center; background-repeat: no-repeat; }
         .suite-bg-1 { background-image: url(${withBasePath("/media/suite/bg-1.jpg")}); }
-        .suite-bg-2 { background-image: url(${withBasePath("/media/suite/bg-2.jpg")}); }
 
         .suite-card-title {
           font-size: 19px;

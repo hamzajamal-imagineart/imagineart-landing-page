@@ -3,13 +3,20 @@ import { PlatformStrip } from "@/components/sections/Platform";
 import { HeroGlobe } from "@/components/sections/HeroGlobe";
 import { HeroDots } from "@/components/sections/HeroDots";
 
+/* Centre blur (Hamza, 7 Oct: like TwelveLabs, tiles go soft toward the copy).
+   Stacked backdrop-blur layers, each masked to a smaller ellipse, so the blur
+   builds toward the centre with no edge: [blur px, ellipse width %, height %]. */
+const BLUR_LAYERS: [number, number, number][] = [[1, 44, 40], [2.5, 34, 30]];
+/** How much of the page colour sits over the blurred centre (0–1). */
+const VEIL_ALPHA = 0.85;
+
 /**
  * Hero (Hamza, 6 Oct): a two-line claim, one line and the purple "Start
  * creating for free" centred, over a slowly turning globe of the product's
  * work. The globe is a three.js scene in <HeroGlobe> (which documents how it
  * works and how it differs from the TwelveLabs hero that prompted it). There
- * is a widely feathered block of the page colour behind the copy, and the
- * globe also dims its own tiles there (its softCentre prop).
+ * is a progressive blur toward the copy, a feathered block of the page colour
+ * behind it, and the globe also dims its own tiles there (softCentre).
  *
  * The section is dark on a light page (Hamza, 6 Oct): it carries
  * data-theme="dark", which globals.css honours on any element, so every
@@ -26,18 +33,28 @@ export function HeroGlobeSection() {
 
         <div className="hc-stage" aria-hidden>
           <HeroGlobe distance={68} softCentre={{ rx: 0.62, ry: 0.5, dim: 0.4, blur: 0 }} />
-          {/* A soft block of the page colour behind the copy (Hamza, 7 Oct:
-              back, and smooth): widely feathered so it has no edge, with the
-              globe's own dimming underneath it. */}
+          {/* The centre goes soft: progressive backdrop blur, then a feathered
+              block of the page colour, over the globe's own dimming. */}
+          {BLUR_LAYERS.map(([px, w, h]) => (
+            <span
+              key={px}
+              className="hc-blur"
+              style={{
+                ["--b" as string]: `${px}px`,
+                ["--w" as string]: `${w}%`,
+                ["--h" as string]: `${h}%`,
+              }}
+            />
+          ))}
           <span className="hc-veil" />
           <span className="hc-topband" />
         </div>
 
         <div className="hc-copy">
-          <h1 className="hc-title"><span className="hc-line">One canvas at scale for your</span><span className="hc-line hc-muted">work generations</span></h1>
+          <h1 className="hc-title"><span className="hc-line">One workspace for your</span><span className="hc-line">content generations</span></h1>
           <p className="hc-lede">
             Every leading model for image, video and audio in one workspace, with your brand held
-            across every output and the security and admin controls your organisation needs.
+            across every output and the security your organisation needs.
           </p>
           <a href={START_HREF} className="hs-cta">
             Start creating for free
@@ -81,7 +98,15 @@ export function HeroGlobeSection() {
         .hc-stage { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
         .hg-host { position: absolute; inset: 0; }
         .hg-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
-        /* The veil behind the copy: the page colour at 92%, sized to the copy
+        .hc-blur {
+          position: absolute;
+          inset: 0;
+          -webkit-backdrop-filter: blur(var(--b));
+          backdrop-filter: blur(var(--b));
+          -webkit-mask-image: radial-gradient(var(--w) var(--h) at 50% 50%, #000 35%, transparent 100%);
+          mask-image: radial-gradient(var(--w) var(--h) at 50% 50%, #000 35%, transparent 100%);
+        }
+        /* The veil behind the copy: the page colour, sized to the copy
            column with a margin, feathered by a wide blur so it melts into the
            tiles rather than cutting them. */
         .hc-veil {
@@ -92,7 +117,7 @@ export function HeroGlobeSection() {
           height: clamp(300px, 36%, 360px);
           transform: translate(-50%, -50%);
           border-radius: 80px;
-          background: color-mix(in srgb, var(--page-bg) 92%, transparent);
+          background: rgba(0, 0, 0, ${VEIL_ALPHA});
           filter: blur(44px);
         }
 
@@ -117,7 +142,6 @@ export function HeroGlobeSection() {
           align-items: center;
           text-align: center;
         }
-        .hc-muted { color: var(--heading-muted); }
         /* Two lines, always (Hamza, 6 Oct, to a reference): "One canvas at
            scale for your" white, "work generations" muted, large at weight 500;
            each line is held whole and the size scales with the viewport so
@@ -128,14 +152,14 @@ export function HeroGlobeSection() {
              62vw column (less padding) at every width. */
           font-size: clamp(28px, 3.6vw, 58px);
           line-height: 1.1;
-          font-weight: 500;
+          font-weight: 600;
           letter-spacing: -0.03em;
-          color: var(--ink-heading);
+          color: #fff; /* both lines pure white (Hamza, 7 Oct) */
           text-wrap: balance;
         }
         .hc-lede {
           margin-top: 22px;
-          max-width: 62ch;
+          max-width: 54ch; /* narrower than the title, so it breaks after "with your" (7 Oct) */
           font-size: clamp(15px, 1.15vw, 18px);
           line-height: 1.6;
           color: var(--ink-2);
