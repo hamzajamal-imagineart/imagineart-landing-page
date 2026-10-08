@@ -640,3 +640,32 @@ body::before {
 @media (prefers-reduced-motion: reduce) {
   .reveal, .reveal.is-in { opacity: 1; transform: none; transition: none; }
 }
+
+/* Footer watermark glow (8 Oct): a river of colour behind the wordmark.
+   Two wavy bands (a sine-shaped mask) roll left to right at different
+   lengths and speeds while the colours flow along them. Strength:
+   .wm-glow opacity; speed: the wm-wave / wm-flow durations. */
+.wm-glow {
+  position: absolute; inset: -15% 0; opacity: 0.25; filter: blur(36px);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 15%, #000 85%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 15%, #000 85%, transparent);
+}
+.wm-glow::before, .wm-glow::after {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(90deg, #8a3ffc, #3d7bff, #2fd6c3, #3d7bff, #8a3ffc);
+  background-size: 50% 100%;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 200' preserveAspectRatio='none'%3E%3Cpath d='M0 70 Q150 20 300 70 T600 70 L600 130 Q450 180 300 130 T0 130 Z'/%3E%3C/svg%3E") repeat-x 0 0 / 640px 100%;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 200' preserveAspectRatio='none'%3E%3Cpath d='M0 70 Q150 20 300 70 T600 70 L600 130 Q450 180 300 130 T0 130 Z'/%3E%3C/svg%3E") repeat-x 0 0 / 640px 100%;
+  animation: wm-wave 9s linear infinite, wm-flow 16s linear infinite;
+}
+.wm-glow::after {
+  opacity: 0.6; transform: translateY(12%) scaleY(0.8);
+  -webkit-mask-size: 900px 100%; mask-size: 900px 100%;
+  animation-name: wm-wave-b, wm-flow; animation-duration: 14s, 22s;
+}
+@keyframes wm-wave { to { -webkit-mask-position: 640px 0; mask-position: 640px 0; } }
+@keyframes wm-wave-b { to { -webkit-mask-position: 900px 0; mask-position: 900px 0; } }
+@keyframes wm-flow { to { background-position: 200% 0; } }
+@media (prefers-reduced-motion: reduce) {
+  .wm-glow::before, .wm-glow::after { animation: none; }
+}

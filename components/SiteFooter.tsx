@@ -214,8 +214,10 @@ export function SiteFooter() {
       </div>
 
       {/* Big watermark (back on, Hamza, 8 Oct) */}
-      <div className="max-w-[1240px] mx-auto text-center select-none pointer-events-none px-5 md:px-8 pt-4 leading-[0]">
-        <img src={withBasePath("/media/footer/watermark.svg")} alt="" aria-hidden="true" className="w-full max-w-[1240px] h-auto inline-block" />
+      <div className="relative max-w-[1240px] mx-auto text-center select-none pointer-events-none px-5 md:px-8 pt-4 leading-[0]">
+        {/* Subtle drifting gradient behind the watermark (Hamza, 8 Oct); styles in globals.css (.wm-glow). */}
+        <div className="wm-glow" aria-hidden="true" />
+        <img src={withBasePath("/media/footer/watermark.svg")} alt="" aria-hidden="true" className="relative w-full max-w-[1240px] h-auto inline-block" />
       </div>
 
       {/* Bottom bar */}
