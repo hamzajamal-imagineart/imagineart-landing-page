@@ -19,7 +19,7 @@ import { START_HREF } from "@/lib/links";
  * needs a floor under it, not a tint.
  *
  * Studio marks top-left (back on 8 Oct, Hamza): Ad Studio on Advertising,
- * Fashion Studio on Product shots, Film Studio on Filmmaking, each over a
+ * Fashion Studio on Brand campaigns, Film Studio on Filmmaking, each over a
  * light scrim at the top so the white mark holds on a bright image.
  */
 type Logo = { src: string; alt: string; h: number };
@@ -34,9 +34,13 @@ const CARDS: { title: string; body: string; image: string; logo?: Logo }[] = [
     title: "Product shots",
     body: "AI-powered photoshoots. No studio. No crew. No scheduling.",
     image: "/media/outcomes/product.jpg",
+  },
+  {
+    title: "Brand campaigns",
+    body: "On-brand visuals, video, and audio at any scale, any format.",
+    image: "/media/outcomes/brand.jpg",
     logo: { src: "/media/studios/logos/fashion-studio-white.svg", alt: "Fashion Studio", h: 32 },
   },
-  { title: "Brand campaigns", body: "On-brand visuals, video, and audio at any scale, any format.", image: "/media/outcomes/brand.jpg" },
 ];
 const WIDE = {
   title: "Filmmaking",
