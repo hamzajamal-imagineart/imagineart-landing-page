@@ -126,7 +126,9 @@ export function SiteFooter() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="bg-[#070707] border-t border-white/[0.06] overflow-x-hidden">
+    <footer className="relative isolate overflow-hidden bg-[#070707] border-t border-white/[0.06]">
+      {/* Colour rising from the page's foot, behind everything (Hamza, 9 Oct); styles in globals.css (.wm-glow). */}
+      <div className="wm-glow" aria-hidden="true" />
       <div className="max-w-[1240px] mx-auto px-5 md:px-8 pt-10 md:pt-14 pb-8">
         <div className="flex flex-col md:flex-row items-start justify-between gap-8 flex-wrap">
 
@@ -215,8 +217,6 @@ export function SiteFooter() {
 
       {/* Big watermark (back on, Hamza, 8 Oct) */}
       <div className="relative max-w-[1240px] mx-auto text-center select-none pointer-events-none px-5 md:px-8 pt-4 leading-[0]">
-        {/* Subtle drifting gradient behind the watermark (Hamza, 8 Oct); styles in globals.css (.wm-glow). */}
-        <div className="wm-glow" aria-hidden="true" />
         <img src={withBasePath("/media/footer/watermark.svg")} alt="" aria-hidden="true" className="relative w-full max-w-[1240px] h-auto inline-block" />
       </div>
 

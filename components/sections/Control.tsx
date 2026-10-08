@@ -33,7 +33,7 @@ const REFS = [
 const EDIT_TOOLS = [
   { label: "Inpaint", video: "/media/capabilities/inpaint.mp4" },
   { label: "Extend", video: "/media/capabilities/video-extend.mp4" },
-  { label: "Lip sync", video: "/media/tools/lipsync.mp4" },
+  { label: "Camera Angles", video: "/media/capabilities/camera-angles.mp4" }, // replaces Lip sync (Hamza, 8 Oct)
 ];
 
 const img = (f: string) => withBasePath(`/media/control/${f}`);
@@ -94,7 +94,7 @@ export const CONTROL_POINTS: TimelinePoint[] = [
   },
   {
     title: "Edit the frame, not the prompt",
-    body: "Inpaint, relight, extend, caption and lip sync on the exact frame, instead of rolling the dice again. Precision tools for video and image, in the same canvas.",
+    body: "Inpaint, relight, extend, caption or change the camera angle on the exact frame, instead of rolling the dice again. Precision tools for video and image, in the same canvas.",
     cta: { label: "Open the editor", href: "https://www.imagine.art/ai-video-editor" },
     media: <EditVisual />,
   },

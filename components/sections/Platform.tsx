@@ -38,9 +38,9 @@ const VIDEO_SET = [
 
 /** The Workflows recording (it ran under the Agents tab until 7 Oct, hence
     the file's name). */
-const WORKFLOWS_CLIP = "/media/hero/modes/agent.mp4";
+const WORKFLOWS_CLIP = "/media/hero/modes/agent-v2.mp4";
 /** The Imagine Computer recording, for the Agent tab. */
-const COMPUTER_CLIP = "/media/hero/computer.mp4";
+const COMPUTER_CLIP = "/media/hero/computer-v3.mp4";
 
 /**
  * The plugin marks and anchors the Workflows tile already carries.
