@@ -54,8 +54,9 @@ export default function Page() {
         {/* Drift (Hamza, 8 Oct): flying through space, stills grow out of
             a ring around the copy. The corridor that ran here before is
             parked at /hero-9, the always-open globe at /hero-8. */}
-        {/* Customer logos sit between the hero and the platform strip (Hamza, 8 Oct). */}
-        <HeroGlobeSection drift beforeStrip={<Partners />} />
+        <HeroGlobeSection drift />
+        {/* Logos back under the platform strip (Hamza, 8 Oct). */}
+        <Partners />
         <Suite />
         {/* Pastel wash behind Models (Hamza, 7 Oct); the one behind Outcomes came off on 8 Oct. */}
         <Outcomes />

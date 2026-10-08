@@ -25,8 +25,8 @@ const CUSTOMERS: { name: string; h: number }[] = [
 export function Partners() {
   return (
     <section className="relative border-t border-[color:var(--line)] py-16 md:py-20 lg:border-t-0">
-      {/* Closed at both ends and pulled in off the hero's edge (Hamza, 8 Oct). */}
-      <SectionGuides edge="both" insetTop={24} />
+      {/* Top edge only: Suite, right below, marks the seam under it. */}
+      <SectionGuides edge="top" />
       <div className="container-page">
         <p className="pt-cap">Trusted by the brands you benchmark against</p>
         {/* A still grid (Hamza, 7 Oct): no marquee. */}
