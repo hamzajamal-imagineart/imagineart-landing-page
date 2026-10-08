@@ -516,7 +516,7 @@ export function PlatformStrip() {
           and a lede, centred, above the tab row. */}
       <div className="pf-head">
         <BlurHeading className="h2 pf-h2" lead="Purpose-built for creative enterprise" />
-        <p className="lede mt-4">Pick the way in that fits how your team works. The same models and the same brand kit come with you, wherever you start.</p>
+        <p className="lede mt-4">Same models, same brand kit, wherever you start.</p>
       </div>
       <div className="pf-tabs" role="tablist" aria-label="Platform" ref={tabs.containerRef as React.Ref<HTMLDivElement>}>
         <SlidingIndicator box={tabs.box} ready={tabs.ready} className="pf-tab-fill" />
@@ -533,7 +533,6 @@ export function PlatformStrip() {
           >
             <TabDots v={i} id={x.id} />
             {x.label}
-            {x.isNew && <span className="pf-new">New</span>}
           </button>
         ))}
       </div>
@@ -605,7 +604,7 @@ export function PlatformStrip() {
         /* Minimal tabs (Hamza, 6 Oct, to a reference): no track and no
            dividers, a small dot glyph before each label, and only the
            selected tab on a soft fill. Above the container. */
-        .pf-head { text-align: center; margin: 0 auto 40px; max-width: 720px; display: flex; flex-direction: column; align-items: center; }
+        .pf-head { text-align: center; margin: 0 auto 56px; max-width: 720px; display: flex; flex-direction: column; align-items: center; }
         .pf-head .lede { max-width: 56ch; }
         .pf-tabs {
           position: relative;
@@ -675,14 +674,17 @@ export function PlatformStrip() {
 
         /* The container: one hairline, nothing nested inside it (Hamza,
            6 Oct: "no double borders"). The stage fills it edge to edge. */
+        /* No grey box of its own (Hamza, 8 Oct): the stage is the one
+           rounded surface, edged with a hairline so a white recording still
+           reads against the white page (no shadow). */
         .pf-frame {
           position: relative;
-          margin-top: 20px;
+          margin-top: 40px;
           overflow: hidden;
           border-radius: var(--radius-5);
           border: 1px solid var(--line);
-          background: var(--tile);
         }
+
         .pf-panel { padding: 0; }
 
         /* One ratio for every tab, so switching never moves the height. */
@@ -709,7 +711,7 @@ export function PlatformStrip() {
           background:
             radial-gradient(circle at 70% 50%, rgb(var(--brand-rgb) / 0.10), transparent 55%),
             radial-gradient(var(--pf-dot, rgba(255, 255, 255, 0.07)) 1px, transparent 1.2px) 0 0 / 22px 22px,
-            var(--tile-2);
+            var(--tile);
         }
         :root:not([data-theme="dark"]) .pf-plug:not([data-theme="dark"] *) { --pf-dot: rgba(15, 20, 30, 0.09); }
         .pf-plug-eyebrow {
@@ -851,7 +853,7 @@ export function PlatformStrip() {
            previous UI that had tabs"): client tabs, the MCP / CLI toggle, the
            three steps and the recording. It is taller than a 2:1 stage, so
            this tab alone lets the stage take its content's height. */
-        .pf-stage:has(.pf-mcp) { aspect-ratio: auto; overflow: visible; border: 0; background: transparent; }
+        .pf-stage:has(.pf-mcp) { aspect-ratio: auto; overflow: visible; border: 0; background: var(--tile); }
         .pf-mcp { min-width: 0; }
         .pf-mcp .mcp-panel { border: 0; background: transparent; padding: 0; }
         /* The tab tracks sit in from the frame's edges, not flush against
