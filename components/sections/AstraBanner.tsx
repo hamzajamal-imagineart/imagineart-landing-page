@@ -84,8 +84,7 @@ export function AstraBanner() {
             </h2>
           </div>
           <p className="astra-line">
-            <span>{copy.line[0]}</span>
-            <span>{copy.line[1]}</span>
+            {copy.line.join(" ")}
           </p>
           <a className="astra-cta" href={cta.href} target="_blank" rel="noopener noreferrer">
             {cta.label}
@@ -129,8 +128,8 @@ export function AstraBanner() {
         .astra-mark { width: clamp(34px, 4vw, 52px); height: clamp(34px, 4vw, 52px); display: block; flex-shrink: 0; }
         .astra-gpt { font-size: clamp(36px, 4.4vw, 56px); line-height: 1.1; font-weight: 600; letter-spacing: -0.02em; white-space: nowrap; text-shadow: 0 4px 8px rgba(176,175,175,0.2); }
         .astra-serif { font-family: var(--font-instrument-serif), Georgia, serif; font-size: clamp(36px, 4.4vw, 56px); line-height: 1.1; font-weight: 400; white-space: nowrap; }
-        .astra-line { margin: 0; font-size: 16px; line-height: 1.45; letter-spacing: -0.005em; }
-        .astra-line span { display: block; }
+        /* One flowing line, wider than the old two-line break (Hamza, 8 Oct). */
+        .astra-line { margin: 0; max-width: 28em; font-size: 16px; line-height: 1.45; letter-spacing: -0.005em; text-wrap: pretty; }
         .astra-cta { pointer-events: auto; display: inline-flex; align-items: center; gap: 8px; height: 40px; padding: 0 14px; border-radius: 999px; background: #fff; color: #000; font-size: 15px; font-weight: 500; white-space: nowrap; transition: background 0.3s; }
         .astra-cta:hover { background: #ececec; }
         .astra-cta:active { transform: translateY(1px); }
