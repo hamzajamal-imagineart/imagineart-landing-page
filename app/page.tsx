@@ -3,6 +3,7 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { PageTint } from "@/components/PageTint";
 import { Wash } from "@/components/Wash";
 import { ScrollReveal } from "@/components/ScrollReveal";
+import { PaperBirds } from "@/components/PaperBirds";
 import { FAQSection } from "@/components/FAQSection";
 import { ReviewsSection } from "@/components/ReviewsSection";
 
@@ -71,6 +72,8 @@ export default function Page() {
 
       <SiteFooter />
       <ScrollReveal />
+      {/* Experiment (Hamza, 8 Oct): origami birds fly right to left on scroll from the suite on. */}
+      <PaperBirds />
     </>
   );
 }
