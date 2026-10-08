@@ -48,8 +48,13 @@ export default function Page() {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(softwareSchema) }} />
+      {/* Dark mode for this page (Hamza, 8 Oct). The dark tokens key off
+          :root[data-theme="dark"] (globals.css), and the body takes its colour
+          from them, so the attribute goes on <html>, set inline so it lands
+          before first paint. Other routes stay light. */}
+      <script dangerouslySetInnerHTML={{ __html: "document.documentElement.setAttribute('data-theme','dark')" }} />
       <PageTint palette="neutral" />
-      <SiteNav variant="onDark" theme="light" />
+      <SiteNav variant="onDark" theme="dark" />
 
       <main>
         {/* Drift (Hamza, 8 Oct): flying through space, stills grow out of
