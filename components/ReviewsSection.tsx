@@ -43,7 +43,7 @@ const [A, B, FEATURED, C, D]: Review[] = [
 /** An image the product made, over the featured review (Hamza, 25 Sep; it
     was a clip). An illustration on purpose, not a photograph: a face over a
     named review would read as the reviewer, and Trustpilot gives no photo. */
-const FEATURED_IMAGE = "/media/reviews/featured.jpg";
+const FEATURED_IMAGE = "/media/reviews/featured-product.jpg"; // green bottle product shot (was the white bottles), Hamza 8 Oct
 
 const initials = (name: string) =>
   name.split(/\s+/).map((w) => w[0]).slice(0, 2).join("").toUpperCase();
@@ -231,7 +231,7 @@ export function ReviewsSection() {
           --rv-avatar: rgba(255, 255, 255, 0.14);
           --rv-star-off: rgba(255, 255, 255, 0.24);
         }
-        .rv-media { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 20%; display: block; }
+        .rv-media { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 100%; display: block; }
         .rv-scrim {
           position: absolute;
           inset: 0;
