@@ -231,6 +231,8 @@ export function ReviewsSection() {
           --rv-avatar: rgba(255, 255, 255, 0.14);
           --rv-star-off: rgba(255, 255, 255, 0.24);
         }
+        /* The hairline as an overlay: the inset shadow is painted under the image, which hid it (Hamza, 8 Oct). */
+        .rv-featured::after { content: ""; position: absolute; inset: 0; border-radius: inherit; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1); pointer-events: none; z-index: 2; }
         .rv-media { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 100%; display: block; }
         .rv-scrim {
           position: absolute;
