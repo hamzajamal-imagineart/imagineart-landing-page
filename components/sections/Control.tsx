@@ -64,7 +64,7 @@ export const CONTROL_POINTS: TimelinePoint[] = [
       <>
         <img className="cm-bg" src={img("brandkit.jpg")} alt="" loading="lazy" />
         <div className="kitcard">
-          <h5>MOKA brand kit <i>● applied</i></h5>
+          <h5>MOKA brand kit</h5>
           <div className="sw">
             <i style={{ background: "#3b2a1f" }} />
             <i style={{ background: "#c8a27a" }} />
@@ -85,10 +85,10 @@ export const CONTROL_POINTS: TimelinePoint[] = [
       <>
         <div className="refgrid">
           {REFS.map((r) => (
-            <div key={r.src}><img src={img(r.src)} alt="" loading="lazy" /><span>{r.tag}</span></div>
+            <div key={r.src}><img src={img(r.src)} alt="" loading="lazy" /></div>
           ))}
         </div>
-        <div className="refpin"><img src={img("product.jpg")} alt="" loading="lazy" /><b>REFERENCE</b></div>
+        <div className="refpin"><img src={img("product.jpg")} alt="" loading="lazy" /></div>
       </>
     ),
   },
