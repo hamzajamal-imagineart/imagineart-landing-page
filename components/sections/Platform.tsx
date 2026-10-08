@@ -572,7 +572,7 @@ export function PlatformStrip() {
           margin: 16px auto 0;
           padding: 4px;
           border-radius: var(--radius-pill);
-          background: var(--track);
+          background: color-mix(in srgb, var(--ink-heading) 6%, transparent);
         }
         .pf-via-thumb {
           position: absolute;
@@ -620,7 +620,10 @@ export function PlatformStrip() {
         .pf-tab-fill { border-radius: calc(10px * var(--corner)); background: var(--tile); }
         /* On the light palette --tile is two percent off white and the pill
            barely shows; a step darker reads as a selection (Hamza, 6 Oct). */
-        :root:not([data-theme="dark"]) .pf-tab-fill:not([data-theme="dark"] *) { background: #e9eaec; }
+        /* Not a flat cool grey (Hamza, 8 Oct: the greys fought the warm
+           wash): a translucent ink tint, so the pill picks up whatever sits
+           behind it. Same for the MCP/Plugins track below. */
+        :root:not([data-theme="dark"]) .pf-tab-fill:not([data-theme="dark"] *) { background: rgba(23, 23, 23, 0.06); }
         .pf-tab {
           position: relative;
           z-index: 1;
