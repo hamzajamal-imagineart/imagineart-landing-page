@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
+import { Comfortaa } from "next/font/google";
 import "./globals.css";
 
 import { withBasePath } from "@/lib/assets";
@@ -12,6 +13,10 @@ const googleSans = localFont({
   display: "swap",
   weight: "100 900",
 });
+
+// One word of the hero headline, "workspace", is set in Comfortaa (Hamza,
+// 8 Oct); everything else stays in Google Sans Flex.
+const heroFont = Comfortaa({ subsets: ["latin"], variable: "--font-hero", display: "swap", weight: ["400", "500", "600"] });
 
 export const metadata: Metadata = {
   title: "ImagineArt, The AI Creative Platform",
@@ -34,7 +39,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     // The page ships dark. The light palette is still defined in globals.css
     // and still correct, so this attribute is the only thing to change back.
-    <html lang="en" className={googleSans.variable}>
+    <html lang="en" className={`${googleSans.variable} ${heroFont.variable}`}>
       <body>{children}</body>
     </html>
   );

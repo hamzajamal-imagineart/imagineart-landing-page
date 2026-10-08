@@ -19,6 +19,10 @@ import { useEffect, useRef } from "react";
 /* A compact grid, brighter, each dot with its own weight (Hamza, 7 Oct,
    after kyoso.ai). */
 const SPACING = 12, DOT = 0.95, BIG = 1.3, ALPHA = 0.22;
+/* Field mode (Hamza, 8 Oct): the dots spread over the whole hero, behind
+   the globe, rather than in two edge bands; a wider pitch and a quieter
+   tone so a full screen of them reads as texture. */
+const FIELD_SPACING = 18, FIELD_ALPHA = 0.16;
 /* Latching: a dot within CATCH px of the cursor attaches; it follows with an
    ease of its own (FOLLOW_MIN–MAX), sits up to SPREAD px off the cursor so a
    caught group stays a cluster, and lets go once the cursor is further than
@@ -43,7 +47,7 @@ type Dot = {
   sp: number;
 };
 
-export function HeroDots({ className }: { className?: string }) {
+export function HeroDots({ className, field = false }: { className?: string; field?: boolean }) {
   const ref = useRef<HTMLCanvasElement | null>(null);
 
   useEffect(() => {
@@ -72,10 +76,11 @@ export function HeroDots({ className }: { className?: string }) {
       if (narrow) band = 16;
       dots = [];
       let i = 0;
-      for (let y = 0; y < h + SPACING; y += SPACING) {
-        for (let x = 0; x < w + SPACING; x += SPACING) {
+      const pitch = field ? FIELD_SPACING : SPACING;
+      for (let y = 0; y < h + pitch; y += pitch) {
+        for (let x = 0; x < w + pitch; x += pitch) {
           const left = x <= band, right = x >= w - band;
-          if (!left && !right) continue;
+          if (!field && !left && !right) continue;
           // A plain grid: every dot the same weight, straight rows and
           // columns, no fade (Hamza, 7 Oct).
           const ang = Math.random() * Math.PI * 2, off = Math.random() * SPREAD;
@@ -178,7 +183,8 @@ export function HeroDots({ className }: { className?: string }) {
           const hs = HALO * (0.6 + 0.4 * glow);
           ctx.drawImage(halo, d.x - hs / 2, d.y - hs / 2, hs, hs);
         }
-        ctx.globalAlpha = d.a * (ALPHA + (SPARKLE_ALPHA - ALPHA) * glow);
+        const base = field ? FIELD_ALPHA : ALPHA;
+        ctx.globalAlpha = d.a * (base + (SPARKLE_ALPHA - base) * glow);
         ctx.beginPath();
         ctx.arc(d.x, d.y, d.r * (1 + (SPARKLE_GROW - 1) * glow), 0, Math.PI * 2);
         ctx.fill();
@@ -200,7 +206,7 @@ export function HeroDots({ className }: { className?: string }) {
       host.removeEventListener("pointermove", onMove);
       host.removeEventListener("pointerleave", onLeave);
     };
-  }, []);
+  }, [field]);
 
   return <canvas ref={ref} className={className} aria-hidden />;
 }

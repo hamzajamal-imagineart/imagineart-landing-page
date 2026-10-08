@@ -21,7 +21,7 @@ import { withBasePath } from "@/lib/assets";
  * the left and its dark cover thins (the cover is off at 0/0, as theirs).
  * Lit tiles brighten and grow as they come near (DEPTH_FAR → DEPTH_NEAR), and bob a
  * little (BOB). Tiles can carry a gradient band that sweeps across them now
- * and then (BAND_SHARE, off).
+ * and then (BAND_SHARE; on again since 8 Oct).
  * The pointer drifts the camera (PARALLAX) and swells tiles under it
  * (HOVER_*), and only clips under the pointer play.
  *
@@ -92,7 +92,11 @@ const ringCount = (phi: number) => Math.max(8, Math.round(PER_RING * Math.sin(ph
 const TILE_W = 2.4, TILE_H = 1.35, CORNER = 0.18, TILE_SCALE = 2;
 const ROTATION = 0.065; // rad/s
 /** Axis tilt (toward the viewer, then rolled) so the rings run diagonally. */
-const TILT_X = 0.42, TILT_Z = -0.3;
+/* TILT_X was 0.42 (toward the viewer); that swung the globe's empty north
+   pole into the upper front, so the big near tiles all sat low and the top
+   read thin (Hamza, 8 Oct: "more images at the bottom"). Level now, with
+   the roll kept so the rings still run on a diagonal. */
+const TILT_X = 0, TILT_Z = -0.3;
 const GLOBE_OFFSET = new THREE.Vector3(0, -3, 0);
 const CAMERA_DIST = 76, FOV = 44;
 const PARALLAX = 5;
@@ -197,6 +201,15 @@ function layout(shape: GlobeShape): Point[] {
 const MORPH_ASPECT = 0.75;
 /** The morph waits longer than the home hover before it forms (Hamza, 7 Oct). */
 const MORPH_DELAY = 1.2;
+/* The cards' own stills (Hamza, 8 Oct): the globe's are sized for small
+   tiles and went soft at card size, so the cards have a set of their own,
+   generated for them in ImagineArt at 3:4 and saved at 1080×1440. Bright,
+   candid sport, nature and lifestyle frames, after a reference. By card
+   (see MORPH_CARDS); the four front-column cards get the strongest. */
+export const MORPH_IMAGES = [
+  "horse", "hummingbird", "dunk", "steps", "bridge", "gymnast", "quarterback", "driver",
+  "summit", "dancer", "surfer", "skier", "meadow", "tennis", "cyclist", "climber",
+].map((n) => `/media/hero/cards/${n}.jpg`);
 const MORPH_CARDS: { x: number; y: number; h: number; d: number }[] = [
   // Left: an outer column half off the edge, a front column, an inner one.
   { x: -1.02, y: 0.5, h: 0.34, d: 60 }, { x: -1.0, y: -0.3, h: 0.34, d: 60 },
@@ -207,15 +220,23 @@ const MORPH_CARDS: { x: number; y: number; h: number; d: number }[] = [
   { x: 0.8, y: 0.45, h: 0.42, d: 52 }, { x: 0.8, y: -0.28, h: 0.42, d: 52 }, { x: 0.86, y: -0.86, h: 0.3, d: 58 },
   { x: 0.6, y: 0.3, h: 0.34, d: 56 }, { x: 0.62, y: -0.42, h: 0.3, d: 58 }, { x: 0.5, y: 0.66, h: 0.24, d: 62 },
 ];
+/** Depth of field: tiles nearer than DOF_SHARP (on the -1..1 depth scale)
+    are sharp; blur rises to the `depthBlur` prop at the very back. */
+const DOF_SHARP = 0.35;
 const COVER_HIDDEN = 0, COVER_LIT = 0;
-/* A gradient band can sweep across tiles now and then; off (Hamza, 6 Oct:
-   no gradient on the images). Raise BAND_SHARE to bring it back. */
-const BAND_SHARE = 0, BAND_WIDTH = 0.98, BAND_FEATHER = 0.5, BAND_OPACITY = 0.95;
+/* A gradient glow on tiles now and then (Hamza, 8 Oct, after TwelveLabs; it
+   was off since 6 Oct): BAND_SHARE of the tiles each, on their own clock,
+   wash over with the section washes' pastel gradient that swells to
+   BAND_OPACITY and fades away, the image still showing through, then rest. */
+const BAND_SHARE = 0.3, BAND_WIDTH = 0.98, BAND_FEATHER = 0.5, BAND_OPACITY = 0.85;
 /** Page colour behind the tiles and of the dark cover (the dark hero's
     --page-bg, kept literal here because it feeds a shader uniform). */
 const BG = "#0b0b0c";
-/** The band's gradient, in the brand's violets rather than their greens. */
-const BAND_STOPS: [number, string][] = [[0, "#c4b5fd"], [0.4, "#8a3ffc"], [0.75, "#ff8fd8"], [1, "#ffd1a1"]];
+/** The glow's gradient, top to bottom (Hamza, 8 Oct: no purple, no
+    orange, something that sits with the brand violet): the section washes'
+    pastels, green, butter, peach and lilac (the --wash-* tokens, literal
+    here for the shader), matching the headline's "workspace". */
+const BAND_STOPS: [number, string][] = [[0, "#cfe8a6"], [0.35, "#ecdf9f"], [0.7, "#f7d3a6"], [1, "#ecd2f6"]];
 
 const VERT = /* glsl */ `
   varying vec2 vUv;
@@ -234,12 +255,22 @@ const FRAG_IMAGE = /* glsl */ `
     vec2 uv = vUv - 0.5;
     if (uAspect > plate) uv.x *= plate / uAspect; else uv.y *= uAspect / plate;
     uv += 0.5;
-    // Softness behind the copy: a coarser mip level (stills) plus four
-    // offset taps (which also softens clips, whose textures have no mips).
-    float o = uBlur * 0.012;
-    vec4 t = texture2D(uMap, uv, uBlur) * 0.4
-      + (texture2D(uMap, uv + vec2(o, o), uBlur) + texture2D(uMap, uv + vec2(-o, o), uBlur)
-       + texture2D(uMap, uv + vec2(o, -o), uBlur) + texture2D(uMap, uv + vec2(-o, -o), uBlur)) * 0.15;
+    // Softness (behind the copy, and with depth on the home hero): a coarser
+    // mip level plus a 13-tap disc in two rings, which smooths out the mip's
+    // blockiness so it reads as a lens blur rather than pixelation.
+    vec4 t;
+    if (uBlur < 0.05) {
+      t = texture2D(uMap, uv);
+    } else {
+      float o = uBlur * 0.008;
+      t = texture2D(uMap, uv, uBlur) * 0.16;
+      for (int k = 0; k < 6; k++) {
+        float ang = float(k) * 1.0472;
+        vec2 d = vec2(cos(ang), sin(ang));
+        t += texture2D(uMap, clamp(uv + d * o, 0.0, 1.0), uBlur) * 0.08;
+        t += texture2D(uMap, clamp(uv + d.yx * vec2(1.0, -1.0) * o * 2.0, 0.0, 1.0), uBlur) * 0.06;
+      }
+    }
     float soft = 0.4;
     float edge = 1.0 - uProgress * (1.0 + soft * 2.0) + soft;
     float a = smoothstep(edge - soft, edge + soft, vUv.x);
@@ -265,9 +296,9 @@ const FRAG_COVER = /* glsl */ `
 const FRAG_BAND = /* glsl */ `
   uniform sampler2D uGrad; uniform float uPos; uniform float uWidth; uniform float uFeather; uniform float uOpacity; varying vec2 vUv;
   void main() {
-    float d = abs(vUv.y - uPos);
-    float m = smoothstep(uWidth + uFeather, uWidth - uFeather, d);
-    gl_FragColor = vec4(texture2D(uGrad, vec2(0.5, vUv.y)).rgb, m * uOpacity);
+    // The whole tile at once (uPos, uWidth and uFeather are unused since the
+    // sweep became a swell).
+    gl_FragColor = vec4(texture2D(uGrad, vec2(0.5, vUv.y)).rgb, uOpacity);
   }
 `;
 
@@ -335,6 +366,7 @@ export function HeroGlobe({
   parted,
   morph = false,
   alwaysOpen = false,
+  depthBlur = 0,
 }: {
   /** Stills for the tiles. Changing the list retextures the globe in place. */
   images?: string[];
@@ -358,6 +390,8 @@ export function HeroGlobe({
   parted?: { push: number; wide: number };
   /** Cards at the edges that become the globe on hover (/hero-7). */
   morph?: boolean;
+  /** Depth-of-field blur at the back of the globe, in mip levels (0 = off). */
+  depthBlur?: number;
   /** Opened from the start, then opened further after BLOOM_DELAY (home). */
   alwaysOpen?: boolean;
 } = {}) {
@@ -479,11 +513,11 @@ export function HeroGlobe({
         const cover = new THREE.ShaderMaterial({ uniforms: { uColor: { value: bg.clone() }, uProgress: { value: 0 }, uMin: { value: COVER_HIDDEN }, uMax: { value: COVER_LIT } }, vertexShader: VERT, fragmentShader: FRAG_COVER, transparent: true, depthWrite: false, side: THREE.DoubleSide });
         const seed = n * 7 + 13;
         const hasBand = hash(seed + 99) < BAND_SHARE;
-        const band = hasBand ? new THREE.ShaderMaterial({ uniforms: { uGrad: { value: grad }, uPos: { value: -2.5 }, uWidth: { value: BAND_WIDTH }, uFeather: { value: BAND_FEATHER }, uOpacity: { value: 0 } }, vertexShader: VERT, fragmentShader: FRAG_BAND, transparent: true, depthTest: false, depthWrite: false, side: THREE.DoubleSide }) : null;
+        const band = hasBand ? new THREE.ShaderMaterial({ uniforms: { uGrad: { value: grad }, uPos: { value: -2.5 }, uWidth: { value: BAND_WIDTH }, uFeather: { value: BAND_FEATHER }, uOpacity: { value: 0 } }, vertexShader: VERT, fragmentShader: FRAG_BAND, transparent: true, depthWrite: false, side: THREE.DoubleSide }) : null;
         const group = new THREE.Group();
         const mi = new THREE.Mesh(plate, image); mi.position.z = 0.002; mi.renderOrder = 1; group.add(mi);
         if (COVER_HIDDEN > 0 || COVER_LIT > 0) { const mc = new THREE.Mesh(plate, cover); mc.position.z = 0.006; mc.renderOrder = 2; group.add(mc); }
-        if (band) { const mb = new THREE.Mesh(plate, band); mb.position.z = 0.004; mb.renderOrder = 3; group.add(mb); }
+        if (band) { const mb = new THREE.Mesh(plate, band); mb.position.z = 0.004; mb.renderOrder = 1; group.add(mb); }
         group.position.set(x, y, z);
         globe.add(group);
         tiles.push({
@@ -496,6 +530,9 @@ export function HeroGlobe({
 
     // Morph: spread the cards over the tile list so their images differ.
     if (initial.current.morph) MORPH_CARDS.forEach((_, k) => { const i = Math.floor((k + 0.5) * tiles.length / MORPH_CARDS.length); tiles[i].card = k; });
+
+    // Morph: the cards' own stills, loaded once and kept across retextures.
+    const cardTex = initial.current.morph ? loadStills(MORPH_IMAGES) : [];
 
     const applyMedia = (imgs: string[], cls: string[]) => {
       disposeMedia();
@@ -510,6 +547,7 @@ export function HeroGlobe({
         const m = items[order[i]];
         tile.image.uniforms.uMap.value = m?.texture ?? null;
         tile.video = m?.video ?? null;
+        if (tile.card >= 0 && cardTex[tile.card]) { tile.image.uniforms.uMap.value = cardTex[tile.card]; tile.video = null; }
       });
     };
     applyMedia(images0, clips0);
@@ -617,7 +655,11 @@ export function HeroGlobe({
         tile.hover = hv;
         let coreBlur = 0;
         if (shape0 === "spiral") { const k = Math.max(0, 1 - tile.u / SPIRAL_SHARP_AT); coreBlur = SPIRAL_BLUR * k * k; }
-        tile.image.uniforms.uBlur.value = Math.max(soft * (sc?.blur ?? 0), coreBlur);
+        // Depth of field (Hamza, 8 Oct, after TwelveLabs): tiles on the far
+        // side of the globe go soft, the near ones stay sharp.
+        let dof = 0;
+        if (depthBlur > 0) { const far = Math.max(0, Math.min(1, (DOF_SHARP - tile.dot) / (DOF_SHARP + 1))); dof = depthBlur * far * far * (3 - 2 * far); }
+        tile.image.uniforms.uBlur.value = Math.max(soft * (sc?.blur ?? 0), coreBlur, dof);
 
         // Face the camera: undo the globe's turn, then take the camera's facing.
         tile.group.quaternion.copy(globeQuatInv).multiply(camera.quaternion);
@@ -629,8 +671,8 @@ export function HeroGlobe({
 
         if (tile.band && tile.bandAnim) {
           const a = tile.bandAnim, cycle = a.duration + a.pause, at = (t + a.offset) % cycle;
-          if (at < a.duration) { tile.band.uniforms.uPos.value = -2.5 + (at / a.duration) * 6; tile.band.uniforms.uOpacity.value = BAND_OPACITY; }
-          else { tile.band.uniforms.uPos.value = -2.5; tile.band.uniforms.uOpacity.value = 0; }
+          // Swell in and out on a sine over the duration, then rest.
+          tile.band.uniforms.uOpacity.value = at < a.duration ? BAND_OPACITY * Math.sin((at / a.duration) * Math.PI) : 0;
         }
 
         // Hourglass: stream down, wrapping at the foot, faded at both ends.
@@ -737,6 +779,7 @@ export function HeroGlobe({
       host.removeEventListener("pointerleave", onLeave);
       applyRef.current = null;
       disposeMedia();
+      cardTex.forEach((t) => t.dispose());
       grad.dispose();
       plate.dispose();
       tiles.forEach((tile) => { tile.image.dispose(); tile.cover.dispose(); tile.band?.dispose(); });

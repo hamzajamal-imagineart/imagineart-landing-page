@@ -305,7 +305,8 @@ export function SiteNav({
   // glass. Local change to the kit's file — fold it back into
   // guidelines-for-landing-page.
   const barTop = 0;
-  const barHeight = 64;
+  // Taller, with clearer type (Hamza, 8 Oct, to a reference): 76px.
+  const barHeight = 76;
   /** Space between the bar and the dropdown. 0 since the panel went full
       width (7 Oct): a full-width sheet reads as part of the bar, and a strip
       of page between them looked like a gap. The invisible bridge stays. */
@@ -314,7 +315,7 @@ export function SiteNav({
   const themeVars = (
     darkTheme
       ? {
-          "--nav-fg": "rgba(255,255,255,0.65)",
+          "--nav-fg": "rgba(255,255,255,0.9)",
           "--nav-fg-hover": "#ffffff",
           "--nav-tab-hover": "rgba(255,255,255,0.1)",
           "--nav-cta-bg": "#ffffff",
@@ -325,7 +326,7 @@ export function SiteNav({
           "--nav-sel-fg": "#ffffff",
         }
       : {
-          "--nav-fg": "#757575",
+          "--nav-fg": "#2e2e2e",
           "--nav-fg-hover": "#0b0b0c",
           "--nav-tab-hover": "#ebebeb",
           "--nav-cta-bg": "#171717",
@@ -340,10 +341,10 @@ export function SiteNav({
   return (
     <>
       <style>{`
-        .nav-tab { display: inline-flex; align-items: center; height: 32px; padding: 6px 10px; border: none; border-radius: 10px; background: transparent; cursor: pointer; text-decoration: none; white-space: nowrap; font-family: ${FONT}; font-size: 14px; font-weight: 500; line-height: 20px; letter-spacing: 0.02em; color: var(--nav-fg); transition: color 0.25s, background 0.25s; }
+        .nav-tab { display: inline-flex; align-items: center; height: 36px; padding: 6px 12px; border: none; border-radius: 10px; background: transparent; cursor: pointer; text-decoration: none; white-space: nowrap; font-family: ${FONT}; font-size: 15.5px; font-weight: 500; line-height: 20px; letter-spacing: 0.01em; color: var(--nav-fg); transition: color 0.25s, background 0.25s; }
         .nav-tab:hover, .nav-tab:focus-visible, .nav-tab[aria-expanded="true"] { color: var(--nav-fg-hover); background: var(--nav-tab-hover); outline: none; }
 
-        .nav-signin { font-family: ${FONT}; font-size: 14px; font-weight: 500; color: var(--nav-fg-hover); text-decoration: none; padding: 6px 10px; border-radius: 10px; white-space: nowrap; transition: color 0.3s, background 0.25s; }
+        .nav-signin { font-family: ${FONT}; font-size: 15.5px; font-weight: 500; color: var(--nav-fg-hover); text-decoration: none; padding: 6px 10px; border-radius: 10px; white-space: nowrap; transition: color 0.3s, background 0.25s; }
         .nav-signin:hover { background: var(--nav-tab-hover); }
         .nav-cta { font-family: ${FONT}; font-weight: 500; color: var(--nav-cta-fg); background: var(--nav-cta-bg); border: none; border-radius: 10px; cursor: pointer; letter-spacing: 0.02em; white-space: nowrap; transition: box-shadow 0.2s, transform 0.2s, background 0.3s, color 0.3s; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; box-sizing: border-box; }
         .nav-cta:hover { box-shadow: 0 0 0 6px var(--nav-cta-glow); transform: scale(1.02); }
@@ -607,7 +608,7 @@ export function SiteNav({
 
         <div className="nav-desktop" style={{ alignItems: "center", gap: 8, flexShrink: 0 }}>
           <a href={NAV_SIGN_IN} className="nav-signin">Sign in</a>
-          <a href={NAV_CTA.href} className="nav-cta" style={{ height: 36, padding: "6px 14px", fontSize: 14 }}>
+          <a href={NAV_CTA.href} className="nav-cta" style={{ height: 42, padding: "6px 18px", fontSize: 15.5 }}>
             {NAV_CTA.label}
           </a>
         </div>

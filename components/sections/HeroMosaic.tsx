@@ -172,7 +172,7 @@ export function HeroMosaic() {
         .hm {
           position: relative;
           min-height: 100vh;
-          padding-top: 64px;
+          padding-top: 76px; /* the nav bar */
           display: flex;
           flex-direction: column;
           background: var(--page-bg);

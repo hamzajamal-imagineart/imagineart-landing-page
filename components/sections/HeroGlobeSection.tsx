@@ -1,7 +1,6 @@
 import { DEMO_HREF, START_HREF } from "@/lib/links";
 import { PlatformStrip } from "@/components/sections/Platform";
-import { HeroGlobe, type GlobeShape } from "@/components/sections/HeroGlobe";
-import { HeroDots } from "@/components/sections/HeroDots";
+import { HeroGlobe, MORPH_IMAGES, type GlobeShape } from "@/components/sections/HeroGlobe";
 
 /** Stills only on the globe, no video (Hamza, 7 Oct). */
 const NO_CLIPS: string[] = [];
@@ -11,9 +10,12 @@ const NO_CLIPS: string[] = [];
 const GLOBE_SOFT = { rx: 0.62, ry: 0.5, dim: 0.6, blur: 3 };
 const SPIRAL_SOFT = { rx: 0.62, ry: 0.5, dim: 0, blur: 3 };
 const HOURGLASS_SOFT = { rx: 0.62, ry: 0.5, dim: 0.4, blur: 0 };
+/* /hero-7 and the home hero use the cards' high-res stills across the whole globe (Hamza, 8 Oct). */
 /** /hero-6: the globe held open in two wings, the copy on clear ground
     between them, so no block and no dimming (Hamza, 7 Oct). */
 const PARTED = { push: 30, wide: 2 };
+/** Depth of field on the globe heroes: blur at the far side, mip levels. */
+const DEPTH_BLUR = 4;
 /** How dark the black block behind the copy is (0–1). */
 const VEIL_ALPHA = 0.85;
 /** The glow behind the CTA: size as % of the button, and its strength. */
@@ -41,25 +43,26 @@ export function HeroGlobeSection({ light = false, shape = "globe", parted = fals
   return (
     <>
       <section id="top" className={`hc${light ? " hc-light" : ""}`} data-theme={light ? undefined : "dark"}>
-        {/* The halftone edges, live: dots give way to the pointer and spring
-            back (sections/HeroDots). */}
-        <HeroDots className="hs-dots" />
+        {/* Dots off for now (Hamza, 8 Oct). <HeroDots className="hs-dots"
+            field /> brings back the field behind the globe (import it from
+            sections/HeroDots). */}
 
         <div className="hc-stage" aria-hidden>
-          <HeroGlobe clips={NO_CLIPS} distance={68} softCentre={parted ? undefined : shape === "hourglass" ? HOURGLASS_SOFT : shape === "spiral" ? SPIRAL_SOFT : GLOBE_SOFT} light={light} shape={shape} parted={parted ? PARTED : undefined} morph={morph} alwaysOpen={alwaysOpen} />
-          {/* A feathered black block behind the copy, over the globe's own
-              dimming (Hamza, 7 Oct: no blur on the globe). */}
-          {/* The spiral has no block behind the copy (Hamza, 7 Oct): its
-              centre tiles are blurred instead. */}
+          <HeroGlobe images={morph || alwaysOpen ? MORPH_IMAGES : undefined} clips={NO_CLIPS} distance={68} softCentre={parted ? undefined : shape === "hourglass" ? HOURGLASS_SOFT : shape === "spiral" ? SPIRAL_SOFT : GLOBE_SOFT} light={light} shape={shape} parted={parted ? PARTED : undefined} morph={morph} alwaysOpen={alwaysOpen} depthBlur={shape === "globe" ? DEPTH_BLUR : 0} />
+          {/* No frosted patch (Hamza, 8 Oct, after TwelveLabs): the globe
+              blurs its far tiles itself, depth of field, so the words sit
+              over soft, dim footage. */}
+
           {/* A feathered dark block behind the copy on the globe and the
               hourglass (Hamza, 7 Oct), over the tiles' own blur and dimming;
-              on the globe it clears as the globe opens. */}
+              on the globe it clears as the globe opens. The spiral blurs its
+              centre tiles instead. */}
           {shape !== "spiral" && !parted && <span className={`hc-veil${morph ? " hc-veil-forms" : shape === "globe" ? " hc-veil-opens" : ""}`} />}
           <span className="hc-topband" />
         </div>
 
         <div className="hc-copy">
-          <h1 className="hc-title"><span className="hc-line">One workspace for your</span><span className="hc-line">content generations</span></h1>
+          <h1 className="hc-title"><span className="hc-line">One <span className="hc-accent">workspace</span> for your</span><span className="hc-line">content generations</span></h1>
           <p className="hc-lede">
             Every leading model for image, video and audio in one workspace, with your brand held
             across every output and the security your organisation needs.
@@ -93,15 +96,16 @@ export function HeroGlobeSection({ light = false, shape = "globe", parted = fals
           height: 100vh; /* exactly one screen (Hamza, 7 Oct) */
           display: grid;
           place-items: center;
-          padding-top: 64px;
+          padding-top: 76px; /* the nav bar */
           background: var(--page-bg);
         }
-        /* Halftone at the edges, drawn by <HeroDots> on a canvas over the
-           whole stage (its colour is this element's color). */
+        /* The dot field, drawn by <HeroDots> on a canvas across the whole
+           hero, behind the globe (Hamza, 8 Oct: spread over the back rather
+           than in bands at the edges). Its colour is this element's color. */
         .hs-dots {
           position: absolute;
           inset: 0;
-          z-index: 2;
+          z-index: 0;
           pointer-events: none;
           /* Whiter than the heading ink (Hamza, 7 Oct). */
           color: #fff;
@@ -138,7 +142,7 @@ export function HeroGlobeSection({ light = false, shape = "globe", parted = fals
           position: absolute;
           left: 0; right: 0; top: 0;
           height: 170px;
-          background: linear-gradient(to bottom, var(--page-bg) 0%, var(--page-bg) 72px, transparent 100%);
+          background: linear-gradient(to bottom, var(--page-bg) 0%, var(--page-bg) 84px, transparent 100%);
         }
 
         .hc-copy {
@@ -157,12 +161,38 @@ export function HeroGlobeSection({ light = false, shape = "globe", parted = fals
            each line is held whole and the size scales with the viewport so
            the longer one fits the column. */
         .hc-line { display: block; white-space: nowrap; }
+        /* The headline stays in Google Sans Flex; only "workspace" is set
+           in Comfortaa (Hamza, 8 Oct). */
+        .hc-accent { font-family: var(--font-hero), var(--font-sans); }
+        /* "workspace" takes the same gradient as the tiles' glow (Hamza,
+           8 Oct: "play with it", then "a colour that complements purple"):
+           the section washes' pastels (8 Oct, after sunset, aqua-mint, blue
+           and muted peach): green, butter, peach and lilac from the --wash-*
+           tokens, drifting slowly across the letters with a faint glow under
+           it. Still under reduced motion. */
+        .hc-accent {
+          background: linear-gradient(100deg, var(--wash-green) 0%, var(--wash-butter) 25%, var(--wash-peach) 50%, var(--wash-lilac) 75%, var(--wash-green) 100%);
+          background-size: 200% 100%;
+          -webkit-background-clip: text;
+          background-clip: text;
+          -webkit-text-fill-color: transparent;
+          color: var(--wash-peach);
+          filter: drop-shadow(0 0 18px rgba(247, 211, 166, 0.22));
+          animation: hc-accent-drift 7s linear infinite;
+          /* Comfortaa sits a little wide; pull it in to the line. */
+          letter-spacing: -0.04em;
+          padding: 0 0.04em 0.08em;
+        }
+        @keyframes hc-accent-drift { to { background-position: -200% 0; } }
+        @media (prefers-reduced-motion: reduce) { .hc-accent { animation: none; } }
         .hc-title {
           /* The first line is about 11.5em wide; 3.6vw keeps it inside the
              62vw column (less padding) at every width. */
           font-size: clamp(28px, 3.6vw, 58px);
           line-height: 1.1;
-          font-weight: 600;
+          /* 500, not 600 (Hamza, 8 Oct): matched to the weight "workspace"
+             reads at in Comfortaa, so the line is even. */
+          font-weight: 500;
           letter-spacing: -0.03em;
           color: #fff; /* both lines pure white (Hamza, 7 Oct) */
           text-wrap: balance;
