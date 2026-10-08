@@ -68,7 +68,7 @@ const FIELD_TOP = 110;
 /** Minimum gap (px) between a card and the hero's left/right edge. */
 const EDGE = 32;
 /** Film grain over the hero (Hamza, 8 Oct): strength 0–1. */
-const NOISE = 0.18;
+const NOISE = 0.13;
 /** The grain and a soft light pool in the centre and fade out toward every
  *  edge (Hamza, 8 Oct): GLOW_SIZE is the ellipse (% of the hero's width /
  *  height) they reach zero at; GLOW is the light's strength (0–1). */

@@ -473,7 +473,7 @@ export function SiteNav({
            container's gutters. Local change to the kit's file — fold it back. */
         /* A contained card, not a full-width sheet (Hamza, 8 Oct): the page
            container's width, centred under the bar, rounded and edged. */
-        .mm-panel { position: fixed; left: 0; right: 0; margin-inline: auto; width: min(1176px, calc(100vw - 32px)); z-index: 59; display: block; padding: 28px 32px 32px; box-sizing: border-box; background: var(--mm-surface); -webkit-backdrop-filter: blur(32px) saturate(160%); backdrop-filter: blur(32px) saturate(160%); border: 0; border-radius: 18px; box-shadow: var(--mm-shadow); animation: navMenuIn 0.22s ${NAV_EASE} both; transition: top ${NAV_DURATION} ${NAV_EASE}; font-family: ${FONT}; }
+        .mm-panel { position: fixed; left: 0; right: 0; margin-inline: auto; width: min(1320px, calc(100vw - 32px)); z-index: 59; /* wider (Hamza, 8 Oct: was 1176) */ display: block; padding: 28px 32px 32px; box-sizing: border-box; background: var(--mm-surface); -webkit-backdrop-filter: blur(32px) saturate(160%); backdrop-filter: blur(32px) saturate(160%); border: 0; border-radius: 18px; box-shadow: var(--mm-shadow); animation: navMenuIn 0.22s ${NAV_EASE} both; transition: top ${NAV_DURATION} ${NAV_EASE}; font-family: ${FONT}; }
         /* Invisible bridge over the gap to the bar, so hover survives the trip down. */
         .mm-panel::before { content: ""; position: absolute; left: 0; right: 0; top: -34px; height: 34px; }
         @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) { .mm-panel { background: var(--mm-solid); } }
@@ -493,7 +493,7 @@ export function SiteNav({
         .mm-panel .mm-col { width: auto; flex: 1 1 0; min-width: 0; gap: 28px; }
         /* Columns after the first carry the 40px gutter inside their own box,
            so they are 40px wider to keep the same content width. */
-        .mm-panel .mm-col + .mm-col { width: auto; margin-left: 48px; padding-left: 0; border-left: 0; } /* no divider lines (8 Oct); a wider gap does the separating */
+        .mm-panel .mm-col + .mm-col { width: auto; margin-left: 72px; padding-left: 0; border-left: 0; } /* no divider lines (8 Oct); a wider gap does the separating */
         .mm-panel .mm-col-narrow { width: auto; }
         .mm-panel .mm-col-divider { width: auto; padding-right: 0; border-right: 0; }
         .mm-panel .mm-group { gap: 4px; }

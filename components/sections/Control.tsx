@@ -144,7 +144,7 @@ export function PointsTimeline({ points }: { points: TimelinePoint[] }) {
                 <div>
                   <p>{p.body}</p>
                   {p.cta && (
-                    <ButtonLink variant="ghost" href={p.cta.href} target="_blank" rel="noopener noreferrer" className="mt-5" onClick={(e) => e.stopPropagation()}>
+                    <ButtonLink variant="ghost" href={p.cta.href} target="_blank" rel="noopener noreferrer" className="mt-5 ci-cta" onClick={(e) => e.stopPropagation()}>
                       {p.cta.label}
                     </ButtonLink>
                   )}
@@ -179,6 +179,11 @@ export function PointsTimeline({ points }: { points: TimelinePoint[] }) {
         .ci-body { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.4s var(--ease-out); }
         .ci.on .ci-body { grid-template-rows: 1fr; }
         .ci-body > div { overflow: hidden; }
+        /* A solid pill (Hamza, 8 Oct: the ghost outline was near-invisible on
+           the dark page). Only the open point shows its button, so one solid
+           action at a time; it inverts with the theme. */
+        .ci-cta { background: var(--ink-heading) !important; color: var(--page-bg) !important; border-color: transparent !important; }
+        .ci-cta:hover { opacity: 0.88; }
         .ci-body p { padding-top: 10px; max-width: 44ch; font-size: 15px; line-height: 1.6; color: var(--ink-2); }
 
         .ctl-media { display: flex; flex-direction: column; gap: 40px; }

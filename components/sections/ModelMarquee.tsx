@@ -19,6 +19,8 @@ const PROVIDERS: [file: string, name: string, mono?: boolean][] = [
 ];
 /** Seconds for one full loop. */
 const LOOP = 60;
+/** Share (%) of the screen width each side over which the row fades out (Hamza, 8 Oct: wider). */
+const EDGE_FADE = 16;
 
 function Items({ hidden }: { hidden?: boolean }) {
   return (
@@ -60,14 +62,14 @@ export function ModelMarquee() {
         .mq-line { color: var(--ink-3); font-size: 17px; line-height: 1.5; margin-bottom: 32px; }
         .mq {
           overflow: hidden;
-          -webkit-mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent);
-          mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent);
+          -webkit-mask-image: linear-gradient(90deg, transparent, #000 ${EDGE_FADE}%, #000 ${100 - EDGE_FADE}%, transparent);
+          mask-image: linear-gradient(90deg, transparent, #000 ${EDGE_FADE}%, #000 ${100 - EDGE_FADE}%, transparent);
         }
-        .mq-t { display: flex; gap: 64px; width: max-content; padding-right: 64px; animation: mqSlide ${LOOP}s linear infinite; }
+        .mq-t { display: flex; gap: 52px; width: max-content; padding-right: 52px; animation: mqSlide ${LOOP}s linear infinite; }
         .mq:hover .mq-t { animation-play-state: paused; }
         @keyframes mqSlide { to { transform: translateX(-50%); } }
-        .mq-item { display: inline-flex; align-items: center; gap: 13px; white-space: nowrap; font-size: 21px; font-weight: 500; color: var(--ink-2); }
-        .mq-item img, .mq-mono { width: 34px; height: 34px; flex: none; display: block; }
+        .mq-item { display: inline-flex; align-items: center; gap: 11px; white-space: nowrap; font-size: 18px; font-weight: 500; color: var(--ink-2); }
+        .mq-item img, .mq-mono { width: 28px; height: 28px; flex: none; display: block; }
         .mq-mono { background: currentColor; -webkit-mask-size: contain; mask-size: contain; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; -webkit-mask-position: center; mask-position: center; color: var(--ink-heading); }
         @media (prefers-reduced-motion: reduce) { .mq-t { animation: none; flex-wrap: wrap; width: auto; justify-content: center; } .mq-t > [aria-hidden] { display: none; } }
       `}</style>

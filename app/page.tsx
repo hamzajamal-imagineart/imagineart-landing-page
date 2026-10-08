@@ -16,7 +16,6 @@ import { Industries } from "@/components/sections/Industries";
 import { Workflows } from "@/components/sections/Workflows";
 import { Models } from "@/components/sections/Models";
 import { Security } from "@/components/sections/Security";
-import { ClosingCta } from "@/components/sections/ClosingCta";
 
 // Kept in sync with layout.tsx's metadata. The FAQ emits its own FAQPage
 // schema, so it is not duplicated here.
@@ -73,7 +72,7 @@ export default function Page() {
         <Security />
         <ReviewsSection />
         <FAQSection />
-        <ClosingCta />
+        {/* <ClosingCta /> pulled (Hamza, 8 Oct); the component is still on disk. */}
       </main>
 
       <SiteFooter />

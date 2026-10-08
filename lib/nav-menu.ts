@@ -130,7 +130,7 @@ export const NAV: NavEntry[] = [
         links: [
           { label: "MCP", href: `${IA}/mcp`, marks: ["/media/mcp/clients/claude.svg", "/media/mcp/clients/chatgpt.svg"] },
           { label: "Plugins", href: `${IA}/plugins`, marks: ["/media/plugins/aftereffects.svg", "/media/plugins/figma.svg"] },
-          { label: "Extensions", marks: ["chrome"] }, // TODO: Chrome extension URL
+          { label: "Extensions", href: "https://chromewebstore.google.com/detail/imagineart/cimlkemminoobnamlheobhnghepobcff", marks: ["chrome"] },
           { label: "Mobile", href: "https://apps.apple.com/us/app/imagineart-ai-video-generator/id1664121419", marks: ["phone"] },
         ],
       },
@@ -182,14 +182,8 @@ export const NAV: NavEntry[] = [
             },
           ],
         },
-      ],
-    },
-  },
-  {
-    label: "Collaborate",
-    panel: {
-      columns: [
         {
+          // Collaborate, folded in from its own top-level menu (Hamza, 8 Oct).
           groups: [
             {
               heading: "Collaborate",
