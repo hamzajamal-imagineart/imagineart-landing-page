@@ -103,8 +103,7 @@ export function AstraBanner() {
           display: flex; align-items: center;
           height: 560px; width: 100%;
           /* Black fill behind the stars (Hamza, 8 Oct). */
-          /* No fill (Hamza, 8 Oct): the stars sit on the page itself; the hairline keeps the shape. */
-          background: transparent; color: #fff;
+          background: #000; color: #fff;
         }
         @media (min-width: 768px) { .astra { height: 440px; } }
         /* Out to the container's edges (its 1240px frame and guide lines), past .container-page's 32px gutter (Hamza, 8 Oct). */
