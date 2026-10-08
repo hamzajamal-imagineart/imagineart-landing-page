@@ -48,7 +48,7 @@ export function HeroGlobeSection({ light = false, shape = "globe", parted = fals
             sections/HeroDots). */}
 
         <div className="hc-stage" aria-hidden>
-          <HeroGlobe images={morph || alwaysOpen ? MORPH_IMAGES : undefined} clips={NO_CLIPS} distance={68} softCentre={parted ? undefined : shape === "hourglass" ? HOURGLASS_SOFT : shape === "spiral" ? SPIRAL_SOFT : GLOBE_SOFT} light={light} shape={shape} parted={parted ? PARTED : undefined} morph={morph} alwaysOpen={alwaysOpen} depthBlur={shape === "globe" ? DEPTH_BLUR : 0} />
+          <HeroGlobe images={morph || alwaysOpen || shape === "corridor" ? MORPH_IMAGES : undefined} clips={NO_CLIPS} distance={68} softCentre={parted ? undefined : shape === "hourglass" ? HOURGLASS_SOFT : shape === "spiral" ? SPIRAL_SOFT : GLOBE_SOFT} light={light} shape={shape} parted={parted ? PARTED : undefined} morph={morph} alwaysOpen={alwaysOpen} depthBlur={shape === "globe" || shape === "corridor" ? DEPTH_BLUR : 0} />
           {/* No frosted patch (Hamza, 8 Oct, after TwelveLabs): the globe
               blurs its far tiles itself, depth of field, so the words sit
               over soft, dim footage. */}
@@ -161,9 +161,10 @@ export function HeroGlobeSection({ light = false, shape = "globe", parted = fals
            each line is held whole and the size scales with the viewport so
            the longer one fits the column. */
         .hc-line { display: block; white-space: nowrap; }
-        /* The headline stays in Google Sans Flex; only "workspace" is set
-           in Comfortaa (Hamza, 8 Oct). */
-        .hc-accent { font-family: var(--font-hero), var(--font-sans); }
+        /* The whole headline in Comfortaa (Hamza, 8 Oct: one family across
+           the title; "workspace" keeps its gradient). Comfortaa runs light
+           and wide, so 600 with tighter tracking. */
+        .hc-title.hc-title { font-family: var(--font-hero), var(--font-sans); font-weight: 600; letter-spacing: -0.04em; }
         /* "workspace" takes the same gradient as the tiles' glow (Hamza,
            8 Oct: "play with it", then "a colour that complements purple"):
            the section washes' pastels (8 Oct, after sunset, aqua-mint, blue
@@ -179,8 +180,6 @@ export function HeroGlobeSection({ light = false, shape = "globe", parted = fals
           color: var(--wash-peach);
           filter: drop-shadow(0 0 18px rgba(247, 211, 166, 0.22));
           animation: hc-accent-drift 7s linear infinite;
-          /* Comfortaa sits a little wide; pull it in to the line. */
-          letter-spacing: -0.04em;
           padding: 0 0.04em 0.08em;
         }
         @keyframes hc-accent-drift { to { background-position: -200% 0; } }

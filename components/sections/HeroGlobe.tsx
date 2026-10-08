@@ -137,7 +137,27 @@ const BLOOM_DELAY = 1, BLOOM_EXTRA = 0.5, BLOOM_TAU = 0.6;
    downward at HG_FLOW of the height a second while the shape turns, so
    images come round to the front; each fades in at the top and out at the
    bottom, where it wraps. */
-export type GlobeShape = "globe" | "spiral" | "hourglass";
+/* corridor (/hero-8; Hamza, 8 Oct): two walls of tiles, one each side, run
+   away from the viewer to a vanishing point behind the copy. Tiles drift
+   along them at CO_FLOW units a second, out of the centre, small, toward the
+   edges of the screen, large (see CO_REVERSE), and wrap; they fade in and
+   out at both ends. CO_ROWS lanes per wall, CO_WALL out from the
+   centre, spanning CO_NEAR to CO_FAR in depth. */
+const CO_ROWS = [-15, -5, 5, 15], CO_PER_LANE = 11, CO_WALL = 21, CO_NEAR = 54, CO_FAR = -90, CO_FLOW = 3.2, CO_FADE = 0.12;
+/** Depth on the corridor is measured against this (it stands in for a radius). */
+const CO_DEPTH_SCALE = 60;
+/* Curved and reversed (Hamza, 8 Oct): the walls bend in as they recede
+   (CO_BEND units by the far end, on a square so the curve tightens with
+   distance) and the lanes draw together vertically (CO_PINCH of their
+   height), so each lane reads as an arc; and the stream now runs outward,
+   from the vanishing point behind the copy toward the viewer (CO_REVERSE). */
+const CO_BEND = 11, CO_PINCH = 0.4, CO_REVERSE = true;
+const corridorAt = (u: number, side: number, row: number) => ({
+  x: side * (CO_WALL - CO_BEND * u * u),
+  y: CO_ROWS[row] * (1 - CO_PINCH * u),
+  z: CO_NEAR - u * (CO_NEAR - CO_FAR),
+});
+export type GlobeShape = "globe" | "spiral" | "hourglass" | "corridor";
 const SPIRAL_ARMS = 3, SPIRAL_PER_ARM = 34, SPIRAL_R0 = 4, SPIRAL_R1 = 42, SPIRAL_TURNS = 1.15;
 /* Spiral, tuned (Hamza, 7 Oct): it turns at SPIRAL_ROTATION (slower than the
    globe), tiles grow from SPIRAL_SIZE_MIN× at the core to SPIRAL_SIZE_MAX× at
@@ -149,6 +169,7 @@ const SHAPES: Record<GlobeShape, { radius: number; tilt: [number, number]; offse
   globe: { radius: GLOBE, tilt: [TILT_X, TILT_Z], offset: GLOBE_OFFSET },
   spiral: { radius: SPIRAL_R1, tilt: [1.0, -0.18], offset: new THREE.Vector3(0, 3, 0) },
   hourglass: { radius: HG_R_MAX, tilt: [0.06, 0], offset: new THREE.Vector3(0, 0, 0) },
+  corridor: { radius: CO_DEPTH_SCALE, tilt: [0, 0], offset: new THREE.Vector3(0, 0, 0) },
 };
 /** Where each tile sits: position, ring and angle for the bob, a size
     factor, and (hourglass) its place down the height, 0 at the top. */
@@ -168,6 +189,14 @@ function layout(shape: GlobeShape): Point[] {
       // `u` carries how far out the tile is (0 core, 1 rim) for the blur.
       const out = Math.sqrt(t);
       pts.push({ x: Math.cos(theta) * r, y: (hash(a * 97 + k) - 0.5) * 1.5, z: Math.sin(theta) * r, theta, ring: a, size: SPIRAL_SIZE_MIN + (SPIRAL_SIZE_MAX - SPIRAL_SIZE_MIN) * out, u: out });
+    }
+  } else if (shape === "corridor") {
+    // `theta` carries the side (-1 or 1), `ring` the lane, `u` the place
+    // along it; lanes are offset so tiles don't line up across rows.
+    for (const side of [-1, 1]) for (let row = 0; row < CO_ROWS.length; row++) for (let k = 0; k < CO_PER_LANE; k++) {
+      const u = (k + hash(row * 7 + (side > 0 ? 3 : 0)) ) / CO_PER_LANE % 1;
+      const p = corridorAt(u, side, row);
+      pts.push({ ...p, theta: side, ring: row, size: 1, u });
     }
   } else if (shape === "hourglass") {
     for (let row = 0; row < HG_ROWS; row++) for (let k = 0; k < HG_PER_ROW; k++) {
@@ -247,7 +276,7 @@ const VERT = /* glsl */ `
     width ÷ height), so a 3:4 still is not stretched. */
 const PLATE_ASPECT = TILE_W / TILE_H;
 const FRAG_IMAGE = /* glsl */ `
-  uniform sampler2D uMap; uniform float uProgress; uniform float uBrightness; uniform float uAspect; uniform float uBlur; uniform float uLight; uniform float uPlate; varying vec2 vUv;
+  uniform sampler2D uMap; uniform float uProgress; uniform float uBrightness; uniform float uAspect; uniform float uBlur; uniform float uLight; uniform float uPlate; uniform float uReady; varying vec2 vUv;
   void main() {
     // The plate's own shape (w ÷ h): 16:9 on the globe, taller while the
     // morph hero holds its cards upright.
@@ -276,7 +305,9 @@ const FRAG_IMAGE = /* glsl */ `
     float a = smoothstep(edge - soft, edge + soft, vUv.x);
     // On a light page, dimming fades a tile toward white rather than black.
     vec3 c = uLight > 0.5 ? mix(vec3(1.0), t.rgb, clamp(uBrightness, 0.0, 1.0)) : t.rgb * uBrightness;
-    gl_FragColor = vec4(c, a);
+    // Hidden until its still has loaded, then faded in (uReady), so a
+    // tile is never a dark plate while it waits.
+    gl_FragColor = vec4(c, a * uReady);
   }
 `;
 /** The cover: the page colour, thick on an unlit tile and thin on a lit one,
@@ -509,7 +540,7 @@ export function HeroGlobe({
     points.forEach((pt, n) => {
       {
         const { x, y, z, theta, ring: r } = pt;
-        const image = new THREE.ShaderMaterial({ uniforms: { uMap: { value: null }, uProgress: { value: 0 }, uBrightness: { value: 1 }, uAspect: { value: PLATE_ASPECT }, uBlur: { value: 0 }, uLight: { value: initial.current.light ? 1 : 0 }, uPlate: { value: PLATE_ASPECT } }, vertexShader: VERT, fragmentShader: FRAG_IMAGE, transparent: true, depthWrite: false, side: THREE.DoubleSide });
+        const image = new THREE.ShaderMaterial({ uniforms: { uMap: { value: null }, uProgress: { value: 0 }, uBrightness: { value: 1 }, uAspect: { value: PLATE_ASPECT }, uBlur: { value: 0 }, uLight: { value: initial.current.light ? 1 : 0 }, uPlate: { value: PLATE_ASPECT }, uReady: { value: 0 } }, vertexShader: VERT, fragmentShader: FRAG_IMAGE, transparent: true, depthWrite: false, side: THREE.DoubleSide });
         const cover = new THREE.ShaderMaterial({ uniforms: { uColor: { value: bg.clone() }, uProgress: { value: 0 }, uMin: { value: COVER_HIDDEN }, uMax: { value: COVER_LIT } }, vertexShader: VERT, fragmentShader: FRAG_COVER, transparent: true, depthWrite: false, side: THREE.DoubleSide });
         const seed = n * 7 + 13;
         const hasBand = hash(seed + 99) < BAND_SHARE;
@@ -596,7 +627,7 @@ export function HeroGlobe({
       const t = clock.elapsedTime;
       const step = Math.min(dt, 0.05);
 
-      if (!reduced) globe.rotation.y -= dt * (shape0 === "spiral" ? SPIRAL_ROTATION : ROTATION);
+      if (!reduced && shape0 !== "corridor") globe.rotation.y -= dt * (shape0 === "spiral" ? SPIRAL_ROTATION : ROTATION);
       const targetX = hover ? mouse.x * PARALLAX : 0;
       const targetY = hover ? mouse.y * PARALLAX * 0.5 : 0;
       camera.position.x += (targetX - camera.position.x) * 0.05;
@@ -667,12 +698,17 @@ export function HeroGlobe({
         tile.image.uniforms.uProgress.value = tile.progress;
         tile.cover.uniforms.uProgress.value = tile.progress;
         tile.image.uniforms.uBrightness.value = (BRIGHT_MIN + ((tile.dot + 1) * 0.5) * (BRIGHT_MAX - BRIGHT_MIN)) * (1 - soft * (sc?.dim ?? 0.5));
-        tile.image.uniforms.uAspect.value = aspects.get(tile.image.uniforms.uMap.value as THREE.Texture) ?? PLATE_ASPECT;
+        const mapTex = tile.image.uniforms.uMap.value as THREE.Texture | null;
+        tile.image.uniforms.uAspect.value = (mapTex && aspects.get(mapTex)) ?? PLATE_ASPECT;
+        // Fade a tile in once its still is there (clips count as ready).
+        const loaded = !!mapTex && (aspects.has(mapTex) || !!tile.video);
+        const ready = tile.image.uniforms.uReady;
+        ready.value = loaded ? Math.min(1, ready.value + step * 2.5) : 0;
 
         if (tile.band && tile.bandAnim) {
           const a = tile.bandAnim, cycle = a.duration + a.pause, at = (t + a.offset) % cycle;
           // Swell in and out on a sine over the duration, then rest.
-          tile.band.uniforms.uOpacity.value = at < a.duration ? BAND_OPACITY * Math.sin((at / a.duration) * Math.PI) : 0;
+          tile.band.uniforms.uOpacity.value = (at < a.duration ? BAND_OPACITY * Math.sin((at / a.duration) * Math.PI) : 0) * ready.value;
         }
 
         // Hourglass: stream down, wrapping at the foot, faded at both ends.
@@ -682,6 +718,13 @@ export function HeroGlobe({
           const p = hourglassAt(tile.u, tile.theta);
           tile.base.set(p.x, p.y, p.z); tile.size = p.size;
           const a = Math.min(1, tile.u / HG_FADE, (1 - tile.u) / HG_FADE);
+          ends = a * a * (3 - 2 * a);
+          tile.image.uniforms.uBrightness.value *= ends;
+        } else if (shape0 === "corridor") {
+          if (!reduced) tile.u = (tile.u + (CO_REVERSE ? -1 : 1) * step * CO_FLOW / (CO_NEAR - CO_FAR) + 1) % 1;
+          const p = corridorAt(tile.u, tile.theta, tile.ring);
+          tile.base.set(p.x, p.y, p.z);
+          const a = Math.min(1, tile.u / CO_FADE, (1 - tile.u) / CO_FADE);
           ends = a * a * (3 - 2 * a);
           tile.image.uniforms.uBrightness.value *= ends;
         }

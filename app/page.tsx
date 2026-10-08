@@ -51,8 +51,10 @@ export default function Page() {
       <SiteNav variant="onDark" theme="light" />
 
       <main>
-        {/* Always open; opens further after 1s of hover (Hamza, 7 Oct). */}
-        <HeroGlobeSection alwaysOpen />
+        {/* The corridor (Hamza, 8 Oct): tiles stream out of a vanishing
+            point behind the copy along two curved walls. The always-open
+            globe that ran here before is parked at /hero-8. */}
+        <HeroGlobeSection shape="corridor" />
         <Partners />
         <Suite />
         {/* Pastel washes behind Outcomes and Models (Hamza, 7 Oct). */}
