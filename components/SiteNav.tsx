@@ -271,6 +271,9 @@ function Panel({ panel, onNavigate }: { panel: NavPanel; onNavigate: () => void 
   );
 }
 
+/** Width of a dropdown column; columns keep it rather than spreading across the panel. */
+const MENU_COL_W = 286;
+
 /* ─── SiteNav ───────────────────────────────────────────────── */
 
 export function SiteNav({
@@ -490,7 +493,7 @@ export function SiteNav({
         .mm-inner { display: flex; align-items: stretch; width: 100%; }
         /* Columns share the card's width rather than fixed widths, so the
            contained card (8 Oct) never pushes the feature card out of it. */
-        .mm-panel .mm-col { width: auto; flex: 1 1 0; min-width: 0; gap: 28px; }
+        .mm-panel .mm-col { width: auto; flex: 0 1 ${MENU_COL_W}px; min-width: 0; gap: 28px; } /* a set column width, not stretched across the panel (Hamza, 8 Oct: Resources and Collaborate sat too far apart) */
         /* Columns after the first carry the 40px gutter inside their own box,
            so they are 40px wider to keep the same content width. */
         .mm-panel .mm-col + .mm-col { width: auto; margin-left: 72px; padding-left: 0; border-left: 0; } /* no divider lines (8 Oct); a wider gap does the separating */
@@ -556,7 +559,7 @@ export function SiteNav({
         .mm-panel .mm-cards { margin-left: auto; padding-left: 32px; flex: none; }
 
         .mm-panel-single .mm-col, .mm-panel-single .mm-col + .mm-col { width: auto; flex: 1; }
-        .mm-panel-single .mm-group { display: grid; grid-template-columns: repeat(auto-fill, 264px); column-gap: 40px; row-gap: 4px; }
+        .mm-panel-single .mm-group { display: grid; grid-template-columns: repeat(auto-fill, ${MENU_COL_W}px); column-gap: 72px; row-gap: 4px; } /* same track and gutter as the multi-column panels (8 Oct) */
         .mm-panel-single .mm-heading { grid-column: 1 / -1; }
         .mm-panel-single .mm-item { position: relative; }
         .mm-panel-single .mm-desc { max-width: none; }

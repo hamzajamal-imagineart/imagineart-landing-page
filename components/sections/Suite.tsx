@@ -31,23 +31,31 @@ type Tool = { title: string; body: string; clip: string; href: string };
 /* Order (Hamza, 7 Oct): Workflows, Image / Video, Music, then the tools,
    then the studios last. */
 const TOOLS: Tool[] = [
+  // Create image / video / audio lead the rail, then Workflows (Hamza, 8 Oct:
+  // titles and lines to his cards; they replace "Image / Video" and "Music").
+  {
+    title: "Create image",
+    clip: "/media/hero/modes/image/1-text-to-image.mp4",
+    href: `${HOME}/ai-image-generator`,
+    body: "Any style, any model. Reference a product, lock a face and get the whole set, not one render.",
+  },
+  {
+    title: "Create video",
+    clip: "/media/hero/modes/video/1-prompt.mp4",
+    href: `${HOME}/ai-video-generator`,
+    body: "Text or image to motion with Kling, Seedance, Veo and more. Extend, relight and reframe the result.",
+  },
+  {
+    title: "Create audio",
+    clip: "/media/tools/ai-voiceover.mp4",
+    href: `${HOME}/audio-studio`,
+    body: "Voices, speech and sound for every clip. Clone a voice once and narrate in any language.",
+  },
   {
     title: "Workflows",
     clip: "/media/suite/workflows.mp4",
     href: `${HOME}/workflow`,
     body: "Node-based, multi-step flows that turn a brief into finished assets. The repeatable backbone behind every campaign your team ships.",
-  },
-  {
-    title: "Image / Video",
-    clip: "/media/suite/canvas.mp4",
-    href: `${HOME}/image`,
-    body: "Full editing surfaces for both. Create and refine in the same place, no exports, no handoffs, no drift.",
-  },
-  {
-    title: "Music",
-    clip: "/media/capabilities/music.mp4",
-    href: `${HOME}/audio/music/elevenlabs-music`,
-    body: "Score your content with original, royalty-free tracks generated to fit the moment.",
   },
   {
     title: "Brand Guidelines",
@@ -80,6 +88,13 @@ const TOOLS: Tool[] = [
     body: "Produce performance-ready ad creative in every format and ratio, fast.",
   },
   {
+    // Added 8 Oct (Hamza): the third studio, between Ad and Fashion.
+    title: "Film Studio",
+    clip: "/media/studios/film-studio.mp4",
+    href: `${HOME}/ai-film-studio`,
+    body: "Characters, storyboards and scenes, carried from first concept to the final frame.",
+  },
+  {
     title: "Fashion Studio",
     clip: "/media/studios/fashion-studio.mp4",
     href: `${HOME}/fashion-studio`,
@@ -92,7 +107,8 @@ const TOOLS: Tool[] = [
    middle, falling to near-black at the top and corners, with fine even
    grain. Nine colours, generated in ImagineArt as one set so the rail reads
    as one family; all dark at the top, where the white title sits. */
-const CARD_BG = ["teal", "terracotta", "indigo", "sage", "plum", "ochre", "rose", "slate", "olive"]
+// Purple, blue and green under the three Create cards, as in Hamza's reference (8 Oct).
+const CARD_BG = ["plum", "indigo", "sage", "teal", "terracotta", "ochre", "rose", "slate", "olive", "teal", "plum"]
   .map((n) => `/media/suite/field-${n}.jpg`);
 /** A flat black wash over each still, to sit them a step darker (Hamza, 7 Oct). */
 const CARD_DARKEN = 0.52;

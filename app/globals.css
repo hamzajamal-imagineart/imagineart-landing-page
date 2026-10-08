@@ -404,7 +404,7 @@
 }
 
 .lede {
-  font-size: 18px;
+  font-size: 16px; /* every paragraph under a section heading (Hamza, 8 Oct; was 18) */
   line-height: 1.65;
   max-width: 60ch;
   color: var(--ink-2);

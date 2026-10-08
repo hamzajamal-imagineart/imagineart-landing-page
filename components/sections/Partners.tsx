@@ -24,7 +24,7 @@ const CUSTOMERS: { name: string; h: number }[] = [
 
 export function Partners() {
   return (
-    <section className="relative border-t border-[color:var(--line)] pt-24 pb-16 md:pt-32 md:pb-20 lg:border-t-0" /* more room above, under the hero (8 Oct) */>
+    <section className="pt-section relative border-t border-[color:var(--line)] pt-24 pb-16 md:pt-32 md:pb-20 lg:border-t-0" /* more room above, under the hero (8 Oct) */>
       {/* Under the hero again, where the model logos were (Hamza, 8 Oct):
           closed at both ends, since the platform strip below has no guides,
           and pulled in off the hero's foot. */}
@@ -42,6 +42,7 @@ export function Partners() {
       </div>
 
       <style>{`
+        .pt-section { isolation: isolate; }
         .pt-cap { text-align: center; font-size: 13px; line-height: 1.5; color: var(--ink-3); }
         .pt-grid {
           list-style: none;

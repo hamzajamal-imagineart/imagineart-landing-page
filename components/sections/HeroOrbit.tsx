@@ -187,7 +187,6 @@ export function HeroOrbit() {
       </div>
 
       <div className="hx1-copy">
-        <span className="hx1-kicker">The creative platform for brands and creators</span>
         <h1 className="hx1-h1">
           <span className="hx1-h">
             {/* The underline runs under "Create <word>," only (Hamza, 8 Oct). */}
@@ -209,10 +208,8 @@ export function HeroOrbit() {
               <path d="M6 28 C 120 10, 260 36, 400 18 S 560 14, 594 24" />
             </svg>
             </span>{" "}
-            control &amp; scale
+            control at scale
           </span>
-          <br />
-          <span className="hx1-mute">content in one place.</span>
         </h1>
         <p className="hx1-lede">
           Every leading model, studios for the work you ship, brand control that holds across every output, and
@@ -247,9 +244,7 @@ export function HeroOrbit() {
         }
         /* The field starts FIELD_TOP below the hero's top (Hamza, 8 Oct) so
            the top row of cards clears the 76px nav instead of sitting under it. */
-        /* The light pool, on its own layer that runs BLEED px past the hero's
-           foot like the grain, so neither stops on the seam. */
-        .hx1::before { content: ""; position: absolute; inset: 0 0 -${BLEED}px 0; z-index: -1; pointer-events: none; background: radial-gradient(${GRAIN_SIZE} at 50% 40%, rgba(255,255,255,${GLOW}) 0%, rgba(255,255,255,${GLOW / 3}) 40%, transparent 100%); }
+        /* The light pool behind the hero is off (Hamza, 8 Oct); GLOW, GLOW_SIZE, GRAIN_SIZE and BLEED are unused. */
         /* Grain over the hero removed (Hamza, 8 Oct); NOISE / NOISE_URL are unused. */
         .hx1-field {
           position: absolute; inset: ${FIELD_TOP}px 0 0 0; pointer-events: none;
@@ -296,7 +291,7 @@ export function HeroOrbit() {
         .rw-w.out { opacity: 0; transform: translateY(-.45em); }
         .rw-w b { font-weight: inherit; -webkit-background-clip: text; background-clip: text; color: transparent; background-image: var(--g); }
 
-        .hx1-lede { font-size: clamp(1rem, 1.3vw, 1.2rem); line-height: 1.55; color: var(--ink-2); max-width: 40rem; }
+        .hx1-lede { font-size: 16px; /* fixed (Hamza, 8 Oct) */ line-height: 1.55; color: var(--ink-2); max-width: 40rem; }
         .hx1-cta { display: flex; gap: .6rem; flex-wrap: wrap; align-items: center; justify-content: center; }
         .hx1-btn { display: inline-flex; align-items: center; justify-content: center; min-height: 2.75rem; padding: 0 1.4rem; border-radius: 999px; border: 1px solid transparent; font-size: .95rem; font-weight: 500; white-space: nowrap; transition: background .25s, transform .25s; }
         .hx1-btn:active { transform: scale(.98); }
