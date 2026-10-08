@@ -12,9 +12,9 @@ const BASE = "https://www.imagine.art";
 
 // TODO: audit per product. These columns and socials are shared site-wide, so
 // only change them if the whole site changed — not for a single page.
-/* Five columns, each one or two headed sections (Hamza, 8 Oct, to his
-   arrangement): Platform + Studios, Business + Models, Apps (the tool pages,
-   image → video → audio), Resources + Collaborate, Pricing + Contact Us. */
+/* Four columns of headed sections (Hamza, 8 Oct, to his arrangement):
+   Platform + Studios; Apps (the tool pages, image → video → audio);
+   Business + Contact Us + Collaborate; Pricing + Resources. */
 type FooterSection = { heading: string; links: { label: string; href: string }[] };
 const COLUMNS: FooterSection[][] = [
   [
@@ -41,23 +41,6 @@ const COLUMNS: FooterSection[][] = [
   ],
   [
     {
-      heading: "Business",
-      links: [
-        { label: "Enterprise", href: `${BASE}/business` },
-        { label: "Solutions", href: `${BASE}/business/solutions` },
-        { label: "Case Studies", href: `${BASE}/business/case-studies` },
-      ],
-    },
-    {
-      heading: "Models",
-      links: [
-        { label: "Runway Gen 4.5", href: `${BASE}/features/runway-gen-4.5` }, // TODO: returned 410 on 5 Oct 2026
-        { label: "GPT Image 2.5", href: `${BASE}/insights/gpt-image-2-5-overview` },
-      ],
-    },
-  ],
-  [
-    {
       // The tool pages Hamza listed on 8 Oct ("References" has no page yet, so it's left out).
       heading: "Apps",
       links: [
@@ -78,13 +61,18 @@ const COLUMNS: FooterSection[][] = [
   ],
   [
     {
-      heading: "Resources",
+      heading: "Business",
       links: [
-        { label: "Blog", href: `${BASE}/insights` },
-        { label: "Announcements", href: `${BASE}/announcements` },
-        { label: "Imagine Academy", href: "https://academy.imagine.art/" },
-        { label: "Help Docs", href: "https://docs.imagine.art/" },
+        { label: "Enterprise", href: `${BASE}/business` },
+        { label: "Solutions", href: `${BASE}/business/solutions` },
         { label: "Case Studies", href: `${BASE}/business/case-studies` },
+      ],
+    },
+    {
+      heading: "Contact Us",
+      links: [
+        { label: "Contact Sales", href: `${BASE}/business#contact` },
+        { label: "Book a Demo", href: "https://cal.com/team/imagineart/imagineart-customer-assist" },
       ],
     },
     {
@@ -106,10 +94,13 @@ const COLUMNS: FooterSection[][] = [
       ],
     },
     {
-      heading: "Contact Us",
+      heading: "Resources",
       links: [
-        { label: "Contact Sales", href: `${BASE}/business#contact` },
-        { label: "Book a Demo", href: "https://cal.com/team/imagineart/imagineart-customer-assist" },
+        { label: "Blog", href: `${BASE}/insights` },
+        { label: "Announcements", href: `${BASE}/announcements` },
+        { label: "Imagine Academy", href: "https://academy.imagine.art/" },
+        { label: "Help Docs", href: "https://docs.imagine.art/" },
+        { label: "Case Studies", href: `${BASE}/business/case-studies` },
       ],
     },
   ],
@@ -140,7 +131,7 @@ export function SiteFooter() {
         <div className="flex flex-col md:flex-row items-start justify-between gap-8 flex-wrap">
 
           {/* Brand */}
-          <div className="flex flex-col w-full md:w-44 shrink-0 items-start justify-start gap-6 md:gap-8 flex-wrap">
+          <div className="flex flex-col w-full md:w-[calc((100%-104px)/5)] shrink-0 items-start justify-start gap-6 md:gap-8 flex-wrap">
             <img src={withBasePath("/media/footer/logo-icon.svg")} alt="ImagineArt" width={28} height={28} className="block" />
 
             <div className="flex flex-col gap-2">
@@ -190,8 +181,8 @@ export function SiteFooter() {
             </div>
           </div>
 
-          {/* Link columns: five equal tracks (Hamza, 8 Oct). */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-x-6 gap-y-10 flex-1 min-w-0">
+          {/* Link columns: four equal tracks (Hamza, 8 Oct). */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-10 flex-1 min-w-0">
             {COLUMNS.map((sections) => (
               <div key={sections[0].heading} className="flex flex-col gap-10">
                 {sections.map((sec) => (
