@@ -152,6 +152,18 @@ const CO_DEPTH_SCALE = 60;
    height), so each lane reads as an arc; and the stream now runs outward,
    from the vanishing point behind the copy toward the viewer (CO_REVERSE). */
 const CO_BEND = 11, CO_PINCH = 0.4, CO_REVERSE = true;
+/** How open the corridor sits at rest (0..1 of the hover opening); it goes
+    all the way after MORPH_DELAY of hover (Hamza, 8 Oct). */
+const CO_REST_OPEN = 0.4;
+/* Perspective lines (Hamza, 8 Oct: an experiment): faint guides along each
+   lane and ribs across each wall every CO_RIB_EVERY of the depth, so the
+   corridor's shape shows even between tiles. They open with the tiles.
+   Off (Hamza, 8 Oct: tried and removed); true brings them back.
+   CO_LINES turns them off; CO_LINE_ALPHA is their strength. */
+const CO_LINES = false, CO_LINE_ALPHA = 0.12, CO_RIB_EVERY = 0.1, CO_LINE_STEPS = 40;
+/** How far tiles turn onto the walls (radians): CO_YAW_NEAR at the near
+    end, CO_YAW_FAR at the vanishing point; CO_PITCH tips the outer lanes. */
+const CO_YAW_NEAR = 0.95, CO_YAW_FAR = 0.15, CO_PITCH = 0.35;
 const corridorAt = (u: number, side: number, row: number) => ({
   x: side * (CO_WALL - CO_BEND * u * u),
   y: CO_ROWS[row] * (1 - CO_PINCH * u),
@@ -532,6 +544,33 @@ export function HeroGlobe({
     };
 
     const points = layout(shape0);
+    // Corridor guides: each a list of [u, side, row] samples, turned into
+    // positions every frame (they open with the tiles).
+    type Guide = { line: THREE.Line; samples: [number, number, number][] };
+    const guides: Guide[] = [];
+    const guideMat = new THREE.LineBasicMaterial({ color: initial.current.light ? 0x000000 : 0xffffff, transparent: true, opacity: CO_LINE_ALPHA, depthWrite: false });
+    if (shape0 === "corridor" && CO_LINES) {
+      const addGuide = (samples: [number, number, number][]) => {
+        const g = new THREE.BufferGeometry();
+        g.setAttribute("position", new THREE.BufferAttribute(new Float32Array(samples.length * 3), 3));
+        const line = new THREE.Line(g, guideMat);
+        line.frustumCulled = false;
+        globe.add(line);
+        guides.push({ line, samples });
+      };
+      for (const side of [-1, 1]) {
+        // Along each lane.
+        for (let row = 0; row < CO_ROWS.length; row++) addGuide(Array.from({ length: CO_LINE_STEPS + 1 }, (_, i) => [i / CO_LINE_STEPS, side, row] as [number, number, number]));
+        // Ribs across the wall, top lane to bottom lane, curving with it.
+        for (let u = 0; u <= 1.0001; u += CO_RIB_EVERY) addGuide(Array.from({ length: 13 }, (_, i) => [u, side, (i / 12) * (CO_ROWS.length - 1)] as [number, number, number]));
+      }
+    }
+    /** A point on the corridor with a fractional lane (for the ribs). */
+    const corridorPoint = (u: number, side: number, rowF: number, out: THREE.Vector3) => {
+      const r0 = Math.floor(rowF), r1 = Math.min(CO_ROWS.length - 1, r0 + 1), f = rowF - r0;
+      const a = corridorAt(u, side, r0), b = corridorAt(u, side, r1);
+      return out.set(a.x + (b.x - a.x) * f, a.y + (b.y - a.y) * f, a.z + (b.z - a.z) * f);
+    };
 
     const plate = roundedPlate(TILE_W, TILE_H, TILE_H * CORNER);
     const grad = gradientTexture();
@@ -615,6 +654,7 @@ export function HeroGlobe({
     const clock = new THREE.Clock();
     const camDir = new THREE.Vector3(), toCam = new THREE.Vector3(), globeWorld = new THREE.Vector3(), tileWorld = new THREE.Vector3(), tileDir = new THREE.Vector3(), proj = new THREE.Vector3();
     const globeQuatInv = new THREE.Quaternion(), globeQuat = new THREE.Quaternion();
+    const turn = new THREE.Quaternion(), turnE = new THREE.Euler();
     const camRight = new THREE.Vector3(), camUp = new THREE.Vector3(), lat = new THREE.Vector3(), pos = new THREE.Vector3();
     let open = 0, insideFor = 0, lastOpen = -1, bloom = 0;
     const stage = (host.closest("section") as HTMLElement | null) ?? host;
@@ -645,7 +685,12 @@ export function HeroGlobe({
       // Open while the pointer is over the hero, eased both ways.
       const inside = hover && !reduced && Math.abs(pointer.x) <= 1 && Math.abs(pointer.y) <= 1;
       insideFor = inside ? insideFor + step : 0;
-      open = held ? 1 : open + ((insideFor >= (morph ? MORPH_DELAY : OPEN_DELAY) ? 1 : 0) - open) * (1 - Math.exp(-step / OPEN_TAU));
+      // The corridor rests part-way open and opens fully after a longer
+      // hover (Hamza, 8 Oct), like the morph.
+      const corridor = shape0 === "corridor";
+      const wait = morph || corridor ? MORPH_DELAY : OPEN_DELAY;
+      const rest = corridor ? CO_REST_OPEN : 0;
+      open = held ? 1 : open + ((insideFor >= wait ? 1 : rest) - open) * (1 - Math.exp(-step / OPEN_TAU));
       const openE = open * open * (3 - 2 * open);
       // Always-open globe: part further after BLOOM_DELAY of hover.
       if (bloomOn) bloom += ((insideFor >= BLOOM_DELAY ? 1 : 0) - bloom) * (1 - Math.exp(-step / BLOOM_TAU));
@@ -694,6 +739,17 @@ export function HeroGlobe({
 
         // Face the camera: undo the globe's turn, then take the camera's facing.
         tile.group.quaternion.copy(globeQuatInv).multiply(camera.quaternion);
+        if (shape0 === "corridor") {
+          // Turned onto the walls (Hamza, 8 Oct: "curvyness"): near tiles
+          // swing hard toward the centre like panels seen along a wall, far
+          // ones face you, and the top and bottom lanes tip in too, so the
+          // corridor reads as a curved tube rather than flat cards.
+          const near = 1 - tile.u;
+          const yaw = -tile.theta * (CO_YAW_FAR + (CO_YAW_NEAR - CO_YAW_FAR) * near);
+          const pitch = (CO_ROWS[tile.ring] / CO_ROWS[CO_ROWS.length - 1]) * CO_PITCH * near;
+          turn.setFromEuler(turnE.set(pitch, yaw, 0));
+          tile.group.quaternion.multiply(turn);
+        }
         tile.progress += ((lit ? 1 : 0) - tile.progress) * step * 3;
         tile.image.uniforms.uProgress.value = tile.progress;
         tile.cover.uniforms.uProgress.value = tile.progress;
@@ -801,6 +857,28 @@ export function HeroGlobe({
         if (playing[c.video.src]) { if (c.video.paused) c.video.play().catch(() => {}); }
         else if (!c.video.paused) c.video.pause();
       }
+      if (guides.length) {
+        // Same sideways opening as the tiles, so lines and tiles stay together.
+        const gp = new THREE.Vector3();
+        for (const g of guides) {
+          const arr = (g.line.geometry.getAttribute("position") as THREE.BufferAttribute);
+          g.samples.forEach(([u, side, rowF], i) => {
+            corridorPoint(u, side, rowF, gp);
+            if (openE > 0.001) {
+              gp.applyMatrix4(globe.matrixWorld);
+              lat.subVectors(gp, globeWorld);
+              const lx = lat.dot(camRight), ly = lat.dot(camUp);
+              const r = Math.sqrt((lx / openWide) ** 2 + ly * ly) || 0.0001;
+              const f = Math.max(0, 1 - r / (form.radius * OPEN_REACH));
+              const push = openE * openPush * f;
+              gp.addScaledVector(camRight, (lx / r) * push).addScaledVector(camUp, (ly / r) * push);
+              globe.worldToLocal(gp);
+            }
+            arr.setXYZ(i, gp.x, gp.y, gp.z);
+          });
+          arr.needsUpdate = true;
+        }
+      }
       renderer.render(scene, camera);
     };
     function sync() {
@@ -825,6 +903,8 @@ export function HeroGlobe({
       cardTex.forEach((t) => t.dispose());
       grad.dispose();
       plate.dispose();
+      guides.forEach((g) => g.line.geometry.dispose());
+      guideMat.dispose();
       tiles.forEach((tile) => { tile.image.dispose(); tile.cover.dispose(); tile.band?.dispose(); });
       renderer.dispose();
     };

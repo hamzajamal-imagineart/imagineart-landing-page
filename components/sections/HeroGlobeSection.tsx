@@ -1,5 +1,6 @@
 import { DEMO_HREF, START_HREF } from "@/lib/links";
 import { PlatformStrip } from "@/components/sections/Platform";
+import { Wash } from "@/components/Wash";
 import { HeroGlobe, MORPH_IMAGES, type GlobeShape } from "@/components/sections/HeroGlobe";
 
 /** Stills only on the globe, no video (Hamza, 7 Oct). */
@@ -82,11 +83,15 @@ export function HeroGlobeSection({ light = false, shape = "globe", parted = fals
         </div>
       </section>
 
-      <div className="hs-strip">
-        <div className="container-page">
-          <PlatformStrip />
+      {/* The pastel wash pooled at the centre right of the platform
+          section (Hamza, 8 Oct). */}
+      <Wash variant="d" flushTop>
+        <div className="hs-strip">
+          <div className="container-page">
+            <PlatformStrip />
+          </div>
         </div>
-      </div>
+      </Wash>
 
       <style>{`
         .hc {

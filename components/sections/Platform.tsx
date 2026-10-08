@@ -515,7 +515,7 @@ export function PlatformStrip() {
       {/* A heading over the tabs (Hamza, 6 Oct, to a reference): one line
           and a lede, centred, above the tab row. */}
       <div className="pf-head">
-        <BlurHeading className="h2 pf-h2" lead="Start wherever you work" />
+        <BlurHeading className="h2 pf-h2" lead="Purpose-built for creative enterprise" />
         <p className="lede mt-4">Pick the way in that fits how your team works. The same models and the same brand kit come with you, wherever you start.</p>
       </div>
       <div className="pf-tabs" role="tablist" aria-label="Platform" ref={tabs.containerRef as React.Ref<HTMLDivElement>}>
@@ -638,7 +638,8 @@ export function PlatformStrip() {
           font-size: 17px;
           font-weight: 500;
           letter-spacing: -0.01em;
-          color: var(--ink-2);
+          /* Between the old grey (--ink-2) and full ink, so unselected tabs read clearly but still step back from the active one (Hamza, 8 Oct). */
+          color: color-mix(in srgb, var(--ink-heading) 82%, var(--page-bg));
           cursor: pointer;
           white-space: nowrap;
           transition: color 220ms ease;

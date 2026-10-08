@@ -580,6 +580,9 @@ body::before {
   opacity: 0.5;
   background-image: var(--page-noise);
   background-size: 140px 140px;
+  /* Off (Hamza, 8 Oct): the grey grain over white read as off-white; the
+     page is pure white now. Remove this line to bring the grain back. */
+  display: none;
 }
 
 /* ═════════════════════════════════════════════════════════════
