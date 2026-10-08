@@ -516,7 +516,7 @@ export function PlatformStrip() {
           and a lede, centred, above the tab row. */}
       <div className="pf-head">
         <BlurHeading className="h2 pf-h2" lead="Purpose-built for creative enterprise" />
-        <p className="lede mt-4">Same models, same brand kit, wherever you start.</p>
+        <p className="lede mt-4">Agents, tools, workflows and studios in one platform, on brand and under your control.</p>
       </div>
       <div className="pf-tabs" role="tablist" aria-label="Platform" ref={tabs.containerRef as React.Ref<HTMLDivElement>}>
         <SlidingIndicator box={tabs.box} ready={tabs.ready} className="pf-tab-fill" />
