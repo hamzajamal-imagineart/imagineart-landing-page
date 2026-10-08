@@ -276,7 +276,7 @@ export function HeroOrbit() {
 
         .hx1-copy { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 22px; max-width: 76rem; }
         .hx1-kicker { font-size: 11px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3); }
-        .hx1-h1 { font-size: clamp(2.1rem, 3.8vw, 48px); /* 48px on desktop (Hamza, 8 Oct) */ line-height: 1.02; letter-spacing: -.04em; font-weight: 600; color: #fff; text-wrap: balance; }
+        .hx1-h1 { font-size: clamp(2.1rem, 3.8vw, 54px); /* 54px on desktop (Hamza, 8 Oct) */ line-height: 1.02; letter-spacing: -.04em; font-weight: 600; color: #fff; text-wrap: balance; }
         .hx1-mute { color: #6f6f76; }
         .hx1-h { position: relative; display: inline-block; }
         .hx1-u { position: relative; display: inline-block; white-space: nowrap; }
