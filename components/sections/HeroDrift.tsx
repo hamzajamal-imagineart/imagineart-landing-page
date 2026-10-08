@@ -39,6 +39,11 @@ const INNER = 0.32;
 
 const rand = (a: number, b: number) => a + Math.random() * (b - a);
 
+/** Each still's 5s clip (Kling 2.6 Pro from the same still, 8 Oct), played
+ *  only while the pointer is on its card. /media/hero/cards/x.jpg →
+ *  /media/hero/clips/x.mp4. */
+const clipFor = (still: string) => still.replace("/cards/", "/clips/").replace(/\.jpg$/, ".mp4");
+
 type Card = { z: number; ax: number; ay: number; dx: number; dy: number; aspect: number; src: string };
 
 export function HeroDrift() {
@@ -58,6 +63,32 @@ export function HeroDrift() {
       return src;
     };
 
+    const stopClip = (el: HTMLElement) => {
+      const v = el.querySelector("video")!;
+      el.classList.remove("hd-playing");
+      if (!v.paused) v.pause();
+    };
+    const playClip = (el: HTMLElement) => {
+      const v = el.querySelector("video")!;
+      const src = el.dataset.clip;
+      if (!src) return;
+      if (v.dataset.src !== src) { v.src = src; v.dataset.src = src; }
+      v.currentTime = 0;
+      v.play().then(() => el.classList.add("hd-playing")).catch(() => {});
+    };
+    const enter = (e: Event) => playClip(e.currentTarget as HTMLElement);
+    const leave = (e: Event) => stopClip(e.currentTarget as HTMLElement);
+    for (const el of cardRefs.current) {
+      el?.addEventListener("pointerenter", enter);
+      el?.addEventListener("pointerleave", leave);
+    }
+    const unbind = () => {
+      for (const el of cardRefs.current) {
+        el?.removeEventListener("pointerenter", enter);
+        el?.removeEventListener("pointerleave", leave);
+      }
+    };
+
     /** A new ray, a new image and a new shape for card i, at depth z. */
     const spawn = (i: number, z: number, old?: Card): Card => {
       if (old) showing.delete(old.src);
@@ -67,6 +98,8 @@ export function HeroDrift() {
       if (el) {
         el.querySelector("img")!.src = withBasePath(c.src);
         el.dataset.aspect = String(c.aspect);
+        el.dataset.clip = withBasePath(clipFor(c.src));
+        stopClip(el);
       }
       return c;
     };
@@ -104,7 +137,7 @@ export function HeroDrift() {
 
     if (reduced) {
       draw();
-      return () => window.removeEventListener("resize", measure);
+      return () => { window.removeEventListener("resize", measure); unbind(); };
     }
 
     let raf = 0, last = performance.now();
@@ -126,6 +159,7 @@ export function HeroDrift() {
     return () => {
       cancelAnimationFrame(raf);
       window.removeEventListener("resize", measure);
+      unbind();
     };
   }, []);
 
@@ -134,6 +168,8 @@ export function HeroDrift() {
       {Array.from({ length: COUNT }, (_, i) => (
         <div key={i} ref={(el) => { cardRefs.current[i] = el; }} className="hd-card">
           <img alt="" decoding="async" />
+          {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+          <video className="hd-clip" muted loop playsInline preload="none" />
         </div>
       ))}
       <style>{`
@@ -149,6 +185,10 @@ export function HeroDrift() {
           transform-origin: center;
         }
         .hd-card img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        /* The stage ignores the pointer; the cards take it back for hover. */
+        .hd-card { pointer-events: auto; }
+        .hd-clip { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 0.25s ease; }
+        .hd-playing .hd-clip { opacity: 1; }
       `}</style>
     </div>
   );
