@@ -310,7 +310,7 @@ export function SiteNav({
   /** Space between the bar and the dropdown. 0 since the panel went full
       width (7 Oct): a full-width sheet reads as part of the bar, and a strip
       of page between them looked like a gap. The invisible bridge stays. */
-  const PANEL_GAP = 0;
+  const PANEL_GAP = 8; // the contained menu card floats just under the bar (8 Oct)
 
   const themeVars = (
     darkTheme
@@ -378,7 +378,7 @@ export function SiteNav({
              full-screen mobile sheet, which needs to cover the page. */
           --mm-surface: rgba(255,255,255,0.9); --mm-solid: #ffffff; --mm-border: rgba(255,255,255,0.6); --mm-divider: rgba(0,0,0,0.08);
           --mm-fg: #0f0f0f; --mm-muted: #757575; --mm-row: #3d3d3d; --mm-more: #3d3d3d;
-          --mm-hover: rgba(0,0,0,0.06); --mm-accent-soft: rgba(23,23,23,0.07); --mm-tint-surface: rgba(255,255,255,0.8);
+          --mm-hover: rgba(0,0,0,0.06); --mm-accent-soft: rgba(23,23,23,0.07); --mm-tint-surface: rgba(0,0,0,0.035);
           --mm-badge-muted-bg: #dbdbdb; --mm-badge-muted-fg: #3d3d3d;
           --mm-cta-bg: #171717; --mm-cta-fg: #ffffff; --mm-cta-glow: rgba(11,11,12,0.08);
           --mm-shadow: 0 4px 8px rgba(176,175,175,0.2), 0 18px 50px rgba(23,35,56,0.08);
@@ -387,7 +387,7 @@ export function SiteNav({
         .mm-scope[data-menu-theme="dark"] {
           --mm-surface: rgba(20,20,22,0.9); --mm-solid: #141416; --mm-border: rgba(255,255,255,0.1); --mm-divider: rgba(255,255,255,0.1);
           --mm-fg: #f5f5f5; --mm-muted: rgba(255,255,255,0.55); --mm-row: rgba(255,255,255,0.85); --mm-more: rgba(255,255,255,0.75);
-          --mm-hover: rgba(255,255,255,0.08); --mm-accent-soft: rgba(255,255,255,0.1); --mm-tint-surface: rgba(255,255,255,0.05);
+          --mm-hover: rgba(255,255,255,0.08); --mm-accent-soft: rgba(255,255,255,0.1); --mm-tint-surface: rgba(255,255,255,0.06);
           --mm-badge-muted-bg: rgba(255,255,255,0.12); --mm-badge-muted-fg: rgba(255,255,255,0.7);
           --mm-cta-bg: #ffffff; --mm-cta-fg: #0a0a0b; --mm-cta-glow: rgba(255,255,255,0.1);
           --mm-shadow: 0 18px 50px rgba(0,0,0,0.5);
@@ -399,7 +399,9 @@ export function SiteNav({
         /* Full width (Hamza, 7 Oct): the panel spans the window edge to edge,
            flush under the bar, with its content centred and held to the page
            container's gutters. Local change to the kit's file — fold it back. */
-        .mm-panel { position: fixed; left: 0; right: 0; width: 100%; z-index: 59; display: block; padding: 32px max(32px, calc((100vw - 1240px) / 2 + 32px)) 40px; box-sizing: border-box; background: var(--mm-surface); -webkit-backdrop-filter: blur(32px) saturate(160%); backdrop-filter: blur(32px) saturate(160%); border: 0; border-bottom: 1px solid var(--mm-divider); border-radius: 0; box-shadow: var(--mm-shadow); animation: navMenuIn 0.22s ${NAV_EASE} both; transition: top ${NAV_DURATION} ${NAV_EASE}; font-family: ${FONT}; }
+        /* A contained card, not a full-width sheet (Hamza, 8 Oct): the page
+           container's width, centred under the bar, rounded and edged. */
+        .mm-panel { position: fixed; left: 0; right: 0; margin-inline: auto; width: min(1176px, calc(100vw - 32px)); z-index: 59; display: block; padding: 28px 32px 32px; box-sizing: border-box; background: var(--mm-surface); -webkit-backdrop-filter: blur(32px) saturate(160%); backdrop-filter: blur(32px) saturate(160%); border: 0; border-radius: 18px; box-shadow: var(--mm-shadow); animation: navMenuIn 0.22s ${NAV_EASE} both; transition: top ${NAV_DURATION} ${NAV_EASE}; font-family: ${FONT}; }
         /* Invisible bridge over the gap to the bar, so hover survives the trip down. */
         .mm-panel::before { content: ""; position: absolute; left: 0; right: 0; top: -34px; height: 34px; }
         @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) { .mm-panel { background: var(--mm-solid); } }
@@ -414,12 +416,14 @@ export function SiteNav({
            .mm-panel so the mobile accordion, which shares these pieces, is
            untouched. Local change to the kit's file — fold it back. */
         .mm-inner { display: flex; align-items: stretch; width: 100%; }
-        .mm-panel .mm-col { width: 248px; gap: 28px; }
+        /* Columns share the card's width rather than fixed widths, so the
+           contained card (8 Oct) never pushes the feature card out of it. */
+        .mm-panel .mm-col { width: auto; flex: 1 1 0; min-width: 0; gap: 28px; }
         /* Columns after the first carry the 40px gutter inside their own box,
            so they are 40px wider to keep the same content width. */
-        .mm-panel .mm-col + .mm-col { width: 288px; margin-left: 40px; padding-left: 40px; border-left: 1px solid var(--mm-divider); }
-        .mm-panel .mm-col-narrow { width: 200px; }
-        .mm-panel .mm-col-divider { width: 248px; padding-right: 0; border-right: 0; }
+        .mm-panel .mm-col + .mm-col { width: auto; margin-left: 48px; padding-left: 0; border-left: 0; } /* no divider lines (8 Oct); a wider gap does the separating */
+        .mm-panel .mm-col-narrow { width: auto; }
+        .mm-panel .mm-col-divider { width: auto; padding-right: 0; border-right: 0; }
         .mm-panel .mm-group { gap: 4px; }
         .mm-panel .mm-heading { margin-bottom: 8px; font-size: 11px; line-height: 16px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; }
         /* Compact items (7 Oct): more menu entries are coming, so titles drop
@@ -430,18 +434,17 @@ export function SiteNav({
         .mm-panel .mm-desc { font-size: 12px; line-height: 17px; max-width: none; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .mm-panel .mm-sublinks { margin-top: 4px; }
         .mm-panel .mm-sublink, .mm-panel .mm-link { font-size: 13px; }
-        .mm-panel .mm-cards { margin-left: auto; padding-left: 40px; }
+        .mm-panel .mm-cards { margin-left: auto; padding-left: 32px; flex: none; }
 
         .mm-panel-single .mm-col, .mm-panel-single .mm-col + .mm-col { width: auto; flex: 1; }
         .mm-panel-single .mm-group { display: grid; grid-template-columns: repeat(auto-fill, 264px); column-gap: 40px; row-gap: 4px; }
         .mm-panel-single .mm-heading { grid-column: 1 / -1; }
         .mm-panel-single .mm-item { position: relative; }
-        .mm-panel-single .mm-item + .mm-item::before { content: ""; position: absolute; left: -20px; top: 8px; bottom: 8px; width: 1px; background: var(--mm-divider); }
         .mm-panel-single .mm-desc { max-width: none; }
 
         .mm-col { display: flex; flex-direction: column; gap: 14px; width: 228px; flex-shrink: 0; }
         .mm-col-narrow { width: 196px; }
-        .mm-col-divider { padding-right: 16px; border-right: 1px solid var(--mm-divider); width: 244px; box-sizing: border-box; }
+        .mm-col-divider { padding-right: 16px; width: 244px; box-sizing: border-box; } /* no hairline (8 Oct) */
         .mm-group { display: flex; flex-direction: column; gap: 8px; }
         .mm-group-links { gap: 2px; }
         .mm-heading { margin: 0; padding: 0 10px; font-size: 14px; line-height: 20px; font-weight: 500; letter-spacing: 0.01em; color: var(--mm-muted); }
@@ -480,9 +483,9 @@ export function SiteNav({
         /* Cards drop out before the panel can outgrow a narrow desktop window. */
         @media (max-width: 1180px) { .mm-cards { display: none; } }
 
-        .mm-card { width: 220px; display: flex; flex-direction: column; gap: 10px; padding: 12px; box-sizing: border-box; border: 1px solid var(--mm-divider); border-radius: 12px; background: var(--mm-tint-surface); overflow: hidden; }
+        .mm-card { width: 220px; display: flex; flex-direction: column; gap: 10px; padding: 12px; box-sizing: border-box; border: 0; border-radius: 16px; background: var(--mm-tint-surface); overflow: hidden; } /* no border: a faint shade sets it off (8 Oct) */
         .mm-card-tint { background: var(--mm-tint-surface); }
-        .mm-card-muted { background: var(--mm-tint-surface); border-color: var(--mm-divider); }
+        .mm-card-muted { background: var(--mm-tint-surface); }
         .mm-card-copy { display: flex; flex-direction: column; gap: 4px; }
         .mm-card-title { margin: 0; display: flex; align-items: center; gap: 10px; font-size: 17px; line-height: 24px; font-weight: 500; color: var(--mm-fg); }
         .mm-card-body { margin: 0; font-size: 13px; line-height: 18px; font-weight: 400; letter-spacing: 0.01em; color: var(--mm-muted); }
@@ -508,7 +511,7 @@ export function SiteNav({
         .ms-body { display: flex; flex-direction: column; gap: 23px; padding: 4px 0 16px; animation: navMenuIn 0.2s ${NAV_EASE} both; }
         .ms-body .mm-group { gap: 8px; }
         .ms-body .mm-heading { padding: 0; }
-        .ms-body .mm-item, .ms-body .mm-link { border-radius: 0; padding: 8px 10px; border-bottom: 1px solid var(--mm-divider); }
+        .ms-body .mm-item, .ms-body .mm-link { border-radius: 0; padding: 8px 10px; }
         .ms-body .mm-item:hover, .ms-body .mm-link:hover { background: transparent; }
         .ms-body .mm-item-title { font-size: 14px; line-height: 20px; }
         .ms-body .mm-chev { display: none; }

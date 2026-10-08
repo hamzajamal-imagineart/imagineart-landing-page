@@ -116,13 +116,10 @@ export const NAV: NavEntry[] = [
             {
               heading: "Studios",
               items: [
-                { title: "AI Creative Studios", description: "A studio for every format", badge: "Soon" }, // TODO: link when the page is live
-              ],
-              links: [
-                { label: "Audio Studio", href: `${IA}/audio-studio` },
-                { label: "Film Studio", href: `${IA}/ai-film-studio` },
-                { label: "Ad Studio", href: `${IA}/ai-ad-studio` },
-                { label: "Fashion Studio", href: `${IA}/ai-fashion-studio` },
+                { title: "Audio Studio", description: "Music, voice and sound effects", href: `${IA}/audio-studio` },
+                { title: "Film Studio", description: "Scenes and shots for short films", href: `${IA}/ai-film-studio` },
+                { title: "Ad Studio", description: "Ad creatives for every channel", href: `${IA}/ai-ad-studio` },
+                { title: "Fashion Studio", description: "Campaign and catalogue imagery", href: `${IA}/ai-fashion-studio` },
               ],
             },
           ],

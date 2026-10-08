@@ -1,6 +1,7 @@
 import { DEMO_HREF, START_HREF } from "@/lib/links";
 import { PlatformStrip } from "@/components/sections/Platform";
 import { Wash } from "@/components/Wash";
+import { HeroDrift } from "@/components/sections/HeroDrift";
 import { HeroGlobe, MORPH_IMAGES, type GlobeShape } from "@/components/sections/HeroGlobe";
 
 /** Stills only on the globe, no video (Hamza, 7 Oct). */
@@ -40,7 +41,7 @@ const CTA_GLOW_W = 140, CTA_GLOW_H = 220, CTA_GLOW_ALPHA = 0.35;
  *  `light` (Hamza, 7 Oct, /hero-2): the same hero on the light page, with
  *  ink dots, ink type, a white block behind the copy and tiles that fade to
  *  white rather than black. */
-export function HeroGlobeSection({ light = false, shape = "globe", parted = false, morph = false, alwaysOpen = false }: { light?: boolean; shape?: GlobeShape; parted?: boolean; morph?: boolean; alwaysOpen?: boolean } = {}) {
+export function HeroGlobeSection({ light = false, shape = "globe", parted = false, morph = false, alwaysOpen = false, drift = false }: { light?: boolean; shape?: GlobeShape; parted?: boolean; morph?: boolean; alwaysOpen?: boolean; drift?: boolean } = {}) {
   return (
     <>
       <section id="top" className={`hc${light ? " hc-light" : ""}`} data-theme={light ? undefined : "dark"}>
@@ -49,7 +50,7 @@ export function HeroGlobeSection({ light = false, shape = "globe", parted = fals
             sections/HeroDots). */}
 
         <div className="hc-stage" aria-hidden>
-          <HeroGlobe images={morph || alwaysOpen || shape === "corridor" ? MORPH_IMAGES : undefined} clips={NO_CLIPS} distance={68} softCentre={parted ? undefined : shape === "hourglass" ? HOURGLASS_SOFT : shape === "spiral" ? SPIRAL_SOFT : GLOBE_SOFT} light={light} shape={shape} parted={parted ? PARTED : undefined} morph={morph} alwaysOpen={alwaysOpen} depthBlur={shape === "globe" || shape === "corridor" ? DEPTH_BLUR : 0} />
+          {drift ? <HeroDrift /> : <HeroGlobe images={morph || alwaysOpen || shape === "corridor" ? MORPH_IMAGES : undefined} clips={NO_CLIPS} distance={68} softCentre={parted ? undefined : shape === "hourglass" ? HOURGLASS_SOFT : shape === "spiral" ? SPIRAL_SOFT : GLOBE_SOFT} light={light} shape={shape} parted={parted ? PARTED : undefined} morph={morph} alwaysOpen={alwaysOpen} depthBlur={shape === "globe" || shape === "corridor" ? DEPTH_BLUR : 0} />}
           {/* No frosted patch (Hamza, 8 Oct, after TwelveLabs): the globe
               blurs its far tiles itself, depth of field, so the words sit
               over soft, dim footage. */}
@@ -58,7 +59,7 @@ export function HeroGlobeSection({ light = false, shape = "globe", parted = fals
               hourglass (Hamza, 7 Oct), over the tiles' own blur and dimming;
               on the globe it clears as the globe opens. The spiral blurs its
               centre tiles instead. */}
-          {shape !== "spiral" && !parted && <span className={`hc-veil${morph ? " hc-veil-forms" : shape === "globe" ? " hc-veil-opens" : ""}`} />}
+          {shape !== "spiral" && !parted && !drift && <span className={`hc-veil${morph ? " hc-veil-forms" : shape === "globe" ? " hc-veil-opens" : ""}`} />}
           <span className="hc-topband" />
         </div>
 
