@@ -35,9 +35,9 @@ const ORB: Orb[] = [
   { x: 4.9, y: 13.6, w: 330, ar: "7/5", d: 1, src: "red-light", m: "kling" },
   { x: 34, y: 7, w: 194, ar: "16/10", d: 3, src: "macro-perfume", m: "nanobanana" }, // up and left, clear of the kicker (8 Oct; was 39.7, 12.8)
   { x: 87.8, y: 13.2, w: 560, ar: "21/9", d: 1, src: "ad-smooth", m: "gpt" },
-  { x: 15.8, y: 42.8, w: 150, ar: "5/6", d: 3, src: "ugc-kai-poster", m: "kling", v: "ugc-kai" },
+  { x: 15.8, y: 42.8, w: 150, ar: "3/4", d: 3, src: "surfer-poster", m: "kling", v: "surfer" }, // latest Kling clips replace the UGC talking heads (Hamza, 8 Oct)
   { x: 7.6, y: 66.3, w: 221, ar: "3/4", d: 2, src: "tryon-poster", m: "seedance", v: "jacket-tryon" },
-  { x: 88.4, y: 55.8, w: 165, ar: "2/3", d: 3, src: "ugc-naima-poster", m: "imagineart", v: "ugc-naima" },
+  { x: 88.4, y: 55.8, w: 165, ar: "3/4", d: 3, src: "skier-poster", m: "kling", v: "skier" },
   { x: 77.5, y: 70.5, w: 227, ar: "16/10", d: 2, src: "car-coffee", m: "seedance" },
   { x: 41.9, y: 80, w: 230, ar: "1/1", d: 2, src: "sneaker-flowers", m: "flux" }, // smaller and higher, clear of the foot fade (8 Oct; was y 89.5, w 281)
 ];
