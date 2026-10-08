@@ -36,21 +36,22 @@
  * over, via `lg:border-t-0` / `lg:border-b-0` on the section itself.
  * Desktop only; purely decorative and non-interactive.
  */
-export function SectionGuides({ edge = "top" }: { edge?: "top" | "bottom" }) {
+export function SectionGuides({ edge = "top" }: { edge?: "top" | "bottom" | "both" }) {
   /** Clear space each side of a dot before the line resumes. */
   const GAP = 7;
 
   // Mask only the end this section actually places dots on; the far end runs
   // clean into the next section so the vertical reads as one unbroken line.
-  const vMask =
-    edge === "top"
-      ? `linear-gradient(to bottom, transparent 0, transparent ${GAP}px, black ${GAP}px, black 100%)`
-      : `linear-gradient(to bottom, black 0, black calc(100% - ${GAP}px), transparent calc(100% - ${GAP}px), transparent 100%)`;
+  // "both" closes a section whose neighbour below has no guides of its own
+  // (Suite, over the guide-less Outcomes; 8 Oct): dots and a rule on both
+  // edges, and the verticals gapped at both ends.
+  const top = edge !== "bottom", bottom = edge !== "top";
+  const vMask = `linear-gradient(to bottom, ${top ? `transparent 0, transparent ${GAP}px, black ${GAP}px` : "black 0"}, ${bottom ? `black calc(100% - ${GAP}px), transparent calc(100% - ${GAP}px), transparent 100%` : "black 100%"})`;
 
   // The horizontal rule has a dot at each of its ends, so it stays gapped both sides.
   const hMask = `linear-gradient(to right, transparent 0, transparent ${GAP}px, black ${GAP}px, black calc(100% - ${GAP}px), transparent calc(100% - ${GAP}px), transparent 100%)`;
 
-  const dotY = edge === "top" ? "top-0 -translate-y-1/2" : "bottom-0 translate-y-1/2";
+  const edges = [top && "top-0 -translate-y-1/2", bottom && "bottom-0 translate-y-1/2"].filter(Boolean) as string[];
 
   return (
     /* Inset by the dot's 2px radius so a dot centred on this frame's edge is
@@ -70,19 +71,17 @@ export function SectionGuides({ edge = "top" }: { edge?: "top" | "bottom" }) {
           style={{ WebkitMaskImage: vMask, maskImage: vMask }}
         />
 
-        {/* Horizontal rule on the marked edge */}
-        <span
-          className={`absolute left-0 right-0 h-px bg-[color:var(--guide-line)] ${edge === "top" ? "top-0" : "bottom-0"}`}
-          style={{ WebkitMaskImage: hMask, maskImage: hMask }}
-        />
+        {/* Horizontal rule on each marked edge */}
+        {top && <span className="absolute left-0 right-0 top-0 h-px bg-[color:var(--guide-line)]" style={{ WebkitMaskImage: hMask, maskImage: hMask }} />}
+        {bottom && <span className="absolute left-0 right-0 bottom-0 h-px bg-[color:var(--guide-line)]" style={{ WebkitMaskImage: hMask, maskImage: hMask }} />}
 
-        {/* One dot per intersection — this edge only */}
-        <span
-          className={`absolute left-0 ${dotY} -translate-x-1/2 w-[4px] h-[4px] rounded-[var(--radius-pill)] bg-[color:var(--guide-dot)]`}
-        />
-        <span
-          className={`absolute right-0 ${dotY} translate-x-1/2 w-[4px] h-[4px] rounded-[var(--radius-pill)] bg-[color:var(--guide-dot)]`}
-        />
+        {/* One dot per intersection, on the marked edges only */}
+        {edges.map((dotY) => (
+          <span key={dotY}>
+            <span className={`absolute left-0 ${dotY} -translate-x-1/2 w-[4px] h-[4px] rounded-[var(--radius-pill)] bg-[color:var(--guide-dot)]`} />
+            <span className={`absolute right-0 ${dotY} translate-x-1/2 w-[4px] h-[4px] rounded-[var(--radius-pill)] bg-[color:var(--guide-dot)]`} />
+          </span>
+        ))}
       </div>
     </div>
   );

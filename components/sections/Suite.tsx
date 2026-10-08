@@ -116,8 +116,10 @@ export function Suite() {
 
   return (
     <section id="suite" className="relative border-t border-[color:var(--line)] py-24 md:py-32 lg:border-t-0">
-      <SectionGuides edge="top" />
+      <SectionGuides edge="both" />
       <div className="container-page">
+        {/* Chevrons top right, level with the lede (Hamza, 8 Oct). */}
+        <div className="flex items-end justify-between gap-8">
         <div className="max-w-[640px]">
           <p className="eyebrow">The suite</p>
           <BlurHeading className="h2 mt-4" lead="Everything your team" muted="needs to create" />
@@ -125,6 +127,15 @@ export function Suite() {
             A full suite of tools that take you from idea to finished asset, no
             stitching together five different products.
           </p>
+        </div>
+        <div className="flex shrink-0 items-center gap-3">
+          <button type="button" onClick={() => scrollByCards(-1)} aria-label="Previous tools" className="suite-pager">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden><path d="M15 6l-6 6 6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+          </button>
+          <button type="button" onClick={() => scrollByCards(1)} aria-label="Next tools" className="suite-pager">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden><path d="M9 6l6 6-6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+          </button>
+        </div>
         </div>
       </div>
 
@@ -157,16 +168,6 @@ export function Suite() {
         ))}
       </div>
 
-      <div className="container-page">
-        <div className="mt-6 flex items-center justify-end gap-3">
-          <button type="button" onClick={() => scrollByCards(-1)} aria-label="Previous tools" className="suite-pager">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden><path d="M15 6l-6 6 6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-          </button>
-          <button type="button" onClick={() => scrollByCards(1)} aria-label="Next tools" className="suite-pager">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden><path d="M9 6l6 6-6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-          </button>
-        </div>
-      </div>
 
       <style>{`
         /* Gutters match .container-page so the first card lines up with the

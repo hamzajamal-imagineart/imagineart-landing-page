@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 
 /**
  * A soft pastel wash behind a section (Hamza, 7 Oct, after a reference):
@@ -44,9 +44,15 @@ const LAYERS: Record<Variant, string> = {
  *  right under a dark band it must not paint over. */
 /** `rise` keeps the top of the section clear and lets the wash come up
  *  from the bottom only (Hamza, 8 Oct). */
-export function Wash({ variant = "a", flushTop, rise, children }: { variant?: Variant; flushTop?: boolean; rise?: boolean; children: ReactNode }) {
+/** `height` (px) pins the wash to the top of a tall section instead of
+ *  stretching it over the whole thing (Hamza, 8 Oct: Outcomes grew when
+ *  Control merged in, and the colour slid down with it). */
+export function Wash({ variant = "a", flushTop, rise, height, children }: { variant?: Variant; flushTop?: boolean; rise?: boolean; height?: number; children: ReactNode }) {
   return (
-    <div className={`wash wash-${variant}${flushTop ? " wash-flush" : ""}${rise ? " wash-rise" : ""}`}>
+    <div
+      className={`wash wash-${variant}${flushTop ? " wash-flush" : ""}${rise ? " wash-rise" : ""}${height ? " wash-capped" : ""}`}
+      style={height ? ({ "--wash-h": `${height}px` } as CSSProperties) : undefined}
+    >
       {children}
       <style>{`
         .wash { position: relative; isolation: isolate; }
@@ -66,6 +72,7 @@ export function Wash({ variant = "a", flushTop, rise, children }: { variant?: Va
         .wash-c::before { background: ${LAYERS.c}; }
         .wash-d::before { background: ${LAYERS.d}; }
         .wash-flush::before { top: 0; }
+        .wash-capped::before { bottom: auto; height: calc(var(--wash-h) + ${BLEED}px); }
         .wash-rise::before {
           -webkit-mask-image: linear-gradient(to bottom, transparent 0%, transparent 45%, #000 82%, transparent 100%);
           mask-image: linear-gradient(to bottom, transparent 0%, transparent 45%, #000 82%, transparent 100%);

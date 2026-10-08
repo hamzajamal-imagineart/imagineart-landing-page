@@ -9,7 +9,6 @@ import { ReviewsSection } from "@/components/ReviewsSection";
 import { HeroGlobeSection } from "@/components/sections/HeroGlobeSection";
 import { Partners } from "@/components/sections/Partners";
 import { Suite } from "@/components/sections/Suite";
-import { Control } from "@/components/sections/Control";
 import { Outcomes } from "@/components/sections/Outcomes";
 import { Industries } from "@/components/sections/Industries";
 import { Workflows } from "@/components/sections/Workflows";
@@ -58,10 +57,8 @@ export default function Page() {
         {/* Customer logos sit between the hero and the platform strip (Hamza, 8 Oct). */}
         <HeroGlobeSection drift beforeStrip={<Partners />} />
         <Suite />
-        {/* Control (Hamza, 8 Oct), picked from the "Controllable content at scale" page. */}
-        <Control />
-        {/* Pastel washes behind Outcomes and Models (Hamza, 7 Oct). */}
-        <Wash variant="a"><Outcomes /></Wash>
+        {/* Pastel wash behind Models (Hamza, 7 Oct); the one behind Outcomes came off on 8 Oct. */}
+        <Outcomes />
         <Industries />
         <Workflows />
         <Wash variant="b"><Models /></Wash>

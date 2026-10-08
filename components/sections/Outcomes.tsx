@@ -1,15 +1,18 @@
+"use client";
+
 import { withBasePath } from "@/lib/assets";
 import { BlurHeading } from "@/components/BlurHeading";
-import { SectionGuides } from "@/components/primitives/SectionGuides";
 import { START_HREF } from "@/lib/links";
+import { PointsTimeline, CONTROL_POINTS, type TimelinePoint } from "@/components/sections/Control";
 
 /**
  * Outcomes: "From product shot to viral phenomenon". Built from Figma
  * H-Drafts 644:4317 (Hamza, 6 Oct), above Industries.
  *
- * Layout and copy are the frame's: heading, one line, a white "Start
- * creating" action, three tall cards in a row and one wide card under them,
- * each with a title and a line over the image's foot. **Images generated in
+ * Heading, line and "Start creating" action are the frame's. Under them,
+ * since 8 Oct, the three control points as a timeline (PointsTimeline in
+ * Control.tsx), replacing the frame's three-plus-one card grid. The four
+ * outcome entries are kept in code but not shown. **Images generated in
  * ImagineArt for this section** (Hamza, 6 Oct; Nano Banana Pro at 2K, the
  * ImagineArt (Official) workspace), one per card from its own line, saved to
  * media/outcomes/ as JPEG: three 3:4 at 1100px wide, the Filmmaking card 21:9
@@ -52,32 +55,36 @@ const WIDE = {
   logo: { src: "/media/studios/logos/film-studio.png", alt: "Film Studio", h: 32 },
 };
 
-function Card({ title, body, image, video, logo, wide }: { title: string; body: string; image: string; video?: string; logo?: Logo; wide?: boolean }) {
+/** An outcome's visual in the timeline: the still (or clip), its studio
+ *  mark top-left over a light scrim. The title and line moved to the list. */
+function OutcomeVisual({ image, video, logo }: { image: string; video?: string; logo?: Logo }) {
   return (
-    <div className={`oc-card ${wide ? "oc-wide" : ""}`}>
+    <>
       {video ? (
-        <video className="oc-media" src={withBasePath(video)} poster={withBasePath(image)} autoPlay muted loop playsInline preload="metadata" aria-hidden />
+        <video className="cm-bg" src={withBasePath(video)} poster={withBasePath(image)} autoPlay muted loop playsInline preload="metadata" aria-hidden />
       ) : (
         // eslint-disable-next-line @next/next/no-img-element
-        <img className="oc-media" src={withBasePath(image)} alt="" loading="lazy" />
+        <img className="cm-bg" src={withBasePath(image)} alt="" loading="lazy" />
       )}
-      <span className={`oc-scrim ${logo ? "oc-scrim-top" : ""}`} aria-hidden />
       {logo && (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img className="oc-logo" src={withBasePath(logo.src)} alt={logo.alt} style={{ height: logo.h }} />
+        <>
+          <span className="oc-scrim-top" aria-hidden />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img className="oc-logo" src={withBasePath(logo.src)} alt={logo.alt} style={{ height: logo.h }} />
+        </>
       )}
-      <div className="oc-copy">
-        <h3 className="oc-title">{title}</h3>
-        <p className="oc-body">{body}</p>
-      </div>
-    </div>
+    </>
   );
 }
 
+/* One timeline under the heading (Hamza, 8 Oct). */
+// Outcome points 01–04 dropped (Hamza, 8 Oct); CARDS, WIDE and
+// OutcomeVisual stay so they can come back as one spread line.
+const POINTS: TimelinePoint[] = [...CONTROL_POINTS];
+
 export function Outcomes() {
   return (
-    <section id="outcomes" className="relative border-t border-[color:var(--line)] py-24 md:py-32 lg:border-t-0">
-      <SectionGuides edge="top" />
+    <section id="outcomes" className="relative py-24 md:py-32" /* no guide lines or rule (Hamza, 8 Oct) */>
       <div className="container-page">
         <div className="max-w-[680px]">
           <BlurHeading className="h2" lead="From product shot to viral phenomenon" />
@@ -93,9 +100,8 @@ export function Outcomes() {
           </a>
         </div>
 
-        <div className="oc-grid">
-          {CARDS.map((c) => <Card key={c.title} {...c} />)}
-          <Card {...WIDE} wide />
+        <div className="oc-timeline">
+          <PointsTimeline points={POINTS} />
         </div>
       </div>
 
@@ -116,47 +122,11 @@ export function Outcomes() {
         .oc-cta:hover { opacity: 0.86; }
         .oc-cta:focus-visible { outline: 2px solid var(--ink-heading); outline-offset: 3px; }
 
-        .oc-grid {
-          margin-top: 56px;
-          display: grid;
-          grid-template-columns: repeat(3, minmax(0, 1fr));
-          gap: 16px;
-        }
-        .oc-card {
-          position: relative;
-          overflow: hidden;
-          border-radius: var(--radius-3);
-          height: clamp(420px, 37vw, 526px);
-          background: var(--media-ground);
-          isolation: isolate;
-        }
-        .oc-wide { grid-column: 1 / -1; height: clamp(300px, 28vw, 405px); }
-        .oc-media { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; z-index: -2; }
-        /* A floor under the type, not the frame's 25% tint: white over live
-           footage needs it. */
-        .oc-scrim {
-          position: absolute;
-          inset: 0;
-          z-index: -1;
-          background: linear-gradient(to top, var(--scrim-1) 0%, var(--scrim-2) 30%, rgba(0, 0, 0, 0) 60%);
-        }
-        /* A light floor at the top too, only on cards that carry a mark. */
-        .oc-scrim-top {
-          background:
-            linear-gradient(to bottom, var(--scrim-3) 0%, rgba(0, 0, 0, 0) 26%),
-            linear-gradient(to top, var(--scrim-1) 0%, var(--scrim-2) 30%, rgba(0, 0, 0, 0) 60%);
-        }
+        .oc-timeline { margin-top: 64px; }
+        /* A light floor at the top of a visual that carries a studio mark,
+           so the white mark holds on a bright image. */
+        .oc-scrim-top { position: absolute; inset: 0; background: linear-gradient(to bottom, var(--scrim-3) 0%, rgba(0, 0, 0, 0) 26%); }
         .oc-logo { position: absolute; top: 24px; left: 24px; width: auto; display: block; filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.25)); }
-        .oc-copy { position: absolute; left: 24px; right: 24px; bottom: 24px; color: var(--on-media); }
-        .oc-wide .oc-copy { right: auto; max-width: 512px; }
-        .oc-title { font-size: 24px; line-height: 1.3; font-weight: 600; letter-spacing: -0.01em; }
-        .oc-body { margin-top: 8px; font-size: 16px; line-height: 1.6; color: var(--on-media-2); }
-
-        @media (max-width: 900px) {
-          .oc-grid { grid-template-columns: minmax(0, 1fr); }
-          .oc-card { height: 440px; }
-          .oc-wide { height: 360px; }
-        }
       `}</style>
     </section>
   );

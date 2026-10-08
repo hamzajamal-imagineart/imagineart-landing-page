@@ -1,3 +1,6 @@
+"use client";
+
+import { useRef } from "react";
 import { SectionGuides } from "@/components/primitives/SectionGuides";
 import { BlurHeading } from "@/components/BlurHeading";
 import { withBasePath } from "@/lib/assets";
@@ -31,6 +34,21 @@ const INDUSTRIES = [
 ];
 
 export function Industries() {
+  const trackRef = useRef<HTMLDivElement | null>(null);
+
+  // Chevrons, as on the suite rail: one card per click, animated by
+  // `scroll-behavior: smooth` on the track.
+  const scrollByCards = (dir: number) => {
+    const el = trackRef.current;
+    if (!el) return;
+    const card = el.querySelector<HTMLElement>(".ind-card");
+    const gap = parseFloat(getComputedStyle(el).columnGap) || 20;
+    const amount = card ? card.offsetWidth + gap : el.clientWidth * 0.8;
+    const max = el.scrollWidth - el.clientWidth;
+    const to = Math.max(0, Math.min(max, el.scrollLeft + dir * amount));
+    if (to !== el.scrollLeft) el.scrollLeft = to;
+  };
+
   return (
     <section
       id="industries"
@@ -38,6 +56,8 @@ export function Industries() {
     >
       <SectionGuides edge="top" />
       <div className="container-page">
+        {/* Chevrons top right, level with the lede (Hamza, 8 Oct). */}
+        <div className="flex items-end justify-between gap-8">
         <div className="max-w-[640px]">
           <p className="eyebrow">Industries</p>
           <BlurHeading className="h2 mt-4" lead="Built for" muted="your industry" />
@@ -46,12 +66,21 @@ export function Industries() {
             already works, not how a tool wishes you did. Find yours below.
           </p>
         </div>
+        <div className="flex shrink-0 items-center gap-3">
+          <button type="button" onClick={() => scrollByCards(-1)} aria-label="Previous industries" className="ind-pager">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden><path d="M15 6l-6 6 6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+          </button>
+          <button type="button" onClick={() => scrollByCards(1)} aria-label="Next industries" className="ind-pager">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden><path d="M9 6l6 6-6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+          </button>
+        </div>
+        </div>
       </div>
 
       {/* Card shape (Hamza, 8 Oct, after the "Controllable content" page):
           footage in a rounded frame, title and copy underneath, on a
           sideways-scrolling rail. */}
-      <div className="ind-track mt-12">
+      <div ref={trackRef} className="ind-track mt-12">
         {INDUSTRIES.map((i, n) => (
           <div key={i.name} className="ind-card">
             <div className="ind-media">
@@ -85,6 +114,7 @@ export function Industries() {
           padding-left: var(--ind-gutter);
           padding-right: var(--ind-gutter);
           scrollbar-width: none;
+          scroll-behavior: smooth;
         }
         .ind-track::-webkit-scrollbar { display: none; }
         .ind-card { scroll-snap-align: start; background: var(--page-bg); }
@@ -97,6 +127,8 @@ export function Industries() {
         /* Two lines on every card (Hamza, 8 Oct): each body carries its own
            break (\n, kept by pre-line), clamped at two on narrow cards. */
         .ind-body { margin-top: 6px; min-height: calc(2 * 1.55em); font-size: 15px; line-height: 1.55; color: var(--ink-2); white-space: pre-line; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .ind-pager { width: 38px; height: 38px; border-radius: var(--radius-pill); border: 1px solid var(--line); background: var(--page-bg); color: var(--ink); display: grid; place-items: center; cursor: pointer; }
+        .ind-pager:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
       `}</style>
 
     </section>

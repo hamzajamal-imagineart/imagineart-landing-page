@@ -126,7 +126,7 @@ export function Workflows() {
           flex-direction: column;
           padding: clamp(22px, 2.4vw, 32px);
           border-radius: var(--radius-5);
-          background: color-mix(in srgb, var(--tile) 96%, var(--ink-heading)); /* a shade darker than the tile so it reads on white (7 Oct) */
+          background: color-mix(in srgb, var(--ink-heading) 3.5%, var(--page-bg)); /* subtle, just off the page (8 Oct; was a shade darker than --tile) */
           min-width: 0;
         }
         /* No gradient grounds since 6 Oct (Hamza): the tiles are flat

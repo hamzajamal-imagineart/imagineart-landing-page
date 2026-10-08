@@ -1,37 +1,25 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { SectionGuides } from "@/components/primitives/SectionGuides";
-import { BlurHeading } from "@/components/BlurHeading";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { ButtonLink } from "@/components/Button";
 import { withBasePath } from "@/lib/assets";
 
 /**
- * Control (Hamza, 8 Oct): picked from the "Controllable content at scale"
- * page (#control). Three numbered points in a sticky list on the left, one
- * visual each scrolling past on the right; whichever visual sits mid-screen
- * opens its point, and clicking a point scrolls to its visual.
+ * Points timeline (Hamza, 8 Oct): numbered points in a sticky list on the
+ * left, one visual each scrolling past on the right; whichever visual sits
+ * mid-screen opens its point, and clicking a point scrolls to its visual.
  *
- * Copy is that page's, verbatim. Its proof chips are cut (Hamza, 8 Oct),
- * and the third visual plays a clip per edit tool instead of a still.
+ * Started as the Control section picked from the "Controllable content at
+ * scale" page (#control). It now carries all of Outcomes: the outcome points
+ * first, then CONTROL_POINTS (that page's copy, verbatim, proof chips cut,
+ * a clip per edit tool on the third visual).
  */
-const POINTS = [
-  {
-    title: "Your brand, locked",
-    body: "Logos, colors, fonts, products and tone live in a brand kit every model reads. No re-briefing, no drift, on web, mobile and in your workflows.",
-    cta: { label: "Brand kits", href: "https://www.imagine.art/enterprise/brand-kits" },
-  },
-  {
-    title: "Same product, same face, every frame",
-    body: "Reference a product, a character or a presenter once. It holds across scenes, formats and models, so a campaign looks like one campaign.",
-    cta: { label: "Try references", href: "https://www.imagine.art/image" },
-  },
-  {
-    title: "Edit the frame, not the prompt",
-    body: "Inpaint, relight, extend, caption and lip sync on the exact frame, instead of rolling the dice again. Precision tools for video and image, in the same canvas.",
-    cta: { label: "Open the editor", href: "https://www.imagine.art/ai-video-editor" },
-  },
-];
+export type TimelinePoint = {
+  title: string;
+  body: string;
+  cta?: { label: string; href: string };
+  media: ReactNode;
+};
 
 const REFS = [
   { src: "sneaker-flowers.jpg", tag: "Lifestyle · Flux 2" },
@@ -50,9 +38,70 @@ const EDIT_TOOLS = [
 
 const img = (f: string) => withBasePath(`/media/control/${f}`);
 
-export function Control() {
-  const [active, setActive] = useState(0);
+function EditVisual() {
   const [tool, setTool] = useState(0);
+  return (
+    <>
+      {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+      <video key={EDIT_TOOLS[tool].video} className="cm-bg" src={withBasePath(EDIT_TOOLS[tool].video)} autoPlay muted loop playsInline aria-hidden />
+      <div className="edtools" role="tablist" aria-label="Edit tools">
+        {EDIT_TOOLS.map((t, i) => (
+          <button key={t.label} type="button" role="tab" aria-selected={i === tool} className={i === tool ? "on" : undefined} onClick={() => setTool(i)}>
+            {t.label}
+          </button>
+        ))}
+      </div>
+    </>
+  );
+}
+
+export const CONTROL_POINTS: TimelinePoint[] = [
+  {
+    title: "Your brand, locked",
+    body: "Logos, colors, fonts, products and tone live in a brand kit every model reads. No re-briefing, no drift, on web, mobile and in your workflows.",
+    cta: { label: "Brand kits", href: "https://www.imagine.art/enterprise/brand-kits" },
+    media: (
+      <>
+        <img className="cm-bg" src={img("brandkit.jpg")} alt="" loading="lazy" />
+        <div className="kitcard">
+          <h5>MOKA brand kit <i>● applied</i></h5>
+          <div className="sw">
+            <i style={{ background: "#3b2a1f" }} />
+            <i style={{ background: "#c8a27a" }} />
+            <i style={{ background: "#efe6da" }} />
+            <i style={{ background: "#a63d2f" }} />
+          </div>
+          <div className="ft"><span><b>Aa</b>Fraunces</span><span><b>Aa</b>Inter</span></div>
+          <small>Tone: warm, direct, no exclamation marks · 2 products · 4 logos</small>
+        </div>
+      </>
+    ),
+  },
+  {
+    title: "Same product, same face, every frame",
+    body: "Reference a product, a character or a presenter once. It holds across scenes, formats and models, so a campaign looks like one campaign.",
+    cta: { label: "Try references", href: "https://www.imagine.art/image" },
+    media: (
+      <>
+        <div className="refgrid">
+          {REFS.map((r) => (
+            <div key={r.src}><img src={img(r.src)} alt="" loading="lazy" /><span>{r.tag}</span></div>
+          ))}
+        </div>
+        <div className="refpin"><img src={img("product.jpg")} alt="" loading="lazy" /><b>REFERENCE</b></div>
+      </>
+    ),
+  },
+  {
+    title: "Edit the frame, not the prompt",
+    body: "Inpaint, relight, extend, caption and lip sync on the exact frame, instead of rolling the dice again. Precision tools for video and image, in the same canvas.",
+    cta: { label: "Open the editor", href: "https://www.imagine.art/ai-video-editor" },
+    media: <EditVisual />,
+  },
+];
+
+export function PointsTimeline({ points }: { points: TimelinePoint[] }) {
+  const [active, setActive] = useState(0);
   const media = useRef<(HTMLDivElement | null)[]>([]);
 
   useEffect(() => {
@@ -76,84 +125,41 @@ export function Control() {
   };
 
   return (
-    <section id="control" className="relative border-t border-[color:var(--line)] py-24 md:py-32 lg:border-t-0">
-      <SectionGuides edge="top" />
-      <div className="container-page">
-        <div className="max-w-[720px]">
-          <p className="eyebrow">Control</p>
-          <BlurHeading className="h2 mt-4" lead="Scale is only useful if" muted="every output is one you'd ship." lineBreak />
-          <p className="lede mt-5">
-            ImagineArt is built around control: the brand, the product, the face and the frame stay yours, from the
-            first asset to the two-hundredth.
-          </p>
-        </div>
-
-        <div className="ctl mt-14">
-          <div className="ctl-list">
-            {POINTS.map((p, i) => (
-              <div
-                key={p.title}
-                className={`ci${active === i ? " on" : ""}`}
-                onClick={() => pick(i)}
-                role="button"
-                tabIndex={0}
-                aria-expanded={active === i}
-                onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && (e.preventDefault(), pick(i))}
-              >
-                <span className="ci-n">{String(i + 1).padStart(2, "0")}</span>
-                <h3 className="ci-title">{p.title}</h3>
-                <div className="ci-body">
-                  <div>
-                    <p>{p.body}</p>
-                    <ButtonLink href={p.cta.href} target="_blank" rel="noopener noreferrer" className="mt-4" onClick={(e) => e.stopPropagation()}>
+    <>
+      <div className="ctl">
+        <div className="ctl-list">
+          {points.map((p, i) => (
+            <div
+              key={p.title}
+              className={`ci${active === i ? " on" : ""}`}
+              onClick={() => pick(i)}
+              role="button"
+              tabIndex={0}
+              aria-expanded={active === i}
+              onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && (e.preventDefault(), pick(i))}
+            >
+              <span className="ci-n">{String(i + 1).padStart(2, "0")}</span>
+              <h3 className="ci-title">{p.title}</h3>
+              <div className="ci-body">
+                <div>
+                  <p>{p.body}</p>
+                  {p.cta && (
+                    <ButtonLink variant="ghost" href={p.cta.href} target="_blank" rel="noopener noreferrer" className="mt-5" onClick={(e) => e.stopPropagation()}>
                       {p.cta.label}
                     </ButtonLink>
-                  </div>
+                  )}
                 </div>
               </div>
-            ))}
-          </div>
-
-          <div className="ctl-media">
-            {/* 01 Brand kit */}
-            <div className="cm" data-cm={0} ref={(el) => { media.current[0] = el; }}>
-              <img className="cm-bg" src={img("brandkit.jpg")} alt="" loading="lazy" />
-              <div className="kitcard">
-                <h5>MOKA brand kit <i>● applied</i></h5>
-                <div className="sw">
-                  <i style={{ background: "#3b2a1f" }} />
-                  <i style={{ background: "#c8a27a" }} />
-                  <i style={{ background: "#efe6da" }} />
-                  <i style={{ background: "#a63d2f" }} />
-                </div>
-                <div className="ft"><span><b>Aa</b>Fraunces</span><span><b>Aa</b>Inter</span></div>
-                <small>Tone: warm, direct, no exclamation marks · 2 products · 4 logos</small>
-              </div>
             </div>
+          ))}
+        </div>
 
-            {/* 02 References */}
-            <div className="cm" data-cm={1} ref={(el) => { media.current[1] = el; }}>
-              <div className="refgrid">
-                {REFS.map((r) => (
-                  <div key={r.src}><img src={img(r.src)} alt="" loading="lazy" /><span>{r.tag}</span></div>
-                ))}
-              </div>
-              <div className="refpin"><img src={img("product.jpg")} alt="" loading="lazy" /><b>REFERENCE</b></div>
+        <div className="ctl-media">
+          {points.map((p, i) => (
+            <div key={p.title} className="cm" data-cm={i} ref={(el) => { media.current[i] = el; }}>
+              {p.media}
             </div>
-
-            {/* 03 Edit the frame: a clip per tool */}
-            <div className="cm" data-cm={2} ref={(el) => { media.current[2] = el; }}>
-              {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-              <video key={EDIT_TOOLS[tool].video} className="cm-bg" src={withBasePath(EDIT_TOOLS[tool].video)} autoPlay muted loop playsInline aria-hidden />
-              <div className="edtools" role="tablist" aria-label="Edit tools">
-                {EDIT_TOOLS.map((t, i) => (
-                  <button key={t.label} type="button" role="tab" aria-selected={i === tool} className={i === tool ? "on" : undefined} onClick={() => setTool(i)}>
-                    {t.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
+          ))}
         </div>
       </div>
 
@@ -163,15 +169,17 @@ export function Control() {
         .ctl-list { display: flex; flex-direction: column; }
         @media (min-width: 1024px) { .ctl-list { position: sticky; top: 140px; } }
 
-        .ci { position: relative; padding: 20px 0 20px 24px; border-left: 2px solid var(--line); transition: border-color 0.3s; cursor: pointer; outline: none; }
-        .ci.on { border-color: var(--ink); }
-        .ci:focus-visible { box-shadow: inset 2px 0 0 var(--ink); }
-        .ci-n { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.1em; color: var(--ink-3); }
-        .ci-title { margin-top: 6px; font-size: 20px; line-height: 28px; font-weight: 500; letter-spacing: -0.01em; color: var(--ink-heading); }
+        .ci { position: relative; padding: 16px 0 16px 24px; border-left: 2px solid var(--line); transition: border-color 0.3s; cursor: pointer; outline: none; }
+        .ci.on { border-color: var(--ink-heading); }
+        .ci:focus-visible { box-shadow: inset 2px 0 0 var(--ink-heading); }
+        /* Page type throughout (Hamza, 8 Oct): the number in the eyebrow style rather than system mono, titles and copy on the Workflows card scale. */
+        .ci-n { font-size: 11px; font-weight: 600; letter-spacing: 0.16em; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+        .ci-title { margin-top: 6px; font-size: clamp(20px, 1.8vw, 24px); line-height: 1.25; font-weight: 500; letter-spacing: -0.015em; color: var(--ink-3); transition: color 0.3s; }
+        .ci.on .ci-title, .ci:hover .ci-title { color: var(--ink-heading); }
         .ci-body { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.4s var(--ease-out); }
         .ci.on .ci-body { grid-template-rows: 1fr; }
         .ci-body > div { overflow: hidden; }
-        .ci-body p { padding-top: 10px; max-width: 30rem; font-size: 15px; line-height: 1.55; color: var(--ink-2); }
+        .ci-body p { padding-top: 10px; max-width: 44ch; font-size: 15px; line-height: 1.6; color: var(--ink-2); }
 
         .ctl-media { display: flex; flex-direction: column; gap: 40px; }
         .cm { position: relative; border-radius: 20px; overflow: hidden; background: var(--tile); aspect-ratio: 4 / 3; color: #fff; }
@@ -189,7 +197,7 @@ export function Control() {
         .kitcard .ft b { display: block; font-size: 19px; font-weight: 600; }
         .kitcard small { color: rgba(255,255,255,0.6); }
 
-        .refgrid { position: absolute; inset: 24px; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 12px; }
+        .refgrid { position: absolute; inset: 0; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 12px; }
         .refgrid div { position: relative; border-radius: 12px; overflow: hidden; }
         .refgrid img { width: 100%; height: 100%; object-fit: cover; }
         .refgrid span { position: absolute; left: 10px; top: 10px; padding: 4px 10px; border-radius: 999px; background: rgba(0,0,0,0.6); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); font-size: 11.5px; }
@@ -204,6 +212,6 @@ export function Control() {
         .cm .edtools button:focus-visible { outline: 2px solid #fff; outline-offset: 1px; }
         @media (prefers-reduced-motion: reduce) { .ci-body { transition: none; } }
       `}</style>
-    </section>
+    </>
   );
 }
