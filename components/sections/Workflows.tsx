@@ -62,7 +62,7 @@ export function Workflows() {
 
           <article className="wf-tile">
             <h3 className="wf-title">Brand Guidelines.</h3>
-            <p className="wf-body">Every output on brand, without re-briefing it each time.</p>
+            <p className="wf-body">Every output on brand, every time.</p>
             <div className="wf-media">
               {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
               <video src="https://www.imagine.art/business/media/brandkit/brand-kits.mp4" autoPlay muted loop playsInline preload="metadata" aria-hidden />
