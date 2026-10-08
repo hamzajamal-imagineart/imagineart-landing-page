@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { DEMO_HREF, START_HREF } from "@/lib/links";
 import { PlatformStrip } from "@/components/sections/Platform";
+import { SectionGuides } from "@/components/primitives/SectionGuides";
 import { Wash } from "@/components/Wash";
 import { HeroDrift } from "@/components/sections/HeroDrift";
 import { HeroGlobe, MORPH_IMAGES, type GlobeShape } from "@/components/sections/HeroGlobe";
@@ -91,6 +92,9 @@ export function HeroGlobeSection({ light = false, shape = "globe", parted = fals
           section (Hamza, 8 Oct). */}
       <Wash variant="d" flushTop>
         <div className="hs-strip">
+          {/* Guide lines carried down from the logos above to the suite below
+              (Hamza, 8 Oct); those two mark the seams, so no dots here. */}
+          <SectionGuides edge="none" />
           <div className="container-page">
             <PlatformStrip />
           </div>
@@ -288,7 +292,7 @@ export function HeroGlobeSection({ light = false, shape = "globe", parted = fals
         .hc-light .hc-title { color: var(--ink-heading); }
         .hc-light .hc-veil { background: rgba(255, 255, 255, ${VEIL_ALPHA}); }
 
-        .hs-strip { padding-top: clamp(40px, 5vw, 72px); padding-bottom: clamp(48px, 7vh, 88px); }
+        .hs-strip { position: relative; padding-top: clamp(40px, 5vw, 72px); padding-bottom: clamp(48px, 7vh, 88px); }
 
         /* Narrow: the copy needs the full width, so the globe steps back
            behind it as a dim frame. */

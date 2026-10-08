@@ -25,7 +25,8 @@ const CUSTOMERS: { name: string; h: number }[] = [
 export function Partners() {
   return (
     <section className="relative border-t border-[color:var(--line)] py-16 md:py-20 lg:border-t-0">
-      <SectionGuides edge="top" />
+      {/* Closed at both ends and pulled in off the hero's edge (Hamza, 8 Oct). */}
+      <SectionGuides edge="both" insetTop={24} />
       <div className="container-page">
         <p className="pt-cap">Trusted by the brands you benchmark against</p>
         {/* A still grid (Hamza, 7 Oct): no marquee. */}
@@ -52,7 +53,11 @@ export function Partners() {
         @media (max-width: 1023px) { .pt-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
         @media (max-width: 639px) { .pt-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); row-gap: 28px; } }
         .pt-cell { display: flex; align-items: center; justify-content: center; height: 40px; }
-        .pt-cell img { display: block; width: auto; height: auto; max-width: 100%; }
+        .pt-cell img { display: block; width: auto; height: auto; max-width: 100%; transition: filter 0.25s ease, transform 0.3s var(--ease-out); }
+        /* Hover (Hamza, 8 Oct): the grey mark goes to ink and grows a touch. */
+        .pt-cell:hover img { filter: brightness(0.15); transform: scale(1.08); }
+        [data-theme="dark"] .pt-cell:hover img { filter: brightness(1.8); }
+        @media (prefers-reduced-motion: reduce) { .pt-cell img { transition: filter 0.25s ease; } .pt-cell:hover img { transform: none; } }
       `}</style>
     </section>
   );

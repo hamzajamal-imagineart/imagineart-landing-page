@@ -36,7 +36,14 @@
  * over, via `lg:border-t-0` / `lg:border-b-0` on the section itself.
  * Desktop only; purely decorative and non-interactive.
  */
-export function SectionGuides({ edge = "top" }: { edge?: "top" | "bottom" | "both" }) {
+export function SectionGuides({ edge = "top", insetTop = 0 }: {
+  /** "none": verticals only, for a section between two that mark the seams. */
+  edge?: "top" | "bottom" | "both" | "none";
+  /** Start the frame this many px below the section's top, for a section
+   *  that butts against a dark band (Partners under the hero; 8 Oct) so the
+   *  top rule and dots sit on the white, not on the seam. */
+  insetTop?: number;
+}) {
   /** Clear space each side of a dot before the line resumes. */
   const GAP = 7;
 
@@ -45,7 +52,7 @@ export function SectionGuides({ edge = "top" }: { edge?: "top" | "bottom" | "bot
   // "both" closes a section whose neighbour below has no guides of its own
   // (Suite, over the guide-less Outcomes; 8 Oct): dots and a rule on both
   // edges, and the verticals gapped at both ends.
-  const top = edge !== "bottom", bottom = edge !== "top";
+  const top = edge === "top" || edge === "both", bottom = edge === "bottom" || edge === "both";
   const vMask = `linear-gradient(to bottom, ${top ? `transparent 0, transparent ${GAP}px, black ${GAP}px` : "black 0"}, ${bottom ? `black calc(100% - ${GAP}px), transparent calc(100% - ${GAP}px), transparent 100%` : "black 100%"})`;
 
   // The horizontal rule has a dot at each of its ends, so it stays gapped both sides.
@@ -59,6 +66,7 @@ export function SectionGuides({ edge = "top" }: { edge?: "top" | "bottom" | "bot
     <div
       aria-hidden="true"
       className="hidden lg:block pointer-events-none absolute inset-x-[2px] inset-y-0 z-0"
+      style={insetTop ? { top: insetTop } : undefined}
     >
       <div className="relative mx-auto h-full w-full max-w-[1240px]">
         {/* Vertical rules — masked only at the dotted edge */}
