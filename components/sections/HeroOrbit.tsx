@@ -39,7 +39,7 @@ const ORB: Orb[] = [
   { x: 7.6, y: 66.3, w: 221, ar: "3/4", d: 2, src: "tryon-poster", m: "seedance", v: "jacket-tryon" },
   { x: 88.4, y: 55.8, w: 165, ar: "2/3", d: 3, src: "ugc-naima-poster", m: "imagineart", v: "ugc-naima" },
   { x: 77.5, y: 70.5, w: 227, ar: "16/10", d: 2, src: "car-coffee", m: "seedance" },
-  { x: 41.9, y: 89.5, w: 281, ar: "1/1", d: 2, src: "sneaker-flowers", m: "flux" },
+  { x: 41.9, y: 80, w: 230, ar: "1/1", d: 2, src: "sneaker-flowers", m: "flux" }, // smaller and higher, clear of the foot fade (8 Oct; was y 89.5, w 281)
 ];
 /** The four stills in the narrow-screen row. */
 const MROW = [3, 4, 5, 7];
@@ -250,12 +250,11 @@ export function HeroOrbit() {
         /* The light pool, on its own layer that runs BLEED px past the hero's
            foot like the grain, so neither stops on the seam. */
         .hx1::before { content: ""; position: absolute; inset: 0 0 -${BLEED}px 0; z-index: -1; pointer-events: none; background: radial-gradient(${GRAIN_SIZE} at 50% 40%, rgba(255,255,255,${GLOW}) 0%, rgba(255,255,255,${GLOW / 3}) 40%, transparent 100%); }
-        /* Grain over the whole hero, cards included, under nothing that takes the pointer. */
-        .hx1::after { content: ""; position: absolute; inset: 0 0 -${BLEED}px 0; z-index: 2; pointer-events: none; background-image: ${NOISE_URL}; background-size: 160px 160px; opacity: ${NOISE}; mix-blend-mode: screen; -webkit-mask-image: radial-gradient(${GRAIN_SIZE} at 50% 40%, #000 0%, rgba(0,0,0,.6) 40%, transparent 100%); mask-image: radial-gradient(${GRAIN_SIZE} at 50% 40%, #000 0%, rgba(0,0,0,.6) 40%, transparent 100%); }
+        /* Grain over the hero removed (Hamza, 8 Oct); NOISE / NOISE_URL are unused. */
         .hx1-field {
           position: absolute; inset: ${FIELD_TOP}px 0 0 0; pointer-events: none;
-          -webkit-mask-image: linear-gradient(180deg, #000 0, #000 calc(100% - 240px), transparent 100%);
-          mask-image: linear-gradient(180deg, #000 0, #000 calc(100% - 240px), transparent 100%);
+          -webkit-mask-image: linear-gradient(180deg, #000 0, #000 calc(100% - 140px), transparent 100%);
+          mask-image: linear-gradient(180deg, #000 0, #000 calc(100% - 140px), transparent 100%);
         }
         /* left is clamped so no card is cut by the hero's edge (Hamza, 8 Oct): its centre stays at least half its width plus EDGE in from either side. */
         .oc1 { position: absolute; left: clamp(calc(var(--w) / 2 + ${EDGE}px), var(--x), calc(100% - var(--w) / 2 - ${EDGE}px)); top: var(--y); width: var(--w); transform: translate(-50%, -50%); pointer-events: auto; will-change: transform; }

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
-import { Comfortaa } from "next/font/google";
+import { Comfortaa, Instrument_Serif } from "next/font/google";
 import "./globals.css";
 
 import { withBasePath } from "@/lib/assets";
@@ -17,6 +17,8 @@ const googleSans = localFont({
 // One word of the hero headline, "workspace", is set in Comfortaa (Hamza,
 // 8 Oct); everything else stays in Google Sans Flex.
 const heroFont = Comfortaa({ subsets: ["latin"], variable: "--font-hero", display: "swap", weight: ["400", "500", "600"] });
+// "ASTRA" in the GPT-6 Astra banner is set in Instrument Serif, as on imagine.art (8 Oct).
+const serifFont = Instrument_Serif({ subsets: ["latin"], variable: "--font-instrument-serif", display: "swap", weight: "400" });
 
 export const metadata: Metadata = {
   title: "ImagineArt, The AI Creative Platform",
@@ -39,7 +41,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     // The page ships dark. The light palette is still defined in globals.css
     // and still correct, so this attribute is the only thing to change back.
-    <html lang="en" className={`${googleSans.variable} ${heroFont.variable}`} suppressHydrationWarning /* the home page sets data-theme inline before hydration */>
+    <html lang="en" className={`${googleSans.variable} ${heroFont.variable} ${serifFont.variable}`} suppressHydrationWarning /* the home page sets data-theme inline before hydration */>
       <body>{children}</body>
     </html>
   );

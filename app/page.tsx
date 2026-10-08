@@ -8,10 +8,10 @@ import { FAQSection } from "@/components/FAQSection";
 import { ReviewsSection } from "@/components/ReviewsSection";
 
 import { HeroGlobeSection } from "@/components/sections/HeroGlobeSection";
-import { ModelMarquee } from "@/components/sections/ModelMarquee";
 import { Partners } from "@/components/sections/Partners";
 import { Suite } from "@/components/sections/Suite";
 import { Outcomes } from "@/components/sections/Outcomes";
+import { AstraBanner } from "@/components/sections/AstraBanner";
 import { Industries } from "@/components/sections/Industries";
 import { Workflows } from "@/components/sections/Workflows";
 import { Models } from "@/components/sections/Models";
@@ -60,11 +60,11 @@ export default function Page() {
         {/* Orbit hero (Hamza, 8 Oct), from the "Controllable content at
             scale" page. The drift fly-through that ran here is parked at
             /hero-2, the corridor at /hero-9. */}
-        <HeroGlobeSection orbit beforeStrip={<ModelMarquee />} />
-        {/* Logos back under the platform strip (Hamza, 8 Oct). */}
-        <Partners />
+        <HeroGlobeSection orbit beforeStrip={<Partners />} />
         <Suite />
         {/* Pastel wash behind Models (Hamza, 7 Oct); the one behind Outcomes came off on 8 Oct. */}
+        {/* GPT-6 Astra banner from imagine.art (Hamza, 8 Oct), between Suite and Outcomes. */}
+        <AstraBanner />
         <Outcomes />
         <Industries />
         <Workflows />

@@ -24,9 +24,11 @@ const CUSTOMERS: { name: string; h: number }[] = [
 
 export function Partners() {
   return (
-    <section className="relative border-t border-[color:var(--line)] py-16 md:py-20 lg:border-t-0">
-      {/* Top edge only: Suite, right below, marks the seam under it. */}
-      <SectionGuides edge="top" />
+    <section className="relative border-t border-[color:var(--line)] pt-24 pb-16 md:pt-32 md:pb-20 lg:border-t-0" /* more room above, under the hero (8 Oct) */>
+      {/* Under the hero again, where the model logos were (Hamza, 8 Oct):
+          closed at both ends, since the platform strip below has no guides,
+          and pulled in off the hero's foot. */}
+      <SectionGuides edge="both" insetTop={56} />
       <div className="container-page">
         <p className="pt-cap">Trusted by the brands you benchmark against</p>
         {/* A still grid (Hamza, 7 Oct): no marquee. */}
