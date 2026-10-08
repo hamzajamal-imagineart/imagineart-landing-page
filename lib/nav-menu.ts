@@ -69,7 +69,13 @@ export type NavCard =
       surface?: "tint" | "muted";
     };
 
-export type NavPanel = { columns: NavColumn[]; cards?: NavCard[] };
+/** A link in a panel's bottom bar: a label, a stack of small marks before it
+ *  (image paths, or a built-in "chrome" / "phone" glyph), and an outbound arrow. */
+export type NavBarLink = { label: string; href?: string; marks: string[] };
+/** A full-width strip along the foot of a panel (Platform: where else Imagine runs). */
+export type NavBar = { title: string; links: NavBarLink[] };
+
+export type NavPanel = { columns: NavColumn[]; cards?: NavCard[]; bar?: NavBar };
 
 export type NavEntry = { label: string; href?: string; panel?: NavPanel };
 
@@ -100,14 +106,6 @@ export const NAV: NavEntry[] = [
               items: [
                 { title: "Creative Agent", description: "An agent that plans and creates", href: `${IA}/imagine-computer` },
                 { title: "Workflows", description: "Repeatable model pipelines", href: `${IA}/business/workflows` },
-                {
-                  title: "Integrations",
-                  description: "Imagine inside your tools",
-                  links: [
-                    { label: "MCP", href: `${IA}/mcp` },
-                    { label: "Plugins", href: `${IA}/plugins` },
-                  ],
-                },
               ],
             },
           ],
@@ -126,6 +124,16 @@ export const NAV: NavEntry[] = [
           ],
         },
       ],
+      // Integrations moved out of the Build column into this bar (Hamza, 8 Oct).
+      bar: {
+        title: "Use ImagineArt everywhere you create",
+        links: [
+          { label: "MCP", href: `${IA}/mcp`, marks: ["/media/mcp/clients/claude.svg", "/media/mcp/clients/chatgpt.svg"] },
+          { label: "Plugins", href: `${IA}/plugins`, marks: ["/media/plugins/aftereffects.svg", "/media/plugins/figma.svg"] },
+          { label: "Extensions", marks: ["chrome"] }, // TODO: Chrome extension URL
+          { label: "Mobile", href: "https://apps.apple.com/us/app/imagineart-ai-video-generator/id1664121419", marks: ["phone"] },
+        ],
+      },
       cards: [
         {
           kind: "card",

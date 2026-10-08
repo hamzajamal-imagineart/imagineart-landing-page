@@ -11,6 +11,7 @@ import {
   NAV_SIGN_IN,
   type NavCard,
   type NavGroup,
+  type NavBar,
   type NavItem,
   type NavPanel,
 } from "@/lib/nav-menu";
@@ -25,10 +26,12 @@ const linkTarget = (href: string) =>
 
 /* ─── Icons ─────────────────────────────────────────────────── */
 
-function Chevron({ size = 16, className }: { size?: number; className?: string }) {
+/** Every link in the menus ends in the bar's outbound arrow (Hamza, 8 Oct;
+ *  it was a chevron on items and a right arrow on plain links). */
+function Chevron({ size = 13, className }: { size?: number; className?: string }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 16 16" fill="none" className={className} aria-hidden>
-      <path d="M6 3.5l4.2 4.1a.55.55 0 010 .8L6 12.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={className} aria-hidden>
+      <path d="M7 17L17 7M8 7h9v9" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
@@ -42,11 +45,7 @@ function ChevronDown({ className }: { className?: string }) {
 }
 
 function ArrowRight() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden>
-      <path d="M11 7H2.5M8.25 10.5L11 7.4c.4-.4.4-.4 0-.8L8.25 3.5" stroke="currentColor" strokeLinecap="round" />
-    </svg>
-  );
+  return <Chevron size={12} />;
 }
 
 function ArrowUpRight() {
@@ -179,17 +178,90 @@ function Card({ card, onNavigate }: { card: NavCard; onNavigate: () => void }) {
   );
 }
 
+/* ─── Panel bar: "Use ImagineArt everywhere you create" ───────── */
+
+function BarMark({ mark }: { mark: string }) {
+  if (mark === "chrome") {
+    return (
+      <span className="mm-bar-mark">
+        <svg viewBox="0 0 24 24" width="100%" height="100%" aria-hidden>
+          <circle cx="12" cy="12" r="11" fill="#DB4437" />
+          <path d="M12 12 L21.53 6.5 A11 11 0 0 1 12 23 Z" fill="#FFCD40" />
+          <path d="M12 12 L12 23 A11 11 0 0 1 2.47 6.5 Z" fill="#0F9D58" />
+          <circle cx="12" cy="12" r="5" fill="#fff" />
+          <circle cx="12" cy="12" r="3.9" fill="#4285F4" />
+        </svg>
+      </span>
+    );
+  }
+  if (mark === "phone") {
+    return (
+      <span className="mm-bar-glyph" aria-hidden>
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none"><rect x="6.5" y="2.5" width="11" height="19" rx="2.5" stroke="currentColor" strokeWidth="1.6" /><path d="M10.5 18.5h3" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" /></svg>
+      </span>
+    );
+  }
+  // eslint-disable-next-line @next/next/no-img-element
+  return <span className="mm-bar-mark"><img src={withBasePath(mark)} alt="" /></span>;
+}
+
+/** The bar's light reflection: seconds per cycle, and the share (%) of it
+ *  spent sweeping across; the rest is a pause before the next pass. */
+const GLINT_S = 5, SWEEP = 55;
+/** The bar's height; its outline's corner radius is half of it. */
+const BAR_H = 44;
+
+function OutArrow() {
+  return (
+    <svg className="mm-bar-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path d="M7 17L17 7M8 7h9v9" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function PanelBar({ bar, onNavigate }: { bar: NavBar; onNavigate: () => void }) {
+  return (
+    <div className="mm-bar">
+      <span className="mm-bar-title">{bar.title}</span>
+      <div className="mm-bar-links">
+        {bar.links.map((l) => {
+          const inner = (
+            <>
+              <span className="mm-bar-marks">{l.marks.map((m) => <BarMark key={m} mark={m} />)}</span>
+              {l.label}
+              {l.href && <OutArrow />}
+            </>
+          );
+          return l.href ? (
+            <a key={l.label} href={l.href} className="mm-bar-link" onClick={onNavigate} {...linkTarget(l.href)}>{inner}</a>
+          ) : (
+            <span key={l.label} className="mm-bar-link mm-bar-link-off">{inner}</span>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 function Panel({ panel, onNavigate }: { panel: NavPanel; onNavigate: () => void }) {
+  const cols = panel.columns.map((col, i) => (
+    <div
+      key={i}
+      className={`mm-col${col.width === "narrow" ? " mm-col-narrow" : ""}${col.divider ? " mm-col-divider" : ""}`}
+    >
+      {col.groups.map((g, j) => <Group key={j} group={g} onNavigate={onNavigate} />)}
+    </div>
+  ));
   return (
     <>
-      {panel.columns.map((col, i) => (
-        <div
-          key={i}
-          className={`mm-col${col.width === "narrow" ? " mm-col-narrow" : ""}${col.divider ? " mm-col-divider" : ""}`}
-        >
-          {col.groups.map((g, j) => <Group key={j} group={g} onNavigate={onNavigate} />)}
+      {/* With a bar, the columns and the bar stack in one block left of the
+          cards, so the bar runs under the columns only (Hamza, 8 Oct). */}
+      {panel.bar ? (
+        <div className="mm-main">
+          <div className="mm-cols">{cols}</div>
+          <PanelBar bar={panel.bar} onNavigate={onNavigate} />
         </div>
-      ))}
+      ) : cols}
       {panel.cards && (
         <div className="mm-cards">
           {panel.cards.map((c, i) => <Card key={i} card={c} onNavigate={onNavigate} />)}
@@ -377,7 +449,7 @@ export function SiteNav({
              frosted by .mm-panel's backdrop filter. --mm-solid is for the
              full-screen mobile sheet, which needs to cover the page. */
           --mm-surface: rgba(255,255,255,0.9); --mm-solid: #ffffff; --mm-border: rgba(255,255,255,0.6); --mm-divider: rgba(0,0,0,0.08);
-          --mm-fg: #0f0f0f; --mm-muted: #757575; --mm-row: #3d3d3d; --mm-more: #3d3d3d;
+          --mm-bar-line: rgba(0,0,0,0.1); --mm-bar-glint: rgba(0,0,0,0.35); --mm-bar-sheen: rgba(0,0,0,0.03); --mm-fg: #0f0f0f; --mm-muted: #757575; --mm-row: #3d3d3d; --mm-more: #3d3d3d;
           --mm-hover: rgba(0,0,0,0.06); --mm-accent-soft: rgba(23,23,23,0.07); --mm-tint-surface: rgba(0,0,0,0.035);
           --mm-badge-muted-bg: #dbdbdb; --mm-badge-muted-fg: #3d3d3d;
           --mm-cta-bg: #171717; --mm-cta-fg: #ffffff; --mm-cta-glow: rgba(11,11,12,0.08);
@@ -386,7 +458,7 @@ export function SiteNav({
         }
         .mm-scope[data-menu-theme="dark"] {
           --mm-surface: rgba(20,20,22,0.9); --mm-solid: #141416; --mm-border: rgba(255,255,255,0.1); --mm-divider: rgba(255,255,255,0.1);
-          --mm-fg: #f5f5f5; --mm-muted: rgba(255,255,255,0.55); --mm-row: rgba(255,255,255,0.85); --mm-more: rgba(255,255,255,0.75);
+          --mm-bar-line: rgba(255,255,255,0.1); --mm-bar-glint: rgba(255,255,255,0.85); --mm-bar-sheen: rgba(255,255,255,0.05); --mm-fg: #f5f5f5; --mm-muted: rgba(255,255,255,0.55); --mm-row: rgba(255,255,255,0.85); --mm-more: rgba(255,255,255,0.75);
           --mm-hover: rgba(255,255,255,0.08); --mm-accent-soft: rgba(255,255,255,0.1); --mm-tint-surface: rgba(255,255,255,0.06);
           --mm-badge-muted-bg: rgba(255,255,255,0.12); --mm-badge-muted-fg: rgba(255,255,255,0.7);
           --mm-cta-bg: #ffffff; --mm-cta-fg: #0a0a0b; --mm-cta-glow: rgba(255,255,255,0.1);
@@ -434,6 +506,53 @@ export function SiteNav({
         .mm-panel .mm-desc { font-size: 12px; line-height: 17px; max-width: none; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .mm-panel .mm-sublinks { margin-top: 4px; }
         .mm-panel .mm-sublink, .mm-panel .mm-link { font-size: 13px; }
+        /* Bottom bar (Hamza, 8 Oct): a pill along the panel's foot with a
+           glint on its top edge, the title left and outbound links right,
+           each led by a small stack of marks. */
+        .mm-main { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; justify-content: space-between; gap: 24px; }
+        .mm-cols { display: flex; }
+        .mm-bar { position: relative; height: ${BAR_H}px; box-sizing: border-box; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 0 8px 0 18px; border-radius: 999px; border: 1px solid var(--mm-bar-line); }
+        /* A light reflection across the outline (Hamza, 8 Oct): a soft diagonal
+           band of light on a ring the width of the border, swept left to
+           right with an ease, then a rest before the next pass, like light
+           catching a glass edge. Background-position only, no layout. */
+        .mm-bar::before {
+          content: ""; position: absolute; inset: -1px; border-radius: inherit; padding: 1px; pointer-events: none;
+          background: linear-gradient(110deg, transparent 0%, transparent 42%, var(--mm-bar-glint) 50%, transparent 58%, transparent 100%) no-repeat;
+          background-size: 250% 100%;
+          -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor;
+          mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+          animation: mmSheen ${GLINT_S}s cubic-bezier(.45, 0, .25, 1) infinite;
+        }
+        /* The same light, fainter, across the bar's face. */
+        .mm-bar::after {
+          content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+          background: linear-gradient(110deg, transparent 0%, transparent 44%, var(--mm-bar-sheen) 50%, transparent 56%, transparent 100%) no-repeat;
+          background-size: 250% 100%;
+          animation: mmSheen ${GLINT_S}s cubic-bezier(.45, 0, .25, 1) infinite;
+        }
+        @keyframes mmSheen {
+          0% { background-position: 100% 0; opacity: 0; }
+          8% { opacity: 1; }
+          ${SWEEP - 8}% { opacity: 1; }
+          ${SWEEP}% { background-position: 0% 0; opacity: 0; }
+          100% { background-position: 0% 0; opacity: 0; }
+        }
+        @media (prefers-reduced-motion: reduce) { .mm-bar::before, .mm-bar::after { animation: none; opacity: 0; } }
+        .mm-bar-title { font-size: 13px; font-weight: 500; letter-spacing: 0.01em; color: var(--mm-fg); white-space: nowrap; }
+        .mm-bar-links { display: flex; align-items: center; }
+        .mm-bar-link { display: inline-flex; align-items: center; gap: 7px; padding: 4px 12px; font-size: 13px; font-weight: 500; letter-spacing: 0.01em; color: var(--mm-muted); text-decoration: none; white-space: nowrap; border-radius: 999px; transition: color 0.2s, background 0.2s; }
+        .mm-bar-link + .mm-bar-link { box-shadow: -1px 0 0 0 var(--mm-bar-line); border-top-left-radius: 0; border-bottom-left-radius: 0; }
+        a.mm-bar-link:hover, a.mm-bar-link:focus-visible { color: var(--mm-fg); outline: none; }
+        a.mm-bar-link:hover .mm-bar-arrow { transform: translate(2px, -2px); }
+        .mm-bar-link-off { opacity: 0.7; }
+        .mm-bar-arrow { flex: none; transition: transform 0.2s; }
+        .mm-bar-marks { display: inline-flex; }
+        .mm-bar-mark { width: 22px; height: 22px; border-radius: 50%; overflow: hidden; display: grid; place-items: center; background: #fff; box-shadow: 0 0 0 2px var(--mm-solid); }
+        .mm-bar-mark + .mm-bar-mark { margin-left: -7px; }
+        .mm-bar-mark img { width: 64%; height: 64%; object-fit: contain; display: block; }
+        .mm-bar-glyph { display: inline-grid; place-items: center; width: 18px; height: 22px; color: var(--mm-muted); }
+        @media (max-width: 1240px) { .mm-bar-title { display: none; } .mm-bar { justify-content: center; } }
         .mm-panel .mm-cards { margin-left: auto; padding-left: 32px; flex: none; }
 
         .mm-panel-single .mm-col, .mm-panel-single .mm-col + .mm-col { width: auto; flex: 1; }
@@ -730,6 +849,12 @@ export function SiteNav({
                       {entry.panel.columns.flatMap((col) => col.groups).map((g, i) => (
                         <Group key={i} group={g} onNavigate={closeAll} />
                       ))}
+                      {entry.panel.bar && (
+                        <Group
+                          group={{ heading: "Everywhere you create", links: entry.panel.bar.links.filter((l) => l.href).map((l) => ({ label: l.label, href: l.href! })) }}
+                          onNavigate={closeAll}
+                        />
+                      )}
                     </div>
                   )}
                 </Fragment>
