@@ -1,6 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 import { withBasePath } from "@/lib/assets";
 import { SectionGuides } from "@/components/primitives/SectionGuides";
+import { SectionGlow, sectionGlowCss } from "@/components/primitives/SectionGlow";
 
 /**
  * "Trusted by": the customer marks in a still grid (Hamza, 7 Oct), seven
@@ -29,6 +30,8 @@ export function Partners() {
           closed at both ends, since the platform strip below has no guides,
           and pulled in off the hero's foot. */}
       <SectionGuides edge="both" insetTop={56} />
+      {/* The same pool of light as behind Models (Hamza, 8 Oct), centred on the logos. */}
+      <SectionGlow position="50% 25%" />
       <div className="container-page">
         <p className="pt-cap">Trusted by the brands you benchmark against</p>
         {/* A still grid (Hamza, 7 Oct): no marquee. */}
@@ -42,7 +45,9 @@ export function Partners() {
       </div>
 
       <style>{`
+        ${sectionGlowCss}
         .pt-section { isolation: isolate; }
+        .pt-section .sg { opacity: 0.6; } /* softer than Models' (Hamza, 8 Oct) */
         .pt-cap { text-align: center; font-size: 13px; line-height: 1.5; color: var(--ink-3); }
         .pt-grid {
           list-style: none;
