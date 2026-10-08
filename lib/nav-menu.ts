@@ -85,9 +85,10 @@ export const NAV: NavEntry[] = [
             {
               heading: "Create",
               items: [
-                { title: "AI Image Generator", description: "Images from text, top models", href: `${IA}/ai-image-generator` },
-                { title: "AI Video Generator", description: "Prompts and images into video", href: `${IA}/ai-video-generator` },
-                { title: "AI Tools", description: "Edit, upscale and add effects", badge: "Soon" }, // TODO: link when the page is live
+                { title: "Image", description: "Images from text, top models", href: `${IA}/ai-image-generator` },
+                { title: "Video", description: "Prompts and images into video", href: `${IA}/ai-video-generator` },
+                { title: "Music", description: "Songs and tracks from a prompt", href: `${IA}/audio/music/elevenlabs-music?filter-assets=audio` },
+                { title: "AI Tools", badge: "Soon" }, // TODO: link when the page is live
               ],
             },
           ],

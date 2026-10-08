@@ -453,7 +453,7 @@ export function SiteNav({
         .mm-item:hover, .mm-item:focus-visible { background: var(--mm-hover); }
         .mm-item-title { display: flex; align-items: center; gap: 8px; font-size: 16px; line-height: 24px; font-weight: 600; color: var(--mm-fg); }
         .mm-item-title .mm-badge { margin-left: 4px; }
-        .mm-chev { color: var(--mm-fg); opacity: 0; transform: translateX(-4px); transition: opacity 0.2s, transform 0.2s; flex-shrink: 0; }
+        .mm-chev { margin-left: auto; color: var(--mm-fg); opacity: 0; transform: translateX(-4px); transition: opacity 0.2s, transform 0.2s; flex-shrink: 0; }
         .mm-item:hover .mm-chev, .mm-item:focus-visible .mm-chev { opacity: 1; transform: none; }
         .mm-item-static:hover { background: transparent; }
         .mm-item-soon { cursor: default; }
@@ -483,7 +483,7 @@ export function SiteNav({
         /* Cards drop out before the panel can outgrow a narrow desktop window. */
         @media (max-width: 1180px) { .mm-cards { display: none; } }
 
-        .mm-card { width: 220px; display: flex; flex-direction: column; gap: 10px; padding: 12px; box-sizing: border-box; border: 0; border-radius: 16px; background: var(--mm-tint-surface); overflow: hidden; } /* no border: a faint shade sets it off (8 Oct) */
+        .mm-card { align-self: flex-start; width: 220px; display: flex; flex-direction: column; gap: 10px; padding: 12px; box-sizing: border-box; border: 0; border-radius: 16px; background: var(--mm-tint-surface); overflow: hidden; } /* no border: a faint shade sets it off (8 Oct) */
         .mm-card-tint { background: var(--mm-tint-surface); }
         .mm-card-muted { background: var(--mm-tint-surface); }
         .mm-card-copy { display: flex; flex-direction: column; gap: 4px; }
