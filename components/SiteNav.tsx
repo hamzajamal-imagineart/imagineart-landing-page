@@ -342,6 +342,11 @@ export function SiteNav({
     <>
       <style>{`
         .nav-tab { display: inline-flex; align-items: center; height: 36px; padding: 6px 12px; border: none; border-radius: 10px; background: transparent; cursor: pointer; text-decoration: none; white-space: nowrap; font-family: ${FONT}; font-size: 15.5px; font-weight: 500; line-height: 20px; letter-spacing: 0.01em; color: var(--nav-fg); transition: color 0.25s, background 0.25s; }
+        /* A small soft chevron on the tabs that open a menu (Hamza, 8 Oct);
+           it turns over while the menu is open. */
+        .nav-chev { margin-left: 5px; opacity: 0.6; transition: transform 0.25s ${NAV_EASE}, opacity 0.25s; }
+        .nav-tab:hover .nav-chev, .nav-tab[aria-expanded="true"] .nav-chev { opacity: 1; }
+        .nav-tab[aria-expanded="true"] .nav-chev { transform: rotate(180deg); }
         .nav-tab:hover, .nav-tab:focus-visible, .nav-tab[aria-expanded="true"] { color: var(--nav-fg-hover); background: var(--nav-tab-hover); outline: none; }
 
         .nav-signin { font-family: ${FONT}; font-size: 15.5px; font-weight: 500; color: var(--nav-fg-hover); text-decoration: none; padding: 6px 10px; border-radius: 10px; white-space: nowrap; transition: color 0.3s, background 0.25s; }
@@ -597,6 +602,9 @@ export function SiteNav({
                 }}
               >
                 {entry.label}
+                <svg className="nav-chev" width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden>
+                  <path d="M2.5 3.75 5 6.25l2.5-2.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
               </button>
             ) : (
               <a key={entry.label} href={entry.href} className="nav-tab" onPointerEnter={hoverClose} onClick={closeAll} {...linkTarget(entry.href!)}>
