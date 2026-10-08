@@ -28,7 +28,7 @@ const MCP_ICONS = "https://cdn-imagine.vyro.ai/imagine-one/imagine-mcp/clients/i
 const BANNER_FOR = (id: string, name: string): { title: string; serif: string; line: [string, string] } =>
   id === "chatgpt"
     ? { title: "GPT-6", serif: "ASTRA", line: ["Build games, motion graphics, & interactive 3D", "experiences with Imagine MCP."] }
-    : { title: name, serif: "× IMAGINE", line: [`Generate images, video and music`, `from ${name} with Imagine MCP.`] };
+    : { title: name, serif: "", line: [`Generate images, video and music`, `from ${name} with Imagine MCP.`] };
 
 export function AstraBanner() {
   // The pick in the head drives the banner's button.
@@ -80,7 +80,7 @@ export function AstraBanner() {
             )}
             <h2>
               <span className="astra-gpt">{copy.title}</span>
-              <span className="astra-serif">{copy.serif}</span>
+              {copy.serif && <span className="astra-serif">{copy.serif}</span>}
             </h2>
           </div>
           <p className="astra-line">
