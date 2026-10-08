@@ -685,7 +685,7 @@ export function PlatformStrip() {
           margin-top: 40px;
           overflow: hidden;
           border-radius: var(--radius-5);
-          border: 1px solid var(--line);
+          border: 1px solid color-mix(in srgb, var(--ink-heading) 5%, transparent); /* softer than --line, so it doesn't cut a hard edge on the wash (8 Oct) */
         }
 
         .pf-panel { padding: 0; }
