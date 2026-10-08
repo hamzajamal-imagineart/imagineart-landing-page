@@ -46,6 +46,11 @@ export function ClosingCta() {
           background-position: 62% center;
           background-repeat: no-repeat;
           isolation: isolate;
+          /* Feathered top and bottom (Hamza, 8 Oct) so the picture rises out
+             of the page and sinks back into it instead of ending on a line. */
+          /* Eased stops rather than a straight ramp, so the fade has no visible start line. */
+          -webkit-mask-image: linear-gradient(180deg, transparent 0%, rgb(0 0 0 / .04) 5%, rgb(0 0 0 / .12) 10%, rgb(0 0 0 / .25) 15%, rgb(0 0 0 / .42) 20%, rgb(0 0 0 / .6) 25%, rgb(0 0 0 / .76) 30%, rgb(0 0 0 / .89) 35%, rgb(0 0 0 / .97) 40%, #000 44%, #000 56%, rgb(0 0 0 / .97) 60%, rgb(0 0 0 / .89) 65%, rgb(0 0 0 / .76) 70%, rgb(0 0 0 / .6) 75%, rgb(0 0 0 / .42) 80%, rgb(0 0 0 / .25) 85%, rgb(0 0 0 / .12) 90%, rgb(0 0 0 / .04) 95%, transparent 100%);
+          mask-image: linear-gradient(180deg, transparent 0%, rgb(0 0 0 / .04) 5%, rgb(0 0 0 / .12) 10%, rgb(0 0 0 / .25) 15%, rgb(0 0 0 / .42) 20%, rgb(0 0 0 / .6) 25%, rgb(0 0 0 / .76) 30%, rgb(0 0 0 / .89) 35%, rgb(0 0 0 / .97) 40%, #000 44%, #000 56%, rgb(0 0 0 / .97) 60%, rgb(0 0 0 / .89) 65%, rgb(0 0 0 / .76) 70%, rgb(0 0 0 / .6) 75%, rgb(0 0 0 / .42) 80%, rgb(0 0 0 / .25) 85%, rgb(0 0 0 / .12) 90%, rgb(0 0 0 / .04) 95%, transparent 100%);
         }
         /* Scrim in from the left only, so the picture stays legible on the
            right rather than being flattened under an even wash. */
@@ -56,6 +61,8 @@ export function ClosingCta() {
           z-index: 1;
           pointer-events: none;
           background:
+            /* An even wash of the page colour over the whole picture (Hamza, 8 Oct): the image reads at about 55%. */
+            linear-gradient(color-mix(in srgb, var(--page-bg) 45%, transparent), color-mix(in srgb, var(--page-bg) 45%, transparent)),
             linear-gradient(to right, rgb(var(--glass-rgb) / 0.86) 0%, rgb(var(--glass-rgb) / 0.62) 32%, rgb(var(--glass-rgb) / 0.1) 60%, transparent 80%),
             linear-gradient(to top, rgb(var(--glass-rgb) / 0.32), transparent 55%);
         }

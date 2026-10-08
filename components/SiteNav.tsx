@@ -351,7 +351,7 @@ export function SiteNav({
 
         .nav-signin { font-family: ${FONT}; font-size: 15.5px; font-weight: 500; color: var(--nav-fg-hover); text-decoration: none; padding: 6px 10px; border-radius: 10px; white-space: nowrap; transition: color 0.3s, background 0.25s; }
         .nav-signin:hover { background: var(--nav-tab-hover); }
-        .nav-cta { font-family: ${FONT}; font-weight: 500; color: var(--nav-cta-fg); background: var(--nav-cta-bg); border: none; border-radius: 10px; cursor: pointer; letter-spacing: 0.02em; white-space: nowrap; transition: box-shadow 0.2s, transform 0.2s, background 0.3s, color 0.3s; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; box-sizing: border-box; }
+        .nav-cta { font-family: ${FONT}; font-weight: 500; color: var(--nav-cta-fg); background: var(--nav-cta-bg); border: none; border-radius: 999px; cursor: pointer; letter-spacing: 0.02em; white-space: nowrap; transition: box-shadow 0.2s, transform 0.2s, background 0.3s, color 0.3s; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; box-sizing: border-box; }
         .nav-cta:hover { box-shadow: 0 0 0 6px var(--nav-cta-glow); transform: scale(1.02); }
 
         .nav-desktop { display: flex; }
@@ -489,7 +489,7 @@ export function SiteNav({
         .mm-card-copy { display: flex; flex-direction: column; gap: 4px; }
         .mm-card-title { margin: 0; display: flex; align-items: center; gap: 10px; font-size: 17px; line-height: 24px; font-weight: 500; color: var(--mm-fg); }
         .mm-card-body { margin: 0; font-size: 13px; line-height: 18px; font-weight: 400; letter-spacing: 0.01em; color: var(--mm-muted); }
-        .mm-card-cta { align-self: flex-start; display: inline-flex; align-items: center; height: 32px; padding: 6px 10px; box-sizing: border-box; border-radius: 10px; background: var(--mm-cta-bg); color: var(--mm-cta-fg); font-size: 14px; font-weight: 500; letter-spacing: 0.02em; text-decoration: none; transition: box-shadow 0.2s; }
+        .mm-card-cta { align-self: flex-start; display: inline-flex; align-items: center; height: 32px; padding: 6px 14px; box-sizing: border-box; border-radius: 999px; background: var(--mm-cta-bg); color: var(--mm-cta-fg); font-size: 14px; font-weight: 500; letter-spacing: 0.02em; text-decoration: none; transition: box-shadow 0.2s; }
         .mm-card-cta:hover { box-shadow: 0 0 0 5px var(--mm-cta-glow); }
 
         .mm-media-image { aspect-ratio: 243 / 186; border-radius: 12px; overflow: hidden; }
@@ -743,7 +743,7 @@ export function SiteNav({
               onClick={closeAll}
               style={{
                 display: "inline-flex", alignItems: "center", height: 48, padding: "12px 16px", boxSizing: "border-box",
-                borderRadius: 14, background: "var(--mm-cta-bg)", color: "var(--mm-cta-fg)", fontSize: 14, fontWeight: 500,
+                borderRadius: 999, background: "var(--mm-cta-bg)", color: "var(--mm-cta-fg)", fontSize: 14, fontWeight: 500,
                 letterSpacing: "0.02em", textDecoration: "none",
               }}
             >

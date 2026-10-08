@@ -112,7 +112,7 @@ export function Outcomes() {
           gap: 8px;
           height: 50px;
           padding: 0 24px;
-          border-radius: var(--radius-2);
+          border-radius: var(--radius-pill); /* every CTA a pill (8 Oct) */
           background: var(--ink-heading);
           color: var(--page-bg);
           font-size: 16px;

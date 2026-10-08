@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { DEMO_HREF, START_HREF } from "@/lib/links";
 import { PlatformStrip } from "@/components/sections/Platform";
+import { HeroOrbit } from "@/components/sections/HeroOrbit";
 import { Wash } from "@/components/Wash";
 import { HeroDrift } from "@/components/sections/HeroDrift";
 import { HeroGlobe, MORPH_IMAGES, type GlobeShape } from "@/components/sections/HeroGlobe";
@@ -42,9 +43,10 @@ const CTA_GLOW_W = 140, CTA_GLOW_H = 220, CTA_GLOW_ALPHA = 0.35;
  *  `light` (Hamza, 7 Oct, /hero-2): the same hero on the light page, with
  *  ink dots, ink type, a white block behind the copy and tiles that fade to
  *  white rather than black. */
-export function HeroGlobeSection({ light = false, shape = "globe", parted = false, morph = false, alwaysOpen = false, drift = false, beforeStrip }: { light?: boolean; shape?: GlobeShape; parted?: boolean; morph?: boolean; alwaysOpen?: boolean; drift?: boolean; /** Rendered between the hero and the platform strip (the home page puts the customer logos here, 8 Oct). */ beforeStrip?: ReactNode } = {}) {
+export function HeroGlobeSection({ light = false, shape = "globe", parted = false, morph = false, alwaysOpen = false, drift = false, orbit = false, beforeStrip }: { light?: boolean; shape?: GlobeShape; parted?: boolean; morph?: boolean; alwaysOpen?: boolean; drift?: boolean; /** The orbit hero from the "Controllable content" page (HeroOrbit) in place of this one (8 Oct). */ orbit?: boolean; /** Rendered between the hero and the platform strip (the home page puts the customer logos here, 8 Oct). */ beforeStrip?: ReactNode } = {}) {
   return (
     <>
+      {orbit ? <HeroOrbit /> : (
       <section id="top" className={`hc${light ? " hc-light" : ""}`} data-theme={light ? undefined : "dark"}>
         {/* Dots off for now (Hamza, 8 Oct). <HeroDots className="hs-dots"
             field /> brings back the field behind the globe (import it from
@@ -84,6 +86,7 @@ export function HeroGlobeSection({ light = false, shape = "globe", parted = fals
           </div>
         </div>
       </section>
+      )}
 
       {beforeStrip}
 
@@ -222,7 +225,7 @@ export function HeroGlobeSection({ light = false, shape = "globe", parted = fals
           display: inline-flex; align-items: center;
           height: 52px;
           padding: 0 26px;
-          border-radius: calc(21px * var(--corner));
+          border-radius: var(--radius-pill);
           font-size: 16px; font-weight: 500; letter-spacing: -0.005em; white-space: nowrap;
           color: var(--ink-heading);
           background: color-mix(in srgb, var(--ink-heading) 8%, transparent);
@@ -239,7 +242,7 @@ export function HeroGlobeSection({ light = false, shape = "globe", parted = fals
           gap: 11px;
           height: 52px;
           padding: 0 28px 4px;
-          border-radius: calc(21px * var(--corner));
+          border-radius: var(--radius-pill);
           font-size: 16px;
           font-weight: 500;
           letter-spacing: -0.005em;

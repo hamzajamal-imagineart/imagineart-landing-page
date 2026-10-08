@@ -5,8 +5,10 @@ import { PageTint } from "@/components/PageTint";
 import { HeroGlobeSection } from "@/components/sections/HeroGlobeSection";
 
 /**
- * /hero-2 (Hamza, 7 Oct): the home page's globe hero in light mode, with the
- * platform strip it carries. Parked for comparison; not indexed.
+ * /hero-2 (Hamza, 8 Oct): the drift fly-through, the home hero until the
+ * orbit hero took its place, with the platform strip it carries. Stills
+ * grow out of a ring around the copy and play their clip on hover. Not
+ * indexed. (The light globe that was here before is `<HeroGlobeSection light />`.)
  */
 export const metadata: Metadata = {
   title: "Hero 2 — ImagineArt",
@@ -17,9 +19,9 @@ export default function HeroTwoPage() {
   return (
     <>
       <PageTint palette="neutral" />
-      <SiteNav variant="onLight" theme="light" />
+      <SiteNav variant="onDark" theme="light" />
       <main>
-        <HeroGlobeSection light />
+        <HeroGlobeSection drift />
       </main>
       <SiteFooter />
     </>

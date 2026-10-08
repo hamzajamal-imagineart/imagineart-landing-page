@@ -47,7 +47,7 @@ function CardMedia({ src }: { src: string }) {
 
 export function Models() {
   return (
-    <section id="models" className="relative border-t border-[color:var(--line)] py-24 md:py-32">
+    <section id="models" className="relative py-24 md:py-32" /* no rule: the glow dissolves across the seam (8 Oct) */>
       <SectionGlow />
       <div className="container-page">
         <div className="mx-auto max-w-[680px] text-center">

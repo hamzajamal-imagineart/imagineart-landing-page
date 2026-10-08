@@ -39,7 +39,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     // The page ships dark. The light palette is still defined in globals.css
     // and still correct, so this attribute is the only thing to change back.
-    <html lang="en" className={`${googleSans.variable} ${heroFont.variable}`}>
+    <html lang="en" className={`${googleSans.variable} ${heroFont.variable}`} suppressHydrationWarning /* the home page sets data-theme inline before hydration */>
       <body>{children}</body>
     </html>
   );

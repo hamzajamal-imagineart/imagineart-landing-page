@@ -22,6 +22,8 @@ const PACE = 1.1;
 const FLAP_EVERY = 90, FLAP_DEPTH = 0.12;
 /** Up-and-down drift (px) and its period (px of scroll). */
 const BOB = 18, BOB_EVERY = 520;
+/** How solid the birds are (Hamza, 8 Oct: a bit softer). */
+const OPACITY = 0.55;
 
 type Bird = { src: string; size: number; y: number; speed: number; delay: number; phase: number };
 const B = (n: string) => `/media/birds/${n}.png`;
@@ -85,7 +87,7 @@ export function PaperBirds() {
         /* Behind the page (Hamza, 8 Oct): z -1 in the root stacking context paints over the page colour but under every section, so cards and copy cover the birds and they show in the gaps. */
         .pb { position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; }
         .pb-bird { position: absolute; left: 0; top: 0; visibility: hidden; will-change: transform; transform-origin: 50% 55%; }
-        .pb-bird img { width: 100%; height: 100%; object-fit: contain; display: block; filter: drop-shadow(0 10px 14px rgba(0, 0, 0, 0.12)); }
+        .pb-bird img { width: 100%; height: 100%; object-fit: contain; display: block; opacity: ${OPACITY}; filter: drop-shadow(0 10px 14px rgba(0, 0, 0, 0.12)); }
         @media (prefers-reduced-motion: reduce) { .pb { display: none; } }
       `}</style>
     </div>

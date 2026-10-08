@@ -19,11 +19,10 @@ const COLUMNS: { heading: string; links: FooterLink[] }[] = [
       { label: "Workflows", href: `${BASE}/business/workflows` },
       { label: "MCP", href: `${BASE}/mcp` },
       { label: "Plugins", href: `${BASE}/plugins` },
-      { label: "AI Creative Studios", soon: true }, // TODO: link when live
-      { label: "Audio Studio", href: `${BASE}/audio-studio`, indent: true },
-      { label: "Film Studio", href: `${BASE}/ai-film-studio`, indent: true },
-      { label: "Ad Studio", href: `${BASE}/ai-ad-studio`, indent: true },
-      { label: "Fashion Studio", href: `${BASE}/ai-fashion-studio`, indent: true },
+      { label: "Audio Studio", href: `${BASE}/audio-studio` },
+      { label: "Film Studio", href: `${BASE}/ai-film-studio` },
+      { label: "Ad Studio", href: `${BASE}/ai-ad-studio` },
+      { label: "Fashion Studio", href: `${BASE}/ai-fashion-studio` },
     ],
   },
   {
@@ -56,7 +55,7 @@ const COLUMNS: { heading: string; links: FooterLink[] }[] = [
     links: [
       { label: "Blog", href: `${BASE}/insights` },
       { label: "Announcements", href: `${BASE}/announcements` },
-      { label: "Imagine Academy", soon: true }, // TODO: link not provided yet
+      { label: "Imagine Academy", href: "https://academy.imagine.art/" },
       { label: "Help Docs", href: "https://docs.imagine.art/" },
       { label: "Case Studies", href: `${BASE}/business/case-studies` },
     ],
@@ -95,22 +94,22 @@ export function SiteFooter() {
 
   return (
     <footer className="bg-[#070707] border-t border-white/[0.06] overflow-x-hidden">
-      <div className="max-w-[1240px] mx-auto px-5 md:px-10 pt-10 md:pt-14 pb-8">
+      <div className="max-w-[1240px] mx-auto px-5 md:px-8 pt-10 md:pt-14 pb-8">
         <div className="flex flex-col md:flex-row items-start justify-between gap-8 flex-wrap">
 
           {/* Brand */}
-          <div className="flex flex-col w-full md:w-32 shrink-0 items-start justify-start gap-6 md:gap-8 flex-wrap">
+          <div className="flex flex-col w-full md:w-28 shrink-0 items-start justify-start gap-6 md:gap-8 flex-wrap">
             <img src={withBasePath("/media/footer/logo-icon.svg")} alt="ImagineArt" width={28} height={28} className="block" />
 
             <div className="flex flex-col gap-2">
-              <span className="text-[11px] font-semibold tracking-[0.5px] text-white/[0.38] mb-1">
+              <span className="text-[11px] font-semibold tracking-[0.5px] text-white/[0.38] mb-1 whitespace-nowrap">
                 Try Imagine Mobile
               </span>
               <a
                 href="https://apps.apple.com/us/app/imagineart-ai-video-generator/id1664121419"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-[7px] px-3 py-[7px] rounded-[9px] border border-white/10 text-white/60 text-[11.5px] font-semibold hover:border-white/[0.28] hover:text-white transition-colors"
+                className="inline-flex items-center gap-[7px] px-2.5 py-[7px] whitespace-nowrap rounded-[9px] border border-white/10 text-white/60 text-[11.5px] font-semibold hover:border-white/[0.28] hover:text-white transition-colors"
               >
                 <svg viewBox="0 0 24 24" fill="currentColor" className="w-3.5 h-3.5 shrink-0"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
                 App Store
@@ -119,7 +118,7 @@ export function SiteFooter() {
                 href="https://play.google.com/store/apps/details?id=com.vyroai.aiart&hl=en"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-[7px] px-3 py-[7px] rounded-[9px] border border-white/10 text-white/60 text-[11.5px] font-semibold hover:border-white/[0.28] hover:text-white transition-colors"
+                className="inline-flex items-center gap-[7px] px-2.5 py-[7px] whitespace-nowrap rounded-[9px] border border-white/10 text-white/60 text-[11.5px] font-semibold hover:border-white/[0.28] hover:text-white transition-colors"
               >
                 <svg viewBox="0 0 24 24" fill="currentColor" className="w-3.5 h-3.5 shrink-0"><path d="M3.18 23.75c.33.18.7.26 1.08.22l13.12-7.57-2.82-2.82-11.38 10.17zM.75 1.13C.28 1.63 0 2.39 0 3.36v17.28c0 .97.28 1.73.76 2.22l.12.11 9.68-9.68v-.23L.87 3.02.75 1.13zM20.9 9.61l-2.8-1.62-3.15 3.14 3.15 3.15 2.81-1.62c.8-.46.8-1.21 0-1.67v.62zM4.26.25L17.38 7.82l-2.82 2.82L3.18.47A1.39 1.39 0 014.26.25z"/></svg>
                 Google Play
@@ -128,9 +127,12 @@ export function SiteFooter() {
           </div>
 
           {/* Link columns */}
-          {/* Tracks are content-sized (auto) rather than equal (1fr) so labels
-              like "Background Remover" stay on one line. */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-[repeat(4,auto)] xl:grid-cols-[repeat(7,auto)] justify-between gap-x-6 gap-y-10 flex-1 min-w-0">
+          {/* Equal tracks (Hamza, 8 Oct: the content-sized ones made every
+              column a different width). The brand column narrowed to 112px
+              and the gutter to 16px so the longest label, "Background
+              Remover", still fits on one line in seven; a "Soon" tag drops
+              under its label when it doesn't. */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-x-4 gap-y-10 flex-1 min-w-0">
             {COLUMNS.map((col) => (
               <div key={col.heading}>
                 <span className="block text-[11px] font-semibold tracking-[0.5px] text-white/[0.38] mb-5">
@@ -148,7 +150,7 @@ export function SiteFooter() {
                           {l.label}
                         </a>
                       ) : (
-                        <span className="inline-flex items-center gap-1.5 text-[13px] leading-[1.4] text-white/30">
+                        <span className="inline-flex flex-wrap items-center gap-x-1.5 gap-y-1 text-[13px] leading-[1.4] text-white/30">
                           {l.label}
                           {l.soon && (
                             <span className="text-[10px] leading-none font-medium px-1.5 py-[3px] rounded-[5px] bg-white/[0.08] text-white/45">
@@ -168,12 +170,12 @@ export function SiteFooter() {
       </div>
 
       {/* Big watermark */}
-      <div className="max-w-[1240px] mx-auto text-center select-none pointer-events-none px-5 md:px-10 pt-4 leading-[0]">
+      <div className="max-w-[1240px] mx-auto text-center select-none pointer-events-none px-5 md:px-8 pt-4 leading-[0]">
         <img src={withBasePath("/media/footer/watermark.svg")} alt="" aria-hidden="true" className="w-full max-w-[1240px] h-auto inline-block" />
       </div>
 
       {/* Bottom bar */}
-      <div className="max-w-[1240px] mx-auto px-5 md:px-10 pb-6 md:pb-8">
+      <div className="max-w-[1240px] mx-auto px-5 md:px-8 pb-6 md:pb-8">
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 pt-5 pb-2 border-t border-white/[0.06] flex-wrap">
           <div className="flex items-center gap-0.5 flex-wrap">
             <span className="text-[12px] text-white/25">

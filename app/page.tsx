@@ -8,6 +8,7 @@ import { FAQSection } from "@/components/FAQSection";
 import { ReviewsSection } from "@/components/ReviewsSection";
 
 import { HeroGlobeSection } from "@/components/sections/HeroGlobeSection";
+import { ModelMarquee } from "@/components/sections/ModelMarquee";
 import { Partners } from "@/components/sections/Partners";
 import { Suite } from "@/components/sections/Suite";
 import { Outcomes } from "@/components/sections/Outcomes";
@@ -57,10 +58,10 @@ export default function Page() {
       <SiteNav variant="onDark" theme="dark" />
 
       <main>
-        {/* Drift (Hamza, 8 Oct): flying through space, stills grow out of
-            a ring around the copy. The corridor that ran here before is
-            parked at /hero-9, the always-open globe at /hero-8. */}
-        <HeroGlobeSection drift />
+        {/* Orbit hero (Hamza, 8 Oct), from the "Controllable content at
+            scale" page. The drift fly-through that ran here is parked at
+            /hero-2, the corridor at /hero-9. */}
+        <HeroGlobeSection orbit beforeStrip={<ModelMarquee />} />
         {/* Logos back under the platform strip (Hamza, 8 Oct). */}
         <Partners />
         <Suite />

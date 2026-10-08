@@ -478,12 +478,39 @@ function McpGlyph() {
   );
 }
 
+/** Scroll-in scale of the panel: starting size, and how far up the screen (share of its height) its top is when it reaches full size. */
+const FRAME_FROM = 0.82, FRAME_DONE = 0.3;
+
 export function PlatformStrip() {
   const [tab, setTab] = useState(0);
   /** Which side of the Integrations tab is showing. */
   const [via, setVia] = useState<"mcp" | "plugins">("mcp");
   const tabs = useSlidingIndicator<HTMLButtonElement>(tab);
   const t = TABS[tab];
+  const frame = useRef<HTMLDivElement | null>(null);
+
+  /* The panel grows into place as it scrolls up (Hamza, 8 Oct): it starts at
+     FRAME_FROM of its size when its top enters the bottom of the screen and
+     reaches full size once its top is FRAME_DONE of the way up the screen. */
+  useEffect(() => {
+    const el = frame.current;
+    if (!el || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    let raf = 0;
+    const draw = () => {
+      raf = 0;
+      const vh = window.innerHeight;
+      // Scaled from its top edge, so the top doesn't move with the scale.
+      const top = el.getBoundingClientRect().top;
+      const p = Math.min(1, Math.max(0, (vh - top) / (vh * (1 - FRAME_DONE))));
+      const e = 1 - Math.pow(1 - p, 3);
+      el.style.transform = `scale(${(FRAME_FROM + (1 - FRAME_FROM) * e).toFixed(4)})`;
+    };
+    const queue = () => { if (!raf) raf = requestAnimationFrame(draw); };
+    draw();
+    window.addEventListener("scroll", queue, { passive: true });
+    window.addEventListener("resize", queue);
+    return () => { cancelAnimationFrame(raf); window.removeEventListener("scroll", queue); window.removeEventListener("resize", queue); };
+  }, []);
 
   /**
    * A deep link to #mcp lands on a tab here rather than a section.
@@ -515,8 +542,9 @@ export function PlatformStrip() {
       {/* A heading over the tabs (Hamza, 6 Oct, to a reference): one line
           and a lede, centred, above the tab row. */}
       <div className="pf-head">
-        <BlurHeading className="h2 pf-h2" lead="Purpose-built for creative enterprise" />
-        <p className="lede mt-4">Agents, tools, workflows and studios in one platform, on brand and under your control.</p>
+        {/* Heading and line from the "Controllable content" page's #workspace (Hamza, 8 Oct). */}
+        <BlurHeading className="h2 pf-h2" lead="One workspace. Every capability." />
+        <p className="lede mt-4">Agents, workflows, the AI toolkit, studios and plugins, all in the same place. Nothing exported, nothing handed off.</p>
       </div>
       <div className="pf-tabs" role="tablist" aria-label="Platform" ref={tabs.containerRef as React.Ref<HTMLDivElement>}>
         <SlidingIndicator box={tabs.box} ready={tabs.ready} className="pf-tab-fill" />
@@ -551,7 +579,7 @@ export function PlatformStrip() {
       )}
 
       {/* The product, in a quiet bordered container on a faint dot grid. */}
-      <div className="pf-frame">
+      <div className="pf-frame" ref={frame}>
         <div className="pf-panel">
           <div id="pf-stage" className="pf-stage" role="tabpanel" aria-label={t.label}>{stage}</div>
         </div>
@@ -692,6 +720,8 @@ export function PlatformStrip() {
            reads against the white page (no shadow). */
         .pf-frame {
           position: relative;
+          transform-origin: 50% 0;
+          will-change: transform;
           margin-top: 20px; /* tabs sit closer to the panel (Hamza, 8 Oct; was 40) */
           overflow: hidden;
           border-radius: var(--radius-5);

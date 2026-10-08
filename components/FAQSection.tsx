@@ -91,7 +91,7 @@ function FaqRow({ q, a, defaultOpen = false }: { q: string; a: string; defaultOp
 
 export function FAQSection() {
   return (
-    <section id="faq" className="relative border-t border-[color:var(--line)] py-24 md:py-32">
+    <section id="faq" className="relative py-24 md:py-32" /* no rule: the glow dissolves across the seam (8 Oct) */>
       <SectionGlow position="50% 6%" />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
 
