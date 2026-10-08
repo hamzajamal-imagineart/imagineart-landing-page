@@ -89,6 +89,12 @@ const SOCIALS: { title: string; href: string; path: string }[] = [
   { title: "Discord", href: "https://discord.com/invite/z7kjUyvAbv", path: "M20.317 4.37a19.791 19.791 0 00-4.885-1.515.074.074 0 00-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 00-5.487 0 12.64 12.64 0 00-.617-1.25.077.077 0 00-.079-.037A19.736 19.736 0 003.677 4.37a.07.07 0 00-.032.027C.533 9.046-.32 13.58.099 18.057c.002.022.015.04.03.05a19.9 19.9 0 005.993 3.03.078.078 0 00.084-.028 14.09 14.09 0 001.226-1.994.076.076 0 00-.041-.106 13.107 13.107 0 01-1.872-.892.077.077 0 01-.008-.128c.126-.094.252-.192.372-.292a.074.074 0 01.077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 01.078.01c.12.1.246.198.373.292a.077.077 0 01-.006.127 12.299 12.299 0 01-1.873.892.077.077 0 00-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 00.084.028 19.839 19.839 0 006.002-3.03.077.077 0 00.032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 00-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z" },
 ];
 
+const COMMUNITY: { label: string; href: string }[] = [
+  { label: "Discord", href: "https://discord.com/invite/z7kjUyvAbv" },
+  { label: "Twitter / X", href: "https://x.com/ImagineArt_X" },
+  { label: "Instagram", href: "https://www.instagram.com/imagineartofficial" },
+];
+
 export function SiteFooter() {
   const year = new Date().getFullYear();
 
@@ -109,7 +115,7 @@ export function SiteFooter() {
                 href="https://apps.apple.com/us/app/imagineart-ai-video-generator/id1664121419"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-[7px] px-2.5 py-[7px] whitespace-nowrap rounded-[9px] border border-white/10 text-white/60 text-[11.5px] font-semibold hover:border-white/[0.28] hover:text-white transition-colors"
+                className="inline-flex items-center gap-[7px] px-2.5 py-[7px] whitespace-nowrap rounded-full border border-white/10 text-white/60 text-[11.5px] font-semibold hover:border-white/[0.28] hover:text-white transition-colors"
               >
                 <svg viewBox="0 0 24 24" fill="currentColor" className="w-3.5 h-3.5 shrink-0"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
                 App Store
@@ -118,11 +124,27 @@ export function SiteFooter() {
                 href="https://play.google.com/store/apps/details?id=com.vyroai.aiart&hl=en"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-[7px] px-2.5 py-[7px] whitespace-nowrap rounded-[9px] border border-white/10 text-white/60 text-[11.5px] font-semibold hover:border-white/[0.28] hover:text-white transition-colors"
+                className="inline-flex items-center gap-[7px] px-2.5 py-[7px] whitespace-nowrap rounded-full border border-white/10 text-white/60 text-[11.5px] font-semibold hover:border-white/[0.28] hover:text-white transition-colors"
               >
                 <svg viewBox="0 0 24 24" fill="currentColor" className="w-3.5 h-3.5 shrink-0"><path d="M3.18 23.75c.33.18.7.26 1.08.22l13.12-7.57-2.82-2.82-11.38 10.17zM.75 1.13C.28 1.63 0 2.39 0 3.36v17.28c0 .97.28 1.73.76 2.22l.12.11 9.68-9.68v-.23L.87 3.02.75 1.13zM20.9 9.61l-2.8-1.62-3.15 3.14 3.15 3.15 2.81-1.62c.8-.46.8-1.21 0-1.67v.62zM4.26.25L17.38 7.82l-2.82 2.82L3.18.47A1.39 1.39 0 014.26.25z"/></svg>
                 Google Play
               </a>
+            </div>
+
+            {/* Community (Hamza, 8 Oct): the same accounts as the social icons below. */}
+            <div className="flex flex-col">
+              <span className="block text-[11px] font-semibold tracking-[0.5px] text-white/[0.38] mb-5">
+                Community
+              </span>
+              <ul className="flex flex-col gap-3 list-none m-0 p-0">
+                {COMMUNITY.map((c) => (
+                  <li key={c.label}>
+                    <a href={c.href} target="_blank" rel="noopener noreferrer" className="text-[13px] leading-[1.4] text-white/55 hover:text-white/90 transition-colors no-underline whitespace-nowrap">
+                      {c.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
             </div>
           </div>
 
