@@ -102,7 +102,7 @@ export function AstraBanner() {
           position: relative; isolation: isolate; overflow: hidden;
           display: flex; align-items: center;
           height: 560px; width: 100%;
-          border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); /* tighter corners (8 Oct; was 32) */
+          /* Black fill behind the stars (Hamza, 8 Oct). */
           /* No fill (Hamza, 8 Oct): the stars sit on the page itself; the hairline keeps the shape. */
           background: transparent; color: #fff;
         }
