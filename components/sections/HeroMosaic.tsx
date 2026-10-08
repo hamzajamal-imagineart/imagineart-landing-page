@@ -37,7 +37,7 @@ const THEMES: { tag: string; srcs: string[] }[] = [
     srcs: [
       ...uc("try-on", [1, 2, 3, 4, 5, 6]), ...uc("style-transfer", [1, 2, 3, 4]),
       ...[9, 12, 13, 15, 17, 18].map((n) => `/media/hero/mosaic/m${n}.jpg`),
-      "/media/hero/globe/fashion-dress.jpg", "/media/hero/corridor/fashion.jpg", "/media/outcomes/brand.jpg",
+      "/media/hero/globe/fashion-dress.jpg", "/media/hero/corridor/fashion.jpg", "/media/hero/corridor/fashion-coat.jpg",
     ],
   },
   {
