@@ -5,8 +5,9 @@ import { PageTint } from "@/components/PageTint";
 import { HeroGlobeSection } from "@/components/sections/HeroGlobeSection";
 
 /**
- * /hero-9 (Hamza, 8 Oct): stills appear small around the copy, grow toward
- * the viewer and fade, replaced at random spots (HeroDrift). Not indexed.
+ * /hero-9 (Hamza, 8 Oct): the corridor, the home hero before the drift
+ * took its place. Two walls of tiles stream out of a vanishing point behind
+ * the copy. Not indexed.
  */
 export const metadata: Metadata = {
   title: "Hero 9 — ImagineArt",
@@ -19,7 +20,7 @@ export default function HeroNinePage() {
       <PageTint palette="neutral" />
       <SiteNav variant="onDark" theme="light" />
       <main>
-        <HeroGlobeSection drift />
+        <HeroGlobeSection shape="corridor" />
       </main>
       <SiteFooter />
     </>

@@ -179,8 +179,8 @@ const TABS: Tab[] = [
   // Workflows takes the clip the Agents tab used, which is a Workflows
   // recording.
   { id: "agent", label: "Agent", kind: "clip", videos: [COMPUTER_CLIP], audio: true },
-  { id: "toolkit", label: "Toolkit", kind: "toolkit" },
-  { id: "workflows", label: "Workflows", kind: "clip", videos: [WORKFLOWS_CLIP], audio: true },
+  { id: "workflows", label: "Workflow", kind: "clip", videos: [WORKFLOWS_CLIP], audio: true },
+  { id: "toolkit", label: "AI Toolkit", kind: "toolkit" },
   // Ad, Fashion and Film Studio footage with chips to switch (Hamza, 7 Oct).
   { id: "studios", label: "Studios", kind: "studios" },
   // MCP and Plugins, merged (Hamza, 7 Oct): both are ways to use ImagineArt
@@ -647,6 +647,16 @@ export function PlatformStrip() {
           transition: color 220ms ease;
         }
         .pf-tab:hover, .pf-tab-on, .pf-tab-on:hover { color: var(--ink-heading); }
+        /* Solid pill tabs (Hamza, 8 Oct, to a reference): no glyphs, quiet
+           grey labels, and the selected tab on a solid ink pill with white
+           text (inverted on the dark palette). */
+        .pf-tabs { gap: 2px; }
+        .pf-tab { height: 40px; padding: 0 16px; gap: 8px; font-size: 15px; color: var(--ink-2); transition: color 220ms ease; }
+        .pf-tab:hover { color: var(--ink-heading); }
+        .pf-tab-dots { display: none !important; }
+        .pf-tabs .pf-tab-fill, :root:not([data-theme="dark"]) .pf-tabs .pf-tab-fill:not([data-theme="dark"] *) { border-radius: 999px; background: var(--ink-heading); }
+        .pf-tab-on, .pf-tab-on:hover { color: var(--page-bg); }
+        .pf-tab-on:focus-visible { color: var(--page-bg); }
         /* Keyboard focus (Hamza, 7 Oct: the browser's black outline was
            clipped by the scrolling row): a soft inset ring in the line colour
            instead, inside the tab so nothing cuts it off. */
@@ -682,7 +692,7 @@ export function PlatformStrip() {
            reads against the white page (no shadow). */
         .pf-frame {
           position: relative;
-          margin-top: 40px;
+          margin-top: 20px; /* tabs sit closer to the panel (Hamza, 8 Oct; was 40) */
           overflow: hidden;
           border-radius: var(--radius-5);
           border: 1px solid color-mix(in srgb, var(--ink-heading) 5%, transparent); /* softer than --line, so it doesn't cut a hard edge on the wash (8 Oct) */

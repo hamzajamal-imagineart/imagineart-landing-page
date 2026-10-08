@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { DEMO_HREF, START_HREF } from "@/lib/links";
 import { PlatformStrip } from "@/components/sections/Platform";
 import { Wash } from "@/components/Wash";
@@ -41,7 +42,7 @@ const CTA_GLOW_W = 140, CTA_GLOW_H = 220, CTA_GLOW_ALPHA = 0.35;
  *  `light` (Hamza, 7 Oct, /hero-2): the same hero on the light page, with
  *  ink dots, ink type, a white block behind the copy and tiles that fade to
  *  white rather than black. */
-export function HeroGlobeSection({ light = false, shape = "globe", parted = false, morph = false, alwaysOpen = false, drift = false }: { light?: boolean; shape?: GlobeShape; parted?: boolean; morph?: boolean; alwaysOpen?: boolean; drift?: boolean } = {}) {
+export function HeroGlobeSection({ light = false, shape = "globe", parted = false, morph = false, alwaysOpen = false, drift = false, beforeStrip }: { light?: boolean; shape?: GlobeShape; parted?: boolean; morph?: boolean; alwaysOpen?: boolean; drift?: boolean; /** Rendered between the hero and the platform strip (the home page puts the customer logos here, 8 Oct). */ beforeStrip?: ReactNode } = {}) {
   return (
     <>
       <section id="top" className={`hc${light ? " hc-light" : ""}`} data-theme={light ? undefined : "dark"}>
@@ -83,6 +84,8 @@ export function HeroGlobeSection({ light = false, shape = "globe", parted = fals
           </div>
         </div>
       </section>
+
+      {beforeStrip}
 
       {/* The pastel wash pooled at the centre right of the platform
           section (Hamza, 8 Oct). */}

@@ -9,6 +9,7 @@ import { ReviewsSection } from "@/components/ReviewsSection";
 import { HeroGlobeSection } from "@/components/sections/HeroGlobeSection";
 import { Partners } from "@/components/sections/Partners";
 import { Suite } from "@/components/sections/Suite";
+import { Control } from "@/components/sections/Control";
 import { Outcomes } from "@/components/sections/Outcomes";
 import { Industries } from "@/components/sections/Industries";
 import { Workflows } from "@/components/sections/Workflows";
@@ -51,12 +52,14 @@ export default function Page() {
       <SiteNav variant="onDark" theme="light" />
 
       <main>
-        {/* The corridor (Hamza, 8 Oct): tiles stream out of a vanishing
-            point behind the copy along two curved walls. The always-open
-            globe that ran here before is parked at /hero-8. */}
-        <HeroGlobeSection shape="corridor" />
-        <Partners />
+        {/* Drift (Hamza, 8 Oct): flying through space, stills grow out of
+            a ring around the copy. The corridor that ran here before is
+            parked at /hero-9, the always-open globe at /hero-8. */}
+        {/* Customer logos sit between the hero and the platform strip (Hamza, 8 Oct). */}
+        <HeroGlobeSection drift beforeStrip={<Partners />} />
         <Suite />
+        {/* Control (Hamza, 8 Oct), picked from the "Controllable content at scale" page. */}
+        <Control />
         {/* Pastel washes behind Outcomes and Models (Hamza, 7 Oct). */}
         <Wash variant="a"><Outcomes /></Wash>
         <Industries />
