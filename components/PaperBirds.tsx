@@ -13,7 +13,7 @@ import { withBasePath } from "@/lib/assets";
  * scrolled past the start, so scrolling back flies them back. A fixed,
  * click-through layer over the page; under reduced motion it isn't drawn.
  */
-const START_ID = "suite";
+const START_ID = "models"; // from Models down (Hamza, 9 Oct; was suite)
 /** Scroll (px) after the start section's top reaches the bottom of the screen before the first bird enters. */
 const LEAD = 120;
 /** Overall pace: screen px a bird travels per px scrolled (each bird scales it). */
