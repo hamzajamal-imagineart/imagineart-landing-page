@@ -110,13 +110,13 @@ export function Outcomes() {
           display: inline-flex;
           align-items: center;
           gap: 8px;
-          height: 50px;
-          padding: 0 24px;
-          border-radius: var(--radius-pill); /* every CTA a pill (8 Oct) */
+          height: var(--btn-h-lg);
+          padding: 0 var(--btn-px-lg);
+          border-radius: var(--btn-radius);
           background: var(--ink-heading);
           color: var(--page-bg);
-          font-size: 16px;
-          font-weight: 500;
+          font-size: var(--btn-fs-lg);
+          font-weight: var(--btn-weight);
           transition: opacity 200ms ease;
         }
         .oc-cta:hover { opacity: 0.86; }

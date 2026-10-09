@@ -293,7 +293,7 @@ export function HeroOrbit() {
 
         .hx1-lede { font-size: 16px; /* fixed (Hamza, 8 Oct) */ line-height: 1.55; color: var(--ink-2); max-width: 40rem; }
         .hx1-cta { display: flex; gap: .6rem; flex-wrap: wrap; align-items: center; justify-content: center; }
-        .hx1-btn { display: inline-flex; align-items: center; justify-content: center; min-height: 2.75rem; padding: 0 1.4rem; border-radius: 999px; border: 1px solid transparent; font-size: .95rem; font-weight: 500; white-space: nowrap; transition: background .25s, transform .25s; }
+        .hx1-btn { display: inline-flex; align-items: center; justify-content: center; box-sizing: border-box; height: var(--btn-h-lg); padding: 0 var(--btn-px-lg); border-radius: var(--btn-radius); border: 1px solid transparent; font-size: var(--btn-fs-lg); font-weight: var(--btn-weight); white-space: nowrap; transition: background .25s, transform .25s; }
         .hx1-btn:active { transform: scale(.98); }
         .hx1-btn-primary { background: #f9f9f9; color: #0d0d0d; }
         .hx1-btn-primary:hover { background: #ececec; }

@@ -39,10 +39,9 @@ const softwareSchema = {
  * into (security), who vouches for it (reviews), what people ask (FAQ), then
  * the closing action.
  *
- * <Apps>, <StudioReel>, <Mcp>, <CreativeTools> and <Agent> are pulled, not deleted: all five are still
- * on disk, so recovering any is one import and one line here. MCP is not
- * gone from the page — the hero's MCP chip carries the same panel, which is
- * why the section came out.
+ * <Apps>, <StudioReel>, <CreativeTools> and <Agent> were pulled and then
+ * deleted in the 9 Oct clean-up (recover them from git history). MCP is not
+ * gone from the page: the Platform strip's MCP tab carries the same panel.
  */
 export default function Page() {
   return (
@@ -72,7 +71,7 @@ export default function Page() {
         <Security />
         <ReviewsSection />
         <FAQSection />
-        {/* <ClosingCta /> pulled (Hamza, 8 Oct); the component is still on disk. */}
+        {/* <ClosingCta /> pulled 8 Oct, deleted 9 Oct (in git history). */}
       </main>
 
       <SiteFooter />

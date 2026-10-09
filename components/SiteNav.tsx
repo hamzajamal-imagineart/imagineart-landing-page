@@ -424,9 +424,9 @@ export function SiteNav({
         .nav-tab[aria-expanded="true"] .nav-chev { transform: rotate(180deg); }
         .nav-tab:hover, .nav-tab:focus-visible, .nav-tab[aria-expanded="true"] { color: var(--nav-fg-hover); background: var(--nav-tab-hover); outline: none; }
 
-        .nav-signin { font-family: ${FONT}; font-size: 15.5px; font-weight: 500; color: var(--nav-fg-hover); text-decoration: none; padding: 6px 10px; border-radius: 10px; white-space: nowrap; transition: color 0.3s, background 0.25s; }
+        .nav-signin { font-family: ${FONT}; min-width: var(--btn-pair-w); display: inline-flex; align-items: center; justify-content: center; box-sizing: border-box; height: var(--btn-h-md); padding: 0 var(--btn-px-md); font-size: var(--btn-fs-md); font-weight: var(--btn-weight); color: var(--nav-fg-hover); text-decoration: none; border-radius: var(--btn-radius); white-space: nowrap; transition: color 0.3s, background 0.25s; }
         .nav-signin:hover { background: var(--nav-tab-hover); }
-        .nav-cta { font-family: ${FONT}; font-weight: 500; color: var(--nav-cta-fg); background: var(--nav-cta-bg); border: none; border-radius: 999px; cursor: pointer; letter-spacing: 0.02em; white-space: nowrap; transition: box-shadow 0.2s, transform 0.2s, background 0.3s, color 0.3s; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; box-sizing: border-box; }
+        .nav-cta { font-family: ${FONT}; min-width: var(--btn-pair-w); height: var(--btn-h-md); padding: 0 var(--btn-px-md); font-size: var(--btn-fs-md); font-weight: var(--btn-weight); color: var(--nav-cta-fg); background: var(--nav-cta-bg); border: none; border-radius: var(--btn-radius); cursor: pointer; white-space: nowrap; transition: box-shadow 0.2s, transform 0.2s, background 0.3s, color 0.3s; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; box-sizing: border-box; }
         .nav-cta:hover { box-shadow: 0 0 0 6px var(--nav-cta-glow); transform: scale(1.02); }
 
         .nav-desktop { display: flex; }
@@ -611,7 +611,7 @@ export function SiteNav({
         .mm-card-copy { display: flex; flex-direction: column; gap: 4px; }
         .mm-card-title { margin: 0; display: flex; align-items: center; gap: 10px; font-size: 17px; line-height: 24px; font-weight: 500; color: var(--mm-fg); }
         .mm-card-body { margin: 0; font-size: 13px; line-height: 18px; font-weight: 400; letter-spacing: 0.01em; color: var(--mm-muted); }
-        .mm-card-cta { align-self: flex-start; display: inline-flex; align-items: center; height: 32px; padding: 6px 14px; box-sizing: border-box; border-radius: 999px; background: var(--mm-cta-bg); color: var(--mm-cta-fg); font-size: 14px; font-weight: 500; letter-spacing: 0.02em; text-decoration: none; transition: box-shadow 0.2s; }
+        .mm-card-cta { align-self: flex-start; display: inline-flex; align-items: center; height: var(--btn-h-sm); padding: 0 var(--btn-px-sm); box-sizing: border-box; border-radius: var(--btn-radius); background: var(--mm-cta-bg); color: var(--mm-cta-fg); font-size: var(--btn-fs-sm); font-weight: var(--btn-weight); text-decoration: none; transition: box-shadow 0.2s; }
         .mm-card-cta:hover { box-shadow: 0 0 0 5px var(--mm-cta-glow); }
 
         .mm-media-image { aspect-ratio: 243 / 186; border-radius: 12px; overflow: hidden; }
@@ -741,7 +741,7 @@ export function SiteNav({
 
         <div className="nav-desktop" style={{ alignItems: "center", gap: 8, flexShrink: 0 }}>
           <a href={NAV_SIGN_IN} className="nav-signin">Sign in</a>
-          <a href={NAV_CTA.href} className="nav-cta" style={{ height: 42, padding: "6px 18px", fontSize: 15.5 }}>
+          <a href={NAV_CTA.href} className="nav-cta">
             {NAV_CTA.label}
           </a>
         </div>

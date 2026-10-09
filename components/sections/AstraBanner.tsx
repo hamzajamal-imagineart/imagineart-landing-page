@@ -127,7 +127,7 @@ export function AstraBanner() {
         .astra-serif { font-family: var(--font-instrument-serif), Georgia, serif; font-size: clamp(36px, 4.4vw, 56px); line-height: 1.1; font-weight: 400; white-space: nowrap; }
         /* One flowing line, wider than the old two-line break (Hamza, 8 Oct). */
         .astra-line { margin: 0; max-width: 28em; font-size: 16px; line-height: 1.45; letter-spacing: -0.005em; text-wrap: pretty; }
-        .astra-cta { pointer-events: auto; display: inline-flex; align-items: center; gap: 8px; height: 40px; padding: 0 14px; border-radius: 999px; background: #fff; color: #000; font-size: 15px; font-weight: 500; white-space: nowrap; transition: background 0.3s; }
+        .astra-cta { pointer-events: auto; display: inline-flex; align-items: center; gap: 8px; height: var(--btn-h-md); padding: 0 var(--btn-px-md); border-radius: var(--btn-radius); background: #fff; color: #000; font-size: var(--btn-fs-md); font-weight: var(--btn-weight); white-space: nowrap; transition: background 0.3s; }
         .astra-cta:hover { background: #ececec; }
         .astra-cta:active { transform: translateY(1px); }
 

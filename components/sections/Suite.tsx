@@ -260,7 +260,7 @@ export function Suite() {
         .suite-arrow {
           position: absolute;
           top: 20px; right: 20px;
-          width: 34px; height: 34px;
+          width: var(--btn-icon-sm); height: var(--btn-icon-sm);
           border-radius: var(--radius-pill);
           display: grid; place-items: center;
           color: var(--on-media);
@@ -300,7 +300,7 @@ export function Suite() {
           display: block;
         }
         .suite-pager {
-          width: 38px; height: 38px;
+          width: var(--btn-icon-md); height: var(--btn-icon-md);
           border-radius: var(--radius-pill);
           border: 1px solid var(--line);
           background: var(--page-bg);

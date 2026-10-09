@@ -430,13 +430,13 @@ export function McpPanel() {
       display: inline-flex;
       align-items: center;
       gap: 7px;
-      height: 38px;
-      padding: 0 14px;
-      border-radius: calc(10px * var(--corner));
+      height: var(--btn-h-md);
+      padding: 0 var(--btn-px-md);
+      border-radius: var(--btn-radius); /* was a 10px rectangle (9 Oct) */
       background: var(--panel);
       border: 1px solid var(--line-strong);
-      font-size: 13.5px;
-      font-weight: 500;
+      font-size: var(--btn-fs-md);
+      font-weight: var(--btn-weight);
       color: var(--ink);
       transition: border-color 0.2s ease, background 0.2s ease;
     }

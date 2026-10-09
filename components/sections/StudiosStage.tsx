@@ -115,7 +115,7 @@ export function StudiosStage() {
           position: absolute;
           top: clamp(12px, 3%, 24px);
           right: clamp(12px, 2%, 24px);
-          width: 48px; height: 48px;
+          width: var(--btn-icon-lg); height: var(--btn-icon-lg);
           border-radius: var(--radius-pill);
           display: grid; place-items: center;
           color: var(--on-media);

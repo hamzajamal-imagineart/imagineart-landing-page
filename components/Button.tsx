@@ -16,7 +16,7 @@ function Arrow() {
 }
 
 type Variant = "brand" | "ghost" | "white" | "muted";
-type Size = "md" | "lg";
+type Size = "sm" | "md" | "lg";
 
 interface CommonProps {
   variant?: Variant;
@@ -34,8 +34,10 @@ const base =
   "transition-opacity duration-200 ease-out cursor-pointer border-0 active:translate-y-px";
 
 const sizes: Record<Size, string> = {
-  md: "h-10 px-[18px] text-[14px]",
-  lg: "h-12 px-[22px] text-[15px]",
+  // Sizes read the --btn-* tokens in globals.css (9 Oct).
+  sm: "h-[var(--btn-h-sm)] px-[var(--btn-px-sm)] text-[length:var(--btn-fs-sm)]",
+  md: "h-[var(--btn-h-md)] px-[var(--btn-px-md)] text-[length:var(--btn-fs-md)]",
+  lg: "h-[var(--btn-h-lg)] px-[var(--btn-px-lg)] text-[length:var(--btn-fs-lg)]",
 };
 
 const variants: Record<Variant, string> = {

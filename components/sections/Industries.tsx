@@ -127,7 +127,7 @@ export function Industries() {
         /* Two lines on every card (Hamza, 8 Oct): each body carries its own
            break (\n, kept by pre-line), clamped at two on narrow cards. */
         .ind-body { margin-top: 6px; min-height: calc(2 * 1.55em); font-size: 15px; line-height: 1.55; color: var(--ink-2); white-space: pre-line; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-        .ind-pager { width: 38px; height: 38px; border-radius: var(--radius-pill); border: 1px solid var(--line); background: var(--page-bg); color: var(--ink); display: grid; place-items: center; cursor: pointer; }
+        .ind-pager { width: var(--btn-icon-md); height: var(--btn-icon-md); border-radius: var(--radius-pill); border: 1px solid var(--line); background: var(--page-bg); color: var(--ink); display: grid; place-items: center; cursor: pointer; }
         .ind-pager:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
       `}</style>
 

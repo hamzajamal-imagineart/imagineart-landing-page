@@ -47,6 +47,23 @@
      shared kit's nav and footer are not tied to it. */
   --corner: 1;
 
+  /* ── BUTTONS ── (Hamza, 9 Oct: "define tokens"). Every CTA is a pill in
+     one of three sizes; side-by-side buttons share a size.
+       lg  hero and section CTAs
+       md  nav, banners and in-panel actions
+       sm  compact cards (menu promo cards)
+     Icon buttons: sm card corner arrows, md rail pagers, lg stage arrows. */
+  --btn-radius: var(--radius-pill);
+  --btn-weight: 500;
+  --btn-h-sm: 36px;  --btn-px-sm: 14px;  --btn-fs-sm: 14px;
+  --btn-h-md: 42px;  --btn-px-md: 18px;  --btn-fs-md: 15px;
+  --btn-h-lg: 48px;  --btn-px-lg: 24px;  --btn-fs-lg: 16px;
+  /* Paired buttons (nav Sign in + Try it free) share one width. */
+  --btn-pair-w: 104px;
+  --btn-icon-sm: 34px;
+  --btn-icon-md: 38px;
+  --btn-icon-lg: 48px;
+
   --ink: #141414;
   /* Headings sit a step off pure black: at display sizes #141414 reads
      heavy, and the lighter value keeps plenty of contrast on white.
