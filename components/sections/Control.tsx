@@ -32,7 +32,7 @@ const REFS = [
  *  Relight and Captions are left out until there is footage for them. */
 const EDIT_TOOLS = [
   { label: "Inpaint", video: "/media/capabilities/inpaint.mp4" },
-  { label: "Viral Remake", video: "/media/capabilities/viral-remake.mp4" }, // replaces Extend (Hamza, 9 Oct)
+  { label: "Viral Remake", video: "/media/capabilities/viral-remake-sd25.mp4" }, // Seedance 2.5, 15s, regenerated via the MCP (Hamza, 9 Oct)
   { label: "Camera Angles", video: "/media/capabilities/camera-angles.mp4" }, // replaces Lip sync (Hamza, 8 Oct)
 ];
 
