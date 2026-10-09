@@ -11,7 +11,8 @@ import { SectionGlow, sectionGlowCss } from "@/components/primitives/SectionGlow
  * The only section on the page that keeps the kit's SectionGuides (the
  * container-edge rules and corner dots), by request.
  *
- * The set and heights come from the AI Ad Studio page
+ * Set, order and heights match the Business page (Hamza, 9 Oct: Khaadi in,
+ * mnsaj out). They first came from the AI Ad Studio page
  * (hamzajamal-imagineart/ai-ad-studio, assets/brand-logos): grey
  * single-colour SVGs, each with its own cap so they read at one optical size.
  */
@@ -20,7 +21,7 @@ const CUSTOMERS: { name: string; h: number }[] = [
   { name: "Pega", h: 19 }, { name: "Ashley", h: 22 }, { name: "Buzzlab", h: 18 },
   { name: "Crumble", h: 18 }, { name: "DAP", h: 30 }, { name: "Framon", h: 18 },
   { name: "Komodo", h: 20 }, { name: "ROLLEMAN", h: 15 }, { name: "Smarters", h: 16 },
-  { name: "mnsaj", h: 30 }, { name: "xolour", h: 13 },
+  { name: "Khaadi", h: 18 }, { name: "xolour", h: 13 },
 ];
 
 export function Partners() {
