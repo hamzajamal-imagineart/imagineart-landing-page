@@ -26,7 +26,10 @@ import { HOME } from "@/lib/links";
  * the right. The Figma 647:239 still-image rail and the ImagineArt-generated
  * stills (media/suite/*.jpg) are set aside, not deleted.
  */
-type Tool = { title: string; body: string; clip?: string; image?: string; href: string };
+/** Seconds each hover still holds on the Create image card. */
+const HOVER_STEP_S = 1;
+
+type Tool = { title: string; body: string; clip?: string; image?: string; hoverImages?: string[]; href: string };
 
 /* Order (Hamza, 7 Oct): Workflows, Image / Video, Music, then the tools,
    then the studios last. */
@@ -36,6 +39,8 @@ const TOOLS: Tool[] = [
   {
     title: "Create image",
     image: "/media/suite/create-image.jpg", // cinematic still in place of the clip (Hamza, 9 Oct)
+    // On hover the still steps through these, one a second, then loops (Hamza, 9 Oct).
+    hoverImages: ["/media/hero/orbit/red-light.jpg", "/media/hero/showcase/portrait.jpg", "/media/hero/backdrop-veil.jpg"],
     href: `${HOME}/ai-image-generator`,
     body: "Any style, any model. Reference a product, lock a face and get the whole set, not one render.",
   },
@@ -178,7 +183,12 @@ export function Suite() {
             <div className="suite-mock">
               <div className="suite-embed">
                 {t.image ? (
-                  <img className="suite-media" src={withBasePath(t.image)} alt="" aria-hidden loading="lazy" />
+                  <>
+                    <img className="suite-media" src={withBasePath(t.image)} alt="" aria-hidden loading="lazy" />
+                    {t.hoverImages?.map((h, k) => (
+                      <img key={h} className="suite-media suite-cycle" style={{ animationDelay: `${(k + 1) * HOVER_STEP_S}s` }} src={withBasePath(h)} alt="" aria-hidden loading="lazy" />
+                    ))}
+                  </>
                 ) : (
                   <video className="suite-media" src={withBasePath(t.clip!)} autoPlay muted loop playsInline preload={i < 3 ? "auto" : "metadata"} aria-hidden />
                 )}
@@ -276,6 +286,12 @@ export function Suite() {
           border-radius: calc(12px * var(--corner));
           overflow: hidden;
         }
+        /* Hover stills (9 Oct): stacked over the first, each shown for one
+           HOVER_STEP_S slot of a four-slot loop while the card is hovered. */
+        .suite-cycle { position: absolute; inset: 0; opacity: 0; }
+        .suite-card:hover .suite-cycle { animation: suite-cycle ${HOVER_STEP_S * 4}s linear infinite; }
+        @keyframes suite-cycle { 0% { opacity: 0; } 4% { opacity: 1; } 25% { opacity: 1; } 29% { opacity: 0; } 100% { opacity: 0; } }
+        @media (prefers-reduced-motion: reduce) { .suite-card:hover .suite-cycle { animation: none; } }
         .suite-media {
           width: 100%;
           height: 100%;

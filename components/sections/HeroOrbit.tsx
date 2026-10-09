@@ -34,7 +34,7 @@ type Orb = { x: number; y: number; w: number; ar: string; d: number; src: string
 const ORB: Orb[] = [
   { x: 4.9, y: 13.6, w: 330, ar: "7/5", d: 1, src: "red-light", m: "kling" },
   { x: 34, y: 7, w: 194, ar: "16/10", d: 3, src: "emerald-ring", m: "nanobanana" }, // up and left, clear of the kicker (8 Oct; was 39.7, 12.8)
-  { x: 87.8, y: 13.2, w: 560, ar: "21/9", d: 1, src: "white-horse-poster", m: "imagineart", v: "white-horse" }, // white horse clip from the org's generations (Hamza, 8 Oct); model label unconfirmed,
+  { x: 87.8, y: 13.2, w: 560, ar: "21/9", d: 1, src: "film-25-poster", m: "imagineart", v: "film-25" }, // Film Studio clip 25 (Hamza, 9 Oct; was the white horse); model label unconfirmed,
   { x: 15.8, y: 42.8, w: 150, ar: "3/4", d: 3, src: "surfer-poster", m: "kling", v: "surfer" }, // latest Kling clips replace the UGC talking heads (Hamza, 8 Oct)
   { x: 7.6, y: 66.3, w: 221, ar: "3/4", d: 2, src: "tryon-poster", m: "seedance", v: "jacket-tryon" },
   { x: 88.4, y: 55.8, w: 165, ar: "3/4", d: 3, src: "skier-poster", m: "kling", v: "skier" },

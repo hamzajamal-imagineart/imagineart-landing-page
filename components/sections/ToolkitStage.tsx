@@ -13,12 +13,13 @@ import { withBasePath } from "@/lib/assets";
  * Re-encoded from the 1080p masters with avconvert (Preset1920x1080, H.264),
  * which roughly halved them: 37MB for the set. Only the active clip mounts.
  */
+// Order set by Hamza, 9 Oct.
 const TOOLS = [
-  { id: "remove-bg", label: "Remove BG" },
-  { id: "resize-video", label: "Resize Video" },
   { id: "edit-image", label: "Edit Image" },
-  { id: "video-extend", label: "Video Extend" },
   { id: "image-upscale", label: "Image Upscale" },
+  { id: "video-extend", label: "Video Extend" },
+  { id: "resize-video", label: "Resize Video" },
+  { id: "remove-bg", label: "Remove BG" },
 ];
 
 export function ToolkitStage() {

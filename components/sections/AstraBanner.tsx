@@ -88,9 +88,6 @@ export function AstraBanner() {
           </p>
           <a className="astra-cta" href={cta.href} target="_blank" rel="noopener noreferrer">
             {cta.label}
-            <svg width="18" height="18" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" aria-hidden>
-              <path stroke="currentColor" strokeLinecap="round" d="M18.559 12H5m9 6 4.78-5.293c.706-.707.72-.694 0-1.414L14 6" />
-            </svg>
           </a>
         </div>
 

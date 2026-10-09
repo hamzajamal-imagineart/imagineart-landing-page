@@ -38,9 +38,11 @@ const VIDEO_SET = [
 
 /** The Workflows recording (it ran under the Agents tab until 7 Oct, hence
     the file's name). */
-const WORKFLOWS_CLIP = "/media/hero/modes/agent-v2.mp4";
+/** Height (px) of the Plugins stage on desktop, matched to the MCP panel. */
+const PLUG_STAGE_H = 532;
+const WORKFLOWS_CLIP = "/media/hero/modes/workflow-steps.mp4"; // step-1 + step-2 joined, no sound (Hamza, 9 Oct)
 /** The Imagine Computer recording, for the Agent tab. */
-const COMPUTER_CLIP = "/media/hero/computer-v3.mp4";
+const COMPUTER_CLIP = "/media/hero/computer-v5.mp4";
 
 /**
  * The plugin marks and anchors the Workflows tile already carries.
@@ -179,7 +181,7 @@ const TABS: Tab[] = [
   // Workflows takes the clip the Agents tab used, which is a Workflows
   // recording.
   { id: "agent", label: "Agent", kind: "clip", videos: [COMPUTER_CLIP], audio: true },
-  { id: "workflows", label: "Workflow", kind: "clip", videos: [WORKFLOWS_CLIP], audio: true },
+  { id: "workflows", label: "Workflow", kind: "clip", videos: [WORKFLOWS_CLIP] },
   { id: "toolkit", label: "AI Toolkit", kind: "toolkit" },
   // Ad, Fashion and Film Studio footage with chips to switch (Hamza, 7 Oct).
   { id: "studios", label: "Studios", kind: "studios" },
@@ -786,6 +788,12 @@ export function PlatformStrip() {
         }
         .pf-plug-go:hover { opacity: 0.72; }
 
+        /* Plugins stage matches the MCP panel's height (~532px at 1440), not 16:9 (Hamza, 9 Oct). */
+        .pf-stage:has(.pf-plug) { aspect-ratio: auto; height: ${PLUG_STAGE_H}px; }
+        /* At that height the hub sizes from the height, not the width, so it fits inside the padding and centres (9 Oct). */
+        .pf-plug { grid-template-rows: minmax(0, 1fr); }
+        /* Nudged up: the labels under the bottom tiles made the space below look tighter than above (9 Oct). */
+        .pf-plug .pf-plug-fig { width: auto; height: 100%; max-width: 100%; align-self: center; transform: translateY(-2%); }
         .pf-plug-fig { position: relative; width: 100%; aspect-ratio: 560 / 440; max-height: 100%; justify-self: center; }
         .pf-plug-wires { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
         .pf-wire { fill: none; stroke: var(--line-strong); stroke-width: 1.2; transition: stroke 240ms ease; }
@@ -1077,9 +1085,9 @@ export function PlatformStrip() {
           .pf-stage:has(.hc-reel) { aspect-ratio: 1 / 1; }
           /* The hub stacks under its copy, and the stage takes their
              height rather than a ratio. */
-          .pf-stage:has(.pf-plug) { aspect-ratio: auto; }
-          .pf-plug { position: relative; grid-template-columns: minmax(0, 1fr); padding: 24px 20px 40px; gap: 28px; }
-          .pf-plug-fig { width: 100%; }
+          .pf-stage:has(.pf-plug) { aspect-ratio: auto; height: auto; }
+          .pf-plug { position: relative; grid-template-columns: minmax(0, 1fr); grid-template-rows: none; padding: 24px 20px 40px; gap: 28px; }
+          .pf-plug .pf-plug-fig { width: 100%; height: auto; }
         }
         @media (prefers-reduced-motion: reduce) {
           .pf-pulse { animation: none; opacity: 0; }
