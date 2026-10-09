@@ -56,7 +56,7 @@ export function Workflows() {
             <p className="wf-body">Chain models, tools and connectors into one pipeline.</p>
             <div className="wf-media">
               {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-              <video src={withBasePath("/media/pillars/workflows.mp4")} autoPlay muted loop playsInline preload="auto" aria-hidden />
+              <video src={withBasePath("/media/hero/modes/workflow-steps.mp4")} autoPlay muted loop playsInline preload="auto" aria-hidden />{/* same clip as the Platform Workflow tab (Hamza, 9 Oct) */}
             </div>
           </article>
 

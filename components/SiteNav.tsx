@@ -1,7 +1,7 @@
 "use client";
 
 /* eslint-disable @next/next/no-img-element */
-import { Fragment, useEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { withBasePath } from "@/lib/assets";
 import { PAGE_THEME, type PageTheme } from "@/lib/theme";
 import {
@@ -346,6 +346,26 @@ export function SiteNav({
 
   const closeAll = () => { setOpenPanel(null); setMenuOpen(false); };
 
+  // The open panel is as wide as its columns and sits centred under the item
+  // that opened it, kept 16px inside the viewport (Hamza, 9 Oct).
+  const panelRef = useRef<HTMLDivElement>(null);
+  const [panelLeft, setPanelLeft] = useState<number | null>(null);
+  useLayoutEffect(() => {
+    if (!openPanel) { setPanelLeft(null); return; }
+    const place = () => {
+      const panel = panelRef.current;
+      const tab = document.querySelector<HTMLElement>(`[data-nav-tab="${openPanel}"]`);
+      if (!panel || !tab) return;
+      const t = tab.getBoundingClientRect();
+      const w = panel.offsetWidth;
+      const vw = document.documentElement.clientWidth;
+      setPanelLeft(Math.round(Math.max(16, Math.min(t.left + t.width / 2 - w / 2, vw - w - 16))));
+    };
+    place();
+    window.addEventListener("resize", place);
+    return () => window.removeEventListener("resize", place);
+  }, [openPanel]);
+
   // Desktop menus open on hover (mouse only; touch and keyboard use click).
   useEffect(() => () => window.clearTimeout(hoverTimer.current), []);
   const isMouse = (e: React.PointerEvent) => e.pointerType === "mouse";
@@ -476,7 +496,7 @@ export function SiteNav({
            container's gutters. Local change to the kit's file — fold it back. */
         /* A contained card, not a full-width sheet (Hamza, 8 Oct): the page
            container's width, centred under the bar, rounded and edged. */
-        .mm-panel { position: fixed; left: 0; right: 0; margin-inline: auto; width: min(1320px, calc(100vw - 32px)); z-index: 59; /* wider (Hamza, 8 Oct: was 1176) */ display: block; padding: 28px 32px 32px; box-sizing: border-box; background: var(--mm-surface); -webkit-backdrop-filter: blur(32px) saturate(160%); backdrop-filter: blur(32px) saturate(160%); border: 0; border-radius: 18px; box-shadow: var(--mm-shadow); animation: navMenuIn 0.22s ${NAV_EASE} both; transition: top ${NAV_DURATION} ${NAV_EASE}; font-family: ${FONT}; }
+        .mm-panel { position: fixed; left: 16px; width: max-content; max-width: min(1320px, calc(100vw - 32px)); z-index: 59; /* sized to its columns and placed under its trigger (Hamza, 9 Oct: was a fixed 1320 band) */ display: block; padding: 28px 32px 32px; box-sizing: border-box; background: var(--mm-surface); -webkit-backdrop-filter: blur(32px) saturate(160%); backdrop-filter: blur(32px) saturate(160%); border: 0; border-radius: 18px; box-shadow: var(--mm-shadow); animation: navMenuIn 0.22s ${NAV_EASE} both; transition: top ${NAV_DURATION} ${NAV_EASE}; font-family: ${FONT}; }
         /* Invisible bridge over the gap to the bar, so hover survives the trip down. */
         .mm-panel::before { content: ""; position: absolute; left: 0; right: 0; top: -34px; height: 34px; }
         @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) { .mm-panel { background: var(--mm-solid); } }
@@ -493,7 +513,7 @@ export function SiteNav({
         .mm-inner { display: flex; align-items: stretch; width: 100%; }
         /* Columns share the card's width rather than fixed widths, so the
            contained card (8 Oct) never pushes the feature card out of it. */
-        .mm-panel .mm-col { width: auto; flex: 0 1 ${MENU_COL_W}px; min-width: 0; gap: 28px; } /* a set column width, not stretched across the panel (Hamza, 8 Oct: Resources and Collaborate sat too far apart) */
+        .mm-panel .mm-col { width: auto; flex: 0 0 ${MENU_COL_W}px; min-width: 0; gap: 28px; } /* a set column width, not stretched across the panel (Hamza, 8 Oct: Resources and Collaborate sat too far apart) */
         /* Columns after the first carry the 40px gutter inside their own box,
            so they are 40px wider to keep the same content width. */
         .mm-panel .mm-col + .mm-col { width: auto; margin-left: 72px; padding-left: 0; border-left: 0; } /* no divider lines (8 Oct); a wider gap does the separating */
@@ -559,7 +579,7 @@ export function SiteNav({
         .mm-panel .mm-cards { margin-left: auto; padding-left: 32px; flex: none; }
 
         .mm-panel-single .mm-col, .mm-panel-single .mm-col + .mm-col { width: auto; flex: 1; }
-        .mm-panel-single .mm-group { display: grid; grid-template-columns: repeat(auto-fill, ${MENU_COL_W}px); column-gap: 72px; row-gap: 4px; } /* same track and gutter as the multi-column panels (8 Oct) */
+        .mm-panel-single .mm-group { display: grid; grid-template-columns: repeat(var(--mm-cols, 3), ${MENU_COL_W}px); column-gap: 72px; row-gap: 4px; } /* same track and gutter as the multi-column panels (8 Oct) */
         .mm-panel-single .mm-heading { grid-column: 1 / -1; }
         .mm-panel-single .mm-item { position: relative; }
         .mm-panel-single .mm-desc { max-width: none; }
@@ -710,6 +730,7 @@ export function SiteNav({
                 key={entry.label}
                 type="button"
                 className="nav-tab"
+                data-nav-tab={entry.label}
                 aria-expanded={openPanel === entry.label}
                 aria-controls="nav-dropdown"
                 onPointerEnter={hoverOpen(entry.label)}
@@ -782,7 +803,12 @@ export function SiteNav({
             // item and its panel): the bar is 64 tall and its items end about
             // 10px above its foot, so −4 puts the panel 6px under the item.
             // Local change to the kit's file — fold it back.
-            style={{ top: barTop + barHeight + PANEL_GAP }}
+            ref={panelRef}
+            style={{
+              top: barTop + barHeight + PANEL_GAP,
+              ...(panelLeft !== null ? { left: panelLeft } : { visibility: "hidden" }),
+              ["--mm-cols" as string]: Math.min(3, panelEntry.panel.columns[0]?.groups.reduce((n, g) => n + (g.items?.length ?? g.links?.length ?? 0), 0) ?? 3),
+            }}
             onPointerEnter={hoverKeep}
             onPointerLeave={hoverClose}
           >
