@@ -144,7 +144,7 @@ export function PointsTimeline({ points }: { points: TimelinePoint[] }) {
                 <div>
                   <p>{p.body}</p>
                   {p.cta && (
-                    <ButtonLink variant="ghost" href={p.cta.href} target="_blank" rel="noopener noreferrer" className="mt-5 ci-cta" onClick={(e) => e.stopPropagation()}>
+                    <ButtonLink variant="ghost" arrow={false} href={p.cta.href} target="_blank" rel="noopener noreferrer" className="mt-5 ci-cta" onClick={(e) => e.stopPropagation()}>
                       {p.cta.label}
                     </ButtonLink>
                   )}

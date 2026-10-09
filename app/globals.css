@@ -647,7 +647,7 @@ body::before {
 .wm-glow {
   position: absolute; left: 0; right: 0; bottom: 0; height: 420px; z-index: -1; pointer-events: none;
   opacity: 0.4; filter: blur(30px);
-  background: linear-gradient(0deg, #8a3ffc, #3d7bff, #2fd6c3, #3d7bff, #8a3ffc);
+  background: linear-gradient(0deg, #8a3ffc, #3d7bff, #8a3ffc); /* two colours: purple and blue (Hamza, 9 Oct) */
   background-size: 100% 50%;
   -webkit-mask-image: linear-gradient(to top, #000 0%, rgba(0,0,0,0.6) 45%, transparent 100%);
   mask-image: linear-gradient(to top, #000 0%, rgba(0,0,0,0.6) 45%, transparent 100%);

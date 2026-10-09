@@ -26,7 +26,7 @@ import { HOME } from "@/lib/links";
  * the right. The Figma 647:239 still-image rail and the ImagineArt-generated
  * stills (media/suite/*.jpg) are set aside, not deleted.
  */
-type Tool = { title: string; body: string; clip: string; href: string };
+type Tool = { title: string; body: string; clip?: string; image?: string; href: string };
 
 /* Order (Hamza, 7 Oct): Workflows, Image / Video, Music, then the tools,
    then the studios last. */
@@ -35,7 +35,7 @@ const TOOLS: Tool[] = [
   // titles and lines to his cards; they replace "Image / Video" and "Music").
   {
     title: "Create image",
-    clip: "/media/hero/modes/image/1-text-to-image.mp4",
+    image: "/media/suite/create-image.jpg", // cinematic still in place of the clip (Hamza, 9 Oct)
     href: `${HOME}/ai-image-generator`,
     body: "Any style, any model. Reference a product, lock a face and get the whole set, not one render.",
   },
@@ -177,7 +177,11 @@ export function Suite() {
             </span>
             <div className="suite-mock">
               <div className="suite-embed">
-                <video className="suite-media" src={withBasePath(t.clip)} autoPlay muted loop playsInline preload={i < 3 ? "auto" : "metadata"} aria-hidden />
+                {t.image ? (
+                  <img className="suite-media" src={withBasePath(t.image)} alt="" aria-hidden loading="lazy" />
+                ) : (
+                  <video className="suite-media" src={withBasePath(t.clip!)} autoPlay muted loop playsInline preload={i < 3 ? "auto" : "metadata"} aria-hidden />
+                )}
               </div>
             </div>
           </a>
