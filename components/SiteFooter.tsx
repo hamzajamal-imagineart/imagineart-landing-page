@@ -7,6 +7,7 @@
  * to line up with .container-page.
  */
 import { withBasePath } from "@/lib/assets";
+import { AUTH_HREF } from "@/lib/links";
 
 const BASE = "https://www.imagine.art";
 
@@ -134,7 +135,7 @@ export function SiteFooter() {
 
           {/* Brand */}
           <div className="flex flex-col w-full md:w-[calc((100%-104px)/5)] shrink-0 items-start justify-start gap-6 md:gap-8 flex-wrap">
-            <img src={withBasePath("/media/footer/logo-icon.svg")} alt="ImagineArt" width={28} height={28} className="block" />
+            <a href={AUTH_HREF} aria-label="ImagineArt"><img src={withBasePath("/media/footer/logo-icon.svg")} alt="ImagineArt" width={28} height={28} className="block" /></a>
 
             <div className="flex flex-col gap-2">
               <span className="text-[11px] font-semibold tracking-[0.5px] text-white/[0.38] mb-1">

@@ -7,8 +7,9 @@ import { PAGE_THEME, type PageTheme } from "@/lib/theme";
 import {
   NAV,
   NAV_CTA,
+  NAV_AUTH,
   NAV_HOME,
-  NAV_SIGN_IN,
+  NAV_DEMO,
   type NavCard,
   type NavGroup,
   type NavBar,
@@ -708,7 +709,7 @@ export function SiteNav({
         }}
       >
         {/* Logo — wordmark; inverted to white on the dark bar, dark on a light surface */}
-        <a href={NAV_HOME} style={{ display: "flex", alignItems: "center", flexShrink: 0 }} aria-label="ImagineArt home">
+        <a href={NAV_AUTH} style={{ display: "flex", alignItems: "center", flexShrink: 0 }} aria-label="ImagineArt">
           <img
             src={withBasePath("/media/imagine-art-wordmark.svg")}
             alt="ImagineArt"
@@ -761,7 +762,7 @@ export function SiteNav({
         </div>
 
         <div className="nav-desktop" style={{ alignItems: "center", gap: 8, flexShrink: 0 }}>
-          <a href={NAV_SIGN_IN} className="nav-signin">Sign in</a>
+          <a href={NAV_DEMO.href} className="nav-signin">{NAV_DEMO.label}</a>
           <a href={NAV_CTA.href} className="nav-cta">
             {NAV_CTA.label}
           </a>
@@ -834,7 +835,7 @@ export function SiteNav({
           }}
         >
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "16px 24px", flexShrink: 0 }}>
-            <a href={NAV_HOME} onClick={closeAll} style={{ display: "inline-flex", alignItems: "center" }} aria-label="ImagineArt home">
+            <a href={NAV_AUTH} onClick={closeAll} style={{ display: "inline-flex", alignItems: "center" }} aria-label="ImagineArt">
               <img src={withBasePath("/media/imagine-art-wordmark.svg")} alt="ImagineArt" style={{ display: "block", height: 24, width: "auto", filter: "var(--mm-logo-filter)" }} />
             </a>
             <button
@@ -904,11 +905,11 @@ export function SiteNav({
               {NAV_CTA.label}
             </a>
             <a
-              href={NAV_SIGN_IN}
+              href={NAV_DEMO.href}
               onClick={closeAll}
               style={{ display: "inline-flex", alignItems: "center", gap: 10, fontSize: 16, fontWeight: 500, color: "var(--mm-fg)", textDecoration: "none" }}
             >
-              Sign in
+              {NAV_DEMO.label}
               <ArrowUpRight />
             </a>
           </div>

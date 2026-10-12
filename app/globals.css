@@ -59,7 +59,7 @@
   --btn-h-md: 42px;  --btn-px-md: 18px;  --btn-fs-md: 15px;
   --btn-h-lg: 48px;  --btn-px-lg: 24px;  --btn-fs-lg: 16px;
   /* Paired buttons (nav Sign in + Try it free) share one width. */
-  --btn-pair-w: 104px;
+  --btn-pair-w: 130px; /* fits "Book a demo" (12 Oct) */
   --btn-icon-sm: 34px;
   --btn-icon-md: 38px;
   --btn-icon-lg: 48px;

@@ -7,8 +7,11 @@
  */
 export const HOME = "https://www.imagine.art";
 
+/** Sign-up / sign-in on the app. Every primary CTA (Sign in, Try it free,
+    Start creating) and the logos land here (Hamza, 12 Oct). */
+export const AUTH_HREF = "https://imagine.art/home?showAuth=true";
 /** Primary CTA everywhere: nav, hero, closing band. */
-export const START_HREF = HOME;
+export const START_HREF = AUTH_HREF;
 export const PRICING_HREF = `${HOME}/subscription`;
 /** Secondary CTA in the hero and closing band. The booking page the footer
     already pointed at, so the page keeps its no-contact-form decision. */
