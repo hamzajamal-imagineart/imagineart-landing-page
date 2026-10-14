@@ -93,7 +93,7 @@ function Arrow({ className = "" }: { className?: string }) {
 
 function Card({ t }: { t: Testimonial }) {
   return (
-    <a className="rv-card" href={`${CASE}/${t.slug}`}>
+    <a className="rv-card" href={`${CASE}/${t.slug}`} target="_blank" rel="noopener noreferrer">
       <Backdrop t={t} />
       <figure className="rv-fig">
         <div className="rv-logo-row">
@@ -145,7 +145,7 @@ export function ReviewsSection() {
                 </div>
               ))}
             </dl>
-            <a className="rv-case" href={`${CASE}/${FEATURED.slug}`}>
+            <a className="rv-case" href={`${CASE}/${FEATURED.slug}`} target="_blank" rel="noopener noreferrer">
               Read the case study
               <Arrow />
             </a>
