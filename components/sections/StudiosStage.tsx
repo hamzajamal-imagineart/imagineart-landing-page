@@ -209,9 +209,11 @@ export function StudiosStage() {
           cursor: pointer;
           transition: background var(--dur-fast) ease;
         }
-        .st-chip img { position: relative; z-index: 1; display: block; width: auto; opacity: 0.5; transition: opacity var(--dur-fast) ease; }
+        .st-chip img { position: relative; z-index: 1; display: block; width: auto; opacity: 0.4; transition: opacity var(--dur-fast) ease; }
         .st-chip:hover { background: rgb(18, 18, 20); }
         .st-chip:hover img { opacity: 0.8; }
+        /* Active (14 Oct): a lifted surface and a full logo; inactive logos dim further. */
+        .st-chip-on, .st-chip-on:hover { background: rgb(34, 34, 38); }
         .st-chip-on img { opacity: 1; }
         .st-chip:focus-visible { outline: 2px solid var(--on-media); outline-offset: 2px; }
         /* Continuous edge shimmer on the active chip (Hamza, 14 Oct): a bright
@@ -222,7 +224,7 @@ export function StudiosStage() {
         .st-chip-on::before {
           content: ""; position: absolute; inset: 0; z-index: 2; border-radius: inherit; pointer-events: none;
           padding: 1px;
-          background: conic-gradient(from var(--st-angle), rgba(255, 255, 255, 0.08) 0deg, rgba(255, 255, 255, 0.08) 250deg, rgba(255, 255, 255, 0.95) 320deg, rgba(255, 255, 255, 0.08) 360deg);
+          background: conic-gradient(from var(--st-angle), rgba(255, 255, 255, 0.4) 0deg, rgba(255, 255, 255, 0.4) 250deg, rgba(255, 255, 255, 1) 320deg, rgba(255, 255, 255, 0.4) 360deg); /* a steady 40% ring, not 8%, so the active chip reads as selected between passes (Hamza, 14 Oct) */
           -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor;
           mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
           animation: st-orbit 3s linear infinite;
@@ -267,7 +269,7 @@ export function StudiosStage() {
         }
         @media (prefers-reduced-motion: reduce) {
           .st-media, .st-copy { animation: none; }
-          .st-chip-on::before { animation: none; }
+          .st-chip-on::before { animation: none; background: rgba(255, 255, 255, 0.45); }
         }
       `}</style>
     </div>
