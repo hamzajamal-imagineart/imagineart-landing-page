@@ -16,7 +16,7 @@ const IA = "https://www.imagine.art";
 export const NAV_HOME = IA;
 // /login 404s; the site opens its sign-in dialog from this query instead.
 /** Sign in, Try it free and the logo all open the app's auth (Hamza, 12 Oct). */
-export const NAV_AUTH = "https://imagine.art/home?showAuth=true";
+export const NAV_AUTH = "https://imagine.art/home";
 export const NAV_SIGN_IN = NAV_AUTH;
 /** Secondary nav action: "Book a demo", the same booking page as the hero's Contact sales (Hamza, 12 Oct; was Sign in). */
 export const NAV_DEMO = { label: "Book a demo", href: "https://cal.com/team/imagineart/imagineart-customer-assist" };

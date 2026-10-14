@@ -9,7 +9,7 @@ export const HOME = "https://www.imagine.art";
 
 /** Sign-up / sign-in on the app. Every primary CTA (Sign in, Try it free,
     Start creating) and the logos land here (Hamza, 12 Oct). */
-export const AUTH_HREF = "https://imagine.art/home?showAuth=true";
+export const AUTH_HREF = "https://imagine.art/home";
 /** Primary CTA everywhere: nav, hero, closing band. */
 export const START_HREF = AUTH_HREF;
 export const PRICING_HREF = `${HOME}/subscription`;
