@@ -708,7 +708,7 @@ body::before {
 /* CTA loading state (14 Oct, components/CtaLoading.tsx): the label stays and
    a ring spins in front of it, in the button's own colour, so people still
    see what they clicked; any trailing arrow hides. */
-[data-loading] { pointer-events: none; gap: 8px; box-sizing: border-box; justify-content: center; white-space: nowrap; overflow: hidden; }
+[data-loading] { pointer-events: none; opacity: 0.7; gap: 8px; box-sizing: border-box; justify-content: center; white-space: nowrap; overflow: hidden; }
 [data-loading] svg, [data-loading] img { display: none; }
 [data-loading]::before {
   content: ""; display: inline-block; flex-shrink: 0; width: 14px; height: 14px; box-sizing: border-box;
