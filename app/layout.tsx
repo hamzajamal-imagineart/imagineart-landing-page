@@ -28,6 +28,7 @@ export const metadata: Metadata = {
   title: "ImagineArt: AI Art Generator for Image, Video & Audio",
   description:
     "Create images, video and audio with 50+ AI models, brand controls and workflows in one workspace. Built for teams that ship content at scale.",
+  alternates: { canonical: "https://www.imagine.art" },
   // Next emits app/favicon.ico at the export root, which a sub-path mount
   // cannot serve. Point at a nested copy instead. Same icon set as
   // www.imagine.art, so the tab matches the main site.
