@@ -1,4 +1,5 @@
 import { BlurHeading } from "@/components/BlurHeading";
+import { DEMO_HREF } from "@/lib/links";
 import { SectionGuides } from "@/components/primitives/SectionGuides";
 
 /**
@@ -21,37 +22,37 @@ const TILES = [
   {
     n: "01",
     title: "SSO and MFA",
-    body: "Access through your identity provider.",
+    body: "Sign in through your identity provider.",
     icon: <IconPeople />,
   },
   {
     n: "02",
     title: "SOC 2 Type II",
-    body: "Independently audited controls.",
+    body: "Controls audited by an independent firm.",
     icon: <IconCheckCircle />,
   },
   {
     n: "03",
     title: "Your IP stays yours",
-    body: "Full commercial rights, contract-backed.",
+    body: "Full commercial rights, backed by contract.",
     icon: <IconScales />,
   },
   {
     n: "04",
     title: "Admin controls",
-    body: "Roles, usage and a full audit trail, across every team.",
+    body: "Roles, usage limits and a full audit trail across every team.",
     icon: <IconLayers />,
   },
   {
     n: "05",
     title: "Encrypted end to end",
-    body: "At rest and in transit.",
+    body: "Your data is encrypted at rest and in transit.",
     icon: <IconLock />,
   },
   {
     n: "06",
     title: "Zero data retention",
-    body: "Never stored, never used to train models.",
+    body: "Your content is never stored beyond your workspace or used to train models.", // copy doc wording, flagged there for Legal to confirm (14 Oct)
     icon: <IconShield />,
   },
 ];
@@ -61,13 +62,17 @@ export function Security() {
     <section id="security" className="relative border-t border-[color:var(--line)] py-24 md:py-32 lg:border-t-0">
       <SectionGuides edge="top" />
       <div className="container-page">
-        <div className="max-w-[640px]">
-          <BlurHeading
-            className="h2"
-            lead="Safe, secure,"
-            muted="and built for the enterprise"
-            lineBreak
-          />
+        {/* "Talk to sales" top right, level with the heading (14 Oct copy). */}
+        <div className="flex flex-wrap items-end justify-between gap-6">
+          <div className="max-w-[640px]">
+            <BlurHeading
+              className="h2"
+              lead="Safe, secure"
+              muted="and built for the enterprise"
+              lineBreak
+            />
+          </div>
+          <a className="sec-cta" href={DEMO_HREF}>Talk to sales</a>
         </div>
 
         <div className="sec-grid mt-12">
@@ -90,6 +95,14 @@ export function Security() {
           grid-template-columns: repeat(3, minmax(0, 1fr));
           gap: 16px;
         }
+        .sec-cta {
+          display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
+          height: var(--btn-h-md); padding: 0 var(--btn-px-md); border-radius: var(--radius-pill);
+          border: 1px solid var(--line-strong); color: var(--ink-heading);
+          font-size: var(--btn-fs-md); font-weight: var(--btn-weight); white-space: nowrap; text-decoration: none;
+          transition: background .25s;
+        }
+        .sec-cta:hover { background: var(--tile); }
         .sec-tile {
           display: flex;
           flex-direction: column;
@@ -102,14 +115,14 @@ export function Security() {
         .sec-icon svg { width: 24px; height: 24px; display: block; }
         .sec-title {
           margin-top: 28px;
-          font-size: 18px;
+          font-size: var(--fs-lg);
           font-weight: 500;
           line-height: 1.3;
           letter-spacing: -0.01em;
         }
         .sec-body {
           margin-top: 8px;
-          font-size: 15px;
+          font-size: var(--fs-md);
           line-height: 1.55;
           color: var(--ink-2);
           max-width: 34ch;

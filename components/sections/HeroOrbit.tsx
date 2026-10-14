@@ -57,7 +57,7 @@ const WORKS_LOGO: Record<string, string> = { gpt: "chatgpt", kling: "kling", flu
 const WORDS = [
   { w: "images", g: "linear-gradient(90deg,#C9A6FF,#7C5CFF 55%,#FF7AA2)" },
   { w: "videos", g: "linear-gradient(90deg,#60A5FA,#22D3EE)" },
-  { w: "audios", g: "linear-gradient(90deg,#34D399,#A3E635)" },
+  { w: "audio", g: "linear-gradient(90deg,#34D399,#A3E635)" },
 ];
 /** Rotating word: ms per word. */
 const WORD_EVERY = 2400;
@@ -187,7 +187,9 @@ export function HeroOrbit() {
       </div>
 
       <div className="hx1-copy">
-        <h1 className="hx1-h1">
+        {/* The page's h1 is the small eyebrow; the big line is display copy (Hamza, 14 Oct). */}
+        <h1 className="hx1-kicker">AI art generator built for teams that ship fast</h1>
+        <p className="hx1-h1">
           <span className="hx1-h">
             {/* The underline runs under "Create <word>," only (Hamza, 8 Oct). */}
             <span className="hx1-u">
@@ -208,29 +210,31 @@ export function HeroOrbit() {
               <path d="M6 28 C 120 10, 260 36, 400 18 S 560 14, 594 24" />
             </svg>
             </span>{" "}
-            control at scale
+            at scale
           </span>
-        </h1>
+        </p>
         <p className="hx1-lede">
-          Every leading model, studios for the work you ship, brand control that holds across every output, and
-          workflows.
+          Create images, video and audio with every leading model. Studios for the work you ship, brand control that
+          holds across every output, and workflows that run on their own.
         </p>
         <div className="hx1-cta">
-          <a className="hx1-btn hx1-btn-primary" href={START_HREF}>Start creating for free</a>
-          <a className="hx1-btn hx1-btn-secondary" href={DEMO_HREF}>Contact sales</a>
-        </div>
-        <div className="hx1-works">
-          <span>Works with</span>
-          {WORKS.map((w) => (
-            <a key={w.m} href={w.href} aria-label={w.label} target="_blank" rel="noopener noreferrer">
-              <img src={O(`models/${WORKS_LOGO[w.m]}.png`)} alt="" />
-            </a>
-          ))}
-          <a href="https://www.imagine.art/models" className="more" target="_blank" rel="noopener noreferrer">+50 more</a>
+          <a className="hx1-btn hx1-btn-primary" href={START_HREF}>Start creating free</a>
+          <a className="hx1-btn hx1-btn-secondary" href={DEMO_HREF}>Talk to sales</a>
         </div>
         <div className="hx1-mrow" aria-hidden>
           {MROW.map((i) => <div key={i}><img src={O(`${ORB[i].src}.jpg`)} alt="" /></div>)}
         </div>
+      </div>
+
+      {/* At the foot of the hero, not under the CTAs (Hamza, 14 Oct). */}
+      <div className="hx1-works">
+        <span>Works with</span>
+        {WORKS.map((w) => (
+          <a key={w.m} href={w.href} aria-label={w.label} target="_blank" rel="noopener noreferrer">
+            <img src={O(`models/${WORKS_LOGO[w.m]}.png`)} alt="" />
+          </a>
+        ))}
+        <a href="https://www.imagine.art/models" className="more" target="_blank" rel="noopener noreferrer">+50 more</a>
       </div>
 
       <style>{`
@@ -269,14 +273,14 @@ export function HeroOrbit() {
         .oc1-tg {
           position: absolute; left: 8px; bottom: 8px; display: inline-flex; align-items: center; gap: 5px;
           padding: 3px 8px; border-radius: 999px; background: rgba(0,0,0,.6); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
-          font-size: 11px; color: #fff; opacity: 0; transform: translateY(4px); transition: opacity .25s, transform .25s;
+          font-size: var(--fs-2xs); color: #fff; opacity: 0; transform: translateY(4px); transition: opacity .25s, transform .25s;
         }
         .oc1-tg img { width: 12px !important; height: 12px !important; border-radius: 3px; }
         .oc1.near .oc1-tg { opacity: 1; transform: none; }
 
         .hx1-copy { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 22px; max-width: 76rem; }
-        .hx1-kicker { font-size: 11px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3); }
-        .hx1-h1 { font-size: clamp(2.1rem, 3.8vw, 54px); /* 54px on desktop (Hamza, 8 Oct) */ line-height: 1.02; letter-spacing: -.04em; font-weight: 600; color: #fff; text-wrap: balance; }
+        .hx1-kicker { font-size: var(--fs-2xs); font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3); }
+        .hx1-h1 { font-size: clamp(var(--fs-h3), 4.2vw, var(--fs-display-xl)); /* 60px on desktop (Hamza, 14 Oct; was 54) */ line-height: 1.02; letter-spacing: -.04em; font-weight: 600; color: #fff; text-wrap: balance; }
         .hx1-mute { color: #6f6f76; }
         .hx1-h { position: relative; display: inline-block; }
         .hx1-u { position: relative; display: inline-block; white-space: nowrap; }
@@ -291,7 +295,7 @@ export function HeroOrbit() {
         .rw-w.out { opacity: 0; transform: translateY(-.45em); }
         .rw-w b { font-weight: inherit; -webkit-background-clip: text; background-clip: text; color: transparent; background-image: var(--g); }
 
-        .hx1-lede { font-size: 16px; /* fixed (Hamza, 8 Oct) */ line-height: 1.55; color: var(--ink-2); max-width: 40rem; }
+        .hx1-lede { font-size: var(--fs-md); /* fixed (Hamza, 8 Oct) */ line-height: 1.55; color: var(--ink-2); max-width: 40rem; }
         .hx1-cta { display: flex; gap: .6rem; flex-wrap: wrap; align-items: center; justify-content: center; }
         .hx1-btn { display: inline-flex; align-items: center; justify-content: center; box-sizing: border-box; height: var(--btn-h-lg); padding: 0 var(--btn-px-lg); border-radius: var(--btn-radius); border: 1px solid transparent; font-size: var(--btn-fs-lg); font-weight: var(--btn-weight); white-space: nowrap; transition: background .25s, transform .25s; }
         .hx1-btn:active { transform: scale(.98); }
@@ -300,17 +304,18 @@ export function HeroOrbit() {
         .hx1-btn-secondary { background: transparent; color: #fff; border-color: rgba(255,255,255,.15); }
         .hx1-btn-secondary:hover { background: var(--tile); }
 
-        .hx1-works { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: center; font-size: 13px; color: var(--ink-3); }
+        .hx1-works { position: absolute; left: 50%; bottom: 32px; z-index: 6; transform: translateX(-50%); width: max-content; max-width: calc(100% - 40px); display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: center; font-size: var(--fs-sm); color: var(--ink-3); }
         .hx1-works > span { white-space: nowrap; }
         .hx1-works a { display: inline-flex; width: 30px; height: 30px; border-radius: 50%; overflow: hidden; opacity: .55; filter: grayscale(1); transition: opacity .25s, transform .3s cubic-bezier(.22,1,.36,1), filter .25s; }
         .hx1-works a:hover { opacity: 1; transform: translateY(-2px) scale(1.08); filter: none; }
         .hx1-works a img { width: 100%; height: 100%; object-fit: cover; }
-        .hx1-works a.more { width: auto; padding: 0 10px; align-items: center; border-radius: 999px; border: 1px solid rgba(255,255,255,.14); font-size: 12px; color: var(--ink-2); opacity: 1; filter: none; white-space: nowrap; }
+        .hx1-works a.more { width: auto; padding: 0 10px; align-items: center; border-radius: 999px; border: 1px solid rgba(255,255,255,.14); font-size: var(--fs-xs); color: var(--ink-2); opacity: 1; filter: none; white-space: nowrap; }
 
         .hx1-mrow { display: none; }
         @media (max-width: 1023px) {
           .hx1-field { display: none; }
-          .hx1 { min-height: auto; padding: 112px 20px 56px; }
+          .hx1 { min-height: auto; padding: 112px 20px 56px; flex-direction: column; }
+          .hx1-works { position: static; transform: none; width: auto; max-width: none; margin-top: 28px; }
           .hx1-mrow { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; width: 100%; margin-top: 10px; }
           .hx1-mrow div { aspect-ratio: 3/4; border-radius: 12px; overflow: hidden; background: var(--tile); box-shadow: inset 0 0 0 1px rgba(255,255,255,.08); }
           .hx1-mrow img { width: 100%; height: 100%; object-fit: cover; display: block; }

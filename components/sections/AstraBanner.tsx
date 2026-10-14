@@ -123,10 +123,10 @@ export function AstraBanner() {
         .astra-title h2 { display: flex; flex-wrap: wrap; align-items: center; gap: 0 12px; margin: 0; }
         /* Mark sits left of the title at about cap height (Hamza, 8 Oct). */
         .astra-mark { width: clamp(34px, 4vw, 52px); height: clamp(34px, 4vw, 52px); display: block; flex-shrink: 0; }
-        .astra-gpt { font-size: clamp(36px, 4.4vw, 56px); line-height: 1.1; font-weight: 600; letter-spacing: -0.02em; white-space: nowrap; text-shadow: 0 4px 8px rgba(176,175,175,0.2); }
-        .astra-serif { font-family: var(--font-instrument-serif), Georgia, serif; font-size: clamp(36px, 4.4vw, 56px); line-height: 1.1; font-weight: 400; white-space: nowrap; }
+        .astra-gpt { font-size: clamp(var(--fs-h2), 4.4vw, var(--fs-display-xl)); line-height: 1.1; font-weight: 600; letter-spacing: -0.02em; white-space: nowrap; text-shadow: 0 4px 8px rgba(176,175,175,0.2); }
+        .astra-serif { font-family: var(--font-instrument-serif), Georgia, serif; font-size: clamp(var(--fs-h2), 4.4vw, var(--fs-display-xl)); line-height: 1.1; font-weight: 400; white-space: nowrap; }
         /* One flowing line, wider than the old two-line break (Hamza, 8 Oct). */
-        .astra-line { margin: 0; max-width: 28em; font-size: 16px; line-height: 1.45; letter-spacing: -0.005em; text-wrap: pretty; }
+        .astra-line { margin: 0; max-width: 28em; font-size: var(--fs-md); line-height: 1.45; letter-spacing: -0.005em; text-wrap: pretty; }
         .astra-cta { pointer-events: auto; display: inline-flex; align-items: center; gap: 8px; height: var(--btn-h-md); padding: 0 var(--btn-px-md); border-radius: var(--btn-radius); background: #fff; color: #000; font-size: var(--btn-fs-md); font-weight: var(--btn-weight); white-space: nowrap; transition: background 0.3s; }
         .astra-cta:hover { background: #ececec; }
         .astra-cta:active { transform: translateY(1px); }

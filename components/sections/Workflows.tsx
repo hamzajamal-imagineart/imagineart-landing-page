@@ -44,15 +44,15 @@ export function Workflows() {
       <SectionGuides edge="top" />
       <div className="container-page">
         <div className="mx-auto max-w-[680px] text-center">
-          <BlurHeading className="h2" lead="Content at Scale" />
+          <BlurHeading className="h2" lead="Content at scale," muted="on autopilot" />
           <p className="lede mx-auto mt-5">
-            Build the pipeline once, connect your tools to it, schedule the runs, and see what worked.
+            Build the pipeline once, connect your tools, schedule the runs and see what worked.
           </p>
         </div>
 
         <div className="wf-bento mt-14">
           <article className="wf-tile wf-wide">
-            <h3 className="wf-title">Node canvas.</h3>
+            <h3 className="wf-title">Node canvas</h3>
             <p className="wf-body">Chain models, tools and connectors into one pipeline.</p>
             <div className="wf-media">
               {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
@@ -61,17 +61,17 @@ export function Workflows() {
           </article>
 
           <article className="wf-tile">
-            <h3 className="wf-title">Brand Guidelines.</h3>
+            <h3 className="wf-title">Brand Guidelines</h3>
             <p className="wf-body">Every output on brand, every time.</p>
             <div className="wf-media">
               {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-              <video src="https://www.imagine.art/business/media/brandkit/brand-kits.mp4" autoPlay muted loop playsInline preload="metadata" aria-hidden />
+              <video src={withBasePath("/media/capabilities/brand-kits.mp4")} autoPlay muted loop playsInline preload="metadata" aria-hidden />
             </div>
           </article>
 
           <article className="wf-tile">
-            <h3 className="wf-title">Creative Analyser.</h3>
-            <p className="wf-body">See what performs, and what to change next.</p>
+            <h3 className="wf-title">Creative Analyser</h3>
+            <p className="wf-body">See what performs and what to change next.</p>
             <div className="wf-media">
               {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
               <video src={withBasePath("/media/workflows/creative-analyser.mp4")} autoPlay muted loop playsInline preload="metadata" aria-hidden />
@@ -79,15 +79,15 @@ export function Workflows() {
           </article>
 
           <article className="wf-tile">
-            <h3 className="wf-title">Connectors.</h3>
-            <p className="wf-body">Bring assets in, publish results out.</p>
+            <h3 className="wf-title">Connectors</h3>
+            <p className="wf-body">Bring assets in and publish results out.</p>
             <div className="wf-cluster">
               <MarkCluster dir="connectors" marks={CONNECTORS} label="Google Drive, Dropbox, Pinterest, Facebook, Instagram, LinkedIn and Google Sheets" />
             </div>
           </article>
 
           <article className="wf-tile">
-            <h3 className="wf-title">Plugins.</h3>
+            <h3 className="wf-title">Plugins</h3>
             <p className="wf-body">ImagineArt inside the apps you already use.</p>
             <ul className="wf-plugins">
               {PLUGINS.map((pg) => (
@@ -132,8 +132,8 @@ export function Workflows() {
         /* No gradient grounds since 6 Oct (Hamza): the tiles are flat
            --tile on the light page. The five images stay in
            media/workflows/bg/. */
-        .wf-title { font-size: clamp(20px, 1.8vw, 26px); line-height: 1.2; letter-spacing: -0.015em; color: var(--ink-heading); }
-        .wf-body { margin-top: 10px; font-size: 15px; line-height: 1.6; color: var(--ink-2); max-width: 34ch; }
+        .wf-title { font-size: clamp(var(--fs-xl), 1.8vw, var(--fs-h5)); line-height: 1.2; letter-spacing: -0.015em; color: var(--ink-heading); }
+        .wf-body { margin-top: 10px; font-size: var(--fs-md); line-height: 1.6; color: var(--ink-2); max-width: 34ch; }
         .wf-wide .wf-body { max-width: 52ch; }
 
         .wf-media {
@@ -193,7 +193,7 @@ export function Workflows() {
         }
         .wf-pg-mark img { width: 18px; height: 18px; display: block; object-fit: contain; }
         .wf-pg-name {
-          font-size: 14.5px;
+          font-size: var(--fs-sm);
           font-weight: 500;
           letter-spacing: -0.01em;
           color: var(--ink);

@@ -21,9 +21,10 @@ const heroFont = Comfortaa({ subsets: ["latin"], variable: "--font-hero", displa
 const serifFont = Instrument_Serif({ subsets: ["latin"], variable: "--font-instrument-serif", display: "swap", weight: "400" });
 
 export const metadata: Metadata = {
-  title: "ImagineArt, The AI Creative Platform",
+  // Title and description from the revamped homepage copy (14 Oct).
+  title: "ImagineArt: AI Art Generator for Image, Video & Audio",
   description:
-    "Chat, Workflows and Creative in one platform: 50+ image, video and audio models, an infinite canvas with realtime collaboration, and studios for ads, avatars, fashion and film.",
+    "Create images, video and audio with 50+ AI models, brand controls and workflows in one workspace. Built for teams that ship content at scale.",
   // Next emits app/favicon.ico at the export root, which a sub-path mount
   // cannot serve. Point at a nested copy instead. Same icon set as
   // www.imagine.art, so the tab matches the main site.

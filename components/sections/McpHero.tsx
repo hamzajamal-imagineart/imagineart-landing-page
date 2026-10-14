@@ -45,7 +45,7 @@ export function McpHero({ client, route, onClient, onRoute }: { client: number; 
           <img src={withBasePath("/media/mcp/mcp-word-purple.svg")} alt="" />
         </span>
       </h2>
-      <p className="lede mh-line">Every ImagineArt tool inside the agent you already use, connected once and ready in a minute.</p>
+      <p className="lede mh-line">Connect once and every ImagineArt tool is ready in your AI assistant within a minute. Brief it in chat, get finished assets back.</p>
 
       <div className="mh-chips">
         <div role="group" aria-label="Choose your client" className="mh-clients">
@@ -71,7 +71,7 @@ export function McpHero({ client, route, onClient, onRoute }: { client: number; 
         .mh-chips { margin-top: 32px; display: flex; flex-wrap: nowrap; align-items: center; gap: 2px; max-width: 100%; overflow-x: auto; padding: 4px; border-radius: 999px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.06); -webkit-backdrop-filter: blur(24px); backdrop-filter: blur(24px); box-shadow: 0 10px 34px -20px rgba(0,0,0,0.7); scrollbar-width: none; }
         .mh-chips::-webkit-scrollbar { display: none; }
         .mh-clients { display: flex; flex-wrap: nowrap; align-items: center; gap: 2px; }
-        .mh-chip { display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 12px; flex-shrink: 0; white-space: nowrap; border: 0; border-radius: 999px; background: transparent; color: rgba(255,255,255,0.85); font: inherit; font-size: 13px; font-weight: 500; cursor: pointer; transition: background 0.2s, color 0.2s; }
+        .mh-chip { display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 12px; flex-shrink: 0; white-space: nowrap; border: 0; border-radius: 999px; background: transparent; color: rgba(255,255,255,0.85); font: inherit; font-size: var(--fs-sm); font-weight: 500; cursor: pointer; transition: background 0.2s, color 0.2s; }
         .mh-chip:hover { background: rgba(255,255,255,0.08); color: #fff; }
         .mh-chip.on { background: #fff; color: #15171b; box-shadow: 0 2px 10px -3px rgba(0,0,0,0.45); }
         .mh-chip img { width: 15px; height: 15px; flex-shrink: 0; transition: filter 0.2s; }

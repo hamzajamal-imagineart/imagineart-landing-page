@@ -1,5 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 import { withBasePath } from "@/lib/assets";
+import { AUTH_HREF } from "@/lib/links";
 import { BlurHeading } from "@/components/BlurHeading";
 import { SectionGlow, sectionGlowCss } from "@/components/primitives/SectionGlow";
 
@@ -20,19 +21,26 @@ import { SectionGlow, sectionGlowCss } from "@/components/primitives/SectionGlow
  * Model names follow the B2B repo, which took them from the product's model
  * pickers; see HANDOFF.md §5 for the ones flagged as unverified.
  */
-type Model = { name: string; icon: string; media: string; tone: string };
+type Model = { name: string; icon: string; media: string; tone: string; href: string };
+
+/* Model pages on imagine.art (Hamza, 14 Oct). Four cards have one; names
+   follow those pages' headings. Seedance and Grok open the same generator
+   links as the hero's "Works with" logos; Hailuo and ImagineArt, which have
+   neither, open the app's sign-up like Try it free. Nano Banana's link in the doc (gemini/nanobanana-2-5) 404s; the live
+   page is gemini/nano-banana-2-1. */
+const MODEL_PAGE = "https://www.imagine.art/models";
 
 const DIR = "/media/models";
 
 const MODELS: Model[] = [
-  { name: "Nano Banana Pro", icon: "nanobanana", media: `${DIR}/providers/google.jpg`, tone: "#3a2a1c" },
-  { name: "Seedance 2.5", icon: "dreamina", media: `${DIR}/providers/bytedance.mp4`, tone: "#151c26" },
-  { name: "Kling 3.0", icon: "kling", media: `${DIR}/providers/kling.mp4`, tone: "#14304a" },
-  { name: "Flux 2 Max", icon: "flux", media: `${DIR}/providers/black-forest-labs.mp4`, tone: "#1f2226" },
-  { name: "GPT Image 2", icon: "chatgpt", media: `${DIR}/providers/openai.jpg`, tone: "#26363a" },
-  { name: "Grok 1.5", icon: "grok", media: `${DIR}/providers/xai.mp4`, tone: "#1a1a1e" },
-  { name: "Hailuo H3", icon: "hailuo", media: `${DIR}/providers/minimax.mp4`, tone: "#2a2530" },
-  { name: "ImagineArt 2.0", icon: "imagineart", media: `${DIR}/providers/imagineart.jpg`, tone: "#2a2224" },
+  { name: "Nano Banana 2.1", icon: "nanobanana", media: `${DIR}/providers/google.jpg`, tone: "#3a2a1c", href: `${MODEL_PAGE}/gemini/nano-banana-2-1` },
+  { name: "Seedance 2.5", icon: "dreamina", media: `${DIR}/providers/bytedance.mp4`, tone: "#151c26", href: "https://www.imagine.art/video/create/seedance-25" },
+  { name: "Kling 4.0", icon: "kling", media: `${DIR}/providers/kling.mp4`, tone: "#14304a", href: `${MODEL_PAGE}/kling/kling-4` },
+  { name: "FLUX 3", icon: "flux", media: `${DIR}/providers/black-forest-labs.mp4`, tone: "#1f2226", href: `${MODEL_PAGE}/bfl/flux-3-image` },
+  { name: "GPT Image 2.5", icon: "chatgpt", media: `${DIR}/providers/openai.jpg`, tone: "#26363a", href: `${MODEL_PAGE}/openai/gpt-image-2-5` },
+  { name: "Grok 1.5", icon: "grok", media: `${DIR}/providers/xai.mp4`, tone: "#1a1a1e", href: "https://www.imagine.art/video?modelListId=46&editorMode=default" },
+  { name: "Hailuo H3", icon: "hailuo", media: `${DIR}/providers/minimax.mp4`, tone: "#2a2530", href: AUTH_HREF },
+  { name: "ImagineArt 2.0", icon: "imagineart", media: `${DIR}/providers/imagineart.jpg`, tone: "#2a2224", href: AUTH_HREF },
 ];
 
 function CardMedia({ src }: { src: string }) {
@@ -51,7 +59,7 @@ export function Models() {
       <SectionGlow />
       <div className="container-page">
         <div className="mx-auto max-w-[680px] text-center">
-          <BlurHeading className="h2" lead="Models" />
+          <BlurHeading className="h2" lead="Every leading AI model" />
           <p className="lede mx-auto mt-5">
             Eight of the 50+ models you can switch between mid-workflow, without
             moving your work elsewhere.
@@ -60,14 +68,20 @@ export function Models() {
 
         <div className="mdl-grid mt-12">
           {MODELS.map((m) => (
-            <article key={m.name} className="mdl-card" style={{ backgroundColor: m.tone, ["--mdl-tone" as string]: m.tone }}>
+            <a key={m.name} href={m.href} className="mdl-card" style={{ backgroundColor: m.tone, ["--mdl-tone" as string]: m.tone }}>
               <CardMedia src={m.media} />
               <span className="mdl-fade" aria-hidden />
               <h3 className="mdl-cap">
       <img className="mdl-mark" src={withBasePath(`${DIR}/${m.icon}.png`)} alt="" aria-hidden width={26} height={26} />
                 <span>{m.name}</span>
               </h3>
-            </article>
+              {/* Glass arrow top right, as on the other linked cards (14 Oct). */}
+              <span className="mdl-arrow glass" aria-hidden>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                  <path d="M6 12h12M13 6l6 6-6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </span>
+            </a>
           ))}
         </div>
       </div>
@@ -83,6 +97,8 @@ export function Models() {
           grid-template-columns: repeat(4, minmax(0, 1fr));
           gap: 16px;
         }
+        .mdl-arrow { position: absolute; top: 14px; right: 14px; z-index: 2; width: var(--btn-icon-sm); height: var(--btn-icon-sm); border-radius: var(--btn-radius); display: grid; place-items: center; color: var(--on-media); transition: transform 0.25s ease, background var(--dur-fast) ease; }
+        .mdl-card:hover .mdl-arrow { transform: translateX(2px); }
         .mdl-card {
           position: relative;
           isolation: isolate;
@@ -131,7 +147,7 @@ export function Models() {
           justify-content: center;
           gap: 11px;
           padding: 0 18px 28px;
-          font-size: clamp(15.5px, 1.45vw, 19px);
+          font-size: clamp(var(--fs-md), 1.45vw, var(--fs-xl));
           font-weight: 500;
           letter-spacing: -0.01em;
           line-height: 1.2;

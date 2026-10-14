@@ -110,7 +110,7 @@ function Item({ item, onNavigate }: { item: NavItem; onNavigate: () => void }) {
 function Group({ group, onNavigate }: { group: NavGroup; onNavigate: () => void }) {
   return (
     <div className={group.links ? "mm-group mm-group-links" : "mm-group"}>
-      {group.heading && <p className="mm-heading">{group.heading}</p>}
+      {group.heading && <p className="mm-heading" {...(group.headingHidden ? { "aria-hidden": true, style: { visibility: "hidden" as const } } : {})}>{group.heading}</p>}
       {group.items?.map((item) => <Item key={item.title} item={item} onNavigate={onNavigate} />)}
       {group.links?.map((link) => (
         <a key={link.label} href={link.href} className="mm-link" onClick={onNavigate} {...linkTarget(link.href)}>
@@ -120,7 +120,7 @@ function Group({ group, onNavigate }: { group: NavGroup; onNavigate: () => void 
       ))}
       {group.more && (
         <a href={group.more.href} className="mm-more" onClick={onNavigate} {...linkTarget(group.more.href)}>
-          {group.more.label}
+          <span className="mm-more-label">{group.more.label}</span>
           <ArrowRight />
         </a>
       )}
@@ -165,13 +165,17 @@ function Card({ card, onNavigate }: { card: NavCard; onNavigate: () => void }) {
   return (
     <div className={`mm-card${card.surface ? ` mm-card-${card.surface}` : ""}`}>
       <CardMedia media={card.media} />
-      <div className="mm-card-copy">
-        <p className="mm-card-title">
-          {card.title}
-          {card.badge && <Badge muted>{card.badge}</Badge>}
-        </p>
-        <p className="mm-card-body">{card.body}</p>
-      </div>
+      {(card.title || card.body) && (
+        <div className="mm-card-copy">
+          {card.title && (
+            <p className="mm-card-title">
+              {card.title}
+              {card.badge && <Badge muted>{card.badge}</Badge>}
+            </p>
+          )}
+          {card.body && <p className="mm-card-body">{card.body}</p>}
+        </div>
+      )}
       <a href={card.cta.href} className="mm-card-cta" onClick={onNavigate} {...linkTarget(card.cta.href)}>
         {card.cta.label}
       </a>
@@ -195,10 +199,18 @@ function BarMark({ mark }: { mark: string }) {
       </span>
     );
   }
-  if (mark === "phone") {
+  // The store marks, as in the footer's app buttons (14 Oct: iOS and Android replace "Mobile").
+  if (mark === "apple") {
     return (
       <span className="mm-bar-glyph" aria-hidden>
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none"><rect x="6.5" y="2.5" width="11" height="19" rx="2.5" stroke="currentColor" strokeWidth="1.6" /><path d="M10.5 18.5h3" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" /></svg>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z" /></svg>
+      </span>
+    );
+  }
+  if (mark === "android") {
+    return (
+      <span className="mm-bar-glyph" aria-hidden>
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M3.18 23.75c.33.18.7.26 1.08.22l13.12-7.57-2.82-2.82-11.38 10.17zM.75 1.13C.28 1.63 0 2.39 0 3.36v17.28c0 .97.28 1.73.76 2.22l.12.11 9.68-9.68v-.23L.87 3.02.75 1.13zM20.9 9.61l-2.8-1.62-3.15 3.14 3.15 3.15 2.81-1.62c.8-.46.8-1.21 0-1.67v.62zM4.26.25L17.38 7.82l-2.82 2.82L3.18.47A1.39 1.39 0 014.26.25z" /></svg>
       </span>
     );
   }
@@ -273,7 +285,8 @@ function Panel({ panel, onNavigate }: { panel: NavPanel; onNavigate: () => void 
 }
 
 /** Width of a dropdown column; columns keep it rather than spreading across the panel. */
-const MENU_COL_W = 286;
+/** One column width and gap for every dropdown (Hamza, 14 Oct: was 286 + 72, with 228 + 44 only in Platform). */
+const MENU_COL_W = 228;
 
 /* ─── SiteNav ───────────────────────────────────────────────── */
 
@@ -347,20 +360,18 @@ export function SiteNav({
 
   const closeAll = () => { setOpenPanel(null); setMenuOpen(false); };
 
-  // The open panel is as wide as its columns and sits centred under the item
-  // that opened it, kept 16px inside the viewport (Hamza, 9 Oct).
+  // The open panel is as wide as its columns and sits centred on the page,
+  // kept 16px inside the viewport (Hamza, 14 Oct; was centred under its item).
   const panelRef = useRef<HTMLDivElement>(null);
   const [panelLeft, setPanelLeft] = useState<number | null>(null);
   useLayoutEffect(() => {
     if (!openPanel) { setPanelLeft(null); return; }
     const place = () => {
       const panel = panelRef.current;
-      const tab = document.querySelector<HTMLElement>(`[data-nav-tab="${openPanel}"]`);
-      if (!panel || !tab) return;
-      const t = tab.getBoundingClientRect();
+      if (!panel) return;
       const w = panel.offsetWidth;
       const vw = document.documentElement.clientWidth;
-      setPanelLeft(Math.round(Math.max(16, Math.min(t.left + t.width / 2 - w / 2, vw - w - 16))));
+      setPanelLeft(Math.round(Math.max(16, (vw - w) / 2)));
     };
     place();
     window.addEventListener("resize", place);
@@ -437,7 +448,7 @@ export function SiteNav({
   return (
     <>
       <style>{`
-        .nav-tab { display: inline-flex; align-items: center; height: 36px; padding: 6px 12px; border: none; border-radius: 10px; background: transparent; cursor: pointer; text-decoration: none; white-space: nowrap; font-family: ${FONT}; font-size: 15.5px; font-weight: 500; line-height: 20px; letter-spacing: 0.01em; color: var(--nav-fg); transition: color 0.25s, background 0.25s; }
+        .nav-tab { display: inline-flex; align-items: center; height: 36px; padding: 6px 12px; border: none; border-radius: 10px; background: transparent; cursor: pointer; text-decoration: none; white-space: nowrap; font-family: ${FONT}; font-size: var(--fs-md); font-weight: 500; line-height: 20px; letter-spacing: 0.01em; color: var(--nav-fg); transition: color 0.25s, background 0.25s; }
         /* A small soft chevron on the tabs that open a menu (Hamza, 8 Oct);
            it turns over while the menu is open. */
         .nav-chev { margin-left: 5px; opacity: 0.6; transition: transform 0.25s ${NAV_EASE}, opacity 0.25s; }
@@ -472,7 +483,7 @@ export function SiteNav({
           /* Glass, not a white sheet (Hamza, 7 Oct): a translucent surface
              frosted by .mm-panel's backdrop filter. --mm-solid is for the
              full-screen mobile sheet, which needs to cover the page. */
-          --mm-surface: rgba(255,255,255,0.9); --mm-solid: #ffffff; --mm-border: rgba(255,255,255,0.6); --mm-divider: rgba(0,0,0,0.08);
+          --mm-surface: rgba(255,255,255,0.9); --mm-solid: #ffffff; --mm-border: rgba(255,255,255,0.6); --mm-divider: rgba(0,0,0,0.08); --mm-sep: rgba(0,0,0,0.1); --mm-sep-glow: rgba(0,0,0,0.04);
           --mm-bar-line: rgba(0,0,0,0.1); --mm-bar-glint: rgba(0,0,0,0.35); --mm-bar-sheen: rgba(0,0,0,0.03); --mm-fg: #0f0f0f; --mm-muted: #757575; --mm-row: #3d3d3d; --mm-more: #3d3d3d;
           --mm-hover: rgba(0,0,0,0.06); --mm-accent-soft: rgba(23,23,23,0.07); --mm-tint-surface: rgba(0,0,0,0.035);
           --mm-badge-muted-bg: #dbdbdb; --mm-badge-muted-fg: #3d3d3d;
@@ -481,7 +492,7 @@ export function SiteNav({
           --mm-sel-bg: rgba(23,23,23,0.12); --mm-sel-fg: #171717; --mm-logo-filter: none;
         }
         .mm-scope[data-menu-theme="dark"] {
-          --mm-surface: rgba(20,20,22,0.9); --mm-solid: #141416; --mm-border: rgba(255,255,255,0.1); --mm-divider: rgba(255,255,255,0.1);
+          --mm-surface: rgba(20,20,22,0.9); --mm-solid: #141416; --mm-border: rgba(255,255,255,0.1); --mm-divider: rgba(255,255,255,0.1); --mm-sep: rgba(255,255,255,0.16); --mm-sep-glow: rgba(255,255,255,0.12);
           --mm-bar-line: rgba(255,255,255,0.1); --mm-bar-glint: rgba(255,255,255,0.85); --mm-bar-sheen: rgba(255,255,255,0.05); --mm-fg: #f5f5f5; --mm-muted: rgba(255,255,255,0.55); --mm-row: rgba(255,255,255,0.85); --mm-more: rgba(255,255,255,0.75);
           --mm-hover: rgba(255,255,255,0.08); --mm-accent-soft: rgba(255,255,255,0.1); --mm-tint-surface: rgba(255,255,255,0.06);
           --mm-badge-muted-bg: rgba(255,255,255,0.12); --mm-badge-muted-fg: rgba(255,255,255,0.7);
@@ -517,23 +528,27 @@ export function SiteNav({
         .mm-panel .mm-col { width: auto; flex: 0 0 ${MENU_COL_W}px; min-width: 0; gap: 28px; } /* a set column width, not stretched across the panel (Hamza, 8 Oct: Resources and Collaborate sat too far apart) */
         /* Columns after the first carry the 40px gutter inside their own box,
            so they are 40px wider to keep the same content width. */
-        .mm-panel .mm-col + .mm-col { width: auto; margin-left: 72px; padding-left: 0; border-left: 0; } /* no divider lines (8 Oct); a wider gap does the separating */
+        .mm-panel { --mm-gap: 44px; }
+        .mm-panel .mm-col + .mm-col { width: auto; margin-left: var(--mm-gap); padding-left: 0; border-left: 0; } /* no divider lines (8 Oct); a wider gap does the separating */
         .mm-panel .mm-col-narrow { width: auto; }
-        .mm-panel .mm-col-divider { width: auto; padding-right: 0; border-right: 0; }
-        .mm-panel .mm-group { gap: 4px; }
-        .mm-panel .mm-heading { margin-bottom: 8px; font-size: 11px; line-height: 16px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; }
+        .mm-panel .mm-col-divider { width: auto; padding-right: 0; border-right: 0; position: relative; }
+        /* Separator centred in the gap after a divider column (Hamza, 14 Oct: after
+           Platform): a hairline that tapers to points at both ends with a faint glow. */
+        .mm-panel .mm-col-divider::after { content: ""; position: absolute; top: 0; bottom: 0; right: calc(var(--mm-gap) / -2); width: 1px; background: linear-gradient(to bottom, transparent, var(--mm-sep) 50%, transparent); filter: drop-shadow(0 0 3px var(--mm-sep-glow)); }
+        .mm-panel .mm-group { gap: 16px; } /* more air between items (Hamza, 14 Oct; was 4) */
+        .mm-panel .mm-heading { margin-bottom: 8px; padding-left: 10px; /* level with the item titles, which sit 10px into their hover pad (14 Oct) */ font-size: var(--fs-2xs); line-height: 16px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; }
         /* Compact items (7 Oct): more menu entries are coming, so titles drop
            to 14px, descriptions to one 12px line (clipped with an ellipsis
            if a future one runs long), and items sit tighter. */
         .mm-panel .mm-item { gap: 1px; padding: 6px 10px; }
-        .mm-panel .mm-item-title { font-size: 14px; line-height: 20px; }
-        .mm-panel .mm-desc { font-size: 12px; line-height: 17px; max-width: none; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .mm-panel .mm-item-title { font-size: var(--fs-sm); line-height: 20px; }
+        .mm-panel .mm-desc { font-size: var(--fs-xs); line-height: 17px; max-width: none; } /* wraps rather than cutting off with "…" (14 Oct) */
         .mm-panel .mm-sublinks { margin-top: 4px; }
-        .mm-panel .mm-sublink, .mm-panel .mm-link { font-size: 13px; }
+        .mm-panel .mm-sublink, .mm-panel .mm-link { font-size: var(--fs-sm); }
         /* Bottom bar (Hamza, 8 Oct): a pill along the panel's foot with a
            glint on its top edge, the title left and outbound links right,
            each led by a small stack of marks. */
-        .mm-main { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; justify-content: space-between; gap: 24px; }
+        .mm-main { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; justify-content: space-between; gap: 40px; } /* more air above the bar (Hamza, 14 Oct; was 24) */
         .mm-cols { display: flex; }
         .mm-bar { position: relative; height: ${BAR_H}px; box-sizing: border-box; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 0 8px 0 18px; border-radius: 999px; border: 1px solid var(--mm-bar-line); }
         /* A light reflection across the outline (Hamza, 8 Oct): a soft diagonal
@@ -563,9 +578,9 @@ export function SiteNav({
           100% { background-position: 0% 0; opacity: 0; }
         }
         @media (prefers-reduced-motion: reduce) { .mm-bar::before, .mm-bar::after { animation: none; opacity: 0; } }
-        .mm-bar-title { font-size: 13px; font-weight: 500; letter-spacing: 0.01em; color: var(--mm-fg); white-space: nowrap; }
+        .mm-bar-title { font-size: var(--fs-sm); font-weight: 500; letter-spacing: 0.01em; color: var(--mm-fg); white-space: nowrap; }
         .mm-bar-links { display: flex; align-items: center; }
-        .mm-bar-link { display: inline-flex; align-items: center; gap: 7px; padding: 4px 12px; font-size: 13px; font-weight: 500; letter-spacing: 0.01em; color: var(--mm-muted); text-decoration: none; white-space: nowrap; border-radius: 999px; transition: color 0.2s, background 0.2s; }
+        .mm-bar-link { display: inline-flex; align-items: center; gap: 7px; padding: 4px 12px; font-size: var(--fs-sm); font-weight: 500; letter-spacing: 0.01em; color: var(--mm-muted); text-decoration: none; white-space: nowrap; border-radius: 999px; transition: color 0.2s, background 0.2s; }
         .mm-bar-link + .mm-bar-link { box-shadow: -1px 0 0 0 var(--mm-bar-line); border-top-left-radius: 0; border-bottom-left-radius: 0; }
         a.mm-bar-link:hover, a.mm-bar-link:focus-visible { color: var(--mm-fg); outline: none; }
         a.mm-bar-link:hover .mm-bar-arrow { transform: translate(2px, -2px); }
@@ -579,8 +594,17 @@ export function SiteNav({
         @media (max-width: 1240px) { .mm-bar-title { display: none; } .mm-bar { justify-content: center; } }
         .mm-panel .mm-cards { margin-left: auto; padding-left: 32px; flex: none; }
 
+        /* Four columns (Platform, 14 Oct): tighter columns, gaps and card so
+           the panel stays inside 1320px; the card drops out below 1300px so
+           the columns alone still fit at the 1080px desktop minimum. */
+        .mm-panel.mm-panel-dense .mm-col-narrow { flex-basis: 160px; }
+
+        .mm-panel.mm-panel-dense .mm-cards { padding-left: 24px; }
+        .mm-panel.mm-panel-dense .mm-card { width: 200px; }
+        @media (max-width: 1300px) { .mm-panel.mm-panel-dense .mm-cards { display: none; } }
+
         .mm-panel-single .mm-col, .mm-panel-single .mm-col + .mm-col { width: auto; flex: 1; }
-        .mm-panel-single .mm-group { display: grid; grid-template-columns: repeat(var(--mm-cols, 3), ${MENU_COL_W}px); column-gap: 72px; row-gap: 4px; } /* same track and gutter as the multi-column panels (8 Oct) */
+        .mm-panel-single .mm-group { display: grid; grid-template-columns: repeat(var(--mm-cols, 3), ${MENU_COL_W}px); column-gap: var(--mm-gap); row-gap: 16px; } /* same track and gutter as the multi-column panels (8 Oct) */
         .mm-panel-single .mm-heading { grid-column: 1 / -1; }
         .mm-panel-single .mm-item { position: relative; }
         .mm-panel-single .mm-desc { max-width: none; }
@@ -590,11 +614,11 @@ export function SiteNav({
         .mm-col-divider { padding-right: 16px; width: 244px; box-sizing: border-box; } /* no hairline (8 Oct) */
         .mm-group { display: flex; flex-direction: column; gap: 8px; }
         .mm-group-links { gap: 2px; }
-        .mm-heading { margin: 0; padding: 0 10px; font-size: 14px; line-height: 20px; font-weight: 500; letter-spacing: 0.01em; color: var(--mm-muted); }
+        .mm-heading { margin: 0; padding: 0 10px; font-size: var(--fs-sm); line-height: 20px; font-weight: 500; letter-spacing: 0.01em; color: var(--mm-muted); }
 
         .mm-item { display: flex; flex-direction: column; gap: 1px; padding: 6px 10px; border-radius: 10px; text-decoration: none; transition: background 0.2s; outline: none; }
         .mm-item:hover, .mm-item:focus-visible { background: var(--mm-hover); }
-        .mm-item-title { display: flex; align-items: center; gap: 8px; font-size: 16px; line-height: 24px; font-weight: 600; color: var(--mm-fg); }
+        .mm-item-title { display: flex; align-items: center; gap: 8px; font-size: var(--fs-md); line-height: 24px; font-weight: 600; color: var(--mm-fg); }
         .mm-item-title .mm-badge { margin-left: 4px; }
         .mm-chev { margin-left: auto; color: var(--mm-fg); opacity: 0; transform: translateX(-4px); transition: opacity 0.2s, transform 0.2s; flex-shrink: 0; }
         .mm-item:hover .mm-chev, .mm-item:focus-visible .mm-chev { opacity: 1; transform: none; }
@@ -602,22 +626,25 @@ export function SiteNav({
         .mm-item-soon { cursor: default; }
         .mm-item-soon .mm-item-title { color: var(--mm-muted); }
         .mm-sublinks { display: flex; gap: 4px; margin: 6px 0 0 -8px; }
-        .mm-sublink { display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 4px 8px; box-sizing: border-box; border-radius: 8px; font-size: 14px; font-weight: 500; letter-spacing: 0.01em; color: var(--mm-fg); text-decoration: none; transition: background 0.2s; }
+        .mm-sublink { display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 4px 8px; box-sizing: border-box; border-radius: 8px; font-size: var(--fs-sm); font-weight: 500; letter-spacing: 0.01em; color: var(--mm-fg); text-decoration: none; transition: background 0.2s; }
         .mm-sublink:hover, .mm-sublink:focus-visible { background: var(--mm-hover); outline: none; }
-        .mm-desc { font-size: 13px; line-height: 18px; font-weight: 400; letter-spacing: 0.01em; color: var(--mm-muted); max-width: 208px; }
+        .mm-desc { font-size: var(--fs-sm); line-height: 18px; font-weight: 400; letter-spacing: 0.01em; color: var(--mm-muted); max-width: 208px; }
 
-        .mm-badge { display: inline-flex; align-items: center; height: 20px; padding: 2px 6px; box-sizing: border-box; border-radius: 6px; background: var(--mm-accent-soft); font-size: 12px; line-height: 16px; font-weight: 500; letter-spacing: 0.02em; color: var(--mm-fg); }
-        .mm-badge-muted { height: 16px; padding: 1px 5px; background: var(--mm-badge-muted-bg); font-size: 10px; line-height: 14px; color: var(--mm-badge-muted-fg); }
+        .mm-badge { display: inline-flex; align-items: center; height: 20px; padding: 2px 6px; box-sizing: border-box; border-radius: 6px; background: var(--mm-accent-soft); font-size: var(--fs-xs); line-height: 16px; font-weight: 500; letter-spacing: 0.02em; color: var(--mm-fg); }
+        .mm-badge-muted { height: 16px; padding: 1px 5px; background: var(--mm-badge-muted-bg); font-size: var(--fs-2xs); line-height: 14px; color: var(--mm-badge-muted-fg); }
 
-        .mm-link { padding: 3px 10px; border-radius: 10px; font-size: 14px; line-height: 20px; font-weight: 500; letter-spacing: 0.01em; color: var(--mm-fg); text-decoration: none; transition: background 0.2s; }
+        .mm-link { padding: 3px 10px; border-radius: 10px; font-size: var(--fs-sm); line-height: 20px; font-weight: 500; letter-spacing: 0.01em; color: var(--mm-fg); text-decoration: none; transition: background 0.2s; }
         .mm-link:hover, .mm-link:focus-visible { background: var(--mm-hover); outline: none; }
         /* A right arrow on each plain link (Hamza, 7 Oct), shown only on hover
            or focus, sliding in from the left. */
         .mm-link { display: flex; align-items: center; gap: 8px; }
         .mm-link-arrow { margin-left: auto; display: inline-flex; color: var(--mm-fg); opacity: 0; transform: translateX(-4px); transition: opacity 0.2s, transform 0.2s; }
         .mm-link:hover .mm-link-arrow, .mm-link:focus-visible .mm-link-arrow { opacity: 1; transform: none; }
-        .mm-more { margin-top: 4px; align-self: flex-start; display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 6px 10px; box-sizing: border-box; border-radius: 10px; font-size: 14px; font-weight: 500; letter-spacing: 0.02em; color: var(--mm-more); text-decoration: none; transition: background 0.2s; }
+        .mm-more { margin-top: 4px; align-self: flex-start; display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 6px 10px; box-sizing: border-box; border-radius: 10px; font-size: var(--fs-sm); font-weight: 500; letter-spacing: 0.02em; color: var(--mm-more); text-decoration: none; transition: background 0.2s; }
         .mm-more:hover, .mm-more:focus-visible { background: var(--mm-hover); outline: none; }
+        /* Underlined so it reads as the way into the full list (Hamza, 14 Oct); the arrow stays clean. */
+        .mm-more-label { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; text-decoration-color: color-mix(in srgb, currentColor 45%, transparent); transition: text-decoration-color 0.2s; }
+        .mm-more:hover .mm-more-label, .mm-more:focus-visible .mm-more-label { text-decoration-color: currentColor; }
 
         .mm-cards { display: flex; gap: 12px; align-self: stretch; }
         .mm-tile { display: block; width: 220px; min-height: 300px; border-radius: 12px; overflow: hidden; background: var(--mm-tint-surface); }
@@ -630,8 +657,8 @@ export function SiteNav({
         .mm-card-tint { background: var(--mm-tint-surface); }
         .mm-card-muted { background: var(--mm-tint-surface); }
         .mm-card-copy { display: flex; flex-direction: column; gap: 4px; }
-        .mm-card-title { margin: 0; display: flex; align-items: center; gap: 10px; font-size: 17px; line-height: 24px; font-weight: 500; color: var(--mm-fg); }
-        .mm-card-body { margin: 0; font-size: 13px; line-height: 18px; font-weight: 400; letter-spacing: 0.01em; color: var(--mm-muted); }
+        .mm-card-title { margin: 0; display: flex; align-items: center; gap: 10px; font-size: var(--fs-lg); line-height: 24px; font-weight: 500; color: var(--mm-fg); }
+        .mm-card-body { margin: 0; font-size: var(--fs-sm); line-height: 18px; font-weight: 400; letter-spacing: 0.01em; color: var(--mm-muted); }
         .mm-card-cta { align-self: flex-start; display: inline-flex; align-items: center; height: var(--btn-h-sm); padding: 0 var(--btn-px-sm); box-sizing: border-box; border-radius: var(--btn-radius); background: var(--mm-cta-bg); color: var(--mm-cta-fg); font-size: var(--btn-fs-sm); font-weight: var(--btn-weight); text-decoration: none; transition: box-shadow 0.2s; }
         .mm-card-cta:hover { box-shadow: 0 0 0 5px var(--mm-cta-glow); }
 
@@ -648,7 +675,7 @@ export function SiteNav({
         .mm-split-mirror { transform: scaleX(-1); }
 
         /* ── Mobile sheet ───────────────────────────────────── */
-        .ms-row { width: 100%; display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border: none; background: transparent; cursor: pointer; text-align: left; text-decoration: none; font-family: ${FONT}; font-size: 18px; line-height: 28px; font-weight: 600; color: var(--mm-row); }
+        .ms-row { width: 100%; display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border: none; background: transparent; cursor: pointer; text-align: left; text-decoration: none; font-family: ${FONT}; font-size: var(--fs-lg); line-height: 28px; font-weight: 600; color: var(--mm-row); }
         .ms-chev { color: var(--mm-fg); transition: transform 0.25s ${NAV_EASE}; }
         .ms-row[aria-expanded="true"] .ms-chev { transform: rotate(180deg); }
         .ms-body { display: flex; flex-direction: column; gap: 23px; padding: 4px 0 16px; animation: navMenuIn 0.2s ${NAV_EASE} both; }
@@ -656,13 +683,13 @@ export function SiteNav({
         .ms-body .mm-heading { padding: 0; }
         .ms-body .mm-item, .ms-body .mm-link { border-radius: 0; padding: 8px 10px; }
         .ms-body .mm-item:hover, .ms-body .mm-link:hover { background: transparent; }
-        .ms-body .mm-item-title { font-size: 14px; line-height: 20px; }
+        .ms-body .mm-item-title { font-size: var(--fs-sm); line-height: 20px; }
         .ms-body .mm-chev { display: none; }
         .ms-body .mm-desc { max-width: none; }
         .ms-body .mm-sublinks { margin-left: -8px; }
         .ms-body .mm-more { margin-top: 4px; padding-left: 10px; }
         @media (min-width: 640px) {
-          .ms-body .mm-item-title, .ms-body .mm-desc, .ms-body .mm-link { font-size: 16px; line-height: 24px; }
+          .ms-body .mm-item-title, .ms-body .mm-desc, .ms-body .mm-link { font-size: var(--fs-md); line-height: 24px; }
         }
       `}</style>
 
@@ -798,6 +825,7 @@ export function SiteNav({
             aria-label={panelEntry.label}
             className={`mm-scope mm-panel${
               panelEntry.panel.columns.length === 1 && !panelEntry.panel.cards ? " mm-panel-single" : ""
+            }${panelEntry.panel.columns.length >= 4 ? " mm-panel-dense" : ""
             }`}
             data-menu-theme={menuTheme}
             // Tucked up under the bar (Hamza, 6 Oct: less space between the
@@ -898,7 +926,7 @@ export function SiteNav({
               onClick={closeAll}
               style={{
                 display: "inline-flex", alignItems: "center", height: 48, padding: "12px 16px", boxSizing: "border-box",
-                borderRadius: 999, background: "var(--mm-cta-bg)", color: "var(--mm-cta-fg)", fontSize: 14, fontWeight: 500,
+                borderRadius: 999, background: "var(--mm-cta-bg)", color: "var(--mm-cta-fg)", fontSize: "var(--fs-sm)", fontWeight: 500,
                 letterSpacing: "0.02em", textDecoration: "none",
               }}
             >
@@ -907,7 +935,7 @@ export function SiteNav({
             <a
               href={NAV_DEMO.href}
               onClick={closeAll}
-              style={{ display: "inline-flex", alignItems: "center", gap: 10, fontSize: 16, fontWeight: 500, color: "var(--mm-fg)", textDecoration: "none" }}
+              style={{ display: "inline-flex", alignItems: "center", gap: 10, fontSize: "var(--fs-md)", fontWeight: 500, color: "var(--mm-fg)", textDecoration: "none" }}
             >
               {NAV_DEMO.label}
               <ArrowUpRight />

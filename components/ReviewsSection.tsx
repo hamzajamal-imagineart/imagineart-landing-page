@@ -2,83 +2,118 @@ import { BlurHeading } from "@/components/BlurHeading";
 import { withBasePath } from "@/lib/assets";
 
 /**
- * Reviews, as a bento of five (Hamza, 24 Sep, to a reference): three columns,
- * a tall featured card in the middle with footage fading into its copy, and a
- * short and a tall card either side, dark and light alternating so the two
- * outer columns mirror each other.
- *
- * Reviews are real, pulled from the public Trustpilot profile for
- * www.imagine.art on 28 Aug 2026, filtered to five stars. Attributed to the
- * reviewer's own display name and Trustpilot, because that is all the source
- * gives — so the avatar is a monogram, not a photograph, and the line under
- * the name is the source, not a job title. Obvious typos corrected, nothing
- * else changed.
- *
- * The reference's featured card carries two stats ("32% lead generation").
- * There are no real figures to put there, so that row is left out rather
- * than invented; `stats` on a review renders it when there are.
- *
- * The profile's overall score is 3.9, not 5. Showing only five-star reviews is
- * a selected view, so this section makes no aggregate rating claim.
+ * Testimonials (Hamza, 14 Oct), in the words of the revamped homepage copy,
+ * nothing added (the H2 is Hamza's: "How enterprise brands scale creative with ImagineArt", 14 Oct). Every panel is
+ * its client's case-study image as the background (public/media/reviews,
+ * from the Business page's case-study cards) under a dark scrim, text always
+ * white: the Unilever feature (quote left, its three figures right with
+ * "Read the case study"), then six quote cards, logo top left, quote and
+ * attribution at the foot; each links to its case study.
  */
-type Review = {
-  stars: number;
+type Testimonial = {
   quote: string;
+  /** What changed, under the quote (Framon only, so far). */
+  result?: string;
   name: string;
-  stats?: { value: string; label: string }[];
+  role?: string;
+  slug: string;
+  /** The client's mark (public/media/brand-logos, grey single-colour SVG) and its height. */
+  logo?: string;
+  logoH?: number;
 };
 
-const src = "via Trustpilot";
+const CASE = "https://www.imagine.art/business/case-studies";
 
-/** Five, in the order the grid places them: column one top and bottom, the
-    featured card, column three top and bottom. */
-const [A, B, FEATURED, C, D]: Review[] = [
-  { stars: 5, quote: "It's the perfect portal for everything I need in AI. Easy to add credits. Quick and responsive.", name: "Aubrey Kurlansky" },
-  { stars: 5, quote: "I love this platform. Very easy to navigate through whatever you need to create, and the pricing is very reasonable.", name: "Robyn Delay" },
-  { stars: 5, quote: "I tried multiple tools to create videos but only ImagineArt was able to give me crisp videos as per the prompt.", name: "Uzair Khan" },
-  { stars: 5, quote: "ImagineArt was very helpful to me. Their support was extremely responsive to what I needed.", name: "Heidi Anderson" },
-  { stars: 5, quote: "I'm really impressed with the quality. It works very well and completely met my expectations.", name: "Ali Haider" },
+/** Six, in the order the grid places them: column one top to bottom, then column three. */
+const SIDE: Testimonial[] = [
+  {
+    quote: "Reduce time and costs: that\u2019s exactly what it delivers.",
+    result: "Custom project turnaround went from a full day to a few hours, with no freelancers.",
+    name: "Sales Manager",
+    role: "Framon Group",
+    slug: "framon", logo: "Framon", logoH: 22,
+  },
+  { quote: "The ROI and time savings strongly validated the subscription value.", name: "Buzz Lab", slug: "buzz-lab", logo: "Buzzlab", logoH: 22 },
+  { quote: "We can now experiment, iterate, and launch premium visuals without waiting, or wasting budget.", name: "Mnsaj", slug: "mnsaj", logo: "mnsaj", logoH: 36 },
+  {
+    quote: "It\u2019s like having an extra pair of hands that skips the tedious searching and jumps straight to the creative work.",
+    name: "7Routes",
+    slug: "7routes", logo: "7Routes", logoH: 52,
+  },
+  { quote: "You cannot be model chasing at this stage of the AI development curve.", name: "Co-founder", role: "Noise2Signal", slug: "noise2signal" },
+  {
+    quote: "Instead of waiting for a designer to turn around every concept, we can quickly generate different styles, layouts, and campaign directions ourselves.",
+    name: "Marketing team",
+    role: "USA Home Improvement",
+    slug: "usa-home-improvement", logo: "USAHomeImprovement", logoH: 30,
+  },
 ];
 
-/** An image the product made, over the featured review (Hamza, 25 Sep; it
-    was a clip). An illustration on purpose, not a photograph: a face over a
-    named review would read as the reviewer, and Trustpilot gives no photo. */
-const FEATURED_IMAGE = "/media/reviews/featured-product.jpg"; // green bottle product shot (was the white bottles), Hamza 8 Oct
+const FEATURED: Testimonial = {
+  quote:
+    "ImagineArt changed how our division produces creative. In six weeks, three teams shipped 1,200 static assets and 300 video reels, with images 25x cheaper and 7x faster, and every one of them stayed on-brand across markets. Senior leadership now sends our highest-priority campaigns straight to the platform.",
+  name: "Humza Mahfooz",
+  role: "Unilever",
+  slug: "unilever", logo: "Unilever", logoH: 64,
+};
 
-const initials = (name: string) =>
-  name.split(/\s+/).map((w) => w[0]).slice(0, 2).join("").toUpperCase();
+/** The Unilever stat strip, verbatim from the copy; the figure set large, the rest of its phrase under it. */
+const STATS = [
+  { value: "8x", label: "more output with the same team and budget" },
+  { value: "25x", label: "lower image production cost" },
+  { value: "1,200", label: "static assets and 300 video reels" },
+];
 
-function Stars({ n }: { n: number }) {
+/** A panel's background: the client's image under a scrim, the logo top left. */
+function Backdrop({ t }: { t: Testimonial }) {
   return (
-    <span className="rv-stars" role="img" aria-label={`${n} out of 5 stars`}>
-      {Array.from({ length: 5 }).map((_, s) => (
-        <svg key={s} viewBox="0 0 24 24" className={s < n ? "rv-star-on" : "rv-star-off"} aria-hidden>
-          <path d="M12 2.6l2.9 6.1 6.6.9-4.8 4.6 1.2 6.6L12 17.7 6.1 20.8l1.2-6.6L2.5 9.6l6.6-.9L12 2.6z" />
-        </svg>
-      ))}
-    </span>
+    <>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img className="rv-bg" src={withBasePath(`/media/reviews/${t.slug}.jpg`)} alt="" aria-hidden loading="lazy" />
+      <span className="rv-scrim" aria-hidden />
+    </>
   );
 }
 
-function Person({ name }: { name: string }) {
+function Logo({ t }: { t: Testimonial }) {
+  if (!t.logo) return null;
   return (
-    <div className="rv-person">
-      <span className="rv-avatar" aria-hidden>{initials(name)}</span>
-      <span>
-        <span className="rv-name">{name}</span>
-        <span className="rv-src">{src}</span>
-      </span>
-    </div>
+    // eslint-disable-next-line @next/next/no-img-element
+    <img className="rv-logo" src={withBasePath(`/media/brand-logos/${t.logo}.svg`)} alt={t.role?.split(",").pop()?.trim() ?? t.name} style={{ height: t.logoH }} />
   );
 }
 
-function Card({ r, tone }: { r: Review; tone: "dark" | "light" }) {
+function Arrow({ className = "" }: { className?: string }) {
   return (
-    <figure className={`rv-card rv-${tone}`}>
-      <Stars n={r.stars} />
-      <blockquote className="rv-quote">&ldquo;{r.quote}&rdquo;</blockquote>
-      <figcaption><Person name={r.name} /></figcaption>
-    </figure>
+    <svg className={className} width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path d="M7 17 17 7M9 7h8v8" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function Card({ t }: { t: Testimonial }) {
+  return (
+    <a className="rv-card" href={`${CASE}/${t.slug}`}>
+      <Backdrop t={t} />
+      <figure className="rv-fig">
+        <div className="rv-logo-row">
+          <Logo t={t} />
+          <Arrow className="rv-go" />
+        </div>
+        <span className="rv-qm" aria-hidden>&ldquo;</span>
+        <blockquote className="rv-quote">{t.quote}</blockquote>
+        {/* Who said it, then the result, revealed on hover or focus (Hamza, 14 Oct); always shown on touch. */}
+        <div className="rv-reveal">
+          <div className="rv-reveal-in">
+            <figcaption className="rv-by">
+              <span className="rv-name">{t.name}</span>
+              {t.role && <span className="rv-role">{t.role}</span>}
+            </figcaption>
+            {t.result && <p className="rv-result">{t.result}</p>}
+          </div>
+        </div>
+      </figure>
+    </a>
   );
 }
 
@@ -86,193 +121,131 @@ export function ReviewsSection() {
   return (
     <section id="reviews" className="relative border-t border-[color:var(--line)] py-24 md:py-32">
       <div className="container-page relative z-10">
-        <div className="max-w-[640px]">
-          <BlurHeading className="h2" lead="Reviews" />
-          <p className="lede mt-5">From solo creators to studios, in their own words.</p>
+        <div className="max-w-[720px]">
+          <BlurHeading className="h2" lead="How enterprise brands" muted="scale creative with ImagineArt" lineBreak />
         </div>
 
-        <div className="rv-grid mt-12">
-          <div className="rv-col rv-col-a">
-            <Card r={A} tone="dark" />
-            <Card r={B} tone="light" />
-          </div>
-
-          <figure className="rv-card rv-featured">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img className="rv-media" src={withBasePath(FEATURED_IMAGE)} alt="" aria-hidden loading="lazy" />
-            <span className="rv-scrim" aria-hidden />
-            <div className="rv-featured-copy">
-              <Stars n={FEATURED.stars} />
-              <blockquote className="rv-quote">&ldquo;{FEATURED.quote}&rdquo;</blockquote>
-              {FEATURED.stats && (
-                <dl className="rv-stats">
-                  {FEATURED.stats.map((s) => (
-                    <div key={s.label}>
-                      <dt>{s.value}</dt>
-                      <dd>{s.label}</dd>
-                    </div>
-                  ))}
-                </dl>
-              )}
-              <figcaption><Person name={FEATURED.name} /></figcaption>
-            </div>
+        <div className="rv-feature mt-12">
+          <Backdrop t={FEATURED} />
+          <figure className="rv-feature-main">
+            <Logo t={FEATURED} />
+            <span className="rv-qm rv-qm-lg" aria-hidden>&ldquo;</span>
+            <blockquote className="rv-feature-quote">{FEATURED.quote}</blockquote>
+            <figcaption className="rv-by">
+              <span className="rv-name">{FEATURED.name}</span>
+              <span className="rv-role">{FEATURED.role}</span>
+            </figcaption>
           </figure>
-
-          <div className="rv-col rv-col-c">
-            <Card r={C} tone="light" />
-            <Card r={D} tone="dark" />
+          <div className="rv-feature-side">
+            <dl className="rv-stats">
+              {STATS.map((x) => (
+                <div key={x.value}>
+                  <dt>{x.value}</dt>
+                  <dd>{x.label}</dd>
+                </div>
+              ))}
+            </dl>
+            <a className="rv-case" href={`${CASE}/${FEATURED.slug}`}>
+              Read the case study
+              <Arrow />
+            </a>
           </div>
+        </div>
+
+        <div className="rv-grid mt-4">
+          {SIDE.map((t) => <Card key={t.slug} t={t} />)}
         </div>
       </div>
 
       <style>{`
-        /* Three columns; the outer two split short over tall and tall over
-           short, so the seams sit at different heights either side of the
-           featured card, as in the reference. */
-        .rv-grid {
-          display: grid;
-          grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr) minmax(0, 1fr);
-          gap: 14px;
-          min-height: clamp(520px, 44vw, 620px);
+        /* Panels: the image fills, a scrim holds the text, a 1px edge drawn above both. */
+        .rv-feature, .rv-card {
+          position: relative; isolation: isolate; overflow: hidden;
+          border-radius: var(--radius-4); background: #0e0e10; color: #fff;
         }
-        .rv-col { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
-        .rv-col-a > :first-child, .rv-col-c > :last-child { flex: 1 1 0; }
-        .rv-col-a > :last-child, .rv-col-c > :first-child { flex: 1.3 1 0; }
+        .rv-feature::after, .rv-card::after {
+          content: ""; position: absolute; inset: 0; z-index: 2; border-radius: inherit; pointer-events: none;
+          box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1); transition: box-shadow 0.25s;
+        }
+        .rv-bg { position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1); }
+        .rv-scrim { position: absolute; inset: 0; z-index: -1; }
+        .rv-logo { display: block; flex-shrink: 0; align-self: flex-start; width: auto; max-width: 190px; filter: brightness(0) invert(1); }
+        .rv-name { display: block; font-size: var(--fs-sm); font-weight: 500; letter-spacing: -0.01em; color: #fff; }
+        .rv-role { display: block; margin-top: 2px; font-size: var(--fs-sm); color: rgba(255, 255, 255, 0.66); }
 
-        .rv-card {
-          position: relative;
-          display: flex;
-          flex-direction: column;
-          margin: 0;
-          padding: clamp(20px, 1.9vw, 28px);
-          border-radius: var(--radius-4);
-          min-width: 0;
+        /* Unilever: quote left over the darkest part, figures right. */
+        .rv-feature { display: grid; grid-template-columns: minmax(0, 1fr) clamp(240px, 26%, 320px); min-height: clamp(440px, 38vw, 540px); }
+        .rv-feature .rv-bg { object-position: 62% 50%; }
+        .rv-feature .rv-scrim { background: linear-gradient(90deg, rgba(8, 8, 10, 0.92) 0%, rgba(8, 8, 10, 0.78) 45%, rgba(8, 8, 10, 0.5) 75%, rgba(8, 8, 10, 0.7) 100%); }
+        .rv-feature-main { margin: 0; display: flex; flex-direction: column; padding: clamp(28px, 3.6vw, 56px); }
+        /* The opening quote as the typeface's own glyph, large and muted, set
+           just above the first line and nudged left so its edge lines up
+           with the text (14 Oct); it replaces the typed quotation marks. */
+        .rv-qm {
+          display: block; align-self: flex-start; height: 0.42em; margin: 24px 0 0 -0.06em;
+          font-size: var(--fs-display-xl); line-height: 1; font-weight: 500; letter-spacing: 0;
+          color: rgba(255, 255, 255, 0.35); user-select: none;
         }
-        /* Two shades of dark, not dark and white (Hamza, 24 Sep): the page
-           ships dark and a white card read as a hole in it. The alternation
-           stays, as a lift of one step rather than a flip. */
-        .rv-dark {
-          background: #141416;
-          color: #fff;
-          box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
-          --rv-2: rgba(255, 255, 255, 0.78);
-          --rv-3: rgba(255, 255, 255, 0.55);
-          --rv-avatar: rgba(255, 255, 255, 0.08);
-          --rv-star-off: rgba(255, 255, 255, 0.18);
+        .rv-qm-lg { font-size: 112px; margin-top: 36px; }
+        .rv-feature-quote {
+          margin: 14px 0 0; max-width: 32em;
+          font-size: clamp(var(--fs-xl), 2vw, var(--fs-h4)); line-height: 1.42; letter-spacing: -0.015em; font-weight: 400; color: #fff; text-wrap: pretty;
         }
-        .rv-light {
-          background: #232327;
-          color: #fff;
-          box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
-          --rv-2: rgba(255, 255, 255, 0.82);
-          --rv-3: rgba(255, 255, 255, 0.58);
-          --rv-avatar: rgba(255, 255, 255, 0.1);
-          --rv-star-off: rgba(255, 255, 255, 0.2);
+        .rv-feature-main .rv-by { margin-top: auto; padding-top: 32px; }
+        .rv-feature-side {
+          display: flex; flex-direction: column; justify-content: space-between; gap: 28px;
+          padding: clamp(28px, 3.6vw, 56px) clamp(24px, 2.6vw, 40px);
+          border-left: 1px solid rgba(255, 255, 255, 0.14);
         }
+        .rv-stats { margin: 0; display: flex; flex-direction: column; }
+        .rv-stats > div { padding: 22px 0; border-top: 1px solid rgba(255, 255, 255, 0.14); }
+        .rv-stats > div:first-child { padding-top: 0; border-top: 0; }
+        .rv-stats dt { font-size: clamp(var(--fs-h2), 3.4vw, var(--fs-display-lg)); line-height: 1; font-weight: 500; letter-spacing: -0.035em; color: #fff; font-variant-numeric: tabular-nums; }
+        .rv-stats dd { margin: 10px 0 0; font-size: var(--fs-sm); line-height: 1.45; color: rgba(255, 255, 255, 0.7); }
+        .rv-case {
+          align-self: flex-start; display: inline-flex; align-items: center; gap: 6px;
+          font-size: var(--fs-sm); font-weight: 500; color: #fff; text-decoration: none;
+          padding-bottom: 2px; border-bottom: 1px solid rgba(255, 255, 255, 0.4); transition: border-color 0.2s;
+        }
+        .rv-case:hover { border-bottom-color: #fff; }
 
-        /* Light theme (6 Oct): the tall cards go white, as in the reference
-           — dark and white alternating on a light page. The dark ones are a
-           charcoal grey rather than near-black (Hamza, 6 Oct), which sits
-           more softly on white; white text on it is 11:1. */
-        :root:not([data-theme="dark"]) .rv-dark {
-          background: #2c2c30;
-          box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
-          --rv-avatar: rgba(255, 255, 255, 0.1);
+        /* Six cards: logo top left, quote and attribution at the foot. */
+        .rv-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+        .rv-card { display: flex; min-height: clamp(380px, 31vw, 460px); text-decoration: none; }
+        .rv-card .rv-scrim { background: linear-gradient(to top, rgba(8, 8, 10, 0.92) 0%, rgba(8, 8, 10, 0.72) 42%, rgba(8, 8, 10, 0.28) 72%, rgba(8, 8, 10, 0.45) 100%); }
+        .rv-card:hover .rv-bg { transform: scale(1.04); }
+        .rv-card:hover::after { box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.24); }
+        .rv-card:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+        .rv-fig { display: flex; flex-direction: column; flex: 1; margin: 0; padding: clamp(22px, 2vw, 28px); }
+        /* Logos top-aligned on one line at the card's inset, whatever their height; the arrow on the same line. */
+        .rv-logo-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: auto; }
+        .rv-go { flex-shrink: 0; margin-left: auto; color: rgba(255, 255, 255, 0.7); transition: color 0.2s, transform 0.25s cubic-bezier(0.22, 1, 0.36, 1); }
+        .rv-card:hover .rv-go, .rv-card:focus-visible .rv-go { color: #fff; transform: translate(2px, -2px); }
+        .rv-quote { margin: 10px 0 0; font-size: var(--fs-xl); line-height: 1.45; letter-spacing: -0.005em; color: #fff; text-wrap: pretty; }
+        .rv-result { margin: 12px 0 0; font-size: var(--fs-sm); line-height: 1.5; color: rgba(255, 255, 255, 0.7); }
+        .rv-card .rv-by { margin-top: 20px; padding-top: 16px; border-top: 1px solid rgba(255, 255, 255, 0.16); }
+        .rv-card .rv-result { margin-top: 10px; }
+        /* Collapsed at rest where there is hover; opens on hover or keyboard focus. */
+        @media (hover: hover) and (pointer: fine) {
+          .rv-reveal { display: grid; grid-template-rows: 0fr; opacity: 0; transition: grid-template-rows 0.45s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.3s ease; }
+          .rv-reveal-in { min-height: 0; overflow: hidden; }
+          .rv-card:hover .rv-reveal, .rv-card:focus-visible .rv-reveal { grid-template-rows: 1fr; opacity: 1; }
         }
-        :root:not([data-theme="dark"]) .rv-light {
-          background: #ffffff;
-          color: #141414;
-          box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(16, 20, 30, 0.04);
-          --rv-2: #3a3a3c;
-          --rv-3: #6b6b70;
-          --rv-avatar: #ececea;
-          --rv-star-off: rgba(0, 0, 0, 0.16);
-        }
-
-        .rv-stars { display: inline-flex; gap: 3px; }
-        .rv-stars svg { width: 15px; height: 15px; display: block; }
-        .rv-star-on { fill: #f06a3c; }
-        .rv-star-off { fill: var(--rv-star-off); }
-
-        .rv-quote {
-          margin: 16px 0 0;
-          font-size: 15px;
-          line-height: 1.6;
-          color: var(--rv-2);
-          max-width: 42ch;
-        }
-
-        /* The person sits at the card's foot, whatever the quote's length. */
-        .rv-card figcaption { margin-top: auto; padding-top: 24px; }
-        .rv-person { display: flex; align-items: center; gap: 12px; }
-        .rv-avatar {
-          width: 38px; height: 38px;
-          flex: 0 0 auto;
-          display: grid; place-items: center;
-          border-radius: var(--radius-2);
-          background: var(--rv-avatar);
-          font-size: 12.5px;
-          font-weight: 600;
-          letter-spacing: 0.02em;
-        }
-        .rv-name { display: block; font-size: 14.5px; font-weight: 500; letter-spacing: -0.01em; }
-        .rv-src { display: block; margin-top: 2px; font-size: 12.5px; color: var(--rv-3); }
-
-        /* Featured: footage over the top, fading down into the copy. */
-        .rv-featured {
-          overflow: hidden;
-          justify-content: flex-end;
-          padding: 0;
-          background: #0e0e10;
-          color: #fff;
-          box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
-          --rv-2: rgba(255, 255, 255, 0.84);
-          --rv-3: rgba(255, 255, 255, 0.58);
-          --rv-avatar: rgba(255, 255, 255, 0.14);
-          --rv-star-off: rgba(255, 255, 255, 0.24);
-        }
-        /* The hairline as an overlay: the inset shadow is painted under the image, which hid it (Hamza, 8 Oct). */
-        .rv-featured::after { content: ""; position: absolute; inset: 0; border-radius: inherit; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1); pointer-events: none; z-index: 2; }
-        .rv-media { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 100%; display: block; }
-        .rv-scrim {
-          position: absolute;
-          inset: 0;
-          background: linear-gradient(
-            to bottom,
-            rgba(14, 14, 16, 0) 0%,
-            rgba(14, 14, 16, 0.2) 30%,
-            rgba(14, 14, 16, 0.86) 58%,
-            #0e0e10 78%
-          );
-        }
-        .rv-featured-copy {
-          position: relative;
-          display: flex;
-          flex-direction: column;
-          padding: clamp(20px, 1.9vw, 28px);
-        }
-        .rv-featured figcaption { margin-top: 0; padding-top: 24px; }
-        .rv-stats {
-          display: grid;
-          grid-template-columns: repeat(2, minmax(0, 1fr));
-          gap: 16px;
-          margin: 22px 0 0;
-        }
-        .rv-stats > div { padding-bottom: 14px; border-bottom: 1px solid rgba(255, 255, 255, 0.14); }
-        .rv-stats dt { font-size: 28px; font-weight: 500; letter-spacing: -0.02em; }
-        .rv-stats dd { margin: 4px 0 0; font-size: 13px; color: var(--rv-3); }
+        @media (prefers-reduced-motion: reduce) { .rv-reveal { transition: none; } }
 
         @media (max-width: 1000px) {
-          /* Two columns: the featured card across the top, the four under it. */
-          .rv-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); min-height: 0; }
-          .rv-featured { grid-column: 1 / -1; grid-row: 1; min-height: 460px; }
-          .rv-col > * { flex: 0 0 auto !important; min-height: 220px; }
+          .rv-feature { grid-template-columns: minmax(0, 1fr); }
+          .rv-feature .rv-scrim { background: linear-gradient(to top, rgba(8, 8, 10, 0.92) 0%, rgba(8, 8, 10, 0.8) 55%, rgba(8, 8, 10, 0.55) 100%); }
+          .rv-feature-side { border-left: 0; border-top: 1px solid rgba(255, 255, 255, 0.14); }
+          .rv-stats { flex-direction: row; gap: 24px; }
+          .rv-stats > div, .rv-stats > div:first-child { flex: 1; padding: 0; border: 0; }
+          .rv-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
         }
         @media (max-width: 640px) {
+          .rv-stats { flex-direction: column; gap: 18px; }
           .rv-grid { grid-template-columns: minmax(0, 1fr); }
-          .rv-featured { min-height: 440px; }
-          .rv-col > * { min-height: 0; }
         }
+        @media (prefers-reduced-motion: reduce) { .rv-bg, .rv-go { transition: none; } .rv-card:hover .rv-bg { transform: none; } }
       `}</style>
     </section>
   );

@@ -6,7 +6,7 @@ import { START_HREF } from "@/lib/links";
 import { PointsTimeline, CONTROL_POINTS, type TimelinePoint } from "@/components/sections/Control";
 
 /**
- * Outcomes: "From product shot to viral phenomenon". Built from Figma
+ * Outcomes: "From product shot to global campaign" (copy updated 14 Oct). Built from Figma
  * H-Drafts 644:4317 (Hamza, 6 Oct), above Industries.
  *
  * Heading, line and "Start creating" action are the frame's. Under them,
@@ -87,10 +87,10 @@ export function Outcomes() {
     <section id="outcomes" className="relative py-24 md:py-32" /* no guide lines or rule (Hamza, 8 Oct) */>
       <div className="container-page">
         <div className="max-w-[680px]">
-          <BlurHeading className="h2" lead="From product shot to viral phenomenon" />
+          <BlurHeading className="h2" lead="From product shot to global campaign" />
           <p className="lede mt-5">
-            Global on-brand campaigns, product shots, and top-tier filmmaking. Everything a brand
-            needs to show up at the highest level, in every format, every time.
+            Product shots, on-brand campaigns and cinematic film, in every format, every time.
+            Everything a brand needs to show up at its best.
           </p>
           <a href={START_HREF} className="oc-cta mt-7">
             Start creating

@@ -14,27 +14,32 @@ import { SectionGlow, sectionGlowCss } from "@/components/primitives/SectionGlow
 const ITEMS = [
   {
     q: "What is ImagineArt?",
-    a: "ImagineArt is an AI creative platform in three parts. Chat lets you brief and iterate with frontier models in one thread. Workflows lets you chain models, tools and connectors into pipelines that run on their own. Creative is the toolset itself: image, video, music and audio generation, an infinite canvas, and dedicated studios for ads, avatars, fashion and film.",
+    a: "ImagineArt is an AI creative platform in three parts. Chat lets you brief and iterate with frontier models in one thread. Workflows chains models, tools and connectors into pipelines that run on their own. Creative is the toolset itself: image, video, music and audio generation, an infinite canvas, and studios for ads, avatars, fashion and film.",
+  },
+  {
+    // New in the 14 Oct copy: answers "ai art generator" directly.
+    q: "Is ImagineArt an AI art generator?",
+    a: "Yes. ImagineArt turns text prompts and reference images into images, video and audio using 50+ AI models. Teams also get brand controls, editing tools and workflows to produce finished assets at scale.",
   },
   {
     q: "Which models can I use?",
-    a: "Over 50 image, video, audio and language models from providers including OpenAI, Google, Black Forest Labs, Kling, ByteDance and MiniMax, alongside ImagineArt's own. New models are added as they release, and you switch between them without changing tools.",
+    a: "Over 50 image, video, audio and language models from OpenAI, Google, Black Forest Labs, Kling, ByteDance, MiniMax and more, alongside ImagineArt's own. New models are added as they release, and you switch between them without changing tools.",
   },
   {
     q: "Is it free to start?",
-    a: "Yes. You can start on the free plan and upgrade when you need more generations, higher resolutions or team features. Current plans are on the pricing page.",
+    a: "Yes. Start on the free plan and upgrade when you need more generations, higher resolutions or team features. See current plans on the pricing page.",
   },
   {
-    q: "Can my team work together in realtime?",
-    a: "Yes. The infinite canvas is shared: everyone sees the same file, with live cursors, comments and versions, so reviews happen where the work is instead of in an export.",
+    q: "Can my team work together in real time?",
+    a: "Yes. The infinite canvas is shared. Everyone sees the same file with live cursors, comments and versions, so reviews happen where the work is.",
   },
   {
     q: "How do Workflows connect to the rest of my stack?",
-    a: "Through connectors that bring assets in and publish results out, plugins that run ImagineArt inside the apps you already use, and MCP, so your own agents and tools can drive a workflow directly. Any workflow can also run on a schedule.",
+    a: "Connectors bring assets in and publish results out. Plugins run ImagineArt inside the apps you already use. MCP lets your own agents and tools drive a workflow directly, and any workflow can run on a schedule.",
   },
   {
     q: "Do you train on my content?",
-    a: "No. Your assets, prompts and outputs are private to your workspace. We never use customer content to train our models.",
+    a: "No. Your assets, prompts and outputs are private to your workspace. We never use customer content to train models.",
   },
   {
     q: "Who owns what I make?",
@@ -139,7 +144,7 @@ export function FAQSection() {
           background: transparent;
           border: 0;
           font-family: inherit;
-          font-size: clamp(16px, 1.4vw, 19px);
+          font-size: clamp(var(--fs-md), 1.4vw, var(--fs-xl));
           font-weight: 500;
           line-height: 1.35;
           letter-spacing: -0.01em;
@@ -158,7 +163,7 @@ export function FAQSection() {
           transition: grid-template-rows 280ms cubic-bezier(0.2, 0.7, 0.2, 1);
         }
         .faq-a {
-          font-size: 16px;
+          font-size: var(--fs-md);
           line-height: 1.7;
           color: var(--ink-2);
           max-width: 68ch;

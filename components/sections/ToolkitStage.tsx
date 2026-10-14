@@ -94,7 +94,7 @@ export function ToolkitStage() {
           backdrop-filter: blur(var(--glass-blur));
           color: var(--on-media);
           font: inherit;
-          font-size: 15px;
+          font-size: var(--fs-md);
           font-weight: 500;
           white-space: nowrap;
           cursor: pointer;
@@ -109,7 +109,7 @@ export function ToolkitStage() {
         .tk-label { position: relative; }
         @media (max-width: 640px) {
           .tk-pills { left: 12px; right: 12px; transform: none; }
-          .tk-pill { height: 36px; padding: 0 14px; font-size: 13px; }
+          .tk-pill { height: 36px; padding: 0 14px; font-size: var(--fs-sm); }
         }
         @media (prefers-reduced-motion: reduce) { .tk-video { animation: none; } }
       `}</style>

@@ -47,6 +47,27 @@
      shared kit's nav and footer are not tied to it. */
   --corner: 1;
 
+  /* ── TYPE SCALE ── (Hamza, 14 Oct). Every font-size on the page reads one
+     of these; off-scale values were snapped to the nearest step.
+       display  2xl 72 · xl 60 · lg 48
+       heading  h1 40 · h2 36 · h3 32 · h4 28 · h5 24 · h6 20
+       text     xl 20 · lg 18 · md 16 · sm 14 · xs 12 · 2xs 11          */
+  --fs-display-2xl: 72px;
+  --fs-display-xl: 60px;
+  --fs-display-lg: 48px;
+  --fs-h1: 40px;
+  --fs-h2: 36px;
+  --fs-h3: 32px;
+  --fs-h4: 28px;
+  --fs-h5: 24px;
+  --fs-h6: 20px;
+  --fs-xl: 20px;
+  --fs-lg: 18px;
+  --fs-md: 16px;
+  --fs-sm: 14px;
+  --fs-xs: 12px;
+  --fs-2xs: 11px;
+
   /* ── BUTTONS ── (Hamza, 9 Oct: "define tokens"). Every CTA is a pill in
      one of three sizes; side-by-side buttons share a size.
        lg  hero and section CTAs
@@ -55,9 +76,9 @@
      Icon buttons: sm card corner arrows, md rail pagers, lg stage arrows. */
   --btn-radius: var(--radius-pill);
   --btn-weight: 500;
-  --btn-h-sm: 36px;  --btn-px-sm: 14px;  --btn-fs-sm: 14px;
-  --btn-h-md: 42px;  --btn-px-md: 18px;  --btn-fs-md: 15px;
-  --btn-h-lg: 48px;  --btn-px-lg: 24px;  --btn-fs-lg: 16px;
+  --btn-h-sm: 36px;  --btn-px-sm: 14px;  --btn-fs-sm: var(--fs-sm);
+  --btn-h-md: 42px;  --btn-px-md: 18px;  --btn-fs-md: var(--fs-md);
+  --btn-h-lg: 48px;  --btn-px-lg: 24px;  --btn-fs-lg: var(--fs-md);
   /* Paired buttons (nav Sign in + Try it free) share one width. */
   --btn-pair-w: 130px; /* fits "Book a demo" (12 Oct) */
   --btn-icon-sm: 34px;
@@ -245,6 +266,7 @@
   --hover-wash: rgba(255, 255, 255, 0.55);
   --progress-wash: rgba(0, 0, 0, 0.04);
   --selection-bg: rgba(0, 0, 0, 0.12);
+  --selection-fg: rgb(20 20 20);
 }
 :root[data-theme="dark"],
 [data-theme="dark"] {
@@ -255,6 +277,7 @@
   --hover-wash: rgba(255, 255, 255, 0.045);
   --progress-wash: rgba(255, 255, 255, 0.09);
   --selection-bg: rgba(255, 255, 255, 0.24);
+  --selection-fg: #fff;
 }
 
 
@@ -293,9 +316,10 @@
   h1, h2, h3, h4, h5, h6 { font-weight: 500; }
   strong, b { font-weight: 600; }
 
+  /* Follows the section's theme (14 Oct): fixed dark text vanished on this dark page. */
   ::selection {
-    background: rgb(20 20 20 / 0.12);
-    color: rgb(20 20 20);
+    background: var(--selection-bg);
+    color: var(--selection-fg);
   }
   footer ::selection {
     background: rgb(255 255 255 / 0.16);
@@ -336,7 +360,7 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  font-size: 11px;
+  font-size: var(--fs-2xs);
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--ink-3);
@@ -345,7 +369,7 @@
 
 .display {
   color: var(--ink-heading);
-  font-size: clamp(40px, 6vw, 72px);
+  font-size: clamp(var(--fs-h1), 6vw, var(--fs-display-2xl));
   line-height: 1.05;
   letter-spacing: -0.02em;
   font-weight: 500;
@@ -354,7 +378,7 @@
 
 .h2 {
   color: var(--ink-heading);
-  font-size: clamp(30px, 4vw, 48px);
+  font-size: clamp(var(--fs-h3), 4vw, var(--fs-display-lg));
   line-height: 1.1;
   letter-spacing: -0.015em;
   font-weight: 500;
@@ -383,7 +407,7 @@
 
 .h3 {
   color: var(--ink-heading);
-  font-size: clamp(24px, 2.6vw, 34px);
+  font-size: clamp(var(--fs-h5), 2.6vw, var(--fs-h2));
   line-height: 1.15;
   letter-spacing: -0.015em;
   font-weight: 500;
@@ -421,7 +445,7 @@
 }
 
 .lede {
-  font-size: 16px; /* every paragraph under a section heading (Hamza, 8 Oct; was 18) */
+  font-size: var(--fs-md); /* every paragraph under a section heading (Hamza, 8 Oct; was 18) */
   line-height: 1.65;
   max-width: 60ch;
   color: var(--ink-2);
@@ -463,14 +487,14 @@
 .attr-icon svg { width: 18px; height: 18px; }
 .attr-title {
   margin-top: 18px;
-  font-size: 16.5px;
+  font-size: var(--fs-md);
   font-weight: 500;
   letter-spacing: -0.01em;
   color: var(--ink);
 }
 .attr-body {
   margin-top: 6px;
-  font-size: 14.5px;
+  font-size: var(--fs-sm);
   line-height: 1.55;
   color: var(--ink-3);
   max-width: 34ch;
@@ -674,3 +698,8 @@ body::before {
 @media (prefers-reduced-motion: reduce) {
   .wm-glow { animation: none; }
 }
+
+/* Footer watermark shimmer (14 Oct): a faint glow on the moving outline; off
+   for reduced motion (the SMIL animation can't be paused, so the stroke hides). */
+.wm-shimmer { filter: drop-shadow(0 0 1.5px rgba(201, 166, 255, 0.6)); }
+@media (prefers-reduced-motion: reduce) { .wm-shimmer { display: none; } }

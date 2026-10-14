@@ -180,11 +180,12 @@ const TABS: Tab[] = [
   // recording; Toolkit (was Creative Suite) runs five tool clips with pills;
   // Workflows takes the clip the Agents tab used, which is a Workflows
   // recording.
+  // Studios leads, so the section opens on it (Hamza, 14 Oct).
+  // Ad, Fashion and Film Studio footage with chips to switch (Hamza, 7 Oct).
+  { id: "studios", label: "Studios", kind: "studios" },
   { id: "agent", label: "Agent", kind: "clip", videos: [COMPUTER_CLIP], audio: true },
   { id: "workflows", label: "Workflow", kind: "clip", videos: [WORKFLOWS_CLIP] },
   { id: "toolkit", label: "AI Toolkit", kind: "toolkit" },
-  // Ad, Fashion and Film Studio footage with chips to switch (Hamza, 7 Oct).
-  { id: "studios", label: "Studios", kind: "studios" },
   // MCP and Plugins, merged (Hamza, 7 Oct): both are ways to use ImagineArt
   // from somewhere else, so one tab with a two-way switch under the tab row.
   { id: "integrations", label: "MCP & Plugins", isNew: true, kind: "integrations" },
@@ -443,12 +444,15 @@ const DOT_SETS: [number, number][][] = [
   [[15, 3], [10, 8], [5, 13], [3, 15], [13, 6]],
   [[15, 3], [11, 7], [7, 11], [3, 15]],
 ];
+/** Each tab keeps its own dot pattern whatever its position (14 Oct reorder). */
+const TAB_DOTS: Record<string, number> = { agent: 0, toolkit: 2, studios: 3 };
+
 function TabDots({ v, id }: { v: number; id: string }) {
   if (id === "integrations") return <McpGlyph />;
   if (id === "workflows") return <WorkflowGlyph />;
   return (
     <svg className="pf-tab-dots" width="18" height="18" viewBox="0 0 18 18" aria-hidden>
-      {DOT_SETS[v % DOT_SETS.length].map(([cx, cy], k) => <circle key={k} cx={cx} cy={cy} r="1.5" fill="currentColor" />)}
+      {DOT_SETS[(TAB_DOTS[id] ?? v) % DOT_SETS.length].map(([cx, cy], k) => <circle key={k} cx={cx} cy={cy} r="1.5" fill="currentColor" />)}
     </svg>
   );
 }
@@ -546,7 +550,7 @@ export function PlatformStrip() {
       <div className="pf-head">
         {/* Heading and line from the "Controllable content" page's #workspace (Hamza, 8 Oct). */}
         <BlurHeading className="h2 pf-h2" lead="One workspace. Every capability." />
-        <p className="lede mt-4">Agents, workflows, the AI toolkit, studios and plugins, all in the same place. Nothing exported, nothing handed off.</p>
+        <p className="lede mt-4">Agents, workflows, the full AI toolkit, studios and plugins live together. Brief it, generate it, edit it and ship it without exporting files or handing work between tools.</p>
       </div>
       <div className="pf-tabs" role="tablist" aria-label="Platform" ref={tabs.containerRef as React.Ref<HTMLDivElement>}>
         <SlidingIndicator box={tabs.box} ready={tabs.ready} className="pf-tab-fill" />
@@ -620,13 +624,13 @@ export function PlatformStrip() {
           height: 34px; min-width: 112px; padding: 0 16px;
           border: 0; border-radius: var(--radius-pill);
           background: transparent;
-          font: inherit; font-size: 14px; font-weight: 500;
+          font: inherit; font-size: var(--fs-sm); font-weight: 500;
           color: var(--ink-3);
           cursor: pointer;
           transition: color var(--dur-fast) ease;
         }
         .pf-via-btn:hover, .pf-via-on { color: var(--ink-heading); }
-        .pf-via-new { font-size: 10.5px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--brand); }
+        .pf-via-new { font-size: var(--fs-2xs); font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--brand); }
         [data-theme="dark"] .pf-via-new { color: var(--brand-soft); }
         .pf-via-btn:focus-visible { outline: none; box-shadow: inset 0 0 0 1.5px var(--line-strong); }
         ${slidingIndicatorCss}
@@ -634,8 +638,9 @@ export function PlatformStrip() {
         /* Minimal tabs (Hamza, 6 Oct, to a reference): no track and no
            dividers, a small dot glyph before each label, and only the
            selected tab on a soft fill. Above the container. */
-        .pf-head { text-align: center; margin: 0 auto 56px; max-width: 720px; display: flex; flex-direction: column; align-items: center; }
-        .pf-head .lede { max-width: 56ch; }
+        .pf-head { text-align: center; margin: 0 auto 56px; max-width: 800px; display: flex; flex-direction: column; align-items: center; }
+        /* Two balanced lines on desktop (Hamza, 14 Oct): about 650px of copy a line at 16px. */
+        .pf-head .lede { max-width: 760px; text-wrap: balance; }
         .pf-tabs {
           position: relative;
           margin: 0 auto;
@@ -667,7 +672,7 @@ export function PlatformStrip() {
           height: 48px;
           background: transparent;
           font-family: inherit;
-          font-size: 17px;
+          font-size: var(--fs-lg);
           font-weight: 500;
           letter-spacing: -0.01em;
           /* Between the old grey (--ink-2) and full ink, so unselected tabs read clearly but still step back from the active one (Hamza, 8 Oct). */
@@ -681,7 +686,7 @@ export function PlatformStrip() {
            grey labels, and the selected tab on a solid ink pill with white
            text (inverted on the dark palette). */
         .pf-tabs { gap: 2px; }
-        .pf-tab { height: 40px; padding: 0 16px; gap: 8px; font-size: 15px; color: var(--ink-2); transition: color 220ms ease; }
+        .pf-tab { height: 40px; padding: 0 24px; /* wider tabs (Hamza, 14 Oct; was 16) */ gap: 8px; font-size: var(--fs-md); color: var(--ink-2); transition: color 220ms ease; }
         .pf-tab:hover { color: var(--ink-heading); }
         .pf-tab-dots { display: none !important; }
         .pf-tabs .pf-tab-fill, :root:not([data-theme="dark"]) .pf-tabs .pf-tab-fill:not([data-theme="dark"] *) { border-radius: 999px; background: var(--ink-heading); }
@@ -692,6 +697,9 @@ export function PlatformStrip() {
            instead, inside the tab so nothing cuts it off. */
         .pf-tab:focus { outline: none; }
         .pf-tab:focus-visible { outline: none; color: var(--ink-heading); box-shadow: inset 0 0 0 1.5px var(--line-strong); }
+        /* The active tab sits on the light pill: keep its text dark when focused or selected (14 Oct). */
+        .pf-tab-on:focus-visible { color: var(--page-bg); }
+        .pf-tab-on::selection, .pf-tab-on *::selection { background: rgba(127, 127, 127, 0.3); color: var(--page-bg); }
         .pf-tab-dots { flex: 0 0 auto; display: block; }
         /* Violet tint, not ink (Hamza, 24 Sep, to a reference): the one
            colour in the strip, so it reads as a flag rather than a label.
@@ -704,7 +712,7 @@ export function PlatformStrip() {
           border-radius: calc(6px * var(--corner));
           background: rgb(var(--brand-rgb) / 0.2);
           color: var(--brand-soft);
-          font-size: 10.5px;
+          font-size: var(--fs-2xs);
           font-weight: 600;
           letter-spacing: 0.04em;
           text-transform: uppercase;
@@ -760,7 +768,7 @@ export function PlatformStrip() {
         }
         :root:not([data-theme="dark"]) .pf-plug:not([data-theme="dark"] *) { --pf-dot: rgba(15, 20, 30, 0.09); }
         .pf-plug-eyebrow {
-          font-size: 12px;
+          font-size: var(--fs-xs);
           font-weight: 600;
           letter-spacing: 0.12em;
           text-transform: uppercase;
@@ -768,20 +776,20 @@ export function PlatformStrip() {
         }
         .pf-plug-title {
           margin-top: 12px;
-          font-size: clamp(22px, 2.1vw, 30px);
+          font-size: clamp(var(--fs-h5), 2.5vw, var(--fs-h3));
           line-height: 1.18;
           font-weight: 500;
           letter-spacing: -0.02em;
           color: var(--ink-heading);
           text-wrap: balance;
         }
-        .pf-plug-body { margin-top: 14px; font-size: 15px; line-height: 1.6; color: var(--ink-2); max-width: 38ch; }
+        .pf-plug-body { margin-top: 14px; font-size: var(--fs-md); line-height: 1.6; color: var(--ink-2); max-width: 38ch; }
         .pf-plug-go {
           margin-top: 22px;
           display: inline-flex;
           align-items: center;
           gap: 8px;
-          font-size: 14.5px;
+          font-size: var(--fs-sm);
           font-weight: 500;
           color: var(--ink-heading);
           transition: opacity 200ms ease;
@@ -889,7 +897,7 @@ export function PlatformStrip() {
           left: 50%;
           transform: translateX(-50%);
           white-space: nowrap;
-          font-size: 12.5px;
+          font-size: var(--fs-xs);
           font-weight: 500;
           color: var(--ink-2);
           text-decoration: underline;
@@ -1040,7 +1048,7 @@ export function PlatformStrip() {
         .hc-btn:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
         .hc-time {
           flex: 0 0 auto;
-          font-size: 11px;
+          font-size: var(--fs-2xs);
           font-weight: 500;
           letter-spacing: 0.01em;
           color: rgba(255, 255, 255, 0.75);

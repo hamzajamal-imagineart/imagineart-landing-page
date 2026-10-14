@@ -198,7 +198,7 @@ export function HeroGlobeSection({ light = false, shape = "globe", parted = fals
         .hc-title {
           /* The first line is about 11.5em wide; 3.6vw keeps it inside the
              62vw column (less padding) at every width. */
-          font-size: clamp(28px, 3.6vw, 58px);
+          font-size: clamp(var(--fs-h4), 4.7vw, var(--fs-display-xl));
           line-height: 1.1;
           /* 500, not 600 (Hamza, 8 Oct): matched to the weight "workspace"
              reads at in Comfortaa, so the line is even. */
@@ -210,7 +210,7 @@ export function HeroGlobeSection({ light = false, shape = "globe", parted = fals
         .hc-lede {
           margin-top: 22px;
           max-width: 54ch; /* narrower than the title, so it breaks after "with your" (7 Oct) */
-          font-size: clamp(15px, 1.15vw, 18px);
+          font-size: clamp(var(--fs-md), 1.4vw, var(--fs-lg));
           line-height: 1.6;
           color: var(--ink-2);
         }
@@ -225,7 +225,7 @@ export function HeroGlobeSection({ light = false, shape = "globe", parted = fals
           height: 52px;
           padding: 0 26px;
           border-radius: var(--radius-pill);
-          font-size: 16px; font-weight: 500; letter-spacing: -0.005em; white-space: nowrap;
+          font-size: var(--fs-md); font-weight: 500; letter-spacing: -0.005em; white-space: nowrap;
           color: var(--ink-heading);
           background: color-mix(in srgb, var(--ink-heading) 8%, transparent);
           border: 1px solid color-mix(in srgb, var(--ink-heading) 18%, transparent);
@@ -242,7 +242,7 @@ export function HeroGlobeSection({ light = false, shape = "globe", parted = fals
           height: 52px;
           padding: 0 28px 4px;
           border-radius: var(--radius-pill);
-          font-size: 16px;
+          font-size: var(--fs-md);
           font-weight: 500;
           letter-spacing: -0.005em;
           white-space: nowrap;
@@ -297,8 +297,8 @@ export function HeroGlobeSection({ light = false, shape = "globe", parted = fals
         @media (max-width: 760px) {
           .hc-copy { max-width: none; }
           .hc-stage { opacity: 0.35; }
-          .hs-cta { height: 48px; padding: 0 20px 4px; font-size: 15px; }
-          .hc-sales { height: 48px; padding: 0 20px; font-size: 15px; }
+          .hs-cta { height: 48px; padding: 0 20px 4px; font-size: var(--fs-md); }
+          .hc-sales { height: 48px; padding: 0 20px; font-size: var(--fs-md); }
         }
       `}</style>
     </>

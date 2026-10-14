@@ -31,79 +31,78 @@ const HOVER_STEP_S = 1;
 
 type Tool = { title: string; body: string; clip?: string; image?: string; hoverImages?: string[]; href: string };
 
-/* Order (Hamza, 7 Oct): Workflows, Image / Video, Music, then the tools,
-   then the studios last. */
+/* Order (Hamza, 14 Oct): Create image / video / audio, Workflows, the
+   studios as Fashion, Ad, Film (as in the nav, footer and hero tab), then
+   Brand Guidelines, Video Extend, Inpaint, AI Influencer / UGC. Copy and
+   links to the 14 Oct spec; studios and Workflows link to the nav's pages. */
 const TOOLS: Tool[] = [
-  // Create image / video / audio lead the rail, then Workflows (Hamza, 8 Oct:
-  // titles and lines to his cards; they replace "Image / Video" and "Music").
   {
     title: "Create image",
     image: "/media/suite/create-image.jpg", // cinematic still in place of the clip (Hamza, 9 Oct)
     // On hover the still steps through these, one a second, then loops (Hamza, 9 Oct).
     hoverImages: ["/media/hero/orbit/red-light.jpg", "/media/hero/showcase/portrait.jpg", "/media/hero/backdrop-veil.jpg"],
     href: `${HOME}/ai-image-generator`,
-    body: "Any style, any model. Reference a product, lock a face and get the whole set, not one render.",
+    body: "Any style, any model. Reference a product, lock a face and get the full set, not a single render.",
   },
   {
     title: "Create video",
     clip: "/media/hero/modes/video/1-prompt.mp4",
     href: `${HOME}/ai-video-generator`,
-    body: "Text or image to motion with Kling, Seedance, Veo and more. Extend, relight and reframe the result.",
+    body: "Text or image to video with Kling, Seedance, Veo and more. Then extend, relight and reframe the result.",
   },
   {
     title: "Create audio",
     clip: "/media/tools/ai-voiceover.mp4",
     href: `${HOME}/audio-studio`,
-    body: "Voices, speech and sound for every clip. Clone a voice once and narrate in any language.",
+    body: "Voices, speech and sound for every clip. Clone a voice once, then narrate in any language.",
   },
   {
     title: "Workflows",
     clip: "/media/suite/workflows.mp4",
-    href: `${HOME}/workflow`,
-    body: "Node-based, multi-step flows that turn a brief into finished assets. The repeatable backbone behind every campaign your team ships.",
+    href: `${HOME}/business/workflows`,
+    body: "Node-based flows that turn one brief into finished assets. The repeatable backbone of every campaign you ship.",
+  },
+  {
+    title: "Fashion Studio",
+    clip: "/media/studios/fashion-studio.mp4",
+    href: `${HOME}/ai-fashion-studio`,
+    body: "Turn any garment into on-model imagery and editorial-grade visuals, with fabric, fit and color kept true.",
+  },
+  {
+    title: "Ad Studio",
+    clip: "/media/studios/ad-studio.mp4",
+    href: `${HOME}/ai-ad-studio`,
+    body: "Produce performance-ready ad creative in every format and ratio, locked to your brand, ready to test.",
+  },
+  {
+    title: "Film Studio",
+    clip: "/media/studios/film-studio.mp4",
+    href: `${HOME}/ai-film-studio`,
+    body: "Build characters, storyboards and scenes that stay consistent from first concept to the final frame.",
   },
   {
     title: "Brand Guidelines",
     clip: "/media/capabilities/brand-kits.mp4",
     href: `${HOME}/enterprise/brand-kits`,
-    body: "Lock in your colors, fonts, and visual identity so every generation stays on-brand.",
+    body: "Lock your colors, fonts and visual identity so every generation stays on brand no matter what.",
   },
   {
     title: "Video Extend",
     clip: "/media/capabilities/video-extend.mp4",
-    href: `${HOME}/video`,
-    body: "Take any clip and seamlessly extend it, no reshoots, no awkward cuts.",
+    href: `${HOME}/video?mode=videoExtend&openAddAssetDialog=true`,
+    body: "Extend any clip seamlessly to the length you need, with no reshoots and no awkward cuts.",
   },
   {
     title: "Inpaint",
     clip: "/media/capabilities/inpaint.mp4",
     href: `${HOME}/edit/inpaint`,
-    body: "Edit precisely. Remove, replace, or refine any part of an image with a brush.",
+    body: "Remove, replace or refine any part of an image with a brush, leaving the rest untouched.",
   },
   {
     title: "AI Influencer / UGC",
     clip: "/media/capabilities/ugc.mp4",
     href: `${HOME}/apps/heygen-avatar`,
-    body: "Generate consistent, authentic-feeling creators and user-generated content at scale.",
-  },
-  {
-    title: "Ad Studio",
-    clip: "/media/studios/ad-studio.mp4",
-    href: `${HOME}/ad-studio`,
-    body: "Produce performance-ready ad creative in every format and ratio, fast.",
-  },
-  {
-    // Added 8 Oct (Hamza): the third studio, between Ad and Fashion.
-    title: "Film Studio",
-    clip: "/media/studios/film-studio.mp4",
-    href: `${HOME}/ai-film-studio`,
-    body: "Characters, storyboards and scenes, carried from first concept to the final frame.",
-  },
-  {
-    title: "Fashion Studio",
-    clip: "/media/studios/fashion-studio.mp4",
-    href: `${HOME}/fashion-studio`,
-    body: "Bring apparel and product to life with on-model imagery and editorial-grade visuals.",
+    body: "Create consistent, natural-looking AI creators and UGC videos at scale, without casting, filming or reshoots.",
   },
 ];
 
@@ -143,10 +142,10 @@ export function Suite() {
         <div className="flex items-end justify-between gap-8">
         <div className="max-w-[640px]">
           <p className="eyebrow">The suite</p>
-          <BlurHeading className="h2 mt-4" lead="Everything your team" muted="needs to create" />
+          <BlurHeading className="h2 mt-4" lead="Everything your team needs to create," muted="from idea to finished asset" />
           <p className="lede mt-5">
-            A full suite of tools that take you from idea to finished asset, no
-            stitching together five different products.
+            One AI art generator for images, video and audio, plus the editing, brand and workflow tools around it.
+            No stitching five products together.
           </p>
         </div>
         <div className="flex shrink-0 items-center gap-3">
@@ -251,7 +250,7 @@ export function Suite() {
         .suite-bg { background-size: cover; background-position: center; background-repeat: no-repeat; }
 
         .suite-card-title {
-          font-size: 19px;
+          font-size: var(--fs-xl);
           font-weight: 400;
           letter-spacing: -0.01em;
           line-height: 1.2;
@@ -268,10 +267,13 @@ export function Suite() {
         .suite-card-title { padding-right: 48px; }
         .suite-card-body {
           margin-top: 8px;
-          font-size: 13.5px;
+          font-size: var(--fs-sm);
           line-height: 1.5;
           color: var(--on-media-3);
-          max-width: 24ch;
+          /* About three lines for the longest copy, a little short of the card's
+             width (Hamza, 14 Oct; was 24ch, then full width). */
+          max-width: 272px;
+          text-wrap: pretty;
         }
         /* One frame per card, bottom-anchored, so the media lines up
            across the rail whatever each source's own ratio is. */

@@ -58,7 +58,7 @@ function EditVisual() {
 export const CONTROL_POINTS: TimelinePoint[] = [
   {
     title: "Your brand, locked",
-    body: "Logos, colors, fonts, products and tone live in a brand kit every model reads. No re-briefing, no drift, on web, mobile and in your workflows.",
+    body: "Logos, colors, fonts, products and tone live in one brand kit that every model reads. No re-briefing and no drift, on web, mobile and in your workflows.",
     cta: { label: "Brand kits", href: "https://www.imagine.art/enterprise/brand-kits" },
     media: (
       <>
@@ -79,7 +79,7 @@ export const CONTROL_POINTS: TimelinePoint[] = [
   },
   {
     title: "Same product, same face, every frame",
-    body: "Reference a product, a character or a presenter once. It holds across scenes, formats and models, so a campaign looks like one campaign.",
+    body: "Reference a product, character or presenter once. It holds across scenes, formats and models, so a campaign looks like one campaign.",
     cta: { label: "Try references", href: "https://www.imagine.art/image" },
     media: (
       <>
@@ -94,7 +94,7 @@ export const CONTROL_POINTS: TimelinePoint[] = [
   },
   {
     title: "Edit the frame, not the prompt",
-    body: "Inpaint, relight, extend, caption or change the camera angle on the exact frame, instead of rolling the dice again. Precision tools for video and image, in the same canvas.",
+    body: "Inpaint, relight, extend, caption or change the camera angle on the exact frame instead of re-rolling. Precision tools for image and video on the same canvas.",
     cta: { label: "Open the editor", href: "https://www.imagine.art/ai-video-editor" },
     media: <EditVisual />,
   },
@@ -173,8 +173,8 @@ export function PointsTimeline({ points }: { points: TimelinePoint[] }) {
         .ci.on { border-color: var(--ink-heading); }
         .ci:focus-visible { box-shadow: inset 2px 0 0 var(--ink-heading); }
         /* Page type throughout (Hamza, 8 Oct): the number in the eyebrow style rather than system mono, titles and copy on the Workflows card scale. */
-        .ci-n { font-size: 11px; font-weight: 600; letter-spacing: 0.16em; color: var(--ink-3); font-variant-numeric: tabular-nums; }
-        .ci-title { margin-top: 6px; font-size: clamp(20px, 1.8vw, 24px); line-height: 1.25; font-weight: 500; letter-spacing: -0.015em; color: var(--ink-3); transition: color 0.3s; }
+        .ci-n { font-size: var(--fs-2xs); font-weight: 600; letter-spacing: 0.16em; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+        .ci-title { margin-top: 6px; font-size: clamp(var(--fs-xl), 1.8vw, var(--fs-h5)); line-height: 1.25; font-weight: 500; letter-spacing: -0.015em; color: var(--ink-3); transition: color 0.3s; }
         .ci.on .ci-title, .ci:hover .ci-title { color: var(--ink-heading); }
         .ci-body { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.4s var(--ease-out); }
         .ci.on .ci-body { grid-template-rows: 1fr; }
@@ -184,7 +184,7 @@ export function PointsTimeline({ points }: { points: TimelinePoint[] }) {
            action at a time; it inverts with the theme. */
         .ci-cta { background: var(--ink-heading) !important; color: var(--page-bg) !important; border-color: transparent !important; }
         .ci-cta:hover { opacity: 0.88; }
-        .ci-body p { padding-top: 10px; max-width: 44ch; font-size: 15px; line-height: 1.6; color: var(--ink-2); }
+        .ci-body p { padding-top: 10px; max-width: 44ch; font-size: var(--fs-md); line-height: 1.6; color: var(--ink-2); }
 
         .ctl-media { display: flex; flex-direction: column; gap: 40px; }
         .cm { position: relative; border-radius: 20px; overflow: hidden; background: var(--tile); aspect-ratio: 4 / 3; color: #fff; }
@@ -192,26 +192,26 @@ export function PointsTimeline({ points }: { points: TimelinePoint[] }) {
         .cm-bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 
 
-        .kitcard { position: absolute; left: 24px; top: 24px; width: min(18rem, 70%); display: flex; flex-direction: column; gap: 11px; padding: 16px; border-radius: 14px; background: rgba(15,15,17,0.85); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.1); font-size: 13px; }
-        .kitcard h5 { display: flex; justify-content: space-between; margin: 0; font-size: 15px; font-weight: 500; }
-        .kitcard h5 i { font-style: normal; font-size: 12px; color: #22c55e; }
+        .kitcard { position: absolute; left: 24px; top: 24px; width: min(18rem, 70%); display: flex; flex-direction: column; gap: 11px; padding: 16px; border-radius: 14px; background: rgba(15,15,17,0.85); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.1); font-size: var(--fs-sm); }
+        .kitcard h5 { display: flex; justify-content: space-between; margin: 0; font-size: var(--fs-md); font-weight: 500; }
+        .kitcard h5 i { font-style: normal; font-size: var(--fs-xs); color: #22c55e; }
         .kitcard .sw { display: flex; gap: 6px; }
         .kitcard .sw i { flex: 1; aspect-ratio: 1; border-radius: 6px; }
         .kitcard .ft { display: flex; gap: 6px; }
         .kitcard .ft span { flex: 1; padding: 8px; border-radius: 8px; background: rgba(255,255,255,0.06); }
-        .kitcard .ft b { display: block; font-size: 19px; font-weight: 600; }
-        .kitcard small { color: rgba(255,255,255,0.6); }
+        .kitcard .ft b { display: block; font-size: var(--fs-xl); font-weight: 600; }
+        .kitcard small { font-size: var(--fs-2xs); color: rgba(255,255,255,0.6); }
 
         .refgrid { position: absolute; inset: 0; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 12px; }
         .refgrid div { position: relative; border-radius: 12px; overflow: hidden; }
         .refgrid img { width: 100%; height: 100%; object-fit: cover; }
-        .refgrid span { position: absolute; left: 10px; top: 10px; padding: 4px 10px; border-radius: 999px; background: rgba(0,0,0,0.6); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); font-size: 11.5px; }
+        .refgrid span { position: absolute; left: 10px; top: 10px; padding: 4px 10px; border-radius: 999px; background: rgba(0,0,0,0.6); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); font-size: var(--fs-xs); }
         .refpin { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 104px; aspect-ratio: 1; border-radius: 16px; overflow: hidden; border: 3px solid #fff; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
         .refpin img { width: 100%; height: 100%; object-fit: cover; }
-        .refpin b { position: absolute; left: 0; right: 0; bottom: 0; padding: 3px; background: #fff; color: #111; font-size: 10px; font-weight: 600; text-align: center; }
+        .refpin b { position: absolute; left: 0; right: 0; bottom: 0; padding: 3px; background: #fff; color: #111; font-size: var(--fs-2xs); font-weight: 600; text-align: center; }
 
         .cm .edtools { position: absolute; left: 24px; top: 24px; display: flex; flex-wrap: wrap; gap: 6px; padding: 6px; border-radius: 999px; background: rgba(15,15,17,0.85); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); }
-        .cm .edtools button { padding: 6px 13px; border: 0; border-radius: 999px; background: transparent; font: inherit; font-size: 13px; color: rgba(255,255,255,0.7); cursor: pointer; transition: color 0.2s, background 0.2s; }
+        .cm .edtools button { padding: 6px 13px; border: 0; border-radius: 999px; background: transparent; font: inherit; font-size: var(--fs-sm); color: rgba(255,255,255,0.7); cursor: pointer; transition: color 0.2s, background 0.2s; }
         .cm .edtools button:hover { color: #fff; }
         .cm .edtools button.on { background: #fff; color: #111; }
         .cm .edtools button:focus-visible { outline: 2px solid #fff; outline-offset: 1px; }

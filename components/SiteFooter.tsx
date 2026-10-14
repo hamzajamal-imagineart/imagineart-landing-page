@@ -8,55 +8,52 @@
  */
 import { withBasePath } from "@/lib/assets";
 import { AUTH_HREF } from "@/lib/links";
+import { FooterWatermark } from "@/components/FooterWatermark";
 
 const BASE = "https://www.imagine.art";
 
 // TODO: audit per product. These columns and socials are shared site-wide, so
 // only change them if the whole site changed — not for a single page.
-/* Four columns of headed sections (Hamza, 8 Oct, to his arrangement):
-   Platform + Studios; Apps (the tool pages, image → video → audio);
-   Business + Contact Us + Collaborate; Pricing + Resources. */
-type FooterSection = { heading: string; links: { label: string; href: string }[] };
+/* Four columns that mirror the nav menus (Hamza, 14 Oct): Product + Studios;
+   AI Tools; Business + Solutions; Get Started + Community + Resources.
+   Labels and links match lib/nav-menu.ts, so keep the two in step. */
+type FooterSection = { heading: string; links: { label: string; href?: string; underline?: boolean; soon?: boolean }[] };
 const COLUMNS: FooterSection[][] = [
   [
     {
-      heading: "Platform",
+      heading: "Product",
       links: [
-        { label: "AI Image Generator", href: `${BASE}/ai-image-generator` },
-        { label: "AI Video Generator", href: `${BASE}/ai-video-generator` },
         { label: "Creative Agent", href: `${BASE}/imagine-computer` },
         { label: "Workflows", href: `${BASE}/business/workflows` },
-        { label: "Imagine MCP", href: `${BASE}/mcp` },
-        { label: "Imagine Plugins", href: `${BASE}/plugins` },
+        { label: "MCP", href: `${BASE}/mcp` },
+        { label: "Plugins", href: `${BASE}/plugins` },
       ],
     },
     {
       heading: "Studios",
       links: [
-        { label: "Audio Studio", href: `${BASE}/audio-studio` },
-        { label: "Film Studio", href: `${BASE}/ai-film-studio` },
-        { label: "Ad Studio", href: `${BASE}/ai-ad-studio` },
         { label: "Fashion Studio", href: `${BASE}/ai-fashion-studio` },
+        { label: "Ad Studio", href: `${BASE}/ai-ad-studio` },
+        { label: "Film Studio", href: `${BASE}/ai-film-studio` },
+        { label: "Avatar Studio", soon: true }, // not live yet, as in the nav (14 Oct)
       ],
     },
   ],
   [
     {
-      // The tool pages Hamza listed on 8 Oct ("References" has no page yet, so it's left out).
-      heading: "Apps",
+      // The nav's AI Tools, all opening the app (14 Oct).
+      heading: "AI Tools",
       links: [
-        { label: "Edit Image", href: `${BASE}/image` },
-        { label: "Inpaint", href: `${BASE}/edit/inpaint` },
-        { label: "Image Upscale", href: `${BASE}/edit/upscale/image` },
-        { label: "Animate Images", href: `${BASE}/video?mode=imageToVideo&openAddAssetDialog=true` },
-        { label: "Lipsync Studio", href: `${BASE}/lipsync-studio` },
-        { label: "Video Extend", href: `${BASE}/video?mode=videoExtend&openAddAssetDialog=true` },
-        { label: "Video Edit", href: `${BASE}/video/video-to-video-edit` },
+        { label: "Image", href: `${BASE}/image` },
+        { label: "Video", href: `${BASE}/video/create/seedance-25` },
+        { label: "Audio", href: `${BASE}/audio?filter-assets=audio` },
+        { label: "Camera Angles", href: `${BASE}/apps/camera-angles` },
         { label: "AI Captions", href: `${BASE}/video/captions` },
-        { label: "Video Reframe", href: `${BASE}/apps/video-reframe?category-id=23&view=history` },
-        { label: "Text to Speech", href: `${BASE}/audio/text-to-speech/minimax-speech-2-8-hd?filter-assets=audio` },
-        { label: "Music", href: `${BASE}/audio/music/elevenlabs-music?filter-assets=audio` },
-        { label: "Voice Cloning", href: `${BASE}/audio/voice-cloning?filter-assets=audio` },
+        { label: "Variate", href: `${BASE}/apps/variate` },
+        { label: "Upscale", href: `${BASE}/edit/upscale` },
+        { label: "Lipsync Studio", href: `${BASE}/lipsync-studio` },
+        { label: "Video Recolor", href: `${BASE}/apps/video-recolor?category-id=23` },
+        { label: "All AI tools", href: `${BASE}/tools`, underline: true }, // underlined as the "see all" link (Hamza, 14 Oct)
       ],
     },
   ],
@@ -65,33 +62,41 @@ const COLUMNS: FooterSection[][] = [
       heading: "Business",
       links: [
         { label: "Enterprise", href: `${BASE}/business` },
-        { label: "Solutions", href: `${BASE}/business/solutions` },
         { label: "Case Studies", href: `${BASE}/business/case-studies` },
       ],
     },
     {
-      heading: "Contact Us",
+      heading: "Solutions",
       links: [
-        { label: "Contact Sales", href: `${BASE}/business#contact` },
-        { label: "Book a Demo", href: "https://cal.com/team/imagineart/imagineart-customer-assist" },
-      ],
-    },
-    {
-      heading: "Collaborate",
-      links: [
-        { label: "Creators Program", href: `${BASE}/creators-program` },
-        { label: "Affiliate Program", href: `${BASE}/affiliate-program` },
+        { label: "Fashion and Apparel", href: `${BASE}/business/industries/fashion` },
+        { label: "Real Estate", href: `${BASE}/business/industries/real-estate` },
+        { label: "Food and Beverage", href: `${BASE}/business/industries/ai-for-fb-creatives` },
+        { label: "Education", href: `${BASE}/business/industries/education` },
+        { label: "Automotive", href: `${BASE}/business/industries/automotive` },
+        { label: "Beauty", href: `${BASE}/business/industries/beauty-and-skincare` },
+        { label: "Retail", href: `${BASE}/business/industries/retail` },
+        { label: "Ecommerce", href: `${BASE}/business/solutions/ecommerce` },
+        { label: "Interior Design", href: `${BASE}/business/industries/interior-design-ai` },
       ],
     },
   ],
   [
     {
-      // One page; Individuals, Teams and Enterprise are its sections. TODO: anchors.
-      heading: "Pricing",
+      // One place to buy or talk (Hamza, 14 Oct): was "Pricing" with three links
+      // to the same page, plus Contact Us.
+      heading: "Get Started",
       links: [
-        { label: "Individuals", href: `${BASE}/subscription` },
-        { label: "Teams", href: `${BASE}/subscription` },
-        { label: "Enterprise", href: `${BASE}/subscription` },
+        { label: "Pricing", href: `${BASE}/subscription` },
+        { label: "Contact Us", href: "https://cal.com/team/imagineart/imagineart-customer-assist" }, // the booking page, as the nav's Book a demo (14 Oct)
+      ],
+    },
+    {
+      heading: "Community",
+      links: [
+        { label: "Creators Program", href: `${BASE}/creators-program` },
+        { label: "Affiliate Program", href: `${BASE}/affiliate-program` },
+        { label: "Ambassadors Program", href: `${BASE}/ambassadors` },
+        { label: "ImagineArt Academy", href: "https://academy.imagine.art/" },
       ],
     },
     {
@@ -99,9 +104,8 @@ const COLUMNS: FooterSection[][] = [
       links: [
         { label: "Blog", href: `${BASE}/insights` },
         { label: "Announcements", href: `${BASE}/announcements` },
-        { label: "Imagine Academy", href: "https://academy.imagine.art/" },
-        { label: "Help Docs", href: "https://docs.imagine.art/" },
         { label: "Case Studies", href: `${BASE}/business/case-studies` },
+        { label: "Help Docs", href: "https://docs.imagine.art/" },
       ],
     },
   ],
@@ -138,7 +142,7 @@ export function SiteFooter() {
             <a href={AUTH_HREF} aria-label="ImagineArt"><img src={withBasePath("/media/footer/logo-icon.svg")} alt="ImagineArt" width={28} height={28} className="block" /></a>
 
             <div className="flex flex-col gap-2">
-              <span className="text-[11px] font-semibold tracking-[0.5px] text-white/[0.38] mb-1">
+              <span className="text-[length:var(--fs-2xs)] font-semibold uppercase tracking-[0.1em] text-white/[0.38] mb-1">
                 Try Imagine Mobile
               </span>
               <a
@@ -164,7 +168,7 @@ export function SiteFooter() {
             {/* Community — same treatment as a link column, using the brand
                 column's spare vertical space. */}
             <div>
-              <span className="block text-[11px] font-semibold tracking-[0.5px] text-white/[0.38] mb-5">
+              <span className="block text-[length:var(--fs-2xs)] font-semibold uppercase tracking-[0.1em] text-white/[0.38] mb-5">
                 Community
               </span>
               <ul className="flex flex-col gap-3 list-none m-0 p-0">
@@ -174,7 +178,7 @@ export function SiteFooter() {
                       href={l.href}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-[13px] leading-[1.4] text-white/55 hover:text-white/90 transition-colors no-underline"
+                      className="text-[length:var(--fs-sm)] leading-[1.4] text-white/55 hover:text-white/90 transition-colors no-underline"
                     >
                       {l.label}
                     </a>
@@ -190,20 +194,27 @@ export function SiteFooter() {
               <div key={sections[0].heading} className="flex flex-col gap-10">
                 {sections.map((sec) => (
                   <div key={sec.heading}>
-                    <span className="block text-[11px] font-semibold tracking-[0.5px] text-white/[0.38] mb-5">
+                    <span className="block text-[length:var(--fs-2xs)] font-semibold uppercase tracking-[0.1em] text-white/[0.38] mb-5">
                       {sec.heading}
                     </span>
                     <ul className="flex flex-col gap-3 list-none m-0 p-0">
                       {sec.links.map((l) => (
                         <li key={l.label}>
+                          {l.soon ? (
+                            <span className="inline-flex items-center gap-2 text-[length:var(--fs-sm)] leading-[1.4] text-white/35 whitespace-nowrap">
+                              {l.label}
+                              <span className="rounded-full border border-white/15 px-2 py-px text-[length:var(--fs-2xs)] font-medium uppercase tracking-[0.08em] text-white/50">Soon</span>
+                            </span>
+                          ) : (
                           <a
                             href={l.href}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-[13px] leading-[1.4] text-white/55 hover:text-white/90 transition-colors no-underline whitespace-nowrap"
+                            className={`text-[length:var(--fs-sm)] leading-[1.4] text-white/55 hover:text-white/90 transition-colors whitespace-nowrap ${l.underline ? "underline underline-offset-4 decoration-white/30" : "no-underline"}`}
                           >
                             {l.label}
                           </a>
+                          )}
                         </li>
                       ))}
                     </ul>
@@ -218,17 +229,17 @@ export function SiteFooter() {
 
       {/* Big watermark (back on, Hamza, 8 Oct) */}
       <div className="relative max-w-[1240px] mx-auto text-center select-none pointer-events-none px-5 md:px-8 pt-4 leading-[0]">
-        <img src={withBasePath("/media/footer/watermark.svg")} alt="" aria-hidden="true" className="relative w-full max-w-[1240px] h-auto inline-block" />
+        <FooterWatermark className="relative w-full max-w-[1240px] h-auto inline-block" />
       </div>
 
       {/* Bottom bar */}
       <div className="max-w-[1240px] mx-auto px-5 md:px-8 pb-6 md:pb-8">
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 pt-5 pb-2 border-t border-white/[0.06] flex-wrap">
           <div className="flex items-center gap-0.5 flex-wrap">
-            <span className="text-[12px] text-white/25">
+            <span className="text-[length:var(--fs-xs)] text-white/25">
               © {year} <strong className="font-semibold">Vyro</strong>. All rights reserved.
             </span>
-            <button type="button" className="text-[12px] text-white/25 px-3 bg-transparent border-none cursor-pointer hover:text-white/55 transition-colors">
+            <button type="button" className="text-[length:var(--fs-xs)] text-white/25 px-3 bg-transparent border-none cursor-pointer hover:text-white/55 transition-colors">
               Manage Cookie Preferences
             </button>
           </div>

@@ -320,7 +320,7 @@ export function McpPanel() {
       border-radius: var(--radius-4);
       background: transparent;
       font-family: inherit;
-      font-size: 14.5px;
+      font-size: var(--fs-sm);
       font-weight: 500;
       letter-spacing: -0.01em;
       color: var(--ink-3);
@@ -344,7 +344,7 @@ export function McpPanel() {
     :root[data-theme="dark"] .mcp-mono { filter: brightness(0) invert(1); }
     .mcp-tabs-off .mcp-tab { color: var(--ink-3); }
     .mcp-route { border-radius: var(--radius-3); align-self: center; position: relative; }
-    .mcp-route .mcp-tab { height: 32px; padding: 0 10px; font-size: 13px; gap: 6px; border-radius: calc(13px * var(--corner)); }
+    .mcp-route .mcp-tab { height: 32px; padding: 0 10px; font-size: var(--fs-sm); gap: 6px; border-radius: calc(13px * var(--corner)); }
     .mcp-route .mcp-tab svg { width: 14px; height: 14px; }
     .mcp-title { display: flex; justify-content: center; }
     .mcp-title img { display: block; height: clamp(30px, 3.2vw, 44px); width: auto; }
@@ -369,15 +369,15 @@ export function McpPanel() {
       /* Was a flat 60% white disc with --ink-2 on it, which in dark put
          light grey on a bright circle. Both ends are tokens now. */
       background: var(--tile-2);
-      font-size: 12.5px;
+      font-size: var(--fs-xs);
       font-weight: 500;
       color: var(--ink);
       flex: 0 0 auto;
       margin-top: 1px;
     }
     .mcp-step-body { min-width: 0; flex: 1; }
-    .mcp-step-title { font-size: 16.5px; font-weight: 500; letter-spacing: -0.01em; color: var(--ink); line-height: 1.3; }
-    .mcp-step-text { margin-top: 5px; font-size: 14.5px; line-height: 1.55; color: var(--ink-2); }
+    .mcp-step-title { font-size: var(--fs-md); font-weight: 500; letter-spacing: -0.01em; color: var(--ink); line-height: 1.3; }
+    .mcp-step-text { margin-top: 5px; font-size: var(--fs-sm); line-height: 1.55; color: var(--ink-2); }
     .mcp-step-text code, .mcp-empty code { font-family: var(--font-mono); font-size: 0.92em; padding: 1px 6px; border-radius: calc(6px * var(--corner)); background: var(--panel); border: 1px solid var(--line); }
     .mcp-step-action { margin-top: 10px; }
 
@@ -393,7 +393,7 @@ export function McpPanel() {
       background: var(--panel);
       border: 1px solid var(--line);
     }
-    .mcp-field code { font-family: var(--font-mono); font-size: 13px; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .mcp-field code { font-family: var(--font-mono); font-size: var(--fs-sm); color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .mcp-copy {
       display: inline-flex;
       align-items: center;
@@ -410,7 +410,7 @@ export function McpPanel() {
       background: var(--tile-2);
       color: var(--ink-2);
       font-family: inherit;
-      font-size: 12.5px;
+      font-size: var(--fs-xs);
       font-weight: 500;
       cursor: pointer;
       transition: background 180ms ease, color 180ms ease;
@@ -424,7 +424,7 @@ export function McpPanel() {
       padding: 12px 14px;
     }
     .mcp-block-copy { position: absolute; top: 10px; right: 10px; }
-    .mcp-block pre { font-family: var(--font-mono); font-size: 11.5px; line-height: 1.6; color: var(--ink-2); white-space: pre-wrap; word-break: break-word; padding-right: 40px; }
+    .mcp-block pre { font-family: var(--font-mono); font-size: var(--fs-xs); line-height: 1.6; color: var(--ink-2); white-space: pre-wrap; word-break: break-word; padding-right: 40px; }
 
     .mcp-btn {
       display: inline-flex;
@@ -457,14 +457,14 @@ export function McpPanel() {
       position: absolute; inset: 0;
       display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px;
       color: var(--ink-2);
-      font-size: 14.5px;
+      font-size: var(--fs-sm);
     }
     .mcp-empty img { width: 40px; height: 40px; }
 
     .mcp-term { padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 12px; }
     .mcp-term-bar { display: flex; gap: 6px; }
     .mcp-term-bar span { width: 9px; height: 9px; border-radius: var(--radius-pill); background: rgba(0,0,0,0.14); }
-    .mcp-term pre { font-family: var(--font-mono); font-size: 12.5px; line-height: 1.7; color: var(--ink-3); display: flex; flex-direction: column; }
+    .mcp-term pre { font-family: var(--font-mono); font-size: var(--fs-xs); line-height: 1.7; color: var(--ink-3); display: flex; flex-direction: column; }
     .mcp-l-cmd { color: var(--ink); }
     .mcp-l-ok { color: var(--ink-2); }
     .mcp-gap { height: 0.7em; }
@@ -476,16 +476,16 @@ export function McpPanel() {
       gap: 16px;
       flex-wrap: wrap;
       padding: 14px 18px 10px;
-      font-size: 13px;
+      font-size: var(--fs-sm);
       color: var(--ink-3);
     }
-    .mcp-pkg { display: inline-flex; align-items: center; gap: 5px; font-family: var(--font-mono); font-size: 12.5px; color: var(--ink-2); }
+    .mcp-pkg { display: inline-flex; align-items: center; gap: 5px; font-family: var(--font-mono); font-size: var(--fs-xs); color: var(--ink-2); }
     .mcp-pkg:hover { color: var(--ink); }
 
     @media (max-width: 880px) {
       .mcp-body { grid-template-columns: 1fr; }
       .mcp-visual { order: -1; }
-      .mcp-tab { height: 36px; padding: 0 11px; font-size: 13.5px; }
+      .mcp-tab { height: 36px; padding: 0 11px; font-size: var(--fs-sm); }
     }
   `}</style>
     </>
