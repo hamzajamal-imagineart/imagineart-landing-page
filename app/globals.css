@@ -388,8 +388,11 @@
   /* width: max-content so the box is as wide as the one line. The heading's
      gradient is clipped to its text but painted on its box, so a line
      overflowing a narrower wrapper (Outcomes in 680px) lost its fill and
-     vanished past the edge. Headings that wrap set their own max-width. */
-  .h2 { text-wrap: nowrap; white-space: nowrap; width: max-content; }
+     vanished past the edge. Headings that wrap set their own max-width.
+     Capped at the grid's inner width (Hamza, 14 Oct: the Suite heading ran
+     past the section lines): one line while it fits, a balanced wrap inside
+     the grid when it doesn't. */
+  .h2 { width: max-content; max-width: min(1176px, calc(100vw - 64px)); white-space: normal; text-wrap: balance; }
 }
 /* A one-line heading wider than its centred wrapper (680–820px) overflows
    to the right only: text-align cannot centre a line wider than its box, so
@@ -701,5 +704,5 @@ body::before {
 
 /* Footer watermark shimmer (14 Oct): a faint glow on the moving outline; off
    for reduced motion (the SMIL animation can't be paused, so the stroke hides). */
-.wm-shimmer { filter: drop-shadow(0 0 1.5px rgba(201, 166, 255, 0.6)); }
+.wm-shimmer { filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.55)) drop-shadow(0 0 8px rgba(255, 255, 255, 0.25)); }
 @media (prefers-reduced-motion: reduce) { .wm-shimmer { display: none; } }

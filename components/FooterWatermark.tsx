@@ -1,7 +1,7 @@
 /**
  * Footer watermark, inlined so its outline can carry a shimmer (Hamza, 14 Oct):
- * the letters stay solid white and a soft purple-to-blue band of light runs
- * left to right along their edges. Paths are public/media/footer/watermark.svg.
+ * the letters stay solid white and one soft white band of light, with a glow
+ * like the nav separators, runs left to right along their edges (14 Oct). Paths are public/media/footer/watermark.svg.
  * Tunables: SHIMMER_S (seconds per pass) and STROKE (outline width, in the
  * 297-unit viewBox).
  */
@@ -26,11 +26,9 @@ export function FooterWatermark({ className }: { className?: string }) {
     <svg viewBox="0 0 297 57" className={className} aria-hidden="true" focusable="false">
       <defs>
         <linearGradient id="wm-shimmer" gradientUnits="userSpaceOnUse" x1="-120" y1="0" x2="0" y2="0">
-          <stop offset="0" stopColor="#C9A6FF" stopOpacity="0" />
-          <stop offset="0.4" stopColor="#C9A6FF" stopOpacity="0.9" />
-          <stop offset="0.55" stopColor="#ffffff" stopOpacity="1" />
-          <stop offset="0.7" stopColor="#7CB8FF" stopOpacity="0.9" />
-          <stop offset="1" stopColor="#7CB8FF" stopOpacity="0" />
+          <stop offset="0" stopColor="#ffffff" stopOpacity="0" />
+          <stop offset="0.5" stopColor="#ffffff" stopOpacity="0.9" />
+          <stop offset="1" stopColor="#ffffff" stopOpacity="0" />
           <animate attributeName="x1" values="-120;297" dur={`${SHIMMER_S}s`} repeatCount="indefinite" />
           <animate attributeName="x2" values="0;417" dur={`${SHIMMER_S}s`} repeatCount="indefinite" />
         </linearGradient>
