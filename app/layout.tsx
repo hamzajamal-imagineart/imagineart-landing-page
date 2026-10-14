@@ -5,6 +5,8 @@ import "./globals.css";
 import { CtaLoading } from "@/components/CtaLoading";
 
 import { withBasePath } from "@/lib/assets";
+import { Analytics } from "@/components/Analytics";
+import { GTM_ID } from "@/lib/analytics";
 
 // Google Sans Flex is the only typeface. Variable font, weights 100 to 900,
 // of which the page uses 400, 500 and 600 only.
@@ -45,6 +47,10 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     // and still correct, so this attribute is the only thing to change back.
     <html lang="en" className={`${googleSans.variable} ${heroFont.variable} ${serifFont.variable}`} suppressHydrationWarning /* the home page sets data-theme inline before hydration */>
       <body>
+        <noscript>
+          <iframe src={`https://www.googletagmanager.com/ns.html?id=${GTM_ID}`} height="0" width="0" style={{ display: "none", visibility: "hidden" }} />
+        </noscript>
+        <Analytics />
         {children}
         <CtaLoading />
       </body>
