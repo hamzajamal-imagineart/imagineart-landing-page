@@ -456,9 +456,9 @@ export function SiteNav({
         .nav-tab[aria-expanded="true"] .nav-chev { transform: rotate(180deg); }
         .nav-tab:hover, .nav-tab:focus-visible, .nav-tab[aria-expanded="true"] { color: var(--nav-fg-hover); background: var(--nav-tab-hover); outline: none; }
 
-        .nav-signin { font-family: ${FONT}; min-width: var(--btn-pair-w); display: inline-flex; align-items: center; justify-content: center; box-sizing: border-box; height: var(--btn-h-md); padding: 0 var(--btn-px-md); font-size: var(--btn-fs-md); font-weight: var(--btn-weight); color: var(--nav-fg-hover); text-decoration: none; border-radius: var(--btn-radius); white-space: nowrap; transition: color 0.3s, background 0.25s; }
+        .nav-signin { font-family: ${FONT}; display: inline-flex; align-items: center; justify-content: center; box-sizing: border-box; height: var(--btn-h-md); padding: 0 var(--btn-px-md); font-size: var(--btn-fs-md); font-weight: var(--btn-weight); color: var(--nav-fg-hover); text-decoration: none; border-radius: var(--btn-radius); white-space: nowrap; transition: color 0.3s, background 0.25s; }
         .nav-signin:hover { background: var(--nav-tab-hover); }
-        .nav-cta { font-family: ${FONT}; min-width: var(--btn-pair-w); height: var(--btn-h-md); padding: 0 var(--btn-px-md); font-size: var(--btn-fs-md); font-weight: var(--btn-weight); color: var(--nav-cta-fg); background: var(--nav-cta-bg); border: none; border-radius: var(--btn-radius); cursor: pointer; white-space: nowrap; transition: box-shadow 0.2s, transform 0.2s, background 0.3s, color 0.3s; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; box-sizing: border-box; }
+        .nav-cta { font-family: ${FONT}; height: var(--btn-h-md); padding: 0 var(--btn-px-md); font-size: var(--btn-fs-md); font-weight: var(--btn-weight); color: var(--nav-cta-fg); background: var(--nav-cta-bg); border: none; border-radius: var(--btn-radius); cursor: pointer; white-space: nowrap; transition: box-shadow 0.2s, transform 0.2s, background 0.3s, color 0.3s; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; box-sizing: border-box; }
         .nav-cta:hover { box-shadow: 0 0 0 6px var(--nav-cta-glow); transform: scale(1.02); }
 
         .nav-desktop { display: flex; }

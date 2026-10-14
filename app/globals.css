@@ -79,8 +79,6 @@
   --btn-h-sm: 36px;  --btn-px-sm: 14px;  --btn-fs-sm: var(--fs-sm);
   --btn-h-md: 42px;  --btn-px-md: 18px;  --btn-fs-md: var(--fs-md);
   --btn-h-lg: 48px;  --btn-px-lg: 24px;  --btn-fs-lg: var(--fs-md);
-  /* Paired buttons (nav Sign in + Try it free) share one width. */
-  --btn-pair-w: 130px; /* fits "Book a demo" (12 Oct) */
   --btn-icon-sm: 34px;
   --btn-icon-md: 38px;
   --btn-icon-lg: 48px;
@@ -706,3 +704,29 @@ body::before {
    for reduced motion (the SMIL animation can't be paused, so the stroke hides). */
 .wm-shimmer { filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.55)) drop-shadow(0 0 8px rgba(255, 255, 255, 0.25)); }
 @media (prefers-reduced-motion: reduce) { .wm-shimmer { display: none; } }
+
+/* CTA loading state (14 Oct, components/CtaLoading.tsx): the label hides (its
+   colour is kept, so the spinner can use it) and a ring spins in its place;
+   the button keeps its size. */
+.is-loading { position: relative; pointer-events: none; -webkit-text-fill-color: transparent; }
+.is-loading > *, .is-loading svg, .is-loading img { visibility: hidden; }
+.is-loading::after {
+  content: ""; position: absolute; top: 50%; left: 50%; width: 16px; height: 16px; margin: -8px 0 0 -8px;
+  border-radius: 50%; border: 2px solid currentColor; border-right-color: transparent;
+  animation: cta-spin 0.7s linear infinite;
+}
+@keyframes cta-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .is-loading::after { animation-duration: 1.6s; } }
+
+/* Page-wide loading bar for every other same-tab link (14 Oct): fills fast to
+   70%, then creeps, until the next page replaces this one. */
+.nav-progress { position: fixed; top: 0; left: 0; right: 0; z-index: 9999; height: 2px; pointer-events: none; transform-origin: 0 50%; transform: scaleX(0); opacity: 0; background: linear-gradient(90deg, #8a3ffc, #3d7bff); box-shadow: 0 0 8px rgba(138, 63, 252, 0.6); }
+.nav-progress.on { opacity: 1; animation: nav-progress 8s cubic-bezier(0.1, 0.8, 0.2, 1) forwards; }
+@keyframes nav-progress { 0% { transform: scaleX(0); } 10% { transform: scaleX(0.7); } 100% { transform: scaleX(0.95); } }
+@media (prefers-reduced-motion: reduce) { .nav-progress.on { animation: none; transform: scaleX(0.6); } }
+
+/* In-link spinner for non-button links (14 Oct): takes the place of the link's
+   icon, or follows its text; drawn in the link's own colour. */
+.link-spinner { display: inline-block; flex-shrink: 0; width: 12px; height: 12px; box-sizing: border-box; border-radius: 50%; border: 2px solid currentColor; border-right-color: transparent; vertical-align: middle; animation: cta-spin 0.7s linear infinite; }
+.link-spinner-after { margin-left: 8px; }
+@media (prefers-reduced-motion: reduce) { .link-spinner { animation-duration: 1.6s; } }

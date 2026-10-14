@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { Comfortaa, Instrument_Serif } from "next/font/google";
 import "./globals.css";
+import { CtaLoading } from "@/components/CtaLoading";
 
 import { withBasePath } from "@/lib/assets";
 
@@ -43,7 +44,10 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     // The page ships dark. The light palette is still defined in globals.css
     // and still correct, so this attribute is the only thing to change back.
     <html lang="en" className={`${googleSans.variable} ${heroFont.variable} ${serifFont.variable}`} suppressHydrationWarning /* the home page sets data-theme inline before hydration */>
-      <body>{children}</body>
+      <body>
+        {children}
+        <CtaLoading />
+      </body>
     </html>
   );
 }
