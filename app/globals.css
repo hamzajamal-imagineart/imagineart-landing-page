@@ -705,18 +705,18 @@ body::before {
 .wm-shimmer { filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.55)) drop-shadow(0 0 8px rgba(255, 255, 255, 0.25)); }
 @media (prefers-reduced-motion: reduce) { .wm-shimmer { display: none; } }
 
-/* CTA loading state (14 Oct, components/CtaLoading.tsx): the label hides (its
-   colour is kept, so the spinner can use it) and a ring spins in its place;
-   the button keeps its size. */
-.is-loading { position: relative; pointer-events: none; -webkit-text-fill-color: transparent; }
-.is-loading > *, .is-loading svg, .is-loading img { visibility: hidden; }
-.is-loading::after {
-  content: ""; position: absolute; top: 50%; left: 50%; width: 16px; height: 16px; margin: -8px 0 0 -8px;
+/* CTA loading state (14 Oct, components/CtaLoading.tsx): the label stays and
+   a ring spins in front of it, in the button's own colour, so people still
+   see what they clicked; any trailing arrow hides. */
+.is-loading { pointer-events: none; gap: 8px; }
+.is-loading svg, .is-loading img { display: none; }
+.is-loading::before {
+  content: ""; display: inline-block; flex-shrink: 0; width: 14px; height: 14px; box-sizing: border-box;
   border-radius: 50%; border: 2px solid currentColor; border-right-color: transparent;
   animation: cta-spin 0.7s linear infinite;
 }
 @keyframes cta-spin { to { transform: rotate(360deg); } }
-@media (prefers-reduced-motion: reduce) { .is-loading::after { animation-duration: 1.6s; } }
+@media (prefers-reduced-motion: reduce) { .is-loading::before { animation-duration: 1.6s; } }
 
 /* Page-wide loading bar for every other same-tab link (14 Oct): fills fast to
    70%, then creeps, until the next page replaces this one. */
