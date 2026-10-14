@@ -923,6 +923,7 @@ export function SiteNav({
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 18, padding: "16px 24px 28px", flexShrink: 0 }}>
             <a
               href={NAV_CTA.href}
+              data-cta
               onClick={closeAll}
               style={{
                 display: "inline-flex", alignItems: "center", height: 48, padding: "12px 16px", boxSizing: "border-box",
@@ -934,6 +935,7 @@ export function SiteNav({
             </a>
             <a
               href={NAV_DEMO.href}
+              data-cta
               onClick={closeAll}
               style={{ display: "inline-flex", alignItems: "center", gap: 10, fontSize: "var(--fs-md)", fontWeight: 500, color: "var(--mm-fg)", textDecoration: "none" }}
             >

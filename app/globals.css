@@ -708,15 +708,15 @@ body::before {
 /* CTA loading state (14 Oct, components/CtaLoading.tsx): the label stays and
    a ring spins in front of it, in the button's own colour, so people still
    see what they clicked; any trailing arrow hides. */
-.is-loading { pointer-events: none; gap: 8px; }
-.is-loading svg, .is-loading img { display: none; }
-.is-loading::before {
+[data-loading] { pointer-events: none; gap: 8px; box-sizing: border-box; justify-content: center; white-space: nowrap; overflow: hidden; }
+[data-loading] svg, [data-loading] img { display: none; }
+[data-loading]::before {
   content: ""; display: inline-block; flex-shrink: 0; width: 14px; height: 14px; box-sizing: border-box;
   border-radius: 50%; border: 2px solid currentColor; border-right-color: transparent;
-  animation: cta-spin 0.7s linear infinite;
+  animation: cta-spin 1s linear infinite;
 }
 @keyframes cta-spin { to { transform: rotate(360deg); } }
-@media (prefers-reduced-motion: reduce) { .is-loading::before { animation-duration: 1.6s; } }
+@media (prefers-reduced-motion: reduce) { [data-loading]::before { animation-duration: 1.6s; } }
 
 /* Page-wide loading bar for every other same-tab link (14 Oct): fills fast to
    70%, then creeps, until the next page replaces this one. */
@@ -727,6 +727,6 @@ body::before {
 
 /* In-link spinner for non-button links (14 Oct): takes the place of the link's
    icon, or follows its text; drawn in the link's own colour. */
-.link-spinner { display: inline-block; flex-shrink: 0; width: 12px; height: 12px; box-sizing: border-box; border-radius: 50%; border: 2px solid currentColor; border-right-color: transparent; vertical-align: middle; animation: cta-spin 0.7s linear infinite; }
+.link-spinner { display: inline-block; flex-shrink: 0; width: 12px; height: 12px; box-sizing: border-box; border-radius: 50%; border: 2px solid currentColor; border-right-color: transparent; vertical-align: middle; animation: cta-spin 1s linear infinite; }
 .link-spinner-after { margin-left: 8px; }
 @media (prefers-reduced-motion: reduce) { .link-spinner { animation-duration: 1.6s; } }

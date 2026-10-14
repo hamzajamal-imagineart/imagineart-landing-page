@@ -12,7 +12,7 @@ import { useEffect } from "react";
  * its icon (a card's glass arrow, a menu chevron, a "→") turns into a small
  * spinner in the same spot, or, with no icon, a spinner follows the text.
  * All of them also start a thin bar across the top of the screen.
- * Styles: `.is-loading` and `.nav-progress` in globals.css.
+ * Styles: `[data-loading]`, `.link-spinner` and `.nav-progress` in globals.css.
  */
 const CTA = [
   ".nav-cta", ".nav-signin", ".mm-card-cta",
@@ -20,6 +20,7 @@ const CTA = [
   ".astra-cta", ".mcp-btn", ".hs-cta", ".hc-sales",
   "[data-cta]",
 ].map((s) => `a${s}`).join(", ");
+
 
 /** Give up on the spinner after this long (ms) if the page hasn't changed. */
 const LOADING_TIMEOUT = 10000;
@@ -31,7 +32,11 @@ export function CtaLoading() {
     bar.setAttribute("aria-hidden", "true");
     document.body.appendChild(bar);
     const clear = () => {
-      document.querySelectorAll(".is-loading").forEach((el) => { el.classList.remove("is-loading"); el.removeAttribute("aria-busy"); });
+      document.querySelectorAll<HTMLElement>("[data-loading]").forEach((el) => {
+        el.removeAttribute("data-loading");
+        el.removeAttribute("aria-busy");
+        el.style.width = el.style.transition = "";
+      });
       document.querySelectorAll(".link-spinner").forEach((sp) => sp.remove());
       document.querySelectorAll<SVGElement>("[data-spin-hidden]").forEach((ic) => { ic.style.display = ""; ic.removeAttribute("data-spin-hidden"); });
       bar.classList.remove("on");
@@ -67,8 +72,17 @@ export function CtaLoading() {
       void bar.offsetWidth; // restart the animation on a second click
       bar.classList.add("on");
       if (a.matches(CTA)) {
-        a.classList.add("is-loading");
+        // The label stays and the spinner goes in front; the button grows by
+        // the spinner's width with a short ease (Hamza, 14 Oct). A data
+        // attribute, not a class, so a React re-render can't wipe it.
+        const from = a.getBoundingClientRect().width;
+        a.setAttribute("data-loading", "");
         a.setAttribute("aria-busy", "true");
+        const to = a.getBoundingClientRect().width;
+        a.style.width = `${from}px`;
+        void a.offsetWidth;
+        a.style.transition = "width 0.25s cubic-bezier(0.22, 1, 0.36, 1)";
+        a.style.width = `${to}px`;
       } else {
         spinIn(a);
       }
