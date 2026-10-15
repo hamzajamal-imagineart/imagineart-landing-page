@@ -153,7 +153,7 @@ export const NAV: NavEntry[] = [
                 { title: "Variate", description: "Fresh variations of one image", href: `${IA}/apps/variate` },
                 { title: "Upscale", description: "Boost image or video quality", href: `${IA}/edit/upscale` },
                 { title: "Lipsync Studio", description: "Make a photo speak your audio", href: `${IA}/lipsync-studio` },
-                { title: "Video Recolor", description: "Apply a color grade to any video", href: `${IA}/apps/video-recolor?category-id=23` },
+                { title: "Video Recolor", description: "Apply a color grade to any video", href: `${IA}/apps/video-recolor` },
               ],
               more: { label: "All AI tools", href: `${IA}/tools` },
             },

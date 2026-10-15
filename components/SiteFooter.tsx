@@ -52,7 +52,7 @@ const COLUMNS: FooterSection[][] = [
         { label: "Variate", href: `${BASE}/apps/variate` },
         { label: "Upscale", href: `${BASE}/edit/upscale` },
         { label: "Lipsync Studio", href: `${BASE}/lipsync-studio` },
-        { label: "Video Recolor", href: `${BASE}/apps/video-recolor?category-id=23` },
+        { label: "Video Recolor", href: `${BASE}/apps/video-recolor` },
         { label: "All AI tools", href: `${BASE}/tools`, underline: true }, // underlined as the "see all" link (Hamza, 14 Oct)
       ],
     },
