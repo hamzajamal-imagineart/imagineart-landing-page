@@ -24,7 +24,7 @@ const COLUMNS: FooterSection[][] = [
       heading: "Product",
       links: [
         { label: "Creative Agent", href: `${BASE}/imagine-computer` },
-        { label: "Workflows", href: `${BASE}/business/workflows` },
+        { label: "Workflows", href: `${BASE}/workflow` },
         { label: "MCP", href: `${BASE}/mcp` },
         { label: "Plugins", href: `${BASE}/plugins` },
       ],
@@ -41,12 +41,12 @@ const COLUMNS: FooterSection[][] = [
   ],
   [
     {
-      // The nav's AI Tools, all opening the app (14 Oct).
+      // The nav's AI Tools, same links (15 Oct).
       heading: "AI Tools",
       links: [
-        { label: "Image", href: `${BASE}/image` },
-        { label: "Video", href: `${BASE}/video/create/seedance-25` },
-        { label: "Audio", href: `${BASE}/audio?filter-assets=audio` },
+        { label: "Image", href: `${BASE}/ai-image-generator` },
+        { label: "Video", href: `${BASE}/ai-video-generator` },
+        { label: "Audio", href: `${BASE}/audio-studio` },
         { label: "Camera Angles", href: `${BASE}/apps/camera-angles` },
         { label: "AI Captions", href: `${BASE}/video/captions` },
         { label: "Variate", href: `${BASE}/apps/variate` },

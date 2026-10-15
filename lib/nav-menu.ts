@@ -102,7 +102,7 @@ export const NAV: NavEntry[] = [
               heading: "Product", // was "Platform", which repeated the menu's own name (14 Oct)
               items: [
                 { title: "Creative Agent", description: "An agent that plans and creates", href: `${IA}/imagine-computer` },
-                { title: "Workflows", description: "Canvas for content at scale", href: `${IA}/business/workflows` },
+                { title: "Workflows", description: "Canvas for content at scale", href: `${IA}/workflow` },
                 // Integrations as two rows of their own (Hamza, 14 Oct).
                 { title: "MCP", description: "Connect Claude, ChatGPT, Grok", href: `${IA}/mcp` },
                 { title: "Plugins", description: "Use in Photoshop, Figma, After Effects", href: `${IA}/plugins` },
@@ -130,10 +130,10 @@ export const NAV: NavEntry[] = [
             {
               heading: "AI Tools",
               items: [
-                { title: "Image", description: "Generate AI images", href: `${IA}/image` },
-                { title: "Video", description: "Generate AI videos", href: `${IA}/video/create/seedance-25` },
-                { title: "Audio", description: "Music, voice and sound effects", href: `${IA}/audio?filter-assets=audio` },
-                // Every tool opens the app, not a landing page (Hamza, 14 Oct). Titles and
+                { title: "Image", description: "Generate AI images", href: `${IA}/ai-image-generator` },
+                { title: "Video", description: "Generate AI videos", href: `${IA}/ai-video-generator` },
+                { title: "Audio", description: "Music, voice and sound effects", href: `${IA}/audio-studio` },
+                // Tools open the app; Image, Video and Audio open their generator pages (Hamza, 15 Oct). Titles and
                 // one-liners follow the app's own tool menus where they match;
                 // Audio, Camera Angles and Variate aren't in those menus, so theirs are ours.
                 { title: "Camera Angles", description: "Reshoot from a new angle", href: `${IA}/apps/camera-angles` },
